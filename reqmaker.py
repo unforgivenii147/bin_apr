@@ -1,0 +1,108 @@
+#!/data/data/com.termux/files/usr/bin/python
+import re
+import subprocess
+from collections.abc import Iterable
+from pathlib import Path
+
+REQUIREMENTS_FILE = Path("requirements.txt")
+MISSING_PATTERN = re.compile(r"requires ([A-Za-z0-9_\-]+), which is not installed\.")
+BLACKLIST = {
+    "audioread",
+    "av",
+    "bitarray",
+    "cramjam",
+    "ctranslate2",
+    "evdev",
+    "extensionclass",
+    "flash-attn",
+    "gensim",
+    "jieba",
+    "levenshtein",
+    "llvmlite",
+    "metorial-exceptions",
+    "metorial-generated",
+    "metorial-mcp-session",
+    "metorial-util-endpoint",
+    "numba",
+    "onnxruntime",
+    "ormsgpack",
+    "persistent",
+    "plotly",
+    "plotnine",
+    "pyarrow",
+    "pymupdf",
+    "python-crfsuite",
+    "rpy2-rinterface",
+    "rpy2-robjects",
+    "safetensors",
+    "scikit-learn",
+    "selenium",
+    "sinapsis-core",
+    "soxr",
+    "spacy",
+    "tibs",
+    "torch",
+    "uv",
+    "z3-solver",
+}
+
+
+def run_pip_check() -> str:
+    result = subprocess.run(
+        ["pip", "check"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout.strip()
+
+
+def parse_missing_packages(pip_output: str) -> list[str]:
+    missing: set[str] = set()
+    for line in pip_output.splitlines():
+        match = MISSING_PATTERN.search(line)
+        if match:
+            missing.add(match.group(1))
+    return sorted(missing)
+
+
+def read_existing_requirements() -> set[str]:
+    if not REQUIREMENTS_FILE.exists():
+        return set()
+    return {
+        line.strip()
+        for line in REQUIREMENTS_FILE.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
+    }
+
+
+def save_to_requirements(packages: Iterable[str]) -> None:
+    existing = read_existing_requirements()
+    merged = sorted(existing | set(packages))
+    REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
+    print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
+
+
+def main() -> None:
+    print("🔍 Running pip check...")
+    output = run_pip_check()
+    if not output:
+        print("🎉 No issues found by pip check.")
+        return
+    print("🔎 Parsing missing packages...")
+    missing_packages = parse_missing_packages(output)
+    results = []
+    if not missing_packages:
+        print("🎉 No missing libraries detected.")
+        return
+    print("⚠️ Missing packages detected: ")
+    for pkg in missing_packages:
+        if pkg not in BLACKLIST:
+            results.append(pkg)
+    for pkg in results:
+        print(f"    - {pkg}")
+    save_to_requirements(results)
+
+
+if __name__ == "__main__":
+    main()

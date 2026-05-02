@@ -1,0 +1,29 @@
+#!/data/data/com.termux/files/usr/bin/python
+import sys
+from pathlib import Path
+import cairosvg
+from termcolor import cprint
+from dhh import fsz, get_files, gsz
+
+
+def process_file(path):
+    try:
+        outfile = path.with_suffix(".pdf")
+        cairosvg.svg2pdf(url=str(path), write_to=str(outfile))
+    except:
+        return
+
+
+def main():
+    cwd = Path.cwd()
+    before = gsz(cwd)
+    args = sys.argv[1:]
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".svg"])
+    for f in files:
+        process_file(f)
+    diff_size = before - gsz(cwd)
+    cprint(f"space saved : {fsz(diff_size)}", "cyan")
+
+
+if __name__ == "__main__":
+    main()

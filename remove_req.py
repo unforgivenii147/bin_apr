@@ -1,0 +1,21 @@
+#!/data/data/com.termux/files/usr/bin/python
+import sys
+from pathlib import Path
+
+
+def process_file(path, text):
+    content = path.read_text()
+    target = "Requires-Dist: " + text
+    if target in content:
+        lines = content.splitlines()
+        nl = [line for line in lines if target not in line]
+        newcontent = "\n".join(nl)
+        path.write_text(newcontent, encoding="utf-8")
+        print(f"{path.parent.name} updated.")
+
+
+if __name__ == "__main__":
+    cwd = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    target = sys.argv[1]
+    for path in cwd.rglob("METADATA"):
+        process_file(path, target)

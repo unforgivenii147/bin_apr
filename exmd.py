@@ -1,0 +1,107 @@
+#!/data/data/com.termux/files/usr/bin/python
+import os
+import re
+from pathlib import Path
+
+OUTPUT_DIR = Path("output")
+if not OUTPUT_DIR.exists():
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+def extract_code_snippets_with_details(markdown_content):
+    snippets_data = []
+    lines = markdown_content.splitlines()
+    in_code_block = False
+    current_block_lines = []
+    start_line_num = -1
+    language = ""
+    for i, line in enumerate(lines):
+        if line.strip().startswith("```"):
+            if in_code_block:
+                snippets_data.append(
+                    {
+                        "language": language,
+                        "start_line": start_line_num,
+                        "end_line": i,  # i is the line number of the closing ```
+                        "content": "\n".join(current_block_lines),
+                    }
+                )
+                in_code_block = False
+                current_block_lines = []
+                language = ""
+            else:
+                in_code_block = True
+                start_line_num = i + 1  # Markdown line numbers are typically 1-based
+                match = re.match(r"```(\w*)", line.strip())
+                if match and match.group(1):
+                    language = match.group(1).lower()
+                else:
+                    language = ""  # Default if no language specified
+                current_block_lines = []  # Reset for new block
+        elif in_code_block:
+            current_block_lines.append(line)
+    if in_code_block:
+        snippets_data.append(
+            {
+                "language": language,
+                "start_line": start_line_num,
+                "end_line": len(lines),
+                "content": "\n".join(current_block_lines),
+            }
+        )
+    return snippets_data
+
+
+def get_extension_from_language(language):
+    extensions = {
+        "sh": ".sh",
+        "bash": ".sh",
+        "zsh": ".sh",
+        "python": ".py",
+        "py": ".py",
+        "javascript": ".js",
+        "js": ".js",
+        "html": ".html",
+        "css": ".css",
+        "json": ".json",
+        "yaml": ".yaml",
+        "yml": ".yaml",
+        "sql": ".sql",
+        "md": ".md",  # For markdown code blocks
+        "text": ".txt",
+        "plain": ".txt",
+        "": ".txt",  # Default if no language specified
+    }
+    return extensions.get(language.lower(), ".txt")
+
+
+def process_markdown_files(directory="."):
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith((".md", ".markdown", ".metadata", "METADATA", "PKGINFO", "PKG-INFO")):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                except Exception as e:
+                    print(f"Error reading {filepath}: {e}")
+                    continue
+                code_details = extract_code_snippets_with_details(content)
+                if code_details:
+                    base_name = os.path.splitext(file)[0]
+                    for i, details in enumerate(code_details):
+                        line_range = f"{details['start_line']}-{details['end_line']}"
+                        language = details["language"]
+                        extension = get_extension_from_language(language)
+                        # Create a unique filename
+                        output_filename = f"output/{base_name}_lines_{line_range}{extension}"
+                        output_path = os.path.join(root, output_filename)
+                        with open(output_path, "w", encoding="utf-8") as snippet_file:
+                            snippet_file.write(details["content"].strip())
+                        print(
+                            f"Saved snippet from {filepath} (Lines {line_range}, Lang: '{language}') to {output_path}"
+                        )
+
+
+if __name__ == "__main__":
+    process_markdown_files()

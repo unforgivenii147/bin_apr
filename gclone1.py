@@ -1,0 +1,157 @@
+#!/data/data/com.termux/files/usr/bin/python
+import os
+import re
+import sys
+from pathlib import Path
+from urllib.parse import urlparse
+import requests
+from dh import runcmd
+from loguru import logger
+from termcolor import cprint
+
+GITHUB_API_URL = "https://api.github.com/repos"
+remained = []
+GITHUB_TOKEN = None
+
+
+def parse_repo_url(url_or_path):
+    """
+    Parses a GitHub repo URL or 'user/repo' path into (user, repo).
+    Returns:
+        tuple: (username, repository_name) or (None, None) if invalid.
+    """
+    if "/" in url_or_path and not url_or_path.startswith("http"):
+        parts = url_or_path.strip().split("/")
+        if len(parts) == 2 and parts[0] and parts[1]:
+            return parts[0], parts[1]
+        else:
+            return None, None
+    else:
+        try:
+            parsed = urlparse(url_or_path.strip())
+            if parsed.netloc.lower() in ("github.com", "www.github.com"):
+                path_parts = [p for p in parsed.path.split("/") if p]
+                if len(path_parts) == 2:
+                    return path_parts[0], path_parts[1]
+        except Exception:
+            pass
+    return None, None
+
+
+def get_repo_size_mb(user, repo):
+    """
+    Fetches repository size in MB using the GitHub API.
+    Returns:
+        float: Size in MB, or None if an error occurs.
+    """
+    api_endpoint = f"{GITHUB_API_URL}/{user}/{repo}"
+    headers = {"Accept": "application/vnd.github.v3+json"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+    try:
+        response = requests.get(api_endpoint, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        size_bytes = data.get("size")
+        if size_bytes is not None:
+            size_mb = size_bytes / 1024.0
+            return round(size_mb, 2)
+        else:
+            logger.info(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
+            return None
+    except requests.exceptions.HTTPError as e:
+        logger.info(f"❌ API Error: {e.response.status_code} for {user}/{repo}")
+        if e.response.status_code == 404:
+            logger.info("   Repository not found or access denied.")
+        elif e.response.status_code == 403:
+            logger.info("   Rate limit exceeded or insufficient permissions.")
+        else:
+            logger.info(f"   Response: {e.response.text}")
+        return None
+    except requests.exceptions.RequestException as e:
+        logger.info(f"❌ Network Error: Could not connect to GitHub API: {e}")
+        return None
+    except Exception as e:
+        logger.info(f"❌ An unexpected error occurred while fetching size: {e}")
+        return None
+
+
+def clone_repo_shallow(user, repo):
+    """
+    Clones the repository shallowly (depth 1) into the current directory.
+    Returns:
+        bool: True if cloning was successful, False otherwise.
+    """
+    repo_name = f"{user}/{repo}"
+    repo_url = f"https://github.com/{repo_name}.git"
+    clone_path = os.path.join(os.getcwd(), repo)
+    if os.path.exists(clone_path):
+        return False
+    logger.info(f"\n🚀 Cloning {repo_name} (shallow clone)...")
+    command = ["git", "clone", "--depth", "1", repo_url, clone_path]
+    try:
+        process = runcmd(
+            command,
+            show_output=True,
+        )
+        logger.info("✅ Successfully cloned repository.")
+        logger.info(f"   Cloned into: {clone_path}")
+        return True
+    except FileNotFoundError:
+        logger.info("❌ Error: 'git' command not found. Please ensure Git is installed and in your PATH.")
+        return False
+    except Exception as e:
+        logger.info(f"❌ An unexpected error occurred during cloning: {e}")
+        return False
+
+
+def process_repo(url):
+    global remained
+    user, repo = parse_repo_url(url)
+    if not user or not repo:
+        logger.info(f"❌ Invalid GitHub repository format: '{repo_input}'")
+        sys.exit(1)
+    logger.info(f"🔍 Analyzing repository: {user}/{repo}")
+    repo_size = get_repo_size_mb(user, repo)
+    if repo_size is not None and repo_size <= 2.0:
+        logger.info(f"ℹ️ size: {repo_size} MB")
+        if clone_repo_shallow(user, repo):
+            logger.info("\n🎉 Done!")
+            return
+        else:
+            logger.info("\nScript finished with errors during cloning.")
+            return
+    else:
+        remained.append(url)
+
+
+"""
+    if repo_size is not None and repo_size > 2.0:
+        clogger.info(f"ℹ️ size: {repo_size} MB", "cyan")
+        confirm = input(f"clone '{user}/{repo}'? (y/N): ").strip().lower()
+        if confirm == "y" or confirm == "yes":
+            if clone_repo_shallow(user, repo):
+                logger.info("\n🎉 Done!")
+                return
+            else:
+                logger.info("\nScript finished with errors during cloning.")
+                return
+        else:
+            logger.info("Aborted cloning.")
+    else:
+        logger.info("\nCould not proceed with cloning due to previous errors.")
+        return
+    return
+"""
+if __name__ == "__main__":
+    repo_file = Path("repos.txt")
+    content = repo_file.read_text(encoding="utf-8")
+    lines = content.splitlines(keepends=False)
+    i = 0
+    ll = len(lines)
+    for line in lines:
+        logger.info(f"{i}/{ll}")
+        i += 1
+        process_repo(line)
+    with open("remained", "w") as fo:
+        fo.write("\n".join(remained))

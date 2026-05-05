@@ -2,8 +2,10 @@
 import string
 import sys
 from pathlib import Path
+
 from dh import mpf
 from fastwalk import walk_files
+from loguru import logger
 
 
 def is_all_upper(str1):
@@ -16,7 +18,7 @@ def process_file(fp):
         return None
     ext = fp.suffix[1:]
     if ext and is_all_upper(ext):
-        print(fp)
+        logger.info(fp)
         return True
     return False
 

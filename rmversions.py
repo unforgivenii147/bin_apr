@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def clean_requirements(fname):
     with Path(fname).open(encoding="utf-8") as f:
@@ -15,7 +17,7 @@ def clean_requirements(fname):
         if pkg:
             packages.add(pkg)
     Path(fname).write_text("\n".join(sorted(packages)), encoding="utf-8")
-    print(f"Updated  {fname} with {len(packages)} unique packages.")
+    logger.info(f"Updated  {fname} with {len(packages)} unique packages.")
 
 
 if __name__ == "__main__":

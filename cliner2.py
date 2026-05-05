@@ -2,6 +2,8 @@
 import re
 from pathlib import Path
 
+from loguru import logger
+
 LOG_EXT = ".log"
 PATTERNS = [
     r"\^\[",
@@ -33,21 +35,21 @@ def clean_file(file_path: Path) -> None:
         cleaned_lines = [clean_line(line) for line in lines]
         with Path(file_path).open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)
-        print(f"✓ Cleaned: {file_path}")
+        logger.info(f"✓ Cleaned: {file_path}")
     except Exception as e:
-        print(f"✗ Error processing {file_path}: {e}")
+        logger.info(f"✗ Error processing {file_path}: {e}")
 
 
 def main():
     cwd = Path.cwd()
     log_files = list(cwd.rglob(f"*{LOG_EXT}"))
     if not log_files:
-        print(f"No {LOG_EXT} files found.")
+        logger.info(f"No {LOG_EXT} files found.")
         return
-    print(f"Found {len(log_files)} log file(s). Cleaning...\n")
+    logger.info(f"Found {len(log_files)} log file(s). Cleaning...\n")
     for log_file in log_files:
         clean_file(log_file)
-    print(f"\nDone. Processed {len(log_files)} file(s).")
+    logger.info(f"\nDone. Processed {len(log_files)} file(s).")
 
 
 if __name__ == "__main__":

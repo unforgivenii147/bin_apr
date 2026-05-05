@@ -18,8 +18,7 @@ def convert_vtt_to_srt(vtt_content):
             continue
         if "-->" in line:
             timestamp = line.replace(".", ",")
-            srt_lines.append(str(counter))
-            srt_lines.append(timestamp)
+            srt_lines.extend((str(counter), timestamp))
             counter += 1
             i += 1
             while i < len(lines) and lines[i].strip():

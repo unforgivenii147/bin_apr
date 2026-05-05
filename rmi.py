@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_nobinary
+from loguru import logger
 
 INVISIBLE_CHARS = {
     "\u200b",
@@ -37,10 +39,10 @@ def process_file(fp):
     cleaned = clean_text(text)
     removed = len(text) - len(cleaned)
     if removed:
-        print(f"{removed} invisible characters removed")
+        logger.info(f"{removed} invisible characters removed")
         fp.write_text(cleaned, encoding="utf-8")
         return
-    print("No invisible characters found")
+    logger.info("No invisible characters found")
     return
 
 

@@ -4,6 +4,8 @@ import operator
 from pathlib import Path
 from time import perf_counter
 
+from loguru import logger
+
 
 def hash_file_chunked(filepath, chunk_size):
     sha256_hash = hashlib.sha256()
@@ -26,8 +28,8 @@ def benchmark_chunk_sizes(filepath):
         results[chunk_size] = end_time - start_time
     best_chunk_size = min(results, key=results.get)
     best_time = results[best_chunk_size]
-    print(f"File: {filepath.name} : ", end=" ")
-    print(f"{best_chunk_size}, Time: {best_time}")
+    logger.info(f"File: {filepath.name} : ", end=" ")
+    logger.info(f"{best_chunk_size}, Time: {best_time}")
     return best_chunk_size
 
 
@@ -46,4 +48,4 @@ if __name__ == "__main__":
             else:
                 results[cs] += 1
     sr = dict(sorted(results.items(), key=operator.itemgetter(1), reverse=True))
-    print(sr)
+    logger.info(sr)

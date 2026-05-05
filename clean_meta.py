@@ -2,18 +2,21 @@
 import re
 import sys
 from pathlib import Path
-from dhh import fsz, get_files, gsz, mpf3
+
+from loguru import logger
+
+from dhh import fsz, get_files, gsz
 
 blank_line = "\n"
 IMAGE_RE = re.compile(r"^\s*(\.\.\s+image::|:target:|:alt:)", re.IGNORECASE)
 
 
 def process_file(path: Path):
-    print(f"Processing {path.name}")
+    logger.info(f"Processing {path.name}")
     try:
         content = path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f"⚠️  Skipping {path}: {e}")
+        logger.info(f"⚠️  Skipping {path}: {e}")
         return
     lines = content.splitlines(keepends=True)  # keep original line endings
     modified_lines = []
@@ -54,9 +57,9 @@ def process_file(path: Path):
     new_content = "".join(modified_lines)
     try:
         path.write_text(new_content, encoding="utf-8")
-        print(f"✅ Replaced {replaced_count} line(s) in {path.name}")
+        logger.info(f"✅ Replaced {replaced_count} line(s) in {path.name}")
     except Exception as e:
-        print(f"❌ Failed to write {path}: {e}")
+        logger.info(f"❌ Failed to write {path}: {e}")
 
 
 def main():
@@ -75,11 +78,11 @@ def main():
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
-    print(f"{len(files)} files found.")
+    logger.info(f"{len(files)} files found.")
     for f in files:
         process_file(f)
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

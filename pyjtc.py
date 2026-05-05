@@ -4,6 +4,8 @@ import os
 import re
 from pathlib import Path
 
+from loguru import logger
+
 
 def remove_comments_and_strings(content, filetype, keep_strings=False):
     if filetype in {"c", "cpp", "h", "hpp"}:
@@ -43,15 +45,15 @@ def process_file(filepath, inplace=False, keep_strings=False):
         "py",
         "sh",
     }:
-        print(f"Unsupported file type: {ext}")
+        logger.info(f"Unsupported file type: {ext}")
         return
     content = Path(filepath).read_text(encoding="utf-8")
     cleaned = remove_comments_and_strings(content, ext, keep_strings)
     if inplace:
         Path(filepath).write_text(cleaned, encoding="utf-8")
-        print(f"File {filepath} cleaned and saved in-place.")
+        logger.info(f"File {filepath} cleaned and saved in-place.")
     else:
-        print(f"--- Cleaned {filepath} ---\n{cleaned}\n")
+        logger.info(f"--- Cleaned {filepath} ---\n{cleaned}\n")
 
 
 if __name__ == "__main__":

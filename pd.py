@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from pathlib import Path
+
 import requests
+from loguru import logger
 from packaging import tags
 
 
@@ -20,7 +22,7 @@ def get_package_urls(pkg_name):
     data = response.json()
     releases = data.get("releases", {})
     latest_version = max(releases.keys())
-    print(f"latest version : {latest_version}")
+    logger.info(f"latest version : {latest_version}")
     release_files = releases[latest_version]
     return release_files, latest_version
 
@@ -40,13 +42,13 @@ def download_package(pkg_name):
     else:
         download_url = sdist_files[0]["url"]
         filename = sdist_files[0]["filename"]
-    print(f"Downloading {filename}...")
+    logger.info(f"Downloading {filename}...")
     response = requests.get(download_url)
     if response.status_code != 200:
         msg = f"Failed to download {filename}"
         raise ValueError(msg)
     Path(filename).write_bytes(response.content)
-    print(f"Downloaded {filename}")
+    logger.info(f"Downloaded {filename}")
 
 
 if __name__ == "__main__":

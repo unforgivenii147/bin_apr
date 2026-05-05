@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def process_file(path, text):
     content = path.read_text()
@@ -11,11 +13,13 @@ def process_file(path, text):
         nl = [line for line in lines if target not in line]
         newcontent = "\n".join(nl)
         path.write_text(newcontent, encoding="utf-8")
-        print(f"{path.parent.name} updated.")
+        logger.info(f"{path.parent.name} updated.")
 
 
 if __name__ == "__main__":
-    cwd = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
+    major, minor, _, _, _ = sys.version_info
+    py_version = f"{major}{minor}"
+    cwd = Path(f"/data/data/com.termux/files/usr/lib/python{py_version}/site-packages")
     target = sys.argv[1]
     for path in cwd.rglob("METADATA"):
         process_file(path, target)

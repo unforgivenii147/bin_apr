@@ -2,6 +2,8 @@
 import os
 from pathlib import Path
 
+from loguru import logger
+
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "merged.txt"
 
@@ -26,7 +28,7 @@ def collect_files(root):
 
 def merge_files(root):
     files = list(collect_files(root))
-    print(f"Found {len(files)} files")
+    logger.info(f"Found {len(files)} files")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as fo:
         for i, path in enumerate(files, 1):
             content = read_file(path)
@@ -36,8 +38,8 @@ def merge_files(root):
             fo.write(content)
             if i != len(files):
                 fo.write("\n")
-            print(f"Added: {path}")
-    print(f"\nsaved as: {OUTPUT_FILE}")
+            logger.info(f"Added: {path}")
+    logger.info(f"\nsaved as: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

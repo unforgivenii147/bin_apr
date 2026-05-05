@@ -2,7 +2,9 @@
 import importlib
 import subprocess
 import sys
+
 import pkg_resources
+from loguru import logger
 
 
 def get_installed_python_packages() -> list[tuple[str, str]]:
@@ -46,17 +48,17 @@ def get_latest_version(package_name: str) -> str:
 
 
 def main():
-    print("=== Python Packages Sanity Check ===")
+    logger.info("=== Python Packages Sanity Check ===")
     installed_pkgs = get_installed_python_packages()
-    print(f"Found {len(installed_pkgs)} installed Python packages.\n")
+    logger.info(f"Found {len(installed_pkgs)} installed Python packages.\n")
     issues_found = 0
     for pkg_name, pkg_version in installed_pkgs:
         is_ok, msg = check_package_importable(pkg_name)
         if not is_ok:
-            print(f"[!] {pkg_name} (v{pkg_version}): {msg}")
+            logger.info(f"[!] {pkg_name} (v{pkg_version}): {msg}")
             issues_found += 1
-    print("\n=== Version Check (Optional) ===")
-    print("Checking for outdated packages (this may take a while)...")
+    logger.info("\n=== Version Check (Optional) ===")
+    logger.info("Checking for outdated packages (this may take a while)...")
     outdated_pkgs = []
     for pkg_name, pkg_version in installed_pkgs:
         latest_version = get_latest_version(pkg_name)
@@ -72,21 +74,21 @@ def main():
                 )
             )
     if outdated_pkgs:
-        print("Outdated packages found:")
+        logger.info("Outdated packages found:")
         for (
             pkg_name,
             pkg_version,
             latest_version,
         ) in outdated_pkgs:
-            print(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
+            logger.info(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
     else:
-        print("All packages are up to date.")
-    print("\n=== Summary ===")
-    print(f"Issues found: {issues_found}")
+        logger.info("All packages are up to date.")
+    logger.info("\n=== Summary ===")
+    logger.info(f"Issues found: {issues_found}")
     if issues_found == 0:
-        print("All packages are importable.")
+        logger.info("All packages are importable.")
     else:
-        print("Some packages may need attention.")
+        logger.info("Some packages may need attention.")
 
 
 if __name__ == "__main__":

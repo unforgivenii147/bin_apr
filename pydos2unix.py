@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import fnmatch
-import logging
 import mmap
 from pathlib import Path
+from multiprocessing import Pool
 from dh import is_binary
 from tqdm import tqdm
 
@@ -24,6 +24,7 @@ def needs_conversion(path: Path) -> bool:
 
 
 def convert_in_place(path: Path) -> None:
+    print(f"processing {path.name}")
     with (
         path.open("r+b") as f,
         mmap.mmap(f.fileno(), 0) as mm,
@@ -97,12 +98,12 @@ def worker(args):
     path, dry = args
     res = safe_convert(path, dry_run=dry)
     if res == "ERROR":
-        logging.error("Failed to convert: %s", path)
+        print("Failed to convert: %s", path)
     return res
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Fast dos2unix converter with mmap, tqdm, error logging.")
+    parser = argparse.ArgumentParser(description="Fast dos2unix converter with mmap, tqdm")
     parser.add_argument(
         "paths",
         nargs="*",
@@ -110,10 +111,7 @@ def parse_args():
     )
     parser.add_argument("--recursive", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--parallel", type=int, default=1)
-    parser.add_argument("--chunksize", type=int, default=50)
-    parser.add_argument("--exclude", nargs="*", default=[])
-    parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--exclude", nargs="*", default=[".git", "__pycache__"])
     return parser.parse_args()
 
 
@@ -122,30 +120,11 @@ def main() -> None:
     if not args.paths:
         args.paths = ["."]
         args.recursive = True
-    log_dir = Path.home() / "tmp"
-    log_dir.mkdir(exist_ok=True)
-    log_file = log_dir / "pydos2unix.log"
-    logging.basicConfig(
-        filename=str(log_file),
-        level=logging.ERROR,
-        format="%(asctime)s %(levelname)s: %(message)s",
-    )
     files = scan_paths(args.paths, args.recursive, args.exclude)
     tasks = [(p, args.dry_run) for p in files]
-    if args.parallel > 1:
-        with (
-            Pool(args.parallel) as pool,
-            tqdm(total=len(tasks), unit="file") as bar,
-        ):
-            for _ in pool.imap_unordered(
-                worker,
-                tasks,
-                chunksize=args.chunksize,
-            ):
-                bar.update(1)
-    else:
-        for task in tqdm(tasks, unit="file"):
-            worker(task)
+    with Pool(4) as pool:
+        for _ in pool.imap_unordered(worker, tasks, chunksize=50):
+            pass
 
 
 if __name__ == "__main__":

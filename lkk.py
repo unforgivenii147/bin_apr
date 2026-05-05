@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 import sys
 from pathlib import Path
 
@@ -7,9 +6,9 @@ from pathlib import Path
 def main():
     cwd = Path.cwd()
     req = sys.argv[1].strip()
-    found = [f for f in os.listdir(cwd) if req in f and not os.path.islink(f)]
+    found = [path for path in cwd.glob("*") if req in path.name and not path.is_symlink()]
     for k in found:
-        print(k)
+        print(f"  - {k.name}")
 
 
 if __name__ == "__main__":

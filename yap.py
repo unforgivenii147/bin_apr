@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-import sys
 from os import scandir as _scandir
 from pathlib import Path
+
 from autoflake import fix_code as fix_with_autoflake
 from autopep8 import fix_code as fix_with_autopep
 from black import Mode as _Mode
@@ -113,7 +113,7 @@ def format_single_file(file_path, args) -> bool:
             code = format_str(
                 original_code,
                 mode=_Mode(
-                    target_versions={_tv.PY311, _tv.PY312, _tv.PY313},
+                    target_versions={_tv.PY310, _tv.PY313},
                     line_length=120,
                 ),
             )

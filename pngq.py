@@ -1,57 +1,74 @@
 #!/data/data/com.termux/files/usr/bin/python
-import glob
-import subprocess
-from multiprocessing import get_context
+# import tempfile
+import sys
 from pathlib import Path
-
-QUALITY_RANGE = "60-70"
-START_DIR = Path()
-NUM_PROCESSES = 8
-print(f"Using {NUM_PROCESSES} CPU cores for parallel processing via subprocess.")
+from dh import gsz, get_files, fsz, mpf3, cprint, runcmd
 
 
-def process_png(input_path):
+START_DIR = Path.cwd()
+NUM_PROCESSES = 4
+
+
+def process_file(path):
+    #    _,temp_path = tempfile.mkstemp(dir=Path(path).parent)
+    before = gsz(path)
     try:
-        command = [
+        cmd = [
             "pngquant",
-            f"--quality={QUALITY_RANGE}",
             "--force",
             "--skip-if-larger",
-            input_path,
+            "--quality=60-70",
+            "--strip",
+            str(path),
             "--output",
-            input_path,
+            str(path),
         ]
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=True,
+        ret, txt, err = runcmd(
+            cmd,
+            show_output=False,
         )
-        if "skipping" in result.stdout.lower():
-            print(f"🟢 Skipped: {input_path} (No size reduction possible or quality too low)")
+        if "skipping" in txt.lower():
+            #            if Path(temp_path).exists():
+            #                Path(temp_path).unlink()
+            print(f" Skipped: {path.name}")
+            return
         else:
-            print(f"✅ Optimized: {input_path} (Quality: {quality_range})")
-    except subprocess.CalledProcessError as e:
-        print(
-            f"❌ Error compressing {input_path} via subprocess. Return Code: {e.returncode}. Error: {e.stderr.strip()}"
-        )
+            after = gsz(path)
+            dz = before - after
+            if not dz:
+                print(f"✅ : {path.name} : (no change)")
+                return
+            ratio = ((before - after) / before) * 100
+            print(f"✅ : {path.name}", end=" | ")
+            cprint(f"{ratio:.1f} %")
+            return
     except FileNotFoundError:
         print(
             "❌ Error: 'pngquant' command not found. Please ensure the 'pngquant' binary is installed and in your system PATH."
         )
     except Exception as e:
-        print(f"❌ Error compressing {input_path}: {e}")
+        print(f"❌ Error compressing {path}: {e}")
+
+    return
+
+
+def main():
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = []
+
+    if args:
+        for arg in args:
+            p = Path(arg)
+            if p.is_file():
+                files.append(p)
+            elif p.is_dir():
+                files.extend(get_files(p, extensions=[".png", ".PNG"]))
+    else:
+        files = get_files(root_dir, extensions=[".png", ".PNG"])
+
+    _ = mpf3(process_file, files)
 
 
 if __name__ == "__main__":
-    files = glob.glob(
-        str(START_DIR / "**" / "*.png"),
-        recursive=True,
-    )
-    if not files:
-        print(f"No PNG files found recursively in {START_DIR}.")
-    else:
-        print(f"Found {len(files)} PNG files to process...")
-        with get_context("spawn").Pool(8) as pool:
-            for f in files:
-                pool.apply_async(process_png, (f,))
+    sys.exit(main())

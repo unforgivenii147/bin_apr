@@ -5,6 +5,8 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
+from loguru import logger
+
 
 def run(cmd) -> bool | None:
     try:
@@ -22,13 +24,13 @@ def ensure_gitignore() -> None:
     repo_gitignore = Path(".gitignore")
     global_gitignore = Path.home() / ".gitignore_global"
     if repo_gitignore.exists():
-        print(".gitignore already exists.")
+        logger.info(".gitignore already exists.")
         return
     if global_gitignore.exists():
-        print("Copying global .gitignore_global to local .gitignore...")
+        logger.info("Copying global .gitignore_global to local .gitignore...")
         shutil.copy(global_gitignore, repo_gitignore)
     else:
-        print("No local .gitignore and no ~/.gitignore_global found. Skipping.")
+        logger.info("No local .gitignore and no ~/.gitignore_global found. Skipping.")
 
 
 def find_python_scripts_without_extension():
@@ -50,7 +52,7 @@ def find_python_scripts_without_extension():
 
 def main() -> None:
     if not in_git_repo():
-        print("Not inside a Git repository. Doing nothing.")
+        logger.info("Not inside a Git repository. Doing nothing.")
         return
     ensure_gitignore()
     python_files = []
@@ -58,29 +60,29 @@ def main() -> None:
         python_files.extend(os.path.join(root, f) for f in files if f.endswith(".py"))
     python_files.extend(find_python_scripts_without_extension())
     if not python_files:
-        print("No Python files found.")
+        logger.info("No Python files found.")
         return
-    print("Formatting Python files with black:")
+    logger.info("Formatting Python files with black:")
     for f in python_files:
-        print("  ->", f)
+        logger.info("  ->", f)
         if not run(f"black {f}"):
-            print(f"Black failed for {f}.")
+            logger.info(f"Black failed for {f}.")
             return
-    print("Running git add .")
+    logger.info("Running git add .")
     if not run("git add ."):
-        print("git add failed.")
+        logger.info("git add failed.")
         return
     commit_message = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"Committing with message: {commit_message}")
+    logger.info(f"Committing with message: {commit_message}")
     commit_success = run(f'git commit -m "{commit_message}"')
     if not commit_success:
-        print("Nothing to commit or commit failed.")
+        logger.info("Nothing to commit or commit failed.")
         return
-    print("Pushing changes...")
+    logger.info("Pushing changes...")
     if not run("git push"):
-        print("git push failed.")
+        logger.info("git push failed.")
         return
-    print("Done!")
+    logger.info("Done!")
 
 
 if __name__ == "__main__":

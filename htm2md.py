@@ -5,6 +5,8 @@ import sys
 from multiprocessing import cpu_count
 from pathlib import Path
 
+from loguru import logger
+
 
 def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
     if html_file.suffix.lower() in {
@@ -13,7 +15,7 @@ def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Pa
     }:
         md_file = html_file.with_suffix(".md")
     else:
-        print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
+        logger.info(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
         return (html_file, False)
     try:
         result = subprocess.run(
@@ -23,22 +25,22 @@ def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Pa
             check=True,
         )
         md_file.write_text(result.stdout, encoding="utf-8")
-        print(f"✓ Converted: {html_file} -> {md_file}")
+        logger.info(f"✓ Converted: {html_file} -> {md_file}")
         return (md_file, True)
     except subprocess.CalledProcessError as e:
-        print(
+        logger.info(
             f"✗ Error converting {html_file}: {e.stderr}",
             file=sys.stderr,
         )
         return (html_file, False)
     except FileNotFoundError:
-        print(
+        logger.info(
             f"✗ Error: '{executable}' executable not found. Make sure it's in your PATH.",
             file=sys.stderr,
         )
         sys.exit(1)
     except Exception as e:
-        print(
+        logger.info(
             f"✗ Unexpected error converting {html_file}: {e}",
             file=sys.stderr,
         )
@@ -104,7 +106,7 @@ Examples:
     args = parser.parse_args()
     input_path = Path(args.path).resolve()
     if not input_path.exists():
-        print(
+        logger.info(
             f"Error: Path '{input_path}' does not exist.",
             file=sys.stderr,
         )
@@ -114,11 +116,11 @@ Examples:
     elif input_path.is_dir():
         html_files = find_html_files(input_path, args.recursive)
         if not html_files:
-            print(f"No HTML files found in {input_path}")
+            logger.info(f"No HTML files found in {input_path}")
             sys.exit(0)
-        print(f"Found {len(html_files)} HTML file(s) to process")
+        logger.info(f"Found {len(html_files)} HTML file(s) to process")
     else:
-        print(
+        logger.info(
             f"Error: '{input_path}' is neither a file nor a directory.",
             file=sys.stderr,
         )
@@ -126,13 +128,13 @@ Examples:
     if len(html_files) == 1:
         convert_html_to_md(html_files[0], args.executable)
     else:
-        print(f"Using {args.workers} worker process(es)")
+        logger.info(f"Using {args.workers} worker process(es)")
         process_args = [(f, args.executable) for f in html_files]
         with Pool(processes=args.workers) as pool:
             results = pool.map(process_file_wrapper, process_args)
         successful = sum(1 for _, success in results if success)
-        print(f"\n{'=' * 50}")
-        print(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
+        logger.info(f"\n{'=' * 50}")
+        logger.info(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
 
 
 if __name__ == "__main__":

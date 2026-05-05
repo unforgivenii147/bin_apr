@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 import jsbeautifier
+from loguru import logger
 
 
 def beautify_file(file_path) -> None:
@@ -22,7 +24,7 @@ def beautify_directory(directory) -> None:
         for file in files:
             file_path = os.path.join(root, file)
             if file.endswith((".js", ".css", ".html")):
-                print(f"Beautifying: {file_path}")
+                logger.info(f"Beautifying: {file_path}")
                 beautify_file(file_path)
 
 

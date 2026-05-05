@@ -3,7 +3,9 @@ import argparse
 import re
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+
 from dh import get_pyfiles
+from loguru import logger
 
 NORMAL_IMPORT = r"^import re\b"
 REGEX_IMPORT = r"^import regex as re\b"
@@ -50,7 +52,7 @@ def main():
     args = parser.parse_args()
     cwd = Path.cwd()
     py_files = get_pyfiles(cwd)
-    print(f"Scanning {len(py_files)} files...")
+    logger.info(f"Scanning {len(py_files)} files...")
     with ProcessPoolExecutor() as executor:
         results = list(
             executor.map(
@@ -61,8 +63,8 @@ def main():
         )
     updates = [r for r in results if r]
     for msg in updates:
-        print(msg)
-    print(f"\nTask complete. Files modified: {len(updates)}")
+        logger.info(msg)
+    logger.info(f"\nTask complete. Files modified: {len(updates)}")
 
 
 if __name__ == "__main__":

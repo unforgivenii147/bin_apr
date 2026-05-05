@@ -3,6 +3,8 @@ import os
 import re
 from pathlib import Path
 
+from loguru import logger
+
 
 def resolve_imports(content, current_dir):
     folder_name = Path(current_dir).name
@@ -35,7 +37,7 @@ def merge_python_files():
                 content = infile.read()
                 content = resolve_imports(content, current_dir)
                 outfile.write(content)
-    print(f"Merged {len(py_files)} files into {output_filename}")
+    logger.info(f"Merged {len(py_files)} files into {output_filename}")
 
 
 if __name__ == "__main__":

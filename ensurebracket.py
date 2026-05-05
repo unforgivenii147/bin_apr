@@ -3,7 +3,9 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 from dh import get_files
+from loguru import logger
 
 MAX_QUEUE = 16
 
@@ -21,7 +23,7 @@ def process_file(fn):
         elif char in {"(", "[", "{"}:
             stack.append(char)
     if not stack:
-        print(fn.name)
+        logger.info(fn.name)
     return not stack
 
 

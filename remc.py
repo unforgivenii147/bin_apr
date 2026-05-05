@@ -3,7 +3,10 @@ import ast
 import re
 import sys
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 
@@ -109,7 +112,7 @@ def process_file(file_path: Path) -> None:
             modified, removed = rm_doc(original)
         modified = clean_blank_lines(modified)
         if removed:
-            print(f"✓ {file_path.name} : ", end="")
+            logger.info(f"✓ {file_path.name} : ", end="")
             cprint(f"{removed}", "cyan")
             try:
                 tree = ast.parse(modified)
@@ -123,7 +126,7 @@ def process_file(file_path: Path) -> None:
                 )
                 return
     except Exception as exc:
-        print(f"✗ Error processing {file_path}: {exc}")
+        logger.info(f"✗ Error processing {file_path}: {exc}")
         return
 
 
@@ -141,7 +144,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

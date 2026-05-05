@@ -6,8 +6,10 @@ import shutil
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
+from loguru import logger
 
 PYTHON_EXT = ".py"
 BACKUP_EXT = ".bak"
@@ -37,7 +39,7 @@ def translate_line(line):
             if trans and trans.strip() and trans.strip() != line.strip():
                 return trans
         except Exception as e:
-            print(f"Translation error: {e} -- Line: {line}")
+            logger.info(f"Translation error: {e} -- Line: {line}")
             return None
     return None
 
@@ -70,8 +72,7 @@ def process_file(filepath):
     backup_path = filepath + BACKUP_EXT
     shutil.copyfile(filepath, backup_path)
     code = Path(filepath).read_text(encoding="utf-8")
-    if len(code) > CHUNK_SIZE:
-        pass
+    len(code) > CHUNK_SIZE
     try:
         parsed = ast.parse(
             code,
@@ -79,7 +80,7 @@ def process_file(filepath):
             type_comments=True,
         )
     except Exception as e:
-        print(f"Failed to parse {filepath}: {e}")
+        logger.info(f"Failed to parse {filepath}: {e}")
         return
     lines = code.splitlines(keepends=False)
     new_lines = list(lines)
@@ -140,14 +141,14 @@ def process_file(filepath):
                 indentation = re.match(r"\s*", line).group(0)
                 final_lines.append(f"{indentation}# {trans}")
     Path(filepath).write_text("\n".join(final_lines) + "\n", encoding="utf-8")
-    print(f"Translated: {filepath}")
+    logger.info(f"Translated: {filepath}")
 
 
 def main():
     cwd = Path.cwd()
     py_files = get_pyfiles(cwd)
     if not py_files:
-        print("No Python files found.")
+        logger.info("No Python files found.")
         return
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = {executor.submit(process_file, f): f for f in py_files}
@@ -155,7 +156,7 @@ def main():
             try:
                 future.result()
             except Exception as e:
-                print(f"Failed processing {futures[future]}: {e}")
+                logger.info(f"Failed processing {futures[future]}: {e}")
 
 
 if __name__ == "__main__":

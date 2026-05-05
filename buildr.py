@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 from dh import run_command
+from loguru import logger
 
 if __name__ == "__main__":
     cwd = Path.cwd()
@@ -12,7 +14,7 @@ if __name__ == "__main__":
         cmd = f"python {path!s} bdist_wheel"
         ret, _, _ = run_command(cmd)
         if ret != 0:
-            print("ok")
+            logger.info("ok")
     for path in cwd.rglob("pyproject.toml"):
         pardir = path.parent
         distdir = pardir / "dist"
@@ -24,7 +26,7 @@ if __name__ == "__main__":
         cmd = "python -m build -w"
         ret, _, _ = run_command(cmd)
         if not ret:
-            print("ok")
+            logger.info("ok")
             continue
     allwhl = list(cwd.rglob("*.whl"))
-    print(f"done {len(allwhl)} wheels crwated.")
+    logger.info(f"done {len(allwhl)} wheels crwated.")

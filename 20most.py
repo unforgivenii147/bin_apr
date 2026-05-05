@@ -4,7 +4,9 @@ import sys
 from collections import Counter, deque
 from multiprocessing import Pool
 from pathlib import Path
+
 from dh import get_nobinary
+from loguru import logger
 
 
 def extract_words(text):
@@ -16,7 +18,7 @@ def process_file(path: Path):
     words = extract_words(text)
     filtered = list(words)
     for word, _count in Counter(filtered).most_common(30):
-        print(f"{word}", end=" ")
+        logger.info(f"{word}", end=" ")
 
 
 def main():

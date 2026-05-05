@@ -5,6 +5,8 @@ import os
 import re
 from pathlib import Path
 
+from loguru import logger
+
 BASE64_IMG_REGEX = re.compile(r"data:image/(?P<ext>[a-zA-Z0-9+]+);base64,(?P<data>[A-Za-z0-9+/=\n\r]+)")
 
 
@@ -34,7 +36,7 @@ def scan_and_extract(base_dir: Path, output_dir: Path) -> None:
     output_dir.mkdir(exist_ok=True)
     target_exts = {".ipynb", ".js", ".html"}
     total_found = 0
-    print(f"\n🔍 Scanning: {base_dir.resolve()}\n")
+    logger.info(f"\n🔍 Scanning: {base_dir.resolve()}\n")
     for root, _, files in os.walk(base_dir):
         for fname in files:
             ext = Path(fname).suffix.lower()
@@ -44,8 +46,8 @@ def scan_and_extract(base_dir: Path, output_dir: Path) -> None:
             found = extract_images_from_file(fpath, output_dir)
             total_found += found
             if found:
-                print(f"📸 Extracted {found} images from {fpath}")
-    print(f"\n✅ Extraction complete. Total images saved: {total_found}")
+                logger.info(f"📸 Extracted {found} images from {fpath}")
+    logger.info(f"\n✅ Extraction complete. Total images saved: {total_found}")
 
 
 if __name__ == "__main__":

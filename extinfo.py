@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dhh import fsz, gsz, mpf3
+
+from loguru import logger
+
+from dhh import fsz
 
 
 def main():
@@ -12,8 +15,8 @@ def main():
     for f in cwd.rglob(f"*.{ext}"):
         total_size += f.stat().st_size
         count += 1
-    print(f"Total number of .{ext} files: {count}")
-    print(f"Total size of .{ext} files: {fsz(total_size)}")
+    logger.info(f"Total number of .{ext} files: {count}")
+    logger.info(f"Total size of .{ext} files: {fsz(total_size)}")
 
 
 if __name__ == "__main__":

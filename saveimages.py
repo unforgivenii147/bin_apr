@@ -3,8 +3,10 @@ import argparse
 import os
 from pathlib import Path
 from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def download_image(url, output_dir):
@@ -14,9 +16,9 @@ def download_image(url, output_dir):
         filename = os.path.join(output_dir, Path(url).name)
         with Path(filename).open("wb") as f:
             f.writelines(response.iter_content(1024))
-        print(f"Downloaded: {filename}")
+        logger.info(f"Downloaded: {filename}")
     except Exception as e:
-        print(f"Failed to download {url}: {e}")
+        logger.info(f"Failed to download {url}: {e}")
 
 
 def extract_images_from_url(url, output_dir):
@@ -33,7 +35,7 @@ def extract_images_from_url(url, output_dir):
                 img_url = urljoin(url, img_url)
                 download_image(img_url, output_dir)
     except Exception as e:
-        print(f"Error: {e}")
+        logger.info(f"Error: {e}")
 
 
 if __name__ == "__main__":

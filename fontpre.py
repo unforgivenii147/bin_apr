@@ -1,6 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import html
 import os
+from pathlib import Path
+
+from loguru import logger
 
 # Supported font extensions
 FONT_EXTENSIONS = (".ttf", ".otf", ".woff", ".woff2", ".eot")
@@ -62,9 +65,7 @@ HTML_END = """</body></html>"""
 def find_fonts(root="."):
     font_files = []
     for dirpath, _, filenames in os.walk(root):
-        for file in filenames:
-            if file.lower().endswith(FONT_EXTENSIONS):
-                font_files.append(os.path.join(dirpath, file))
+        font_files.extend(os.path.join(dirpath, file) for file in filenames if file.lower().endswith(FONT_EXTENSIONS))
     return sorted(font_files)
 
 
@@ -81,7 +82,7 @@ def generate_preview(fonts):
     sections = ""
     for i, font_path in enumerate(fonts, 1):
         font_id = f"font{i}"
-        font_name = os.path.basename(font_path)
+        font_name = Path(font_path).name
         styles += create_font_face(font_path, font_id) + "\n"
         escaped_sample = html.escape(SAMPLE_TEXT)
         sections += f"""
@@ -97,12 +98,11 @@ def generate_preview(fonts):
 def main():
     fonts = find_fonts(".")
     if not fonts:
-        print("No font files found.")
+        logger.info("No font files found.")
         return
     html_content = generate_preview(fonts)
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(html_content)
-    print(f"Generated {OUTPUT_FILE} with {len(fonts)} font previews.")
+    Path(OUTPUT_FILE).write_text(html_content, encoding="utf-8")
+    logger.info(f"Generated {OUTPUT_FILE} with {len(fonts)} font previews.")
 
 
 if __name__ == "__main__":

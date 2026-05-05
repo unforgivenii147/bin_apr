@@ -4,7 +4,10 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
@@ -18,7 +21,7 @@ def process_file(fp) -> None:
     if out != src:
         fp.write_text(out, encoding="utf-8")
     after = gsz(fp)
-    print(f"[OK] {fp.name} ", end="")
+    logger.info(f"[OK] {fp.name} ", end="")
     diffsize = before - after
     cprint(f"{fsz(diffsize)}", "cyan")
 
@@ -45,7 +48,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

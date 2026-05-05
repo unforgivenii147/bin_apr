@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 """
-Modern wget clone in Python 3.12+.
+Modern wget clone in Python 3.13+.
 - Streaming downloads with resume support
 - Rich progress bar (tqdm)
 - Robust filename extraction
@@ -9,15 +9,15 @@ Modern wget clone in Python 3.12+.
 """
 
 import argparse
-import math
 import os
 import re
 import sys
-import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
+
+from loguru import logger
 
 try:
     from tqdm import tqdm
@@ -42,15 +42,15 @@ except ImportError:
                 bar_len = 30
                 filled = int(bar_len * self.n / self.total)
                 bar = "█" * filled + "-" * (bar_len - filled)
-                print(f"\r{self.desc}: |{bar}| {percent:3.0f}% {self.n}/{self.total} {self.unit}", end="")
+                logger.info(f"\r{self.desc}: |{bar}| {percent:3.0f}% {self.n}/{self.total} {self.unit}", end="")
             else:
-                print(f"\r{self.desc}: {self.n} {self.unit}", end="")
+                logger.info(f"\r{self.desc}: {self.n} {self.unit}", end="")
 
         def close(self):
             if self.leave:
-                print()
+                logger.info()
             else:
-                print()
+                logger.info()
 
         def __enter__(self):
             return self
@@ -74,7 +74,7 @@ def sanitize_filename(name: str) -> str:
     return name[:255].strip() or "downloaded_file"
 
 
-def extract_filename(url: str, headers: Optional[Dict[str, str]] = None) -> str:
+def extract_filename(url: str, headers: dict[str, str] | None = None) -> str:
     """Extract filename from URL or Content-Disposition headers."""
     if headers:
         cd = headers.get("Content-Disposition", "")
@@ -95,7 +95,7 @@ def filename_fix_existing(filepath: Path) -> Path:
         return filepath
     stem = filepath.stem
     suffix = filepath.suffix
-    parent = filepath.parent or Path(".")
+    parent = filepath.parent or Path()
     counter = 1
     while True:
         new_name = f"{stem} ({counter}){suffix}"
@@ -107,7 +107,7 @@ def filename_fix_existing(filepath: Path) -> Path:
 
 def download(
     url: str,
-    output: Optional[str] = None,
+    output: str | None = None,
     timeout: float = 30.0,
     resume: bool = False,
     quiet: bool = False,
@@ -115,7 +115,7 @@ def download(
     """Download a URL to a file, with progress bar and resume support."""
     output_path = Path(output) if output else None
     if output_path and output_path.is_dir():
-        output_path = output_path / extract_filename(url)
+        output_path /= extract_filename(url)
     remote_size = None
     try:
         with urllib.request.urlopen(url, timeout=timeout) as resp:
@@ -130,7 +130,7 @@ def download(
         offset = output_path.stat().st_size
         if remote_size and offset >= remote_size:
             if not quiet:
-                print(f"✅ Already complete: {output_path} ({offset} bytes)")
+                logger.info(f"✅ Already complete: {output_path} ({offset} bytes)")
             return str(output_path)
     headers = {}
     if offset > 0:
@@ -148,7 +148,7 @@ def download(
             req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 mode = "ab" if offset else "wb"
-                with open(output_path, mode) as f:
+                with Path(output_path).open(mode) as f:
                     while True:
                         chunk = response.read(65536)
                         if not chunk:
@@ -156,19 +156,22 @@ def download(
                         f.write(chunk)
                         pbar.update(len(chunk))
             if not quiet:
-                print(f"\n✅ Saved to: {output_path}")
+                logger.info(f"\n✅ Saved to: {output_path}")
             return str(output_path)
         except urllib.error.HTTPError as e:
-            raise RuntimeError(f"HTTP error {e.code}: {e.reason}")
+            msg = f"HTTP error {e.code}: {e.reason}"
+            raise RuntimeError(msg)
         except urllib.error.URLError as e:
-            raise RuntimeError(f"URL error: {e.reason}")
+            msg = f"URL error: {e.reason}"
+            raise RuntimeError(msg)
         except Exception as e:
-            raise RuntimeError(f"Download failed: {e}")
+            msg = f"Download failed: {e}"
+            raise RuntimeError(msg)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Modern wget clone in Python 3.12+",
+        description="Modern wget clone in Python 3.13+",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -194,7 +197,7 @@ Examples:
             quiet=args.quiet,
         )
     except RuntimeError as e:
-        print(f"❌ {e}", file=sys.stderr)
+        logger.info(f"❌ {e}", file=sys.stderr)
         sys.exit(1)
 
 

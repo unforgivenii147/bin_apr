@@ -2,7 +2,9 @@
 import ast
 import sys
 from pathlib import Path
+
 from dh import fsz, get_files, gsz, mpf
+from loguru import logger
 from termcolor import cprint
 
 
@@ -20,17 +22,17 @@ def process_file(fp):
                     and node.func.attr == "path"
                 ):
                     if isinstance(node.func.value, ast.Attribute) and node.func.attr == "join":
-                        print(
+                        logger.info(
                             f"Warning: os.path.join found in {file_path}. Requires manual review for Path division operator. Node: {ast.dump(node)}"
                         )
                         return node
                     if node.func.attr == "listdir":
-                        print(
+                        logger.info(
                             f"Info: os.listdir found in {file_path}. Consider using Path(path).iterdir(). Node: {ast.dump(node)}"
                         )
                         return node
                     if node.func.attr == "remove":
-                        print(
+                        logger.info(
                             f"Info: os.remove found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                         )
                         new_node = ast.Call(
@@ -40,7 +42,7 @@ def process_file(fp):
                         )
                         return ast.copy_location(new_node, node)
                     if node.func.attr == "splitext":
-                        print(
+                        logger.info(
                             f"Info: os.path.splitext found in {file_path}. Replacing with Path.stem/suffix. Node: {ast.dump(node)}"
                         )
                         return node
@@ -51,7 +53,7 @@ def process_file(fp):
                     and isinstance(node.args[0], ast.Constant)
                     and "remove" in node.args[0].value
                 ):
-                    print(
+                    logger.info(
                         f"Warning: Direct os.remove(string) call found in {file_path}. Consider using Path.unlink(). Node: {ast.dump(node)}"
                     )
                     return node
@@ -59,7 +61,7 @@ def process_file(fp):
 
             def visit_Attribute(self, node):
                 if isinstance(node.value, ast.Name) and node.value.id == "os" and node.attr == "remove":
-                    print(
+                    logger.info(
                         f"Info: os.remove attribute found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                     )
                     new_node = ast.Attribute(value=ast.Name(id="Path"), attr="unlink", ctx=ast.Load())
@@ -77,18 +79,18 @@ def process_file(fp):
             import_pathlib = ast.Import(names=[ast.alias(name="Path")])
             ast.fix_missing_locations(import_pathlib)
             new_tree.body.insert(0, import_pathlib)
-            print(f"Info: Added import Path from pathlib to {file_path}")
+            logger.info(f"Info: Added import Path from pathlib to {file_path}")
         ast.fix_missing_locations(new_tree)
         new_content = ast.unparse(new_tree)
         try:
             ast.parse(new_content)
-            print(f"Successfully validated and refactored: {file_path}")
+            logger.info(f"Successfully validated and refactored: {file_path}")
             return new_content, True
         except SyntaxError as e:
-            print(f"Syntax error in refactored {file_path}: {e}")
+            logger.info(f"Syntax error in refactored {file_path}: {e}")
             return content, False
     except Exception as e:
-        print(f"Error processing {file_path}: {e}")
+        logger.info(f"Error processing {file_path}: {e}")
         return None, False
 
 
@@ -107,9 +109,8 @@ def main():
     else:
         files = get_files(root_dir)
     results = mpf(process_file, files)
-    for result in results:
-        if result:
-            pass
+    for _result in results:
+        pass
     diffsize = before - gsz(root_dir)
     cprint(f"space change : {fsz(diffsize)}", "cyan")
 

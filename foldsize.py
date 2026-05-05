@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import operator
-import os
 import shutil
-import sys
-from collections import defaultdict
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -27,6 +25,7 @@ def safe_rename(src: Path, dest_dir: Path) -> Path:
 
 
 def format_size_range(min_s: int, max_s: int) -> str:
+
     def fmt(n):
         if n < 1000:
             return f"{n}B"
@@ -86,11 +85,11 @@ def main():
     logger.info(f"   Files processed: {num_files:,}")
     logger.info(f"   Directories created: {len(created_dirs)}")
     logger.info("=" * 50)
-    print(f"\n{'Dir Name':<20} {'Files':>8} {'Size (bytes)':>14}")
-    print("-" * 44)
+    logger.info(f"\n{'Dir Name':<20} {'Files':>8} {'Size (bytes)':>14}")
+    logger.info("-" * 44)
     for name, cnt, sz in sorted(created_dirs, key=operator.itemgetter(2)):
-        print(f"{name:<20} {cnt:>8} {sz:>14,}")
-    print(f"\nTotal directories: {len(created_dirs)}")
+        logger.info(f"{name:<20} {cnt:>8} {sz:>14,}")
+    logger.info(f"\nTotal directories: {len(created_dirs)}")
 
 
 if __name__ == "__main__":

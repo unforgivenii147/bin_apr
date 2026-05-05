@@ -2,8 +2,10 @@
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
+
 import tree_sitter_cpp
 from dh import clean_blank_lines, fsz, gsz
+from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -43,7 +45,7 @@ def remove_comments_cpp(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        print(f"[OK] {path.name}")
+        logger.info(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

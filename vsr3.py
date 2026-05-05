@@ -8,10 +8,12 @@ import sys
 import tempfile
 from pathlib import Path
 
+from loguru import logger
+
 try:
     from tqdm import tqdm
 except ImportError:
-    print("Error: tqdm is required. Install it with: pip install tqdm")
+    logger.info("Error: tqdm is required. Install it with: pip install tqdm")
     sys.exit(1)
 
 
@@ -134,7 +136,7 @@ def create_wheel(
                     whl.write(file_path, arcname)
         return True
     except Exception as e:
-        print(f"Error creating wheel: {e}")
+        logger.info(f"Error creating wheel: {e}")
         return False
 
 
@@ -234,11 +236,11 @@ def main():
             else:
                 failed_count += 1
             pbar.update(1)
-    print(f"\n✓ Successfully repacked: {success_count}")
-    print(f"✗ Failed to repack: {failed_count}")
-    print(f"\nWheels saved to: {output_dir}")
+    logger.info(f"\n✓ Successfully repacked: {success_count}")
+    logger.info(f"✗ Failed to repack: {failed_count}")
+    logger.info(f"\nWheels saved to: {output_dir}")
     if failed_count > 0:
-        print(f"Failed packages copied to: {not_repacked_dir}")
+        logger.info(f"Failed packages copied to: {not_repacked_dir}")
 
 
 if __name__ == "__main__":

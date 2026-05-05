@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
 from dh import IMG_EXT, is_image
+from loguru import logger
+
 from dhh import fsz, gsz
 
 try:
@@ -26,7 +29,7 @@ IGNORED_DIRS = {
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in IMG_EXT:
-        print(f"Skipping: {path.name} (Unsupported format or not a file)")
+        logger.info(f"Skipping: {path.name} (Unsupported format or not a file)")
         return False
     if path.suffix.lower() == ".png":
         return True
@@ -39,7 +42,7 @@ def convert_file(file_path: str) -> bool:
         if USE_CV2:
             img = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
             if img is None:
-                print(f"Error: Could not decode {path.name}")
+                logger.info(f"Error: Could not decode {path.name}")
                 return False
             if img.shape[2] == 4:
                 b, g, r, a = cv2.split(img)
@@ -79,12 +82,12 @@ def convert_file(file_path: str) -> bool:
             success = True
         if success:
             path.unlink()
-            print(f"Successfully converted '{path.name}' to png.")
+            logger.info(f"Successfully converted '{path.name}' to png.")
             return True
-        print(f"Failed to write '{output_path.name}'")
+        logger.info(f"Failed to write '{output_path.name}'")
         return False
     except Exception as e:
-        print(f"Error converting '{path.name}': {e}")
+        logger.info(f"Error converting '{path.name}': {e}")
         return False
 
 
@@ -96,18 +99,18 @@ def main() -> None:
         if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and is_image(f)
     ]
     if not files:
-        print("No image files detected.")
+        logger.info("No image files detected.")
         return
-    print(f"converting {len(files)} files...")
+    logger.info(f"converting {len(files)} files...")
     with ThreadPoolExecutor(max_workers=8) as executor:
         results = list(executor.map(convert_file, files))
     changed_count = sum(1 for r in results if r)
-    print(f"Done. {changed_count} files modified.")
+    logger.info(f"Done. {changed_count} files modified.")
     result = gsz(".") - start_size
     if result < 0:
-        print(f"size reduced: - {fsz(result)} ")
+        logger.info(f"size reduced: - {fsz(result)} ")
     else:
-        print(f"size increased: + {fsz(result)} ")
+        logger.info(f"size increased: + {fsz(result)} ")
 
 
 if __name__ == "__main__":

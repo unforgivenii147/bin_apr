@@ -4,6 +4,7 @@ import sys
 import time
 import zipfile
 from pathlib import Path
+
 from print_persian import print_persian as _print
 
 """
@@ -59,8 +60,7 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
                 if result:
                     found_password = result
                     break
-                if (i + 1) % 1000 == 0 or (i + 1) == total_passwords:
-                    pass
+                (i + 1) % 1000 == 0 or (i + 1) == total_passwords
             pool.terminate()
             pool.join()
         end_time = time.time()

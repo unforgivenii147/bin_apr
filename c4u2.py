@@ -2,12 +2,13 @@
 import asyncio
 import json
 import operator
-import os
 import re
 import sys
 from pathlib import Path
+
 import aiohttp
 from bs4 import BeautifulSoup
+from loguru import logger
 
 MIRROR_BASE = "https://mirror-pypi.runflare.com"
 OUTPUT_DIR = Path("output")
@@ -59,18 +60,18 @@ async def fetch_pkg(session: aiohttp.ClientSession, pkg_name: str):
 
 async def main():
     if len(sys.argv) < 2:
-        print("Usage: python fetch_latest.py <packages_file>")
+        logger.info("Usage: python fetch_latest.py <packages_file>")
         sys.exit(1)
     pkg_file = sys.argv[1]
     if not Path(pkg_file).is_file():
-        print(f"Error: File '{pkg_file}' not found.")
+        logger.info(f"Error: File '{pkg_file}' not found.")
         sys.exit(1)
     with Path(pkg_file).open("r", encoding="utf-8") as f:
         packages = [line.strip() for line in f if line.strip() and not line.startswith("#")]
     if not packages:
-        print("No packages found in input file.")
+        logger.info("No packages found in input file.")
         return
-    print(f"Processing {len(packages)} packages concurrently...")
+    logger.info(f"Processing {len(packages)} packages concurrently...")
     results = []
     async with aiohttp.ClientSession() as session:
         tasks = [fetch_pkg(session, pkg) for pkg in packages]
@@ -79,13 +80,13 @@ async def main():
             results.append(res)
             pkg = res.get("pkg_name", "?")
             if "error" in res:
-                print(f"❌ {pkg}: {res['error']}")
+                logger.info(f"❌ {pkg}: {res['error']}")
             else:
-                print(f"✅ {pkg}: {res['latest_version']} — {res['url_of_latest_version']}")
+                logger.info(f"✅ {pkg}: {res['latest_version']} — {res['url_of_latest_version']}")
     results.sort(key=operator.itemgetter("pkg_name"))
     with Path("results.json").open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    print("\n✅ Done. Results saved to `results.json`. HTML saved to `./output/`.")
+    logger.info("\n✅ Done. Results saved to `results.json`. HTML saved to `./output/`.")
 
 
 if __name__ == "__main__":

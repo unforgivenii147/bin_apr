@@ -2,7 +2,9 @@
 import argparse
 import sys
 from pathlib import Path
+
 from deep_translator import GoogleTranslator, single_detection
+from loguru import logger
 
 CHUNK_SIZE = 2000
 ALLOWED_EXT = {
@@ -82,7 +84,7 @@ def main() -> None:
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        print("File not found.", file=sys.stderr)
+        logger.info("File not found.", file=sys.stderr)
         sys.exit(1)
     ext = in_path.suffix.lower()
     content = in_path.read_text(encoding="utf-8")
@@ -92,7 +94,7 @@ def main() -> None:
     translated = translate_python_file(content) if ext == ".py" else translate_text_file(content)
     out_path = in_path.with_name(f"{in_path.stem}_eng{ext}")
     out_path.write_text(translated, encoding="utf-8")
-    print(f"Translated ({src_lang} → en): {out_path}")
+    logger.info(f"Translated ({src_lang} → en): {out_path}")
 
 
 if __name__ == "__main__":

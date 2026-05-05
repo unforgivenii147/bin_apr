@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 import magic
+from loguru import logger
 
 MIME_TO_EXT = {
     "text/html": "html",
@@ -103,7 +105,7 @@ def correct_file_extension(root="."):
             try:
                 mime_type = mime.from_file(path)
             except:
-                print(f"Skipping unreadable: {path}")
+                logger.info(f"Skipping unreadable: {path}")
                 continue
             new_ext = detect_extension(path, mime_type)
             if not new_ext:
@@ -115,10 +117,10 @@ def correct_file_extension(root="."):
             base = parts[0] if len(parts) == 2 else name
             new_name = f"{base}.{new_ext}"
             new_path = os.path.join(dirpath, new_name)
-            print(f"Renaming: {name}  →  {new_name}")
+            logger.info(f"Renaming: {name}  →  {new_name}")
             final_path = safe_rename(path, new_path)
             if final_path != new_path:
-                print(f" ⚠  Collision detected. Saved as: {Path(final_path).name}")
+                logger.info(f" ⚠  Collision detected. Saved as: {Path(final_path).name}")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ import stat
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 COLORS = {
     "dir": "\033[34m",
     "link": "\033[36m",
@@ -89,7 +91,7 @@ def scan_dir(path, args):
         with os.scandir(path) as it:
             entries = [Path(e.path) for e in it]
     except PermissionError:
-        print(
+        logger.info(
             f"ls: cannot open directory '{path}'",
             file=sys.stderr,
         )
@@ -133,11 +135,11 @@ def print_columns(items, width, by_row):
         for c in range(cols):
             idx = r * cols + c if by_row else c * rows + r
             if idx < len(items):
-                print(
+                logger.info(
                     items[idx].ljust(max_len),
                     end="",
                 )
-        print()
+        logger.info()
 
 
 def main():
@@ -184,21 +186,21 @@ def main():
     for path in args.paths:
         path = Path(path)
         if args.d or not path.is_dir():
-            print(format_entry(path, args, color_enabled))
+            logger.info(format_entry(path, args, color_enabled))
             continue
         entries = scan_dir(path, args)
         formatted = [format_entry(e, args, color_enabled) for e in entries]
         if args.l or args._get_kwargs():
             for f in formatted:
-                print(f)
+                logger.info(f)
         elif args._1:
-            print("\n".join(formatted))
+            logger.info("\n".join(formatted))
         else:
             print_columns(formatted, args.w, args.x)
         if args.R:
             for e in entries:
                 if e.is_dir() and not e.is_symlink():
-                    print(f"\n{e}:")
+                    logger.info(f"\n{e}:")
                     main()
 
 

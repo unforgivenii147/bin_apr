@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 from pathlib import Path
+
 import requests
+from loguru import logger
 
 
 def get_github_repos(username, output_file=None) -> None:
@@ -13,7 +15,7 @@ def get_github_repos(username, output_file=None) -> None:
         response.raise_for_status()
         repos = response.json()
         if not repos:
-            print(f"No repositories found for user: {username}")
+            logger.info(f"No repositories found for user: {username}")
             return
         with Path(output_file).open("w", encoding="utf-8") as f:
             f.write(f"GitHub repositories for user: {username}\n")
@@ -30,13 +32,13 @@ def get_github_repos(username, output_file=None) -> None:
                 f.write(f"URL: {url}\n")
                 f.write(f"Stars: {stars} | Forks: {forks} | Language: {language}\n")
                 f.write("-" * 50 + "\n")
-        print(f"Successfully saved {len(repos)} repositories to {output_file}")
+        logger.info(f"Successfully saved {len(repos)} repositories to {output_file}")
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
+        logger.info(f"Error fetching data: {e}")
     except json.JSONDecodeError as e:
-        print(f"Error parsing JSON response: {e}")
+        logger.info(f"Error parsing JSON response: {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.info(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

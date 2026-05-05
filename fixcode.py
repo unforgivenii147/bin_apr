@@ -3,6 +3,8 @@ import ast
 import re
 from pathlib import Path
 
+from loguru import logger
+
 INDENT = " " * 4
 DEF_CLASS = re.compile(r"^\s*(def|class)\s+")
 MAIN_GUARD = re.compile(r"""^\s*if\s+__name__\s*==\s*['"]__main__['"]\s*:""")
@@ -120,12 +122,12 @@ def main():
     ok, err = ast_validate(cleaned)
     if ok:
         dst.write_text(cleaned, encoding="utf-8")
-        print(f"✔ AST valid → {dst}")
+        logger.info(f"✔ AST valid → {dst}")
     else:
         dst.write_text(cleaned, encoding="utf-8")
-        print("✘ AST validation failed")
-        print(err)
-        print("Wrote for inspection")
+        logger.info("✘ AST validation failed")
+        logger.info(err)
+        logger.info("Wrote for inspection")
 
 
 if __name__ == "__main__":

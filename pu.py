@@ -1,7 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
+from loguru import logger
 from pip._internal.cli.main import main as pip_main
+
+
+def uninstall(packages: list[str]):
+    args = ["uninstall", "-y", *packages]
+    return pip_main(args)
 
 
 def display_packages(
@@ -10,10 +17,10 @@ def display_packages(
 ):
     if not packages:
         return
-    print(f"\n{title}:")
+    logger.info(f"\n{title}:")
     for pkg, version in sorted(packages.items()):
-        print(f"  - {pkg} (version: {version})")
-    print(f"\nTotal: {len(packages)} package(s)")
+        logger.info(f"  - {pkg} (version: {version})")
+    logger.info(f"\nTotal: {len(packages)} package(s)")
 
 
 def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
@@ -34,17 +41,12 @@ def get_pkgs():
     return packages
 
 
-def uninstall(packages: list[str]):
-    args = ["uninstall", "-y", *packages]
-    return pip_main(args)
-
-
 def main():
     pat = sys.argv[1]
     pkgs = get_pkgs()
     matc = find_matching_packages(pat, pkgs)
     if not matc:
-        print(f"No installed packages found containing '{pat}' in their name.")
+        logger.info(f"No installed packages found containing '{pat}' in their name.")
         sys.exit(0)
     display_packages(matc, "Packages to uninstall")
     uninstall(list(matc.keys()))

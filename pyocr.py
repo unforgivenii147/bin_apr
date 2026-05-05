@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import cv2
 import pytesseract
+from loguru import logger
 
 SUPPORTED_FORMATS = {
     ".png",
@@ -17,30 +19,30 @@ SUPPORTED_FORMATS = {
 def extract_text(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in SUPPORTED_FORMATS:
-        print(f"Error: '{path.name}' is not a supported image file.")
+        logger.info(f"Error: '{path.name}' is not a supported image file.")
         return False
     output_path = path.with_suffix(".txt")
     try:
         img = cv2.imread(str(path))
         if img is None:
-            print(f"Error: Could not read {path.name}")
+            logger.info(f"Error: Could not read {path.name}")
             return False
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        print(f"Processing '{path.name}'...")
+        logger.info(f"Processing '{path.name}'...")
         text = pytesseract.image_to_string(gray)
         if not text.strip():
-            print(f"Warning: No text detected in '{path.name}'.")
+            logger.info(f"Warning: No text detected in '{path.name}'.")
         Path(output_path).write_text(text, encoding="utf-8")
-        print(f"Success! Text saved to '{output_path.name}'")
+        logger.info(f"Success! Text saved to '{output_path.name}'")
         return True
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.info(f"An error occurred: {e}")
         return False
 
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <image_file>")
+        logger.info(f"Usage: {sys.argv[0]} <image_file>")
         sys.exit(1)
     if extract_text(sys.argv[1]):
         sys.exit(0)

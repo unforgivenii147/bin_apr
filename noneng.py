@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 from dh import BIN_EXT, TXT_EXT, is_binary
 from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException
+from loguru import logger
 
 DetectorFactory.seed = 0
 MAX_CHARS = 5000
@@ -34,7 +36,7 @@ def main():
         for file in files:
             path = os.path.join(root, file)
             if is_text_file(path) and contains_non_english(path):
-                print(os.path.relpath(path))
+                logger.info(os.path.relpath(path))
 
 
 if __name__ == "__main__":

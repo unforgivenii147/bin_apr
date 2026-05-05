@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from pathlib import Path
+
 import cv2
 import numpy as np
 from imutils import paths
+from loguru import logger
 
 
 def dhash(image, hashSize=8):
@@ -19,12 +21,12 @@ def compute_hashes(dataset_path, hashSize=8):
     for imagePath in imagePaths:
         image = cv2.imread(imagePath)
         if image is None:
-            print(f"[WARN] unable to read image: {imagePath}")
+            logger.info(f"[WARN] unable to read image: {imagePath}")
             continue
         try:
             h = dhash(image, hashSize=hashSize)
         except Exception as e:
-            print(f"[WARN] failed to hash {imagePath}: {e}")
+            logger.info(f"[WARN] failed to hash {imagePath}: {e}")
             continue
         hashes.setdefault(h, []).append(imagePath)
     return hashes
@@ -55,12 +57,12 @@ Examples:
         msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
         raise SystemExit(msg)
     is_remove_mode = args["remove"]
-    print("[INFO] computing image hashes...")
+    logger.info("[INFO] computing image hashes...")
     hashes = compute_hashes(dataset_path)
     if not hashes:
-        print("[INFO] no images found in directory")
+        logger.info("[INFO] no images found in directory")
         return
-    print(f"[INFO] found {len(hashes)} unique image(s)")
+    logger.info(f"[INFO] found {len(hashes)} unique image(s)")
     for h, hashedPaths in hashes.items():
         if len(hashedPaths) > 1:
             if not is_remove_mode:
@@ -68,13 +70,13 @@ Examples:
                 for p in hashedPaths:
                     image = cv2.imread(p)
                     if image is None:
-                        print(f"[WARN] unable to read image for montage: {p}")
+                        logger.info(f"[WARN] unable to read image for montage: {p}")
                         continue
                     image = cv2.resize(image, (900, 900))
                     montage = image if montage is None else np.hstack([montage, image])
-                print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
+                logger.info(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
             else:
-                print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
+                logger.info(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:
                     Path(p).unlink()
 

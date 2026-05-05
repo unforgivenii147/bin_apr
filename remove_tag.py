@@ -10,25 +10,26 @@ Example:
 """
 
 import os
+from pathlib import Path
 import sys
+
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def remove_tag_from_html_file(file_path, tag_name):
     """Remove all occurrences of tag_name from a given HTML file."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            html = f.read()
+        html = Path(file_path).read_text(encoding="utf-8")
         soup = BeautifulSoup(html, "html.parser")
         # Find and decompose all instances of tag_name
         for tag in soup.find_all(tag_name):
             tag.decompose()
         # Write back cleaned HTML
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(str(soup))
-        print(f"✅ Removed <{tag_name}> from {file_path}")
+        Path(file_path).write_text(str(soup), encoding="utf-8")
+        logger.info(f"✅ Removed <{tag_name}> from {file_path}")
     except Exception as e:
-        print(f"❌ Error processing {file_path}: {e}")
+        logger.info(f"❌ Error processing {file_path}: {e}")
 
 
 def process_directory(root_dir, tag_name):
@@ -42,7 +43,7 @@ def process_directory(root_dir, tag_name):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python remove_tag.py tagname")
+        logger.info("Usage: python remove_tag.py tagname")
         sys.exit(1)
     tag_name = sys.argv[1]
-    process_directory(os.getcwd(), tag_name)
+    process_directory(pathlib.Path.cwd(), tag_name)

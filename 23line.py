@@ -1,7 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
+from __future__ import annotations
+
 import os
 from pathlib import Path
+
 from dh import gext
+from loguru import logger
 
 EXT = [
     ".py",
@@ -28,7 +33,7 @@ def main() -> None:
     collected = []
     for base, _, files in os.walk(Path.cwd()):
         for name in files:
-            ext = dh.gext(name)
+            ext = gext(name)
             if ext not in EXT:
                 continue
             path = os.path.join(base, name)
@@ -41,8 +46,8 @@ def main() -> None:
         for snippet in unique_collected:
             out.write(snippet)
             out.write("\n\n\n")
-    print(f"Unique snippets saved → {output_path}")
-    print(f"Total unique blocks: {len(unique_collected)}")
+    logger.info(f"Unique snippets saved → {output_path}")
+    logger.info(f"Total unique blocks: {len(unique_collected)}")
 
 
 if __name__ == "__main__":

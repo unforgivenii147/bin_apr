@@ -3,7 +3,9 @@ import ast
 import sys
 import unicodedata
 from pathlib import Path
+
 from dh import get_files, is_binary
+from loguru import logger
 from pbar import Pbar
 from termcolor import cprint
 from unidecode import unidecode_expect_ascii as uea
@@ -23,7 +25,7 @@ def process_file(fn: Path, backup=True) -> bool:
                 tree = ast.parse(content)
                 new_content = ast.unparse(tree)
                 fn.write_text(new_content, encoding="utf-8")
-                print(f"{fn.name} rewrited.")
+                logger.info(f"{fn.name} rewrited.")
                 return True
             except:
                 cprint(f"{fn.name} ast parse error", "cyan")

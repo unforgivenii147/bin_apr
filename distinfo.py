@@ -6,6 +6,8 @@ import site
 from collections import defaultdict
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_site_packages_dirs():
     dirs = []
@@ -37,10 +39,10 @@ def find_multiple_versions() -> None:
                     pkg_versions[name].add(version)
     for pkg, versions in sorted(pkg_versions.items()):
         if len(versions) > 1:
-            print(f"\nPackage: {pkg}")
+            logger.info(f"\nPackage: {pkg}")
             for v in sorted(versions):
-                print(f"  - Version: {v}")
-    print("\nDone.")
+                logger.info(f"  - Version: {v}")
+    logger.info("\nDone.")
 
 
 if __name__ == "__main__":

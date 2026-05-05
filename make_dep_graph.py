@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_installed_packages_dependencies():
     dependencies = {}
@@ -35,9 +37,9 @@ def get_installed_packages_dependencies():
 if __name__ == "__main__":
     all_dependencies = get_installed_packages_dependencies()
     if isinstance(all_dependencies, str):
-        print(all_dependencies)
+        logger.info(all_dependencies)
     else:
         output_file = "package_dependencies.json"
         with Path(output_file).open("w", encoding="utf-8") as f:
             json.dump(all_dependencies, f, indent=4, ensure_ascii=False)
-        print(f"Package dependencies saved to {output_file}")
+        logger.info(f"Package dependencies saved to {output_file}")

@@ -3,11 +3,16 @@ import os
 import shutil
 import sys
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
+major, minor, _, _, _ = sys.version_info
+py_version = f"{major}.{minor}"
 
 
 def process_dir(dr):
-    print(dr.name)
+    logger.info(dr.name)
     if "dist-info" in str(dr.name):
         for k in os.listdir(dr):
             if k in {
@@ -16,12 +21,11 @@ def process_dir(dr):
             }:
                 cprint(f"{dr} removed", "cyan")
                 shutil.rmtree(dr)
-    return None
     return True
 
 
 def main():
-    cwd = "/data/data/com.termux/files/usr/lib/python3.12/site-packages"
+    cwd = f"/data/data/com.termux/files/usr/lib/python{py_version}/site-packages"
     for pth in os.listdir(cwd):
         path = Path(os.path.join(cwd, pth))
         if path.is_dir() and len(os.listdir(path)) == 1:

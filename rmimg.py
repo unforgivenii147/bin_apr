@@ -3,8 +3,11 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 from bs4 import BeautifulSoup
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 
@@ -25,7 +28,7 @@ def process_file(file_path: Path) -> None:
         clean_html = str(soup)
         file_path.write_text(clean_html, encoding="utf-8")
         after = gsz(file_path)
-        print(f"{file_path.name}", end=" ")
+        logger.info(f"{file_path.name}", end=" ")
         diffsize = before - after
         if diffsize == 0:
             cprint("NO CHANGE", "yellow")
@@ -64,7 +67,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+from loguru import logger
 from tqdm import tqdm
 
 SECONDS_24H = 24 * 60 * 60
@@ -52,7 +54,7 @@ def main() -> None:
                 recent.append(result)
     recent.sort(key=operator.itemgetter(0))
     for _, path in recent:
-        print(path.relative_to(root))
+        logger.info(path.relative_to(root))
 
 
 if __name__ == "__main__":

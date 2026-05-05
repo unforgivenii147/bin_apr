@@ -3,8 +3,10 @@ import csv
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 BASE_URL = "https://github.com/trending/python"
 TIMEFRAMES = ["daily", "weekly", "monthly"]
@@ -81,7 +83,7 @@ def main() -> None:
             repos,
             OUTPUT_DIR / f"python_trending_{timeframe}.json",
         )
-    print(f"Saved {len(all_repos)} repos to {OUTPUT_DIR.resolve()}")
+    logger.info(f"Saved {len(all_repos)} repos to {OUTPUT_DIR.resolve()}")
 
 
 if __name__ == "__main__":

@@ -4,10 +4,12 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 try:
     from termcolor import colored
 except ImportError:
-    print("pip install termcolor")
+    logger.info("pip install termcolor")
     sys.exit(1)
 VIDEO_EXTS = {".srt"}
 LEADING_JUNK = re.compile(
@@ -53,17 +55,17 @@ def main():
     args = ap.parse_args()
     files = collect_files(Path(), args.recursive)
     if not files:
-        print("No subtitle files found")
+        logger.info("No subtitle files found")
         return
-    print(colored("\nPreview:", "cyan", attrs=["bold"]))
+    logger.info(colored("\nPreview:", "cyan", attrs=["bold"]))
     for f in files:
         new_core = clean_name(f.name)
         if not new_core:
-            print(colored("SKIP:", "yellow"), f.name)
+            logger.info(colored("SKIP:", "yellow"), f.name)
             continue
         new_name = new_core + f.suffix
         target = f.with_name(new_name)
-        print(
+        logger.info(
             colored("OLD:", "red"),
             f.name,
             colored("-> NEW:", "green"),
@@ -71,7 +73,7 @@ def main():
         )
         if args.write:
             if target.exists():
-                print(
+                logger.info(
                     colored(
                         "  EXISTS, skipped",
                         "yellow",
@@ -80,7 +82,7 @@ def main():
             else:
                 f.rename(target)
     if not args.write:
-        print(
+        logger.info(
             colored(
                 "\nDry-run only. Use -w to apply.",
                 "yellow",

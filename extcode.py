@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 import tree_sitter_python as tsp
+from loguru import logger
 from tree_sitter import Language, Parser
 
 LANG = Language(tsp)
@@ -49,7 +51,7 @@ def process_directory():
         out_file = OUTPUT_DIR / relative_path
         out_file.parent.mkdir(parents=True, exist_ok=True)
         out_file.write_text(extracted)
-        print(f"Saved: {out_file}")
+        logger.info(f"Saved: {out_file}")
 
 
 if __name__ == "__main__":

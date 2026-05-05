@@ -2,10 +2,12 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4):
     if not Path(input_file_path).exists():
-        print(f"خطا: فایل ورودی یافت نشد: {input_file_path}")
+        logger.info(f"خطا: فایل ورودی یافت نشد: {input_file_path}")
         return False
     fixed_lines = []
     current_indent_level = 0
@@ -38,16 +40,15 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
             first_word = stripped_line.split(" ")[0]
             if first_word in block_starters or (first_word == "lambda" and ":" in stripped_line):  # برای lambda
                 current_indent_level += 1
-        if stripped_line.startswith(("elif", "else")):
-            pass
+        stripped_line.startswith(("elif", "else"))
     final_output_path = output_file_path or input_file_path
     try:
         with Path(final_output_path).open("w", encoding="utf-8") as f:
             f.writelines(fixed_lines)
-        print(f"فایل با موفقیت اصلاح شد: {final_output_path}")
+        logger.info(f"فایل با موفقیت اصلاح شد: {final_output_path}")
         return True
     except OSError as e:
-        print(f"خطا در نوشتن فایل خروجی: {e}")
+        logger.info(f"خطا در نوشتن فایل خروجی: {e}")
         return False
 
 
@@ -55,4 +56,4 @@ if __name__ == "__main__":
     inf = Path(sys.argv[1])
     outf = inf.with_stem(inf.stem + "_fixed")
     if not fix_python_indentation(inf, outf):
-        print("اصلاح فایل با خطا مواجه شد.")
+        logger.info("اصلاح فایل با خطا مواجه شد.")

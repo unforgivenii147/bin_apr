@@ -5,7 +5,9 @@ import re
 import sys
 from collections.abc import Iterable
 from pathlib import Path
+
 from dh import get_nobinary
+from loguru import logger
 
 OUTPUT_DIR = Path("extracted_base64")
 DATA_URL_RE = re.compile(
@@ -94,7 +96,7 @@ def main() -> None:
             seen_hashes.add(digest)
             save_asset(mime, data)
             extracted_count += 1
-    print(f"{extracted_count} elements extracted.")
+    logger.info(f"{extracted_count} elements extracted.")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import pathlib
+from pathlib import Path
 import readline
 import rlcompleter
 import sys
+
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.log import TextLog  # Corrected import for TextLog
@@ -38,7 +39,7 @@ class BasicEditor(App):
         log = self.query_one(TextLog)
         if self.filename:
             try:
-                with pathlib.Path(self.filename).open("r", encoding="utf-8") as f:
+                with Path(self.filename).open("r", encoding="utf-8") as f:
                     editor.text = f.read()
                 self.title = f"Basic Editor - {self.filename}"
                 log.write(f"Opened file: {self.filename}")
@@ -59,7 +60,7 @@ class BasicEditor(App):
             filename = input("Enter filename to open: ")
             if filename:
                 self.filename = filename
-                with pathlib.Path(self.filename).open("r", encoding="utf-8") as f:
+                with Path(self.filename).open("r", encoding="utf-8") as f:
                     editor.text = f.read()
                 self.title = f"Basic Editor - {self.filename}"
                 log.write(f"Opened file: {self.filename}")
@@ -86,7 +87,7 @@ class BasicEditor(App):
                 log.write(f"Error getting filename: {e}")
                 return
         try:
-            pathlib.Path(self.filename).write_text(editor.text, encoding="utf-8")
+            Path(self.filename).write_text(editor.text, encoding="utf-8")
             self.title = f"Basic Editor - {self.filename}"
             log.write(f"Saved file: {self.filename}")
             self.is_dirty = False

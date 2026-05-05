@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from loguru import logger
+
 
 @dataclass
 class PackageInfo:
@@ -33,7 +35,7 @@ class PackageDetector:
 
     def log(self, message: str):
         if self.verbose:
-            print(f"[DETECT] {message}")
+            logger.info(f"[DETECT] {message}")
 
     def detect_package_type(self, package_dir: Path) -> tuple[bool, bool, bool]:
         has_c_extension = False
@@ -159,7 +161,7 @@ class WheelBuilder:
 
     def log(self, message: str):
         if self.verbose:
-            print(f"[BUILD] {message}")
+            logger.info(f"[BUILD] {message}")
 
     def calculate_hash(
         self,
@@ -338,7 +340,7 @@ class VenvRepacker:
             "WARNING",
         }:
             timestamp = datetime.now().strftime("%H:%M:%S")
-            print(f"[{timestamp}] [{level}] {message}")
+            logger.info(f"[{timestamp}] [{level}] {message}")
 
     def find_packages(self) -> list[str]:
         packages = set()
@@ -393,24 +395,24 @@ class VenvRepacker:
             return False, f"Error: {e!s}", None
 
     def repack_all(self) -> dict:
-        print("\n╔════════════════════════════════════════════════════════════╗")
-        print("║         Virtual Environment Package Repacker               ║")
-        print("╚════════════════════════════════════════════════════════════╝\n")
-        print(f"Site-packages: {self.site_packages}")
-        print(f"Output directory: {self.output_dir}")
-        print(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
-        print("-" * 60)
+        logger.info("\n╔════════════════════════════════════════════════════════════╗")
+        logger.info("║         Virtual Environment Package Repacker               ║")
+        logger.info("╚════════════════════════════════════════════════════════════╝\n")
+        logger.info(f"Site-packages: {self.site_packages}")
+        logger.info(f"Output directory: {self.output_dir}")
+        logger.info(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
+        logger.info("-" * 60)
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         # Find packages
         packages = self.find_packages()
         if not packages:
-            print("No packages found to repack")
+            logger.info("No packages found to repack")
             return self.stats
         # Repack packages
-        print(f"\nRepacking {len(packages)} packages...\n")
+        logger.info(f"\nRepacking {len(packages)} packages...\n")
         for i, package_name in enumerate(packages, 1):
-            print(
+            logger.info(
                 f"[{i}/{len(packages)}] {package_name}...",
                 end=" ",
                 flush=True,
@@ -423,7 +425,7 @@ class VenvRepacker:
                     self.stats["pure_python_packages"] += 1
                 else:
                     self.stats["packages_with_c_extensions"] += 1
-                print(f"✓ {message}")
+                logger.info(f"✓ {message}")
                 self.results.append(
                     {
                         "package": package_name,
@@ -436,7 +438,7 @@ class VenvRepacker:
             else:
                 self.stats["failed_packages"] += 1
                 self.stats["total_packages"] += 1
-                print(f"✗ {message}")
+                logger.info(f"✗ {message}")
                 self.results.append(
                     {
                         "package": package_name,
@@ -447,16 +449,16 @@ class VenvRepacker:
         return self.stats
 
     def print_stats(self):
-        print("\n" + "=" * 60)
-        print("STATISTICS")
-        print("=" * 60)
-        print(f"Total packages: {self.stats['total_packages']}")
-        print(f"Successfully repacked: {self.stats['successfully_repacked']}")
-        print(f"Failed: {self.stats['failed_packages']}")
-        print()
-        print(f"Pure Python packages: {self.stats['pure_python_packages']}")
-        print(f"Packages with C extensions: {self.stats['packages_with_c_extensions']}")
-        print("=" * 60)
+        logger.info("\n" + "=" * 60)
+        logger.info("STATISTICS")
+        logger.info("=" * 60)
+        logger.info(f"Total packages: {self.stats['total_packages']}")
+        logger.info(f"Successfully repacked: {self.stats['successfully_repacked']}")
+        logger.info(f"Failed: {self.stats['failed_packages']}")
+        logger.info()
+        logger.info(f"Pure Python packages: {self.stats['pure_python_packages']}")
+        logger.info(f"Packages with C extensions: {self.stats['packages_with_c_extensions']}")
+        logger.info("=" * 60)
 
     def save_report(
         self,
@@ -473,25 +475,25 @@ class VenvRepacker:
             report_path = self.output_dir / report_file
             with Path(report_path).open("w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
-            print(f"\n✓ Report saved: {report_path}")
+            logger.info(f"\n✓ Report saved: {report_path}")
         except Exception as e:
-            print(f"\n✗ Error saving report: {e!s}")
+            logger.info(f"\n✗ Error saving report: {e!s}")
 
     def list_wheels(self):
         wheels = list(self.output_dir.glob("*.whl"))
         if not wheels:
-            print("No .whl files found")
+            logger.info("No .whl files found")
             return
-        print(f"\nGenerated {len(wheels)} .whl files:")
-        print("-" * 60)
+        logger.info(f"\nGenerated {len(wheels)} .whl files:")
+        logger.info("-" * 60)
         total_size = 0
         for wheel in sorted(wheels):
             size_mb = wheel.stat().st_size / (1024 * 1024)
             total_size += wheel.stat().st_size
-            print(f"  {wheel.name:<50} {size_mb:>8.2f} MB")
+            logger.info(f"  {wheel.name:<50} {size_mb:>8.2f} MB")
         total_size_mb = total_size / (1024 * 1024)
-        print("-" * 60)
-        print(f"Total size: {total_size_mb:.2f} MB")
+        logger.info("-" * 60)
+        logger.info(f"Total size: {total_size_mb:.2f} MB")
 
 
 # CLI Interface
@@ -570,7 +572,7 @@ Examples:
         if args.list_wheels:
             repacker.list_wheels()
     except Exception as e:
-        print(f"Error: {e!s}", file=sys.stderr)
+        logger.info(f"Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

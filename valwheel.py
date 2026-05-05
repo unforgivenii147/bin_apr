@@ -2,6 +2,8 @@
 import re
 import shutil
 from pathlib import Path
+
+from loguru import logger
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
@@ -65,11 +67,11 @@ def main():
     cwd = Path.cwd()
     for path in cwd.glob("*.whl"):
         if not is_valid(path) or not is_valid2(path):
-            print(f"Invalid wheel name: {path}")
+            logger.info(f"Invalid wheel name: {path}")
             dest = invalid_dir / path.name
             shutil.move(str(path), str(dest))
         else:
-            print(f"Valid wheel name: {path.name}")
+            logger.info(f"Valid wheel name: {path.name}")
 
 
 if __name__ == "__main__":

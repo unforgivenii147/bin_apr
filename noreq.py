@@ -6,6 +6,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
 LOG_FILE = "/sdcard/reqz.txt"
@@ -104,7 +105,8 @@ def main() -> None:
                 f.writelines(line + "\n" for line in removed_lines_accumulator)
             print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
         except PermissionError:
-            print(f"Warning: Could not write to {LOG_FILE}. Check Termux storage permissions.")
+            pass
+        #            print(f"Warning: Could not write to {LOG_FILE}. Check Termux storage permissions.")
         print("\nRemoved Lines:")
         print("-" * 20)
         for line in removed_lines_accumulator:

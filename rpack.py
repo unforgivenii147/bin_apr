@@ -5,6 +5,8 @@ import re
 import shutil
 import sysconfig
 from pathlib import Path
+
+from loguru import logger
 from wheel.wheelfile import WheelFile
 
 
@@ -94,7 +96,7 @@ def repack(
     pkg_lower = pkg.lower()
     installed = list_installed_packages(site)
     if pkg_lower not in installed:
-        print(f"Package '{pkg}' not found.")
+        logger.info(f"Package '{pkg}' not found.")
         return
     real_pkg, version = installed[pkg_lower]
     target_dir = out_repack / real_pkg
@@ -111,7 +113,7 @@ def repack(
         target_dir,
         out_whl,
     )
-    print(f"Repacked: {real_pkg} → {wheel}")
+    logger.info(f"Repacked: {real_pkg} → {wheel}")
 
 
 def main() -> None:

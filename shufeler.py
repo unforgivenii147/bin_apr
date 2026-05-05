@@ -6,7 +6,9 @@ import secrets
 import sys
 from pathlib import Path
 
-MMAP_THRESHOLD_BYTES = 2 * 1024 * 1024
+from loguru import logger
+
+MMAP_THRESHOLD_BYTES = 1 * 1024 * 1024
 
 
 def get_line_offsets(file_path):
@@ -55,24 +57,24 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
     input_path = Path(input_file_path)
     output_path = Path(output_file_path)
     if not input_path.exists():
-        print(f"Error: Input file '{input_file_path}' not found.", file=sys.stderr)
+        logger.info(f"Error: Input file '{input_file_path}' not found.", file=sys.stderr)
         return False
     file_size = input_path.stat().st_size
-    print(f"Input file size: {file_size / (1024 * 1024):.2f} MB")
-    print("Reading line offsets...")
+    logger.info(f"Input file size: {file_size / (1024 * 1024):.2f} MB")
+    logger.info("Reading line offsets...")
     line_offsets = get_line_offsets(input_path)
     original_line_count = len(line_offsets)
-    print(f"Found {original_line_count} lines.")
+    logger.info(f"Found {original_line_count} lines.")
     if original_line_count == 0:
-        print("Input file is empty. Exiting.")
+        logger.info("Input file is empty. Exiting.")
         output_path.touch()  # Create an empty output file
         return True
-    print("Shuffling line offsets...")
+    logger.info("Shuffling line offsets...")
     crypto_shuffle_offsets(line_offsets)
     shuffle3_offsets(line_offsets)
     weighted_shuffle_offsets(line_offsets)
     random.shuffle(line_offsets)
-    print("Writing shuffled lines to output file...")
+    logger.info("Writing shuffled lines to output file...")
     try:
         with (
             input_path.open("rb") as infile,
@@ -94,11 +96,10 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
                     line_data = mm[offset : actual_end_of_line + 1]  # Include newline
                 outfile.write(line_data)
                 if (i + 1) % 100000 == 0:
-                    print(f"  {i + 1}/{original_line_count} lines written...", end="\r")
-        print(f"\nSuccessfully wrote {original_line_count} shuffled lines to: {output_file_path}")
+                    logger.info(f"  {i + 1}/{original_line_count} lines written...", end="\r")
         return True
     except Exception as e:
-        print(f"\nError writing output file: {e}", file=sys.stderr)
+        logger.info(f"\nError writing output file: {e}", file=sys.stderr)
         if output_path.exists():
             output_path.unlink()
         return False
@@ -108,40 +109,39 @@ def enhanced_shuffle_small_file(input_file_path, output_file_path):
     input_path = Path(input_file_path)
     output_path = Path(output_file_path)
     if not input_path.exists():
-        print(f"Error: Input file '{input_file_path}' not found.", file=sys.stderr)
+        logger.info(f"Error: Input file '{input_file_path}' not found.", file=sys.stderr)
         return False
-    print(f"Reading all lines from {input_file_path} into memory...")
+    logger.info(f"Reading all lines from {input_file_path} into memory...")
     try:
         with input_path.open(encoding="utf-8") as f:
             lines = f.readlines()
     except MemoryError:
-        print(
+        logger.info(
             f"MemoryError: File '{input_file_path}' is too large to load into memory. "
             "Consider increasing 1mb or using a system with more RAM.",
             file=sys.stderr,
         )
         return False
     except Exception as e:
-        print(f"Error reading input file: {e}", file=sys.stderr)
+        logger.info(f"Error reading input file: {e}", file=sys.stderr)
         return False
     original_count = len(lines)
     if original_count == 0:
-        print("Input file is empty. Exiting.")
+        logger.info("Input file is empty. Exiting.")
         output_path.touch()
         return True
-    print(f"Read {original_count} lines. Shuffling lines...")
+    logger.info(f"Read {original_count} lines. Shuffling lines...")
     random.shuffle(lines)
     crypto_shuffle(lines)
     shuffle3(lines)
     weighted_shuffle(lines)
-    print(f"Writing shuffled lines to: {output_file_path}")
+    logger.info(f"Writing shuffled lines to: {output_file_path}")
     try:
         with output_path.open("w", encoding="utf-8") as f:
             f.writelines(lines)
-        print(f"Successfully wrote {original_count} shuffled lines.")
         return True
     except Exception as e:
-        print(f"Error writing output file: {e}", file=sys.stderr)
+        logger.info(f"Error writing output file: {e}", file=sys.stderr)
         return False
 
 
@@ -177,16 +177,19 @@ def main():
     args = parser.parse_args()
     input_path = Path(args.input_file)
     if not input_path.exists():
-        print(f"Error: Input file '{input_path}' not found.", file=sys.stderr)
+        logger.info(f"Error: Input file '{input_path}' not found.", file=sys.stderr)
         sys.exit(1)
     file_size = input_path.stat().st_size
     output_path = input_path
     success = False
     if file_size > MMAP_THRESHOLD_BYTES:
-        print(f"File size ({file_size / (1024 * 1024):.2f} MB) exceeds {1} MB. Using mmap strategy.")
+        logger.info(f"File size ({file_size / (1024 * 1024):.2f} MB) exceeds {1} MB. Using mmap strategy.")
         success = enhanced_shuffle_large_file(input_path, output_path)
+
     else:
-        for _i in range(100):
+        N = secrets.randbelow(10)
+        logger.info(f"will run {N} times")
+        for _i in range(N):
             success = enhanced_shuffle_small_file(input_path, output_path)
             if not success:
                 sys.exit(1)

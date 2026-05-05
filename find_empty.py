@@ -3,6 +3,8 @@ import os
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     cwd = Path.cwd()
@@ -14,7 +16,7 @@ def main():
             if path.is_symlink():
                 continue
             if path.is_file() and not path.stat().st_size:
-                print(path.relative_to(cwd))
+                logger.info(path.relative_to(cwd))
 
 
 if __name__ == "__main__":

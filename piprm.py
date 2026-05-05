@@ -2,7 +2,9 @@
 import subprocess
 import sys
 from pathlib import Path
+
 from dh import get_file_age, get_ipkgs
+from loguru import logger
 from rapidfuzz import fuzz
 
 PIP_LIST_FILE = "/sdcard/pip.list"
@@ -40,20 +42,20 @@ def find_dist_info(prefix):
 def uninstall_packages(pkg_name):
     try:
         subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", pkg_name], check=True)
-        print(f"Uninstalled {pkg_name}")
+        logger.info(f"Uninstalled {pkg_name}")
     except subprocess.CalledProcessError:
-        print(f"Skipped {pkg_name} (not installed or error)")
+        logger.info(f"Skipped {pkg_name} (not installed or error)")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <package_prefix>")
+        logger.info(f"Usage: {sys.argv[0]} <package_prefix>")
         sys.exit(1)
     prefix = sys.argv[1].lower()
     installed = load_installed_packages()
     to_uninstall = [pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.WRatio(prefix, pkg.lower()) > 90]
     if not to_uninstall:
-        print("no match found")
+        logger.info("no match found")
         sys.exit(0)
     for k in to_uninstall:
         ans = input(f"remove {k} --> ? (y/n)")

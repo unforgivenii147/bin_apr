@@ -2,18 +2,20 @@
 import os
 import shutil
 from pathlib import Path
+
 import cv2
 import numpy as np
+from loguru import logger
 
 
 def get_image_features_cv2(image_path, size=(64, 64)):
     try:
         img = cv2.imread(image_path)
         if img is None:
-            print(f"Warning: Could not read {image_path}")
+            logger.info(f"Warning: Could not read {image_path}")
             return None
         if img.size == 0:
-            print(f"Warning: Empty image {image_path}")
+            logger.info(f"Warning: Empty image {image_path}")
             return None
         if len(img.shape) == 2:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
@@ -26,7 +28,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             hist_s = cv2.calcHist([hsv], [1], None, [8], [0][256])
             hist_v = cv2.calcHist([hsv], [2], None, [8], [0][256])
         except cv2.error as e:
-            print(f"Histogram calculation error for {image_path}: {e}")
+            logger.info(f"Histogram calculation error for {image_path}: {e}")
             return None
         img_flat = img_resized.flatten()
         features = np.concatenate(
@@ -42,7 +44,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             features /= norm
         return features
     except Exception as e:
-        print(f"Error processing {image_path}: {e!s}")
+        logger.info(f"Error processing {image_path}: {e!s}")
         return None
 
 
@@ -125,29 +127,29 @@ def organize_photos(
     move=False,
     threshold=0.7,
 ):
-    print(f"Scanning directory: {source_dir}")
+    logger.info(f"Scanning directory: {source_dir}")
     image_paths = get_all_images(source_dir)
-    print(f"Found {len(image_paths)} images")
+    logger.info(f"Found {len(image_paths)} images")
     if len(image_paths) == 0:
-        print("No images found!")
+        logger.info("No images found!")
         return
-    print("Extracting features with OpenCV...")
+    logger.info("Extracting features with OpenCV...")
     features = []
     valid_paths = []
     for i, path in enumerate(image_paths):
         if i % 10 == 0:
-            print(f"Processing {i}/{len(image_paths)}...")
+            logger.info(f"Processing {i}/{len(image_paths)}...")
         feat = get_image_features_cv2(path)
         if feat is not None:
             features.append(feat)
             valid_paths.append(path)
-    print(f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images")
+    logger.info(f"\nSuccessfully processed {len(features)} out of {len(image_paths)} images")
     if len(features) == 0:
-        print("No valid images to process!")
+        logger.info("No valid images to process!")
         return
     features = np.array(features)
     n_clusters = min(n_clusters, len(features))
-    print(f"Clustering into {n_clusters} groups...")
+    logger.info(f"Clustering into {n_clusters} groups...")
     labels = simple_clustering(
         features,
         valid_paths,
@@ -156,7 +158,7 @@ def organize_photos(
     )
     output_base = os.path.join(source_dir, "organized_by_similarity")
     Path(output_base).mkdir(exist_ok=True, parents=True)
-    print("Organizing files...")
+    logger.info("Organizing files...")
     for label in range(n_clusters):
         cluster_dir = os.path.join(output_base, f"group_{label + 1}")
         Path(cluster_dir).mkdir(exist_ok=True, parents=True)
@@ -178,9 +180,9 @@ def organize_photos(
             else:
                 shutil.copy2(path, dest_path)
         except Exception as e:
-            print(f"Error copying {path}: {e}")
-    print(f"\nDone! Photos organized in: {output_base}")
-    print(f"Organized {len(valid_paths)} images into {n_clusters} groups")
+            logger.info(f"Error copying {path}: {e}")
+    logger.info(f"\nDone! Photos organized in: {output_base}")
+    logger.info(f"Organized {len(valid_paths)} images into {n_clusters} groups")
 
 
 if __name__ == "__main__":

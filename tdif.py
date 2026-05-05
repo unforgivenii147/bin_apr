@@ -4,6 +4,8 @@ import difflib
 import sys
 from pathlib import Path
 from typing import ClassVar
+
+from loguru import logger
 from textual.app import App, ComposeResult
 from textual.color import Color
 from textual.containers import Horizontal, ScrollableContainer
@@ -241,6 +243,7 @@ class DiffViewerApp(App):
                 panels.first().focus()
 
     def action_search(self) -> None:
+
         def on_input(submitted_text: str) -> None:
             if submitted_text:
                 self.search_term = submitted_text
@@ -282,10 +285,10 @@ Examples:
     file1 = Path(args.file1)
     file2 = Path(args.file2)
     if not file1.exists():
-        print(f"Error: File '{file1}' does not exist")
+        logger.info(f"Error: File '{file1}' does not exist")
         return 1
     if not file2.exists():
-        print(f"Error: File '{file2}' does not exist")
+        logger.info(f"Error: File '{file2}' does not exist")
         return 1
     app = DiffViewerApp(str(file1), str(file2))
     app.run()

@@ -2,7 +2,9 @@
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 from dh import get_files
+from loguru import logger
 from PIL import Image
 from pytesseract import image_to_string
 
@@ -17,14 +19,14 @@ def extract_text(image_path):
 
 
 def process_file(path):
-    print(f"Processing {path.name}")
+    logger.info(f"Processing {path.name}")
     text = extract_text(path)
     if text and len(text) > 1:
         txtfile = path.with_suffix(".txt")
         txtfile.write_text(text, encoding="utf-8")
-        print(f"{txtfile} created.")
+        logger.info(f"{txtfile} created.")
     else:
-        print("No text found.")
+        logger.info("No text found.")
 
 
 def main() -> None:

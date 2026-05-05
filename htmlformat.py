@@ -2,6 +2,8 @@
 import re
 from pathlib import Path
 
+from loguru import logger
+
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")
 SKIP_OPEN_RE = re.compile(r"<\s*(pre|code)\b", re.IGNORECASE)
@@ -50,7 +52,7 @@ def format_file(path: Path):
         "\n".join(formatted) + "\n",
         encoding="utf-8",
     )
-    print(f"[+] Processed: {path.relative_to(cwd)}")
+    logger.info(f"[+] Processed: {path.relative_to(cwd)}")
 
 
 def main():

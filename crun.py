@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from fastwalk import walk_files
+from loguru import logger
+
 from dhh import fsz, gsz, mpf3, run_command
 
 
@@ -13,7 +16,7 @@ def process_file(fp):
     if fp.suffix == ".cpp":
         cmd = f"clang++ {fp!s} -o {fp.with_suffix('')!s}"
     ret, txt, _err = run_command(cmd)
-    print(txt)
+    logger.info(txt)
     return ret
     return True
 
@@ -30,7 +33,7 @@ def main():
         }:
             files.append(path)
     mpf3(process_file, files)
-    print(f"{fsz(start_size - gsz(cwd))}")
+    logger.info(f"{fsz(start_size - gsz(cwd))}")
 
 
 if __name__ == "__main__":

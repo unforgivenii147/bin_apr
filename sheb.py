@@ -2,6 +2,8 @@
 import os
 from pathlib import Path
 
+from loguru import logger
+
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 
 
@@ -54,7 +56,7 @@ def process_file(filepath):
         f.seek(0)
         f.writelines(lines)
         f.truncate()
-        print(f"{os.path.relpath(filepath)} updated.")
+        logger.info(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
         Path(filepath).chmod(0o755)
 

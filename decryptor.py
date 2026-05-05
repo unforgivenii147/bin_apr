@@ -5,9 +5,11 @@ import os
 import random
 import string
 from pathlib import Path
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from loguru import logger
 
 AES_BLOCK_SIZE = 16
 
@@ -57,7 +59,7 @@ def main():
     args = parser.parse_args()
     if args.encrypt:
         key = random_key()
-        print(f"Encryption key: {key}")
+        logger.info(f"Encryption key: {key}")
         action = encrypt_file
     elif args.decrypt:
         if not args.key:
@@ -70,7 +72,7 @@ def main():
         raise SystemExit(msg)
     for file_path in glob.glob("*"):
         if Path(file_path).is_file():
-            print(f"Processing {file_path}...")
+            logger.info(f"Processing {file_path}...")
             action(file_path, key)
 
 

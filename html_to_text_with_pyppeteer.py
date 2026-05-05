@@ -2,6 +2,8 @@
 import asyncio
 import sys
 from pathlib import Path
+
+from loguru import logger
 from pyppeteer import launch
 
 
@@ -21,7 +23,7 @@ async def main():
             deviceScaleFactor: window.devicePixelRatio,
         }
     }""")
-    print(dimensions)
+    logger.info(dimensions)
     await browser.close()
 
 

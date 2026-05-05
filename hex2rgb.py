@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 
+from loguru import logger
+
 
 def hex_to_rgb(value: str) -> tuple[int, int, int]:
     hex_color = value.lstrip("#")
@@ -31,4 +33,4 @@ def hex_to_rgb_dict(value: str) -> dict:
 
 if __name__ == "__main__":
     hexcolor = sys.argv[1].strip()
-    print(gex_to_rgb(hexcolor))
+    logger.info(gex_to_rgb(hexcolor))

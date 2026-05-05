@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     path = Path(sys.argv[1])
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     sys.exit(main())
 """
     path.write_text(template, encoding="utf-8")
-    print(f"{path.name} created.")
+    logger.info(f"{path.name} created.")
 
 
 if __name__ == "__main__":

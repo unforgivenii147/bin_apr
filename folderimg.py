@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
+
 import dh
+from loguru import logger
 from PIL import Image
 
 PHASH_W = 0.5
@@ -20,7 +22,7 @@ def compute_hashes(path: Path):
                 "ahash": dh.average_hash(img),
             }
     except Exception as e:
-        print(f"[SKIP] {path.name}: {e}")
+        logger.info(f"[SKIP] {path.name}: {e}")
         return None
 
 
@@ -36,7 +38,7 @@ def main():
     cwd = Path.cwd()
     images = [p for p in cwd.iterdir() if dh.is_image(p)]
     if not images:
-        print("No images found.")
+        logger.info("No images found.")
         return
     hashes = {}
     for img in images:
@@ -61,7 +63,7 @@ def main():
             folder.mkdir(exist_ok=True)
             for img, _ in group:
                 shutil.move(str(img), folder / img.name)
-    print(f"Done. Created {len(groups)} groups.")
+    logger.info(f"Done. Created {len(groups)} groups.")
 
 
 if __name__ == "__main__":

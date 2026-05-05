@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import pdfplumber
+from loguru import logger
 
 
 def process_file(fp):
@@ -19,7 +21,7 @@ def process_file(fp):
             else:
                 txtfile = f"{outdir}/{Path(fp).stem}{i!s}.txt"
             Path(txtfile).write_text(text, encoding="utf-8")
-            print(f"{txtfile} created")
+            logger.info(f"{txtfile} created")
             i += 1
 
 

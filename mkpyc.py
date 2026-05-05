@@ -4,6 +4,9 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
+from loguru import logger
+
 from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
@@ -32,7 +35,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    print(f"space changed : {fsz(diff_size)}")
+    logger.info(f"space changed : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

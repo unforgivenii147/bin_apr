@@ -1,8 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
+
 import tree_sitter_python as tsp
+from loguru import logger
 from tree_sitter import Language, Parser
+from dh import get_pyfiles
 
 PY_LANGUAGE = Language(tsp.language())
 parser = Parser(PY_LANGUAGE)
@@ -10,10 +13,10 @@ parser = Parser(PY_LANGUAGE)
 
 def extract_python_code_elements(filepath):
     try:
-        with pathlib.Path(filepath).open("rb") as f:
+        with Path(filepath).open("rb") as f:
             tree = parser.parse(f.read())
     except Exception as e:
-        print(f"Error parsing file {filepath}: {e}")
+        logger.info(f"Error parsing file {filepath}: {e}")
         return [], [], []
     functions = []
     classes = []
@@ -70,48 +73,48 @@ def process_directory(start_dir, output_dir):
     all_classes = {}
     all_constants = {}
     all_imports = set()
-    if not pathlib.Path(output_dir).exists():
-        pathlib.Path(output_dir).mkdir(parents=True)
-        print(f"Created output directory: {output_dir}")
+    if not Path(output_dir).exists():
+        Path(output_dir).mkdir(parents=True)
+        logger.info(f"Created output directory: {output_dir}")
     imports_output_path = os.path.join(output_dir, "imports.py")
     for path in get_pyfiles(start_dir):
         functions, classes, constants, imports = extract_python_code_elements(path)
         if functions:
-            all_functions[relative_path] = functions
+            all_functions["relative_path"] = functions
         if classes:
             all_classes[relative_path] = classes
         if constants:
             all_constants[relative_path] = constants
         all_imports.update(imports)
-    with pathlib.Path(os.path.join(output_dir, "functions.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir, "functions.txt")).open("w", encoding="utf-8") as f:
         for file, funcs in all_functions.items():
             f.write(f"# File: {file}\n")
             f.writelines(f"{func}\n" for func in funcs)
             f.write("\n")
-    with pathlib.Path(os.path.join(output_dir, "classes.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir, "classes.txt")).open("w", encoding="utf-8") as f:
         for file, cls in all_classes.items():
             f.write(f"# File: {file}\n")
             f.writelines(f"{c}\n" for c in cls)
             f.write("\n")
-    with pathlib.Path(os.path.join(output_dir, "constants.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir, "constants.txt")).open("w", encoding="utf-8") as f:
         for file, consts in all_constants.items():
             f.write(f"# File: {file}\n")
             f.writelines(f"{const}\n" for const in consts)
             f.write("\n")
-    with pathlib.Path(imports_output_path).open("w", encoding="utf-8") as f:
+    with Path(imports_output_path).open("w", encoding="utf-8") as f:
         if all_imports:
             f.write("# Extracted Imports\n\n")
             f.writelines(f"import {imp}\n" for imp in sorted(all_imports))
         else:
             f.write("# No imports found.\n")
-    print(f"\nExtraction complete. Results saved to '{output_dir}'.")
-    print(f"Imports saved to '{imports_output_path}'.")
+    logger.info(f"\nExtraction complete. Results saved to '{output_dir}'.")
+    logger.info(f"Imports saved to '{imports_output_path}'.")
 
 
 if __name__ == "__main__":
     current_directory = "."
     output_directory = "output"
-    if not pathlib.Path(output_directory).exists():
-        pathlib.Path(output_directory).mkdir(parents=True)
-    print("Starting code element extraction...")
+    if not Path(output_directory).exists():
+        Path(output_directory).mkdir(parents=True)
+    logger.info("Starting code element extraction...")
     process_directory(current_directory, output_directory)

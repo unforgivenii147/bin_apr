@@ -5,21 +5,19 @@ Supports large files via mmap (>5 MB).
 Includes benchmarking for multiple approaches.
 """
 
-import sys
-import os
 import mmap
-import time
-import tracemalloc
+import os
+import sys
 from pathlib import Path
-from typing import List, Tuple, Optional
-import functools
+from typing import List
+
+from loguru import logger
 
 MMAP_THRESHOLD = 50 * 1024 * 1024
 
 
-def read_lines_standard(path: Path) -> List[str]:
-    with open(path, "rb") as f:
-        data = f.read()
+def read_lines_standard(path: Path) -> list[str]:
+    data = Path(path).read_bytes()
     text = data.decode("utf-8", errors="replace")
     lines = text.splitlines(keepends=True)
     if not lines[-1].endswith(("\n", "\r\n", "\r")) and data.endswith(b"\n"):
@@ -27,25 +25,23 @@ def read_lines_standard(path: Path) -> List[str]:
     return lines
 
 
-def read_lines_mmap(path: Path) -> List[str]:
-    size = os.path.getsize(path)
-    with open(path, "rb") as f:
-        with mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ) as mm:
-            text = mm[:].decode("utf-8", errors="replace")
+def read_lines_mmap(path: Path) -> list[str]:
+    size = Path(path).stat().st_size
+    with Path(path).open("rb") as f, mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ) as mm:
+        text = mm[:].decode("utf-8", errors="replace")
     lines = text.splitlines(keepends=True)
     if not lines[-1].endswith(("\n", "\r\n", "\r")) and size > 0 and text.endswith("\n"):
         lines.append("")
     return lines
 
 
-def sort_by_length(lines: List[str]) -> List[str]:
+def sort_by_length(lines: list[str]) -> list[str]:
     return sorted(lines, key=len)
 
 
-def write_lines(path: Path, lines: List[str]) -> None:
-    with open(path, "wb") as f:
-        for line in lines:
-            f.write(line.encode("utf-8"))
+def write_lines(path: Path, lines: list[str]) -> None:
+    with Path(path).open("wb") as f:
+        f.writelines(line.encode("utf-8") for line in lines)
 
 
 def fsz(size: int) -> str:
@@ -58,21 +54,18 @@ def fsz(size: int) -> str:
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
+        logger.info(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
         sys.exit(1)
     path = Path(sys.argv[1])
     if not path.exists():
-        print(f"Error: File '{path}' not found.", file=sys.stderr)
+        logger.info(f"Error: File '{path}' not found.", file=sys.stderr)
         sys.exit(1)
     size = path.stat().st_size
     use_mmap = size > MMAP_THRESHOLD
-    if use_mmap:
-        lines = read_lines_mmap(path)
-    else:
-        lines = read_lines_standard(path)
+    lines = read_lines_mmap(path) if use_mmap else read_lines_standard(path)
     sorted_lines = sort_by_length(lines)
     write_lines(path, sorted_lines)
-    print(f"\n✅ Sorted {len(sorted_lines)} lines by length → saved to '{path}'")
+    logger.info(f"\n✅ Sorted {len(sorted_lines)} lines by length → saved to '{path}'")
 
 
 if __name__ == "__main__":

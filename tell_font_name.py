@@ -2,8 +2,10 @@
 import re
 import sys
 from pathlib import Path
+
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
+from loguru import logger
 from termcolor import cprint
 
 
@@ -62,7 +64,7 @@ def process_file(fn):
     if new_path.exists():
         new_path = unique_path(new_path)
     fn.rename(new_path)
-    print(f"{fn.name} -> ", end="")
+    logger.info(f"{fn.name} -> ", end="")
     cprint(f"{new_path.name}", "green")
     return 0
 
@@ -74,7 +76,7 @@ def main() -> None:
         [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".ttf", ".woff", ".woff2", ".bin", ".otf"])
     )
     if not files:
-        print("no files found")
+        logger.info("no files found")
         return
     if len(files) == 1:
         process_file(files[0])

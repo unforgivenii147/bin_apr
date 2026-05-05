@@ -4,8 +4,10 @@ import re
 import shutil
 import sys
 from pathlib import Path
+
 import markdown
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def modify_classes(html_content):
@@ -103,4 +105,4 @@ def convert_markdown(md_path: str) -> str:
 if __name__ == "__main__":
     md_path = sys.argv[1]
     output_path = convert_markdown(md_path)
-    print(f"Output saved in {output_path}")
+    logger.info(f"Output saved in {output_path}")

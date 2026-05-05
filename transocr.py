@@ -2,9 +2,11 @@
 import argparse
 import sys
 from pathlib import Path
+
 import pytesseract
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
+from loguru import logger
 from PIL import Image, ImageEnhance, ImageFilter
 
 DetectorFactory.seed = 0
@@ -87,7 +89,7 @@ def main() -> None:
             raw_ocr_path = build_raw_ocr_path(in_path)
             raw_ocr_path.write_text(text, encoding="utf-8")
         else:
-            print("Unsupported file type. Use text, jpg, jpeg, png.")
+            logger.info("Unsupported file type. Use text, jpg, jpeg, png.")
             sys.exit(0)
     except Exception:
         sys.exit(1)

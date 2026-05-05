@@ -3,7 +3,9 @@ import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from time import perf_counter
+
 import fastwalk
+from loguru import logger
 
 FILE_EXTENSIONS = {
     ".c",
@@ -27,7 +29,7 @@ FILE_EXTENSIONS = {
 
 def format_file(file_path):
     pth = Path(file_path)
-    print(f"formating {pth.stem}")
+    logger.info(f"formating {pth.stem}")
     try:
         subprocess.run(
             ["clang-format", "-i", file_path],
@@ -54,13 +56,13 @@ def main() -> None:
     start = perf_counter()
     files_to_format = find_files()
     if not files_to_format:
-        print("No files found.")
+        logger.info("No files found.")
         return
-    print(f"Formatting {len(files_to_format)} files...")
+    logger.info(f"Formatting {len(files_to_format)} files...")
     with ProcessPoolExecutor(max_workers=12) as executor:
         results = executor.map(format_file, files_to_format)
         sum(1 for success in results if success)
-    print(f"{perf_counter() - start} sec")
+    logger.info(f"{perf_counter() - start} sec")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,57 @@
+#!/data/data/com.termux/files/usr/bin/python
+import os
+import sys
+from pathlib import Path
+from loguru import logger
+import hashlib
+from dh import cprint, runcmd, get_sha256
+
+
+def get_path_dirs() -> list[Path]:
+    found = []
+    path_env = os.environ.get("PATH", "").split(":")
+    found = [Path(p).expanduser() for p in path_env]
+    found.append(Path("/data/data/com.termux/files/home/tmp/bin"))
+    return found
+
+
+def get_executables_in_dir(d: Path) -> list[Path]:
+    try:
+        return [f for f in d.iterdir() if f.is_file()]
+    except PermissionError:
+        logger.warning(f"Permission denied: {d}")
+        return []
+
+
+def main():
+    from collections import defaultdict
+    import os
+
+    logger.remove()
+    logger.add("/sdcard/dup_apps")
+    dirs = [d for d in get_path_dirs() if d.is_dir()]
+    executables: defaultdict[str, list[tuple[Path, str]]] = defaultdict(list)
+    for d in dirs:
+        for f in get_executables_in_dir(d):
+            try:
+                hash_ = get_sha256(f)
+                executables[f.name].append((f, hash_))
+            except PermissionError:
+                logger.warning(f"Permission denied: {f}")
+            except Exception as e:
+                logger.error(f"Error processing {f}: {e}")
+
+    duplicates = {k: v for k, v in executables.items() if len(v) > 1}
+    if not duplicates:
+        logger.info("No duplicates found.")
+        return
+    for name, items in sorted(duplicates.items()):
+        cprint(f"Duplicate: {name}")
+        for path, hash_ in sorted(items, key=lambda x: str(x[0])):
+            path = Path(path)
+            print(f"  {path.name} in {path.parent.parent.name}/{path.parent.name}")
+            logger.info(f"  {path.name}  {hash_}")
+
+
+if __name__ == "__main__":
+    main()

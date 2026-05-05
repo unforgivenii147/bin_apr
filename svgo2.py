@@ -4,7 +4,10 @@ import sys
 import tempfile
 from multiprocessing import Pool
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz, move_file
 
 MAX_QUEUE = 16
@@ -28,12 +31,12 @@ def process_file(in_file):
             capture_output=True,
         )
         move_file(tmp_file_path, in_file, overwrite=True)
-        print(f"{in_file.name} updated")
+        logger.info(f"{in_file.name} updated")
     except subprocess.CalledProcessError as e:
-        print(f"Error running svgcleaner: {e.stderr.decode('utf-8')}")
+        logger.info(f"Error running svgcleaner: {e.stderr.decode('utf-8')}")
         sys.exit(1)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.info(f"An error occurred: {e}")
         sys.exit(1)
     finally:
         if Path(tmp_file_path).exists():
@@ -46,7 +49,7 @@ def main() -> None:
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".svg"])
     if not files:
-        print("no files found")
+        logger.info("no files found")
         return
     if len(files) == 1:
         process_file(files[0])

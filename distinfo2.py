@@ -3,7 +3,12 @@ import os
 import shutil
 import sys
 from pathlib import Path
-from termcolor import cprint
+
+from dh import cprint
+from loguru import logger
+
+major, minor, _, _, _ = sys.version_info
+py_version = f"{major}.{minor}"
 
 ALLOWED = [
     "METADATA",
@@ -48,22 +53,22 @@ NOT_ALLOWED = [
 
 def process_lic(fp):
     lic_dir = Path(f"{fp}/licenses")
-    if lic_dir.exists():
+    if lic_dir.exists() and "dist-info" in str(lic_dir.parent):
         shutil.rmtree(lic_dir)
-        print(f"{lic_dir} removed.")
+        logger.info(f"{lic_dir} removed.")
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")
-        if not nf.exists() and f != "entry_points.txt":
+        if not nf.exists() and f not in {"entry_points.txt", "top_level.txt"}:
             rett.append(nf)
     return rett
 
 
 def main():
     missings = []
-    cwd = Path("/data/data/com.termux/files/usr/lib/python3.12/site-packages")
-    for pth in os.listdir(cwd):
-        path = Path(os.path.join(cwd, pth))
+    cwd = Path(f"/data/data/com.termux/files/usr/lib/python{py_version}/site-packages")
+    #    cwd = Path.cwd()
+    for path in cwd.iterdir():
         if path.is_dir() and "dist-info" in path.name:
             if len(os.listdir(path)) < 2:
                 cprint(

@@ -3,8 +3,10 @@ import os
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
+
 import pycld2
 from dh import TXT_EXT
+from loguru import logger
 
 MIN_TEXT_LENGTH = 20
 SUPPORTED_EXTENSIONS = TXT_EXT
@@ -65,8 +67,8 @@ def get_file_sample(
 
 def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
     directory = Path(directory).resolve()
-    print(f"🔍 Scanning directory: {directory}")
-    print("=" * 70)
+    logger.info(f"🔍 Scanning directory: {directory}")
+    logger.info("=" * 70)
     results = {
         "total_files": 0,
         "checked_files": 0,
@@ -115,32 +117,32 @@ def analyze_directory(directory: str = ".", show_all: bool = False) -> dict:
 
 
 def print_results(results: dict, show_files: bool = False):
-    print("\n" + "=" * 70)
-    print("📊 LANGUAGE DETECTION RESULTS")
-    print("=" * 70)
+    logger.info("\n" + "=" * 70)
+    logger.info("📊 LANGUAGE DETECTION RESULTS")
+    logger.info("=" * 70)
     total = results["total_files"]
     checked = results["checked_files"]
     non_english_total = sum(len(files) for files in results["non_english"].values())
     english_total = len(results["english"])
     undetermined = len(results["undetermined"])
-    print(f"\n📁 Files scanned: {total}")
-    print(f"   ├─ Successfully analyzed: {checked} ({checked / total * 100:.1f}%)")
-    print(f"   ├─ Skipped (too small): {results['skipped_small']}")
-    print(f"   ├─ Skipped (binary/large): {results['skipped_binary']}")
-    print(f"   └─ Skipped (encoding issues): {results['skipped_encoding']}")
-    print("\n🌍 Language breakdown:")
-    print(f"   ├─ 🇺🇸 English files: {english_total}")
+    logger.info(f"\n📁 Files scanned: {total}")
+    logger.info(f"   ├─ Successfully analyzed: {checked} ({checked / total * 100:.1f}%)")
+    logger.info(f"   ├─ Skipped (too small): {results['skipped_small']}")
+    logger.info(f"   ├─ Skipped (binary/large): {results['skipped_binary']}")
+    logger.info(f"   └─ Skipped (encoding issues): {results['skipped_encoding']}")
+    logger.info("\n🌍 Language breakdown:")
+    logger.info(f"   ├─ 🇺🇸 English files: {english_total}")
     for lang, files in sorted(
         results["non_english"].items(),
         key=lambda x: len(x[1]),
         reverse=True,
     ):
         percentage = len(files) / checked * 100 if checked > 0 else 0
-        print(f"   ├─ 🌐 {lang.upper()}: {len(files)} files ({percentage:.1f}%)")
+        logger.info(f"   ├─ 🌐 {lang.upper()}: {len(files)} files ({percentage:.1f}%)")
     if undetermined > 0:
-        print(f"   └─ ❓ Undetermined: {undetermined}")
+        logger.info(f"   └─ ❓ Undetermined: {undetermined}")
     if results["directory_stats"]:
-        print("\n📂 Directories with most non-English files:")
+        logger.info("\n📂 Directories with most non-English files:")
         dirs_with_non_english = [
             (dir_path, stats) for dir_path, stats in results["directory_stats"].items() if stats["non_english"] > 0
         ]
@@ -153,38 +155,38 @@ def print_results(results: dict, show_files: bool = False):
             stats,
         ) in dirs_with_non_english[:10]:
             percentage = stats["non_english"] / stats["total"] * 100
-            print(f"   ├─ {dir_path if dir_path != '.' else '(root)'}:")
-            print(f"   │   {stats['non_english']}/{stats['total']} files ({percentage:.1f}% non-English)")
+            logger.info(f"   ├─ {dir_path if dir_path != '.' else '(root)'}:")
+            logger.info(f"   │   {stats['non_english']}/{stats['total']} files ({percentage:.1f}% non-English)")
     if show_files and results["non_english"]:
-        print("\n📄 Non-English files by language:")
+        logger.info("\n📄 Non-English files by language:")
         for lang, files in sorted(results["non_english"].items()):
             if files:
-                print(f"\n   🌐 {lang.upper()} ({len(files)} files):")
+                logger.info(f"\n   🌐 {lang.upper()} ({len(files)} files):")
                 for filepath in files[:20]:
                     rel_path = filepath.relative_to(Path.cwd()) if filepath.is_absolute() else filepath
-                    print(f"      └─ {rel_path}")
+                    logger.info(f"      └─ {rel_path}")
                 if len(files) > 20:
-                    print(f"      └─ ... and {len(files) - 20} more")
-    print("\n" + "=" * 70)
-    print("🎯 RECOMMENDATION")
-    print("=" * 70)
+                    logger.info(f"      └─ ... and {len(files) - 20} more")
+    logger.info("\n" + "=" * 70)
+    logger.info("🎯 RECOMMENDATION")
+    logger.info("=" * 70)
     if non_english_total == 0:
-        print("✅ All files appear to be in English! No translation needed.")
+        logger.info("✅ All files appear to be in English! No translation needed.")
     else:
-        print(f"📢 Found {non_english_total} non-English files that may need translation.")
+        logger.info(f"📢 Found {non_english_total} non-English files that may need translation.")
         dirs_to_translate = [
             (dir_path, stats) for dir_path, stats in results["directory_stats"].items() if stats["non_english"] > 0
         ]
         if dirs_to_translate:
-            print("\n📌 Directories to translate (by priority):")
+            logger.info("\n📌 Directories to translate (by priority):")
             for dir_path, stats in sorted(
                 dirs_to_translate,
                 key=lambda x: x[1]["non_english"],
                 reverse=True,
             ):
-                print(f"   └─ {dir_path if dir_path != '.' else 'current directory'}:")
-                print(f"       {stats['non_english']} non-English files to translate")
-    print("=" * 70)
+                logger.info(f"   └─ {dir_path if dir_path != '.' else 'current directory'}:")
+                logger.info(f"       {stats['non_english']} non-English files to translate")
+    logger.info("=" * 70)
 
 
 def main():
@@ -217,10 +219,10 @@ def main():
             show_files=args.verbose or args.list_languages,
         )
     except KeyboardInterrupt:
-        print("\n\n⚠️  Scan interrupted by user")
+        logger.info("\n\n⚠️  Scan interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        logger.info(f"\n❌ Error: {e}")
         sys.exit(1)
 
 

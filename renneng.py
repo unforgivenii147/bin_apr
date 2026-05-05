@@ -2,8 +2,10 @@
 import os
 import re
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+from loguru import logger
 
 DIRECTORY = "."
 non_english_pattern = re.compile(r"[^\x00-\x7F]")
@@ -17,7 +19,7 @@ def translate_if_needed(name: str) -> str:
         translated = GoogleTranslator(source="auto", target="en").translate(base)
         return translated + ext
     except Exception as e:
-        print(f"Translation error for '{name}': {e}")
+        logger.info(f"Translation error for '{name}': {e}")
         return name
 
 
@@ -45,7 +47,7 @@ def rename_files(directory: str):
             new_path = path.parent / new_name
             new_path = get_unique_path(new_path)
             Path(path).rename(new_path)
-            print(f"File renamed: {path.name} -> {new_path.name}")
+            logger.info(f"File renamed: {path.name} -> {new_path.name}")
         elif path.is_dir():
             new_name = translate_if_needed(path.name)
             if new_name == path.name:
@@ -53,7 +55,7 @@ def rename_files(directory: str):
             new_path = path.parent / new_name
             new_path = get_unique_path(new_path)
             Path(path).rename(new_path)
-            print(f"Directory renamed: {path.name} -> {new_path.name}")
+            logger.info(f"Directory renamed: {path.name} -> {new_path.name}")
 
 
 if __name__ == "__main__":

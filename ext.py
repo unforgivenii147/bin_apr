@@ -4,6 +4,8 @@ import multiprocessing as mp
 import os
 from pathlib import Path
 
+from loguru import logger
+
 OUTPUT_DIR = "output"
 EXCLUDE_DIRS = {
     "test",
@@ -115,7 +117,7 @@ def main():
     Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
     files = discover_python_files()
     if not files:
-        print("No Python files found.")
+        logger.info("No Python files found.")
         return
     with mp.Pool(mp.cpu_count()) as pool:
         results = pool.map(extract_from_file, files)
@@ -148,22 +150,22 @@ def main():
         os.path.join(OUTPUT_DIR, "const.py"),
         const_map,
     )
-    print("\n=== Top-Level Classes ===")
+    logger.info("\n=== Top-Level Classes ===")
     for n in sorted(tl_classes):
-        print(" -", n)
-    print("\n=== Top-Level Functions ===")
+        logger.info(" -", n)
+    logger.info("\n=== Top-Level Functions ===")
     for n in sorted(tl_funcs):
-        print(" -", n)
-    print("\n=== Nested Classes ===")
+        logger.info(" -", n)
+    logger.info("\n=== Nested Classes ===")
     for n in sorted(nested_classes):
-        print(" -", n)
-    print("\n=== Nested Functions ===")
+        logger.info(" -", n)
+    logger.info("\n=== Nested Functions ===")
     for n in sorted(nested_funcs):
-        print(" -", n)
-    print("\n=== Constants ===")
+        logger.info(" -", n)
+    logger.info("\n=== Constants ===")
     for n in sorted(const_map):
-        print(" -", n)
-    print("\nOutputs saved to:", OUTPUT_DIR)
+        logger.info(" -", n)
+    logger.info("\nOutputs saved to:", OUTPUT_DIR)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ import re
 import shutil
 from pathlib import Path
 
+from loguru import logger
+
 PRINT_PATTERN = re.compile(r"^\s*print\s+(?!\()(.+)$")
 PRINT_BARE_PATTERN = re.compile(r"^\s*print\s*$")
 EXCEPT_PATTERN = re.compile(r"^\s*except\s+(\S+)\s*,\s*(\S+)\s*:")
@@ -103,10 +105,10 @@ if __name__ == "__main__":
         args.all = True
     root = Path.cwd()
     scan_and_fix(root, force=args.force, apply_all=args.all)
-    print("\n=== SUMMARY ===")
-    print(f"Files changed: {len(changed_files)}")
+    logger.info("\n=== SUMMARY ===")
+    logger.info(f"Files changed: {len(changed_files)}")
     for f in changed_files:
-        print("  -", f)
-    print(f"\nFiles with errors: {len(error_files)}")
+        logger.info("  -", f)
+    logger.info(f"\nFiles with errors: {len(error_files)}")
     for f, e in error_files:
-        print(f"  - {f}: {e}")
+        logger.info(f"  - {f}: {e}")

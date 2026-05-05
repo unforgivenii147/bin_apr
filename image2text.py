@@ -3,8 +3,11 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 import cv2
+from loguru import logger
 from PIL import Image
+
 from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
@@ -26,7 +29,7 @@ def process_file(image_path):
 def process_file2(image_path):
     img = cv2.imread(str(image_path))
     if img is None:
-        print(f"Error: Could not load image from {image_path}")
+        logger.info(f"Error: Could not load image from {image_path}")
         return None
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -63,7 +66,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

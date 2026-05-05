@@ -1,12 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 from fastwalk import walk_files
+from loguru import logger
 
 
 def process_file(fp: Path):
     if not fp.exists():
         return False
-    print(f"processing  ... {fp.name}")
+    logger.info(f"processing  ... {fp.name}")
     last_tag_pos = -1
     tags = (
         "</svg>",

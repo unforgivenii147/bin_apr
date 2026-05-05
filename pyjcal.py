@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from datetime import datetime
 
+from loguru import logger
+
 
 class JalaliDate:
     JALALI_MONTHS_EN = [
@@ -425,7 +427,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) == 1:
-        print(jcal())
+        logger.info(jcal())
     elif sys.argv[1] == "jdate":
         fmt = None
         lang = "en"
@@ -434,7 +436,7 @@ if __name__ == "__main__":
                 lang = "fa"
             elif arg.startswith("+"):
                 fmt = arg[1:]
-        print(jdate(fmt, language=lang))
+        logger.info(jdate(fmt, language=lang))
     elif sys.argv[1] == "jcal":
         month = None
         year = None
@@ -448,7 +450,7 @@ if __name__ == "__main__":
                     month = int(arg)
                 elif year is None:
                     year = int(arg)
-        print(jcal(month, year, language=lang))
+        logger.info(jcal(month, year, language=lang))
     else:
         month = None
         year = None
@@ -462,6 +464,6 @@ if __name__ == "__main__":
                 elif year is None:
                     year = int(arg)
         if month is not None or year is not None:
-            print(jcal(month, year, language=lang))
+            logger.info(jcal(month, year, language=lang))
         else:
-            print(jdate(language=lang))
+            logger.info(jdate(language=lang))

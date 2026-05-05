@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+from loguru import logger
+
 
 def find_md_files():
     cwd = Path.cwd()
@@ -31,7 +33,7 @@ def update_summary():
         f.writelines(header)
         f.write("\n")
         f.writelines(new_entries)
-    print(f"Updated SUMMARY.md with {len(new_entries)} chapters.")
+    logger.info(f"Updated SUMMARY.md with {len(new_entries)} chapters.")
 
 
 if __name__ == "__main__":

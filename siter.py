@@ -8,6 +8,7 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -377,9 +378,9 @@ Examples:
     args = parser.parse_args()
     if args.list:
         sites = find_site_packages()
-        print(f"Found {len(sites)} site-packages:")
+        logger.info(f"Found {len(sites)} site-packages:")
         for i, sp in enumerate(sites, 1):
-            print(f"  {i}. {sp}")
+            logger.info(f"  {i}. {sp}")
         return 0
     if args.site_packages:
         site_packages = args.site_packages.resolve()
@@ -394,9 +395,9 @@ Examples:
         if len(sites) == 1:
             site_packages = sites[0]
         else:
-            print("Multiple site-packages found:")
+            logger.info("Multiple site-packages found:")
             for i, sp in enumerate(sites, 1):
-                print(f"  {i}. {sp}")
+                logger.info(f"  {i}. {sp}")
             try:
                 choice = int(input("\nSelect site-packages [1]: ") or "1")
                 site_packages = sites[choice - 1]

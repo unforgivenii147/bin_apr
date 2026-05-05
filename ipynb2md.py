@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import nbformat
+from loguru import logger
 
 if __name__ == "__main__":
     fn = Path(sys.argv[1])
@@ -17,4 +19,4 @@ if __name__ == "__main__":
                 out.write("```python\n")
                 out.write(cell.source + "\n")
                 out.write("```\n\n")
-    print(f"Exported → {fo}")
+    logger.info(f"Exported → {fo}")

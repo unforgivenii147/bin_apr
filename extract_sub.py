@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def run(cmd):
     result = subprocess.run(
@@ -37,7 +39,7 @@ def extract_subtitles(video_path, output_dir):
     output_dir.mkdir(parents=True, exist_ok=True)
     subs = probe_subtitles(video_path)
     if not subs:
-        print("No embedded subtitle streams found.")
+        logger.info("No embedded subtitle streams found.")
         return
     base = video_path.stem
     for s in subs:
@@ -61,9 +63,9 @@ def extract_subtitles(video_path, output_dir):
         ]
         try:
             run(cmd)
-            print(f"Extracted: {out_file}")
+            logger.info(f"Extracted: {out_file}")
         except RuntimeError as e:
-            print(f"Failed to extract subtitle stream {idx}: {e}")
+            logger.info(f"Failed to extract subtitle stream {idx}: {e}")
 
 
 def main():

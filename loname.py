@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def unique_path(path: Path | str) -> Path:
     path = Path(path)
@@ -33,7 +35,7 @@ def process_file(path):
     if new_path.exists():
         new_path = unique_path(new_path)
     path.rename(new_path)
-    print(f"{path.name} -> {new_path.name}")
+    logger.info(f"{path.name} -> {new_path.name}")
 
 
 if __name__ == "__main__":

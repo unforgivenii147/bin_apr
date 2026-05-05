@@ -4,6 +4,8 @@ import os
 import site
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_all_dist_info_dirs():
     dist_info_dirs = []
@@ -39,11 +41,11 @@ def get_pure():
     for ddir in dist_info_dirs:
         ispure = check_pure(ddir)
         if ispure:
-            print(ispure)
+            logger.info(ispure)
             purz.append(ispure)
     with Path("/sdcard/okpure").open("w", encoding="utf-8") as f:
         f.writelines(f"{k}\n" for k in purz)
-    print(len(purz))
+    logger.info(len(purz))
 
 
 if __name__ == "__main__":

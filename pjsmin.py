@@ -1,14 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import get_files, gext, mpf, gsz, fsz
+
+from dh import fsz, get_files, gext, gsz, mpf
+from loguru import logger
 from rjsmin import jsmin
 from termcolor import cprint
 
 
 def process_file(path) -> str:
     before = gsz(path)
-    print(f"{path.name}", end=" | ")
+    logger.info(f"{path.name}", end=" | ")
     after = before
     try:
         ext = gext(path)
@@ -18,19 +20,19 @@ def process_file(path) -> str:
             after = len(minified)
         diff_size = len(content) - after
         if not diff_size:
-            cprint(f"NO CHANGE", "green")
-            return
+            cprint("NO CHANGE", "green")
+            return None
         path.write_text(minified, encoding="utf-8")
         after = gsz(path)
         diff_size = before - after
         if diff_size > 0:
             reduction = ((before - after) / before) * 100
             cprint(f"- {fsz(diff_size)} | reduction : {reduction:.3f}%", "cyan")
-            return
+            return None
         if diff_size < 0:
             expantion = ((after - before) / after) * 100
             cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%", "yellow")
-            return
+            return None
     except Exception as e:
         return f"{path}: {e}"
 
@@ -41,7 +43,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    print(f"Found {len(files)} files. Starting multiprocessing...")
+    logger.info(f"Found {len(files)} files. Starting multiprocessing...")
     mpf(process_file, files)
 
 

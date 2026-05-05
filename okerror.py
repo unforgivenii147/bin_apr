@@ -3,6 +3,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
 
@@ -39,13 +41,13 @@ def main():
     for py_file in Path().glob("*.py"):
         if py_file.name == Path(__file__).name:
             continue
-        print(f"Checking {py_file}...")
+        logger.info(f"Checking {py_file}...")
         if black_check(py_file):
             dest = unique_destination(OK_DIR / py_file.name)
-            print(f"  ✓ OK → {dest}")
+            logger.info(f"  ✓ OK → {dest}")
         else:
             dest = unique_destination(ERROR_DIR / py_file.name)
-            print(f"  ✗ ERROR → {dest}")
+            logger.info(f"  ✗ ERROR → {dest}")
         shutil.move(str(py_file), str(dest))
 
 

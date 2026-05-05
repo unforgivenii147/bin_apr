@@ -4,6 +4,8 @@ import shutil
 import time
 from pathlib import Path
 
+from loguru import logger
+
 TIME_THRESHOLD = 8 * 60
 
 
@@ -43,27 +45,27 @@ def move_recent_files(start_dir="."):
                             )
                             counter += 1
                     shutil.move(filepath, dest_path)
-                    print(f"Moved: {filepath} -> {dest_path}")
+                    logger.info(f"Moved: {filepath} -> {dest_path}")
                     moved_count += 1
             except (
                 OSError,
                 PermissionError,
             ) as e:
-                print(f"Error processing {filepath}: {e}")
-    print(f"\nTotal files moved: {moved_count}")
+                logger.info(f"Error processing {filepath}: {e}")
+    logger.info(f"\nTotal files moved: {moved_count}")
 
 
 def main():
     try:
         start_dir = Path.cwd()
-        print(f"Starting from directory: {start_dir}")
-        print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
-        print("-" * 60)
+        logger.info(f"Starting from directory: {start_dir}")
+        logger.info(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
+        logger.info("-" * 60)
         move_recent_files(start_dir)
     except KeyboardInterrupt:
-        print("\nOperation cancelled by user")
+        logger.info("\nOperation cancelled by user")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.info(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

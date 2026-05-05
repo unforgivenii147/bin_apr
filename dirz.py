@@ -7,6 +7,7 @@ def gsz(fp):
         return sum(p.stat().st_size for p in fp.rglob("*") if p.is_file() and not p.is_symlink())
     if fp.is_file():
         return fp.stat().st_size
+    return None
 
 
 def fsz(k):
@@ -19,4 +20,4 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     for path in cwd.glob("*"):
         if path.is_dir():
-            print(f"{path.name}      {fsz(gsz(path))}")
+            print(f"  -  {path.name}      {fsz(gsz(path))}")

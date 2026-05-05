@@ -5,12 +5,14 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def install_js2py():
     try:
         return True
     except ImportError:
-        print("📦 Installing js2py library...")
+        logger.info("📦 Installing js2py library...")
         import subprocess
 
         try:
@@ -23,10 +25,10 @@ def install_js2py():
                     "js2py",
                 ]
             )
-            print("✅ js2py installed successfully")
+            logger.info("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
-            print("❌ Failed to install js2py")
+            logger.info("❌ Failed to install js2py")
             return False
 
 
@@ -133,7 +135,7 @@ def simple_js_to_python(js_code: str) -> str:
         r"def \1(\2):",
         python_code,
     )
-    python_code = re.sub(r"//", "#", python_code)
+    python_code = python_code.replace(r"//", "#")
     python_code = re.sub(r";$", "", python_code, flags=re.MULTILINE)
     python_code = re.sub(
         r"\s*{\s*$",
@@ -179,13 +181,13 @@ def convert_file(
     try:
         js_code = Path(input_file).read_text(encoding="utf-8")
     except Exception as e:
-        print(f"❌ Error reading file: {e}")
+        logger.info(f"❌ Error reading file: {e}")
         return False
-    print(f"📄 Converting: {input_file}")
-    print(f"🔧 Method: {method}")
+    logger.info(f"📄 Converting: {input_file}")
+    logger.info(f"🔧 Method: {method}")
     if method == "js2py":
         if not install_js2py():
-            print("⚠️  Falling back to simple conversion")
+            logger.info("⚠️  Falling back to simple conversion")
             method = "simple"
         else:
             output_file = input_file.with_suffix(".py")
@@ -197,16 +199,16 @@ def convert_file(
         result = simple_js_to_python(js_code)
         success = True
     if not success:
-        print(f"❌ Conversion failed: {result}")
+        logger.info(f"❌ Conversion failed: {result}")
         return False
     if output_file is None:
         output_file = input_file.with_suffix(".py")
     try:
         Path(output_file).write_text(result, encoding="utf-8")
-        print(f"✅ Converted successfully: {output_file}")
+        logger.info(f"✅ Converted successfully: {output_file}")
         return True
     except Exception as e:
-        print(f"❌ Error writing file: {e}")
+        logger.info(f"❌ Error writing file: {e}")
         return False
 
 
@@ -244,7 +246,7 @@ def main():
     )
     args = parser.parse_args()
     if not args.input.exists():
-        print(f"❌ Error: File not found: {args.input}")
+        logger.info(f"❌ Error: File not found: {args.input}")
         sys.exit(1)
     outputfile = str(args.input).replace(".js", ".py")
     success = convert_file(
@@ -321,7 +323,7 @@ def calculate_sum(numbers):
     total = 0
     for i in range(len(numbers)):
         total += numbers[i]
-    print("Total:", total)
+    logger.info("Total:", total)
     return total
 nums = [1][2][3][4][5]
 result = calculate_sum(nums)

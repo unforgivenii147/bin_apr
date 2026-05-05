@@ -3,8 +3,10 @@ import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
+
 import tree_sitter_python
 from dh import DOC_TH1, clean_blank_lines, fsz, gsz
+from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -21,7 +23,7 @@ def process_again(pt):
         for line in lines:
             striped = line.strip()
             if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and striped != DOC_TH1:
-                print(line)
+                logger.info(line)
                 continue
             new_lines.append(line)
         new_code = "\n".join(new_lines)
@@ -33,6 +35,7 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -101,7 +104,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
         parser.parse(cleaned)
         path.write_bytes(cleaned)
         process_again(path)
-        print(f"[OK] {path.name}")
+        logger.info(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

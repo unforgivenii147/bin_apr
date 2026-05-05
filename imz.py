@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import argparse
 import ast
 import contextlib
@@ -11,8 +12,10 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
+
 import xxhash
 from dh import PKG_MAPPING, STDLIB
+from loguru import logger
 from tqdm import tqdm
 
 CACHE_FILE = ".reqcache.json"
@@ -473,9 +476,9 @@ def main() -> None:
         try:
             if cache_path.exists():
                 cache_path.unlink()
-            print("Cache cleared.")
+            logger.info("Cache cleared.")
         except Exception as e:
-            print("Failed clearing cache:", e)
+            logger.info("Failed clearing cache:", e)
         return
     tasks = []
     cached_results = []
@@ -574,15 +577,15 @@ def main() -> None:
             for pkg in sorted(pkgs, key=lambda s: s.lower()):
                 f.write(pkg + "\n")
     except Exception as e:
-        print("Failed writing requirements file:", e)
+        logger.info("Failed writing requirements file:", e)
         sys.exit(2)
-    print("\nGenerated", out_file.name)
-    print("────────────────────────────")
+    logger.info("\nGenerated", out_file.name)
+    logger.info("────────────────────────────")
     if pkgs:
         for pkg in sorted(pkgs, key=lambda s: s.lower()):
-            print(pkg)
+            logger.info(pkg)
     else:
-        print("(empty)")
+        logger.info("(empty)")
 
 
 if __name__ == "__main__":

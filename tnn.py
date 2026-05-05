@@ -3,7 +3,8 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from dh import get_pyfiles
+
+from dh import get_nobinary
 
 TAB_PATTERN = re.compile(r"\t")
 SPACE_REPLACEMENT = " " * 4
@@ -53,9 +54,9 @@ def main():
         for f_path in file_paths:
             if not f_path.exists():
                 print(f"Warning: File '{f_path}' not found. Skipping.", file=sys.stderr)
-        file_paths = [f for f in file_paths if f.exists()]  # فقط فایل‌های موجود را نگه می‌دارد
+        file_paths = [f for f in file_paths if f.exists()]
     else:
-        file_paths = get_pyfiles(cwd)
+        file_paths = get_nobinary(cwd)
     file_paths.sort()
     if not file_paths:
         print("No Python files found to process.")

@@ -4,7 +4,9 @@ import json
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
+
 import xxhash
+from loguru import logger
 
 BACKUP_FILE = ".symlink_backup.json"
 MIN_FILE_SIZE = 8
@@ -18,12 +20,12 @@ def calculate_file_hash(filepath, chunk_size=8192):
                 hasher.update(chunk)
         return hasher.hexdigest()
     except OSError as e:
-        print(f"[ERROR] Reading {filepath}: {e}")
+        logger.info(f"[ERROR] Reading {filepath}: {e}")
         return None
 
 
 def find_duplicates(directory="."):
-    print(f"[INFO] Scanning directory: {Path(directory).resolve()}")
+    logger.info(f"[INFO] Scanning directory: {Path(directory).resolve()}")
     size_map = defaultdict(list)
     file_count = 0
     skipped_count = 0
@@ -68,7 +70,7 @@ def create_symlinks(duplicates, dry_run=False):
                 continue
             duplicate_abs = Path(duplicate).resolve()
             get_size = Path(duplicate).stat().st_size
-            print(f"  Symlinking: {duplicate} -> {keeper_abs}")
+            logger.info(f"  Symlinking: {duplicate} -> {keeper_abs}")
             if not dry_run:
                 backup_data["operations"].append(
                     {
@@ -84,24 +86,24 @@ def create_symlinks(duplicates, dry_run=False):
                     symlink_count += 1
                     total_saved += get_size
                 except OSError as e:
-                    print(f"  [ERROR] {e}")
+                    logger.info(f"  [ERROR] {e}")
             else:
-                print(f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}")
+                logger.info(f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}")
                 symlink_count += 1
                 total_saved += get_size
     if not dry_run and symlink_count > 0:
         with Path(BACKUP_FILE).open("w", encoding="utf-8") as f:
             json.dump(backup_data, f, indent=2)
-        print(f"\n[INFO] Backup data saved to {BACKUP_FILE}")
-    print(f"  Space saved: {total_saved / (1024 * 1024):.2f} MB")
+        logger.info(f"\n[INFO] Backup data saved to {BACKUP_FILE}")
+    logger.info(f"  Space saved: {total_saved / (1024 * 1024):.2f} MB")
     if dry_run:
-        print("[DRY RUN] No changes were made")
+        logger.info("[DRY RUN] No changes were made")
     return symlink_count
 
 
 def reverse_symlinks(backup_file=BACKUP_FILE):
     if not Path(backup_file).exists():
-        print(f"[ERROR] Backup file {backup_file} not found!")
+        logger.info(f"[ERROR] Backup file {backup_file} not found!")
         return False
     with Path(backup_file).open(encoding="utf-8") as f:
         backup_data = json.load(f)
@@ -120,10 +122,10 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
             shutil.copy2(target_path, symlink_path)
             restored_count += 1
         except OSError as e:
-            print(f"[ERROR] Restoring {symlink_path}: {e}")
+            logger.info(f"[ERROR] Restoring {symlink_path}: {e}")
     backup_renamed = f"{backup_file}.restored.{datetime.now(tz=UTC).strftime('%Y%m%d_%H%M%S')}"
     Path(backup_file).rename(backup_renamed)
-    print(f"[INFO] Backup file renamed to: {backup_renamed}")
+    logger.info(f"[INFO] Backup file renamed to: {backup_renamed}")
     return True
 
 
@@ -156,12 +158,12 @@ def main():
     else:
         duplicates = find_duplicates(args.directory)
         if not duplicates:
-            print("\n[INFO] No duplicates found!")
+            logger.info("\n[INFO] No duplicates found!")
             return
-        print(f"\n[INFO] Found {len(duplicates)} groups of duplicates")
-        print(f"[INFO] Total duplicate files: {sum(len(files) - 1 for files in duplicates.values())}")
+        logger.info(f"\n[INFO] Found {len(duplicates)} groups of duplicates")
+        logger.info(f"[INFO] Total duplicate files: {sum(len(files) - 1 for files in duplicates.values())}")
         if args.dry_run:
-            print("\n[INFO] [DRY RUN MODE - No changes will be made]")
+            logger.info("\n[INFO] [DRY RUN MODE - No changes will be made]")
         create_symlinks(duplicates, dry_run=args.dry_run)
 
 

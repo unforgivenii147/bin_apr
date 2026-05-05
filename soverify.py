@@ -3,9 +3,9 @@ import ctypes
 import subprocess
 import sys
 from pathlib import Path
-from dh import get_files, cprint
+
+from dh import cprint, get_files
 from loguru import logger
-from pbar import Pbar
 
 logger.remove()
 logger.add("/sdcard/soverify.log")
@@ -101,7 +101,7 @@ def main():
             if not process_file(f):
                 logger.debug(f"{f.name}: error")
         except:
-            print(f"{f.name}: error")
+            logger.info(f"{f.name}: error")
             logger.debug(f"{f.name}: error")
 
 

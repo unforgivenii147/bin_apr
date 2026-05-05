@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from multiprocessing import get_context
 from pathlib import Path
+
 from dh import is_binary
 from pbar import Pbar
-from dhh import fsz, get_files, gsz, mpf3, run_command
+
+from dhh import get_files, run_command
 
 cwd = Path.cwd()
 outfile = cwd / "all_strings.txt"

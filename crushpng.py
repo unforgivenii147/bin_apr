@@ -1,50 +1,72 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import subprocess
-from concurrent.futures import ThreadPoolExecutor, as_completed
+# import tempfile
+import sys
 from pathlib import Path
-from tqdm import tqdm
+from dh import gsz, get_files, fsz, mpf3, cprint, runcmd
 
 
-def find_png_files(directory):
-    png_files = []
-    for root, _, files in os.walk(directory):
-        png_files.extend(os.path.join(root, file) for file in files if file.lower().endswith(".png"))
-    return png_files
+START_DIR = Path.cwd()
+NUM_PROCESSES = 4
 
 
-def optimize_png(file_path):
+def process_file(path):
+    #    _,temp_path = tempfile.mkstemp(dir=Path(path).parent)
+    before = gsz(path)
     try:
-        subprocess.run(
-            ["pngcrush", "-ow", file_path],
-            check=True,
+        cmd = [
+            "pngcrush",
+            "-ow",
+            "--no-force",
+            "-new",
+            "-brute",
+            str(path),
+        ]
+        ret, txt, err = runcmd(
+            cmd,
+            show_output=False,
         )
-        return True, file_path
-    except subprocess.CalledProcessError as e:
-        return False, file_path, str(e)
+        if "skipping" in txt.lower():
+            #            if Path(temp_path).exists():
+            #                Path(temp_path).unlink()
+            print(f" Skipped: {path.name}")
+            return
+        else:
+            after = gsz(path)
+            dz = before - after
+            if not dz:
+                print(f"✅ : {path.name} : (no change)")
+                return
+            ratio = ((before - after) / before) * 100
+            print(f"✅ : {path.name}", end=" | ")
+            cprint(f"{ratio:.1f} %")
+            return
+    except FileNotFoundError:
+        print(
+            "❌ Error: 'pngquant' command not found. Please ensure the 'pngquant' binary is installed and in your system PATH."
+        )
+    except Exception as e:
+        print(f"❌ Error compressing {path}: {e}")
+
+    return
 
 
 def main():
-    current_dir = Path.cwd()
-    png_files = find_png_files(current_dir)
-    if not png_files:
-        print("No PNG files found in the current directory.")
-        return
-    print(f"Found {len(png_files)} PNG files to optimize.")
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {executor.submit(optimize_png, file): file for file in png_files}
-        results = []
-        with tqdm(
-            total=len(png_files),
-            desc="Optimizing PNGs",
-            unit="file",
-        ) as pbar:
-            for future in as_completed(futures):
-                results.append(future.result())
-                pbar.update(1)
-    success = sum(1 for r in results if r[0])
-    print(f"\nOptimization complete. Success: {success}/{len(png_files)} files.")
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = []
+
+    if args:
+        for arg in args:
+            p = Path(arg)
+            if p.is_file():
+                files.append(p)
+            elif p.is_dir():
+                files.extend(get_files(p, extensions=[".png", ".PNG"]))
+    else:
+        files = get_files(root_dir, extensions=[".png", ".PNG"])
+
+    _ = mpf3(process_file, files)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

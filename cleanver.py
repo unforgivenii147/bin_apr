@@ -2,6 +2,8 @@
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def create_unpinned_requirements(output_file="req.txt"):
     try:
@@ -18,11 +20,11 @@ def create_unpinned_requirements(output_file="req.txt"):
             pkg = line.split("==")[0].split(">=")[0].split("<=")[0].split("~=")[0].split(" @ ")[0]
             package_names.append(pkg.strip())
         Path(output_file).write_text("\n".join(package_names) + "\n", encoding="utf-8")
-        print(f"Successfully saved {len(package_names)} package names to {output_file}.")
+        logger.info(f"Successfully saved {len(package_names)} package names to {output_file}.")
     except subprocess.CalledProcessError as e:
-        print(f"Error running pip freeze: {e}")
+        logger.info(f"Error running pip freeze: {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.info(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

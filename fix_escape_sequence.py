@@ -3,15 +3,17 @@ import difflib
 import re
 from pathlib import Path
 
+from loguru import logger
+
 
 def show_diff(text1, text2):
     diff = difflib.unified_diff(text1.splitlines(keepends=True), text2.splitlines(keepends=True), lineterm="")
     changed_lines = [line for line in diff if line.startswith(("+", "-"))]
     if changed_lines:
-        print("--- Differences ---")
+        logger.info("--- Differences ---")
         for line in changed_lines:
-            print(line, end="")
-        print("-----------------")
+            logger.info(line, end="")
+        logger.info("-----------------")
 
 
 def fix_escape_sequences(directory: Path):
@@ -42,9 +44,9 @@ def fix_escape_sequences(directory: Path):
                     backup_path = path.with_name(path.name + ".bak")
                     backup_path.write_text(content, encoding="utf-8")
                     path.write_text(new_content, encoding="utf-8")
-                    print(f"Fixed {path.relative_to(directory)}")
+                    logger.info(f"Fixed {path.relative_to(directory)}")
             except Exception as e:
-                print(f"Error processing {path}: {e}")
+                logger.info(f"Error processing {path}: {e}")
 
 
 if __name__ == "__main__":

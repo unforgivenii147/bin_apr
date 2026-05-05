@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def split_file_by_delimiter(fname, delimiter) -> None:
     content = Path(fname).read_text(encoding="utf-8")
@@ -12,15 +14,15 @@ def split_file_by_delimiter(fname, delimiter) -> None:
 
 def main() -> None:
     if len(sys.argv) != 3:
-        print("Usage: python script.py <filename> <delimiter>")
+        logger.info("Usage: python script.py <filename> <delimiter>")
         sys.exit(1)
     fname = sys.argv[1]
     delimiter = sys.argv[2]
     if not delimiter:
-        print("Error: delimiter cannot be empty")
+        logger.info("Error: delimiter cannot be empty")
         sys.exit(1)
     split_file_by_delimiter(fname, delimiter)
-    print(f"{sys.argv[1]} updated.")
+    logger.info(f"{sys.argv[1]} updated.")
 
 
 if __name__ == "__main__":

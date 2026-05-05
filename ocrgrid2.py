@@ -2,9 +2,11 @@
 import itertools
 import time
 from pathlib import Path
+
 import cv2
 import pytesseract
 from dh import IMG_EXT
+from loguru import logger
 
 OUTPUT_DIR = Path("ocr_results")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -52,7 +54,7 @@ def main():
     image_files = [f for f in Path().iterdir() if f.suffix.lower() in IMG_EXT]
     all_results = []
     for img_path in image_files:
-        print(f"Processing: {img_path}")
+        logger.info(f"Processing: {img_path}")
         processed = prepare_image_for_ocr(img_path)
         for oem, psm in itertools.product(OEM_OPTIONS, PSM_OPTIONS):
             text, config, duration, error = run_tesseract_on_image(processed, oem, psm)
@@ -73,7 +75,7 @@ def main():
         OUTPUT_DIR / "ocr_summary.csv",
         index=False,
     )
-    print(
+    logger.info(
         "\nDone. All results saved in:",
         OUTPUT_DIR,
     )

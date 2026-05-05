@@ -1,10 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
 from dh import clean_blank_lines, mpf
+from loguru import logger
 from tree_sitter import Language, Parser
 
 LANGUAGES = {
@@ -28,6 +30,7 @@ def get_parser(lang):
 
 
 def _collect_python_docstrings(node, deletions):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -104,9 +107,9 @@ def process_file(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        print(f"[OK] {path}")
+        logger.info(f"[OK] {path}")
     except Exception as e:
-        print(f"[FAIL] {path} -> {e}")
+        logger.info(f"[FAIL] {path} -> {e}")
 
 
 def collect_supported_files(root: Path) -> list[Path]:

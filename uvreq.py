@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+from loguru import logger
+
 
 def process_file(fp):
     path = Path(fp)
@@ -9,7 +11,7 @@ def process_file(fp):
     for line in lines:
         if 'name = "' in line:
             pkg_name = line.split('name = "')[1].split('"')[0]
-            print(pkg_name)
+            logger.info(pkg_name)
             with Path("requirements.txt").open("a", encoding="utf-8") as f:
                 f.write(pkg_name + "\n")
 

@@ -4,10 +4,12 @@ import os
 import random
 import string
 from pathlib import Path
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from fastwalk import walk_files
+from loguru import logger
 
 AES_BLOCK_SIZE = 128
 
@@ -57,7 +59,7 @@ def main():
     args = parser.parse_args()
     if args.encrypt:
         key = random_key()
-        print(f"Encryption key: {key}")
+        logger.info(f"Encryption key: {key}")
         action = encrypt_file
         with Path("key").open("a", encoding="utf-8") as f:
             f.write("\n")

@@ -2,9 +2,12 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
 from joblib import Parallel, delayed
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32 * 1024 * 1024
@@ -53,7 +56,7 @@ def main():
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)
-    print(f"{fsz(diff_size)}")
+    logger.info(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

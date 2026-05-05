@@ -3,6 +3,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from loguru import logger
+
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 
 
@@ -72,7 +74,7 @@ def find_svg_files(cwd):
 def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
     svg_files = find_svg_files(cwd)
     if not svg_files:
-        print("No SVG files found.")
+        logger.info("No SVG files found.")
         return
     total_before = 0
     total_after = 0
@@ -80,18 +82,18 @@ def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
     for in_file in svg_files:
         success, f, before, after, size_change = clean_single_svg(in_file, svgcleaner_path)
         if success:
-            print(f"Cleaned: {f}")
-            print(f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes")
+            logger.info(f"Cleaned: {f}")
+            logger.info(f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes")
             total_before += before
             total_after += after
             total_saved += size_change
         else:
-            print(f"Failed to clean {f}: {size_change}")
-    print("\n--- Summary ---")
-    print(f"Total files processed: {len(svg_files)}")
-    print(f"Total size before: {total_before} bytes")
-    print(f"Total size after: {total_after} bytes")
-    print(f"Total size saved: {total_saved} bytes")
+            logger.info(f"Failed to clean {f}: {size_change}")
+    logger.info("\n--- Summary ---")
+    logger.info(f"Total files processed: {len(svg_files)}")
+    logger.info(f"Total size before: {total_before} bytes")
+    logger.info(f"Total size after: {total_after} bytes")
+    logger.info(f"Total size saved: {total_saved} bytes")
 
 
 if __name__ == "__main__":

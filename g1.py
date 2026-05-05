@@ -3,8 +3,15 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
 import requests
 from tqdm import tqdm
+
+
+def normalize_url(txt):
+    if not txt.startswith("http"):
+        return "https://github.com/" + txt
+    return txt
 
 
 def get_repo_size(repo_url):
@@ -73,7 +80,7 @@ def main():
         print("Example: script.py git@github.com:user/repo.git")
         print("Example: script.py https://github.com/user/repo")
         return
-    repo = sys.argv[1].strip()
+    repo = normalize_url(sys.argv[1].strip())
     print(f"[INFO] Checking repository size for: {repo}")
     size_mb = get_repo_size(repo)
     if size_mb > 1:

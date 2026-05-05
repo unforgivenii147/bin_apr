@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_nobinary
+from loguru import logger
 
 STRTOFIND = [
     "dist-info",
@@ -42,7 +44,7 @@ def main() -> None:
     pool.join()
     esz = gsz(root)
     diffsize = isz - esz
-    print(f"space freed : {fsz(diffsize)}")
+    logger.info(f"space freed : {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@
 import os
 from pathlib import Path
 
+from loguru import logger
+
 search_string = 'b64 = """'
 current_dir = Path.cwd()
 for root, _dirs, files in os.walk(current_dir):
@@ -11,7 +13,7 @@ for root, _dirs, files in os.walk(current_dir):
             with Path(file_path).open(encoding="utf-8") as f:
                 content = f.read()
                 if search_string in content:
-                    print(f"Found in file: {file_path}")
+                    logger.info(f"Found in file: {file_path}")
         except (
             UnicodeDecodeError,
             PermissionError,

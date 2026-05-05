@@ -2,6 +2,8 @@
 import concurrent.futures
 import os
 import subprocess
+
+from loguru import logger
 from tqdm import tqdm
 
 
@@ -41,7 +43,7 @@ def main():
     exclude_dirs = {".git"}
     exclude_extensions = (".min.js", ".min.css")
     files_to_format = []
-    print("Scanning directory for files...")
+    logger.info("Scanning directory for files...")
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         files_to_format.extend(
@@ -50,7 +52,7 @@ def main():
             if file.endswith(target_extensions) and not file.endswith(exclude_extensions)
         )
     if not files_to_format:
-        print("No matching files found.")
+        logger.info("No matching files found.")
         return
     errors = []
     with (
@@ -67,14 +69,14 @@ def main():
             if err:
                 errors.append(err)
             pbar.update(1)
-    print("\n" + "=" * 30)
-    print(f"Finished processing {len(files_to_format)} files.")
+    logger.info("\n" + "=" * 30)
+    logger.info(f"Finished processing {len(files_to_format)} files.")
     if errors:
-        print(f"Encountered {len(errors)} errors:")
+        logger.info(f"Encountered {len(errors)} errors:")
         for error in errors:
-            print(f"  - {error}")
+            logger.info(f"  - {error}")
     else:
-        print("All files formatted successfully!")
+        logger.info("All files formatted successfully!")
 
 
 if __name__ == "__main__":

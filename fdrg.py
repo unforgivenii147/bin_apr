@@ -7,7 +7,9 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from queue import Queue
+
 from fastwalk import walk_files
+from loguru import logger
 
 pause_event = threading.Event()
 pause_event.set()
@@ -35,15 +37,15 @@ def setup_keyboard_listener():
         def on_key_press(event):
             if event.name in {"space", "p"} and pause_event.is_set():
                 pause_event.clear()
-                print("\n[PAUSED] Press 'c' to continue...")
+                logger.info("\n[PAUSED] Press 'c' to continue...")
             elif event.name == "c" and not pause_event.is_set():
                 pause_event.set()
-                print("\n[RESUMED] Searching...")
+                logger.info("\n[RESUMED] Searching...")
 
         keyboard.on_press(on_key_press)
         return True
     except ImportError:
-        print("Warning: 'keyboard' not installed. Pause disabled.")
+        logger.info("Warning: 'keyboard' not installed. Pause disabled.")
         return False
 
 
@@ -60,9 +62,9 @@ def should_skip_file(path: Path):
 
 def report_result(file_path, line_num=None):
     if line_num:
-        print(f"[FOUND] {file_path} (Line: {line_num})")
+        logger.info(f"[FOUND] {file_path} (Line: {line_num})")
     else:
-        print(f"[FOUND] {file_path}")
+        logger.info(f"[FOUND] {file_path}")
     results_queue.put((file_path, line_num))
 
 
@@ -177,11 +179,11 @@ def main():
     excluded_patterns = {e for e in args.exclude if any(ch in e for ch in "*?[]")}
     setup_keyboard_listener()
     root = Path(args.directory).resolve()
-    print(f"[INFO] Root: {root}")
-    print(f"[INFO] Mode: {'content' if args.content else 'filename'}")
-    print(f"[INFO] Excluded dirs: {sorted(excluded_dirs)}")
-    print(f"[INFO] Excluded patterns: {sorted(excluded_patterns)}")
-    print("=" * 80)
+    logger.info(f"[INFO] Root: {root}")
+    logger.info(f"[INFO] Mode: {'content' if args.content else 'filename'}")
+    logger.info(f"[INFO] Excluded dirs: {sorted(excluded_dirs)}")
+    logger.info(f"[INFO] Excluded patterns: {sorted(excluded_patterns)}")
+    logger.info("=" * 80)
     files = []
     for pth in walk_files(root):
         path = Path(pth)
@@ -196,7 +198,7 @@ def main():
         ):
             continue
         files.append(path)
-    print(f"[INFO] Files queued: {len(files)}\n")
+    logger.info(f"[INFO] Files queued: {len(files)}\n")
     with ThreadPoolExecutor(max_workers=8) as ex:
         futures = [
             ex.submit(
@@ -209,7 +211,7 @@ def main():
         ]
         for _f in as_completed(futures):
             pass
-    print(f"[INFO] Total results: {results_queue.qsize()}")
+    logger.info(f"[INFO] Total results: {results_queue.qsize()}")
 
 
 if __name__ == "__main__":

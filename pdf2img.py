@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
+
+from loguru import logger
 from pdf2image import convert_from_path
 
 POPPLER_PATH = None
@@ -8,7 +10,7 @@ POPPLER_PATH = None
 
 def convert_pdf_to_jpg(pdf_path: Path, output_folder: Path):
     try:
-        print(f"Converting '{pdf_path.name}'...")
+        logger.info(f"Converting '{pdf_path.name}'...")
         pdf_output_dir = output_folder / pdf_path.stem
         pdf_output_dir.mkdir(parents=True, exist_ok=True)
         images = convert_from_path(
@@ -28,43 +30,45 @@ def convert_pdf_to_jpg(pdf_path: Path, output_folder: Path):
                 shutil.move(source_jpg_path, final_jpg_path)
                 converted_files.append(final_jpg_path)
             else:
-                print(f"Warning: Expected file {source_jpg_path} not found after conversion.")
-        print(f"Successfully converted '{pdf_path.name}' to {len(converted_files)} JPG files in '{pdf_output_dir}'.")
+                logger.info(f"Warning: Expected file {source_jpg_path} not found after conversion.")
+        logger.info(
+            f"Successfully converted '{pdf_path.name}' to {len(converted_files)} JPG files in '{pdf_output_dir}'."
+        )
         return True
     except Exception as e:
-        print(f"Error converting '{pdf_path.name}': {e}")
+        logger.info(f"Error converting '{pdf_path.name}': {e}")
         if "pdf_output_dir" in locals() and pdf_output_dir.exists():
             try:
                 shutil.rmtree(pdf_output_dir)
             except Exception as cleanup_e:
-                print(f"Error during cleanup of '{pdf_output_dir}': {cleanup_e}")
+                logger.info(f"Error during cleanup of '{pdf_output_dir}': {cleanup_e}")
         return False
 
 
 def process_directory(start_dir: Path, output_base_dir: Path):
-    print(f"Starting PDF to JPG conversion in directory: {start_dir}")
-    print(f"Output will be saved in: {output_base_dir}")
+    logger.info(f"Starting PDF to JPG conversion in directory: {start_dir}")
+    logger.info(f"Output will be saved in: {output_base_dir}")
     converted_count = 0
     failed_count = 0
     for item in start_dir.rglob("*"):
         if item.is_file() and item.suffix.lower() == ".pdf":
             if output_base_dir in item.parents:
-                print(f"Skipping PDF '{item.name}' as it's within the output directory.")
+                logger.info(f"Skipping PDF '{item.name}' as it's within the output directory.")
                 continue
             if convert_pdf_to_jpg(item, output_base_dir):
                 try:
                     item.unlink()
-                    print(f"Removed original PDF: '{item.name}'")
+                    logger.info(f"Removed original PDF: '{item.name}'")
                     converted_count += 1
                 except OSError as e:
-                    print(f"Error removing original PDF '{item.name}': {e}")
+                    logger.info(f"Error removing original PDF '{item.name}': {e}")
                     failed_count += 1
             else:
                 failed_count += 1
-    print("\n--- Conversion Summary ---")
-    print(f"Successfully converted and removed: {converted_count} PDF files.")
-    print(f"Failed to convert: {failed_count} PDF files.")
-    print("------------------------")
+    logger.info("\n--- Conversion Summary ---")
+    logger.info(f"Successfully converted and removed: {converted_count} PDF files.")
+    logger.info(f"Failed to convert: {failed_count} PDF files.")
+    logger.info("------------------------")
 
 
 if __name__ == "__main__":
@@ -72,5 +76,5 @@ if __name__ == "__main__":
     output_directory = current_directory / "output_jpgs"
     output_directory.mkdir(exist_ok=True)
     process_directory(current_directory, output_directory)
-    print("\nScript finished.")
-    print(f"Converted JPG files are located in: {output_directory}")
+    logger.info("\nScript finished.")
+    logger.info(f"Converted JPG files are located in: {output_directory}")

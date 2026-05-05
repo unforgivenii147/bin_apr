@@ -6,14 +6,16 @@ import sys
 from multiprocessing import cpu_count
 from pathlib import Path
 
+from loguru import logger
+
 try:
     from tree_sitter_languages import get_language, get_parser
 except ImportError:
-    print(
+    logger.info(
         "Error: tree-sitter dependencies not installed.",
         file=sys.stderr,
     )
-    print(
+    logger.info(
         "Install with: pip install tree-sitter tree-sitter-languages",
         file=sys.stderr,
     )

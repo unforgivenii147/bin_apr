@@ -4,6 +4,8 @@ import shutil
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
+from loguru import logger
+
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
 DIR_NAMES = [
     "__pycache__",
@@ -20,12 +22,12 @@ def remove_path(path) -> None:
     try:
         if p.is_file():
             p.unlink()
-            print(f"Removed file: {p.name}")
+            logger.info(f"Removed file: {p.name}")
         elif p.is_dir():
             shutil.rmtree(p)
-            print(f"Removed directory: {os.path.relpath(p)}")
+            logger.info(f"Removed directory: {os.path.relpath(p)}")
     except Exception as e:
-        print(f"Failed to remove {p}: {e}")
+        logger.info(f"Failed to remove {p}: {e}")
 
 
 def scan_and_remove(base_path):
@@ -36,7 +38,7 @@ def scan_and_remove(base_path):
         dirs_to_remove = [d for d in dirs if d in DIR_NAMES]
         for d in dirs_to_remove:
             if str(Path(d).parent) == "site-packages":
-                print("not allowed")
+                logger.info("not allowed")
                 continue
             yield os.path.join(root, d)
             dirs.remove(d)

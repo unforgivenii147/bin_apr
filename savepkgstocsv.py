@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 OUTPUT_DIR = Path("/sdcard/backups")
 TSV_FILE = OUTPUT_DIR / "installed.tsv"
 CSV_FILE = OUTPUT_DIR / "installed.csv"
@@ -62,7 +64,7 @@ def query_packages() -> list[list[str]]:
         cols = line.split("\t")
         if len(cols) != len(FIELDS):
             continue
-        print(cols)
+        logger.info(cols)
         rows.append(cols)
     rows.sort(key=lambda r: int(r[6] or 0), reverse=True)
     return rows
@@ -86,9 +88,9 @@ def main() -> None:
     rows = query_packages()
     save_tsv(rows)
     save_csv(rows)
-    print(f"Saved {len(rows)} packages")
-    print(f"TSV: {TSV_FILE}")
-    print(f"CSV: {CSV_FILE}")
+    logger.info(f"Saved {len(rows)} packages")
+    logger.info(f"TSV: {TSV_FILE}")
+    logger.info(f"CSV: {CSV_FILE}")
 
 
 if __name__ == "__main__":

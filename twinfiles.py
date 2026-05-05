@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from fastwalk import walk_files
+from loguru import logger
 
 
 def main() -> None:
@@ -19,10 +21,10 @@ def main() -> None:
             twin = path.with_suffix(ext2)
             if twin.exists():
                 if todel == ext1:
-                    print(f"[✖] {path}  (keeping {twin})")
+                    logger.info(f"[✖] {path}  (keeping {twin})")
                     path.unlink()
                 else:
-                    print(f"[✖] {twin}  (keeping {path})")
+                    logger.info(f"[✖] {twin}  (keeping {path})")
                     twin.unlink()
 
 

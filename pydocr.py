@@ -8,10 +8,13 @@ from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 from textwrap import dedent
+
 from dh import get_files, unique_path
 from loguru import logger
 
-BASE_DIR = Path("doc")
+cwd = Path.cwd()
+cwdname = cwd.name
+BASE_DIR = Path(f"{cwdname}_doc")
 
 
 def format_markdown(module_name: str, module_doc: str, functions, classes) -> str:
@@ -136,11 +139,12 @@ def main():
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
     logger.info(f"processing {len(files)} files")
-    with get_context("spawn").Pool(8) as pool:
+
+    with get_context("spawn").Pool(4) as pool:
         pending = deque()
         for f in files:
             pending.append(pool.apply_async(process_file_task, (f,)))
-            if len(pending) > 16:
+            if len(pending) > 8:
                 pending.popleft().get()
         while pending:
             pending.popleft().get()

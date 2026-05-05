@@ -5,8 +5,10 @@ import shutil
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import ssdeep
 import xxhash
+from loguru import logger
 from tqdm import tqdm
 
 EXCLUDE_DIRS = {
@@ -42,7 +44,7 @@ class FileSimilarityDetector:
 
     def process_files(self, files):
         files = list(files)
-        print(f"Processing {len(files)} files...")
+        logger.info(f"Processing {len(files)} files...")
         with ThreadPoolExecutor() as pool:
             futures = [pool.submit(self.hash_file, f) for f in files]
             for fut in tqdm(
@@ -108,7 +110,7 @@ class FileSimilarityDetector:
                     try:
                         Path(victim).unlink()
                     except Exception as e:
-                        print(f"Failed to delete {victim}: {e}")
+                        logger.info(f"Failed to delete {victim}: {e}")
             else:
                 grp_dir = out / f"similarity_group_{idx}"
                 grp_dir.mkdir(exist_ok=True)
@@ -119,18 +121,18 @@ class FileSimilarityDetector:
                             grp_dir / Path(p).name,
                         )
                     except Exception as e:
-                        print(f"Failed to copy {p}: {e}")
+                        logger.info(f"Failed to copy {p}: {e}")
 
     def print_duplicates(self):
         if not self.duplicates:
             return
-        print("\n" + "=" * 40)
-        print("DUPLICATES (100% identical)")
+        logger.info("\n" + "=" * 40)
+        logger.info("DUPLICATES (100% identical)")
         for h, paths in self.duplicates.items():
-            print(f"\nHash: {h}")
+            logger.info(f"\nHash: {h}")
             for p in paths:
-                print(f"  - {p}")
-        print("=" * 40)
+                logger.info(f"  - {p}")
+        logger.info("=" * 40)
 
 
 def main():
@@ -156,7 +158,7 @@ def main():
     detector = FileSimilarityDetector()
     files = list(detector.scan_files())
     if not files:
-        print("No files found.")
+        logger.info("No files found.")
         return
     detector.process_files(files)
     groups = detector.find_similarity_groups(args.threshold)
@@ -166,9 +168,9 @@ def main():
             move=args.move,
             output_dir=args.output,
         )
-        print(f"Processed {len(groups)} similarity groups.")
+        logger.info(f"Processed {len(groups)} similarity groups.")
     else:
-        print("No similar (non-identical) files found.")
+        logger.info("No similar (non-identical) files found.")
     detector.print_duplicates()
 
 

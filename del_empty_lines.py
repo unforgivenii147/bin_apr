@@ -2,7 +2,9 @@
 import os
 import sys
 from pathlib import Path
+
 from binaryornot import is_binary
+from loguru import logger
 from termcolor import cprint
 
 
@@ -26,12 +28,12 @@ def process_file(path):
     final_len = len(newlines)
     removed = orig_len - final_len
     if removed:
-        print(f"{path.name}", end=" | ")
+        logger.info(f"{path.name}", end=" | ")
         cprint(f"{removed}", "blue")
         newcontent = "\n".join(newlines)
         path.write_text(newcontent, encoding="utf-8")
     else:
-        print(f"{path.name}", end=" | ")
+        logger.info(f"{path.name}", end=" | ")
         cprint("NO CHANGE", "grey")
 
 

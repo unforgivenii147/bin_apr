@@ -6,6 +6,8 @@ import shutil
 import sysconfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+from loguru import logger
 from wheel.wheelfile import WheelFile
 
 
@@ -95,7 +97,7 @@ def repack(
     pkg_lower = pkg.lower()
     installed = list_installed_packages(site)
     if pkg_lower not in installed:
-        print(f"Package '{pkg}' not found.")
+        logger.info(f"Package '{pkg}' not found.")
         return
     real_pkg, version = installed[pkg_lower]
     target_dir = out_repack / real_pkg
@@ -112,7 +114,7 @@ def repack(
         target_dir,
         out_whl,
     )
-    print(f"Repacked: {real_pkg} → {wheel}")
+    logger.info(f"Repacked: {real_pkg} → {wheel}")
 
 
 def main() -> None:
@@ -136,11 +138,11 @@ def main() -> None:
     out_whl.mkdir(parents=True, exist_ok=True)
     if args.all:
         pkgs = list_installed_packages(site)
-        pkg_list = [real for _, (real, _) in pkgs.items()]
+        pkg_list = [real for (real, _) in pkgs.values()]
     else:
         pkg_list = args.packages
     if not pkg_list:
-        print("No packages specified.")
+        logger.info("No packages specified.")
         return
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = {
@@ -158,7 +160,7 @@ def main() -> None:
             try:
                 future.result()
             except Exception as e:
-                print(f"Error repacking {pkg}: {e}")
+                logger.info(f"Error repacking {pkg}: {e}")
 
 
 if __name__ == "__main__":

@@ -3,9 +3,9 @@ import shutil
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from dh import get_files, unique_path
 from loguru import logger
-from pbar import Pbar
 
 EXT = [
     ".js",
@@ -48,7 +48,6 @@ def move_to_error_folder(path: Path) -> None:
     dest = unique_path(error_dir / path.name)
     shutil.move(str(path), str(dest))
     del error_dir, dest
-    return
 
 
 def format_file(path: Path) -> tuple[Path, bool, str | None]:

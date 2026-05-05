@@ -2,8 +2,9 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from file_hash import hash_file
-from termcolor import cprint
+
+from xxhash import xxh64_hexdigest
+from dh import cprint
 
 
 def should_skip(path):
@@ -16,7 +17,10 @@ def should_skip(path):
 
 
 def get_hash_file(path):
-    return hash_file(path), path
+    if not path.exists() or not path.stat().st_size:
+        return "", path
+    with path.open("rb") as f:
+        return xxh64_hexdigest(f.read()), path
 
 
 def find_duplicates():
@@ -52,7 +56,6 @@ def find_duplicates():
             for file_path in paths:
                 relative_path = file_path.relative_to(cwd)
                 cprint(f" - {relative_path}", "cyan")
-            print()
 
 
 if __name__ == "__main__":

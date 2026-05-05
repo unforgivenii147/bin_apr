@@ -6,6 +6,8 @@ import zipfile
 from email.parser import Parser
 from pathlib import Path
 
+from loguru import logger
+
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
 
 
@@ -128,8 +130,8 @@ def main() -> None:
     shutil.copytree(root, out_dir, dirs_exist_ok=True)
     (out_dir / "setup.py").write_text(generate_setup_py(meta, extensions, entry_points))
     (out_dir / "pyproject.toml").write_text(generate_pyproject_toml())
-    print(f"✔ setup.py generated for {meta['name']}")
-    print("✔ binary extensions detected" if extensions else "✔ pure Python package")
+    logger.info(f"✔ setup.py generated for {meta['name']}")
+    logger.info("✔ binary extensions detected" if extensions else "✔ pure Python package")
 
 
 if __name__ == "__main__":

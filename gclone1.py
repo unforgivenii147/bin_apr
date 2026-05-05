@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
+
 import requests
 from dh import runcmd
 from loguru import logger
-from termcolor import cprint
 
 GITHUB_API_URL = "https://api.github.com/repos"
 remained = []
@@ -17,6 +16,7 @@ GITHUB_TOKEN = None
 def parse_repo_url(url_or_path):
     """
     Parses a GitHub repo URL or 'user/repo' path into (user, repo).
+
     Returns:
         tuple: (username, repository_name) or (None, None) if invalid.
     """
@@ -24,23 +24,22 @@ def parse_repo_url(url_or_path):
         parts = url_or_path.strip().split("/")
         if len(parts) == 2 and parts[0] and parts[1]:
             return parts[0], parts[1]
-        else:
-            return None, None
-    else:
-        try:
-            parsed = urlparse(url_or_path.strip())
-            if parsed.netloc.lower() in ("github.com", "www.github.com"):
-                path_parts = [p for p in parsed.path.split("/") if p]
-                if len(path_parts) == 2:
-                    return path_parts[0], path_parts[1]
-        except Exception:
-            pass
+        return None, None
+    try:
+        parsed = urlparse(url_or_path.strip())
+        if parsed.netloc.lower() in {"github.com", "www.github.com"}:
+            path_parts = [p for p in parsed.path.split("/") if p]
+            if len(path_parts) == 2:
+                return path_parts[0], path_parts[1]
+    except Exception:
+        pass
     return None, None
 
 
 def get_repo_size_mb(user, repo):
     """
     Fetches repository size in MB using the GitHub API.
+
     Returns:
         float: Size in MB, or None if an error occurs.
     """
@@ -56,9 +55,8 @@ def get_repo_size_mb(user, repo):
         if size_bytes is not None:
             size_mb = size_bytes / 1024.0
             return round(size_mb, 2)
-        else:
-            logger.info(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
-            return None
+        logger.info(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
+        return None
     except requests.exceptions.HTTPError as e:
         logger.info(f"❌ API Error: {e.response.status_code} for {user}/{repo}")
         if e.response.status_code == 404:
@@ -79,16 +77,17 @@ def get_repo_size_mb(user, repo):
 def clone_repo_shallow(user, repo):
     """
     Clones the repository shallowly (depth 1) into the current directory.
+
     Returns:
         bool: True if cloning was successful, False otherwise.
     """
     repo_name = f"{user}/{repo}"
     repo_url = f"https://github.com/{repo_name}.git"
-    clone_path = os.path.join(os.getcwd(), repo)
-    if os.path.exists(clone_path):
+    clone_path = os.path.join(Path.cwd(), repo)
+    if Path(clone_path).exists():
         return False
     logger.info(f"\n🚀 Cloning {repo_name} (shallow clone)...")
-    command = ["git", "clone", "--depth", "1", repo_url, clone_path]
+    command = ["git", "clone", repo_url, clone_path]
     try:
         process = runcmd(
             command,
@@ -113,16 +112,15 @@ def process_repo(url):
         sys.exit(1)
     logger.info(f"🔍 Analyzing repository: {user}/{repo}")
     repo_size = get_repo_size_mb(user, repo)
-    if repo_size is not None and repo_size <= 2.0:
+
+    if repo_size is not None and repo_size <= 100:
         logger.info(f"ℹ️ size: {repo_size} MB")
         if clone_repo_shallow(user, repo):
             logger.info("\n🎉 Done!")
             return
-        else:
-            logger.info("\nScript finished with errors during cloning.")
-            return
-    else:
-        remained.append(url)
+        logger.info("\nScript finished with errors during cloning.")
+        return
+    remained.append(url)
 
 
 """
@@ -153,5 +151,4 @@ if __name__ == "__main__":
         logger.info(f"{i}/{ll}")
         i += 1
         process_repo(line)
-    with open("remained", "w") as fo:
-        fo.write("\n".join(remained))
+    Path("remained").write_text("\n".join(remained), encoding="utf-8")

@@ -7,6 +7,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from loguru import logger
+
 OUTPUT_DIR = Path("output")
 DB_PATH = Path("/sdcard/ext.db")
 ALLOWED_PYTHON_EXTENSIONS = (
@@ -203,7 +205,7 @@ def extract_entities_from_content(content: str, path: Path) -> list[dict[str, An
     except SyntaxError:
         return []
     except Exception as e:
-        print(f"Error parsing AST for {path}: {e}")
+        logger.info(f"Error parsing AST for {path}: {e}")
         return []
 
 
@@ -228,7 +230,7 @@ def process_single_file(path: Path) -> list[dict[str, Any]]:
             return extract_entities_from_content(content, path)
         return []
     except Exception as e:
-        print(f"Error reading file {path}: {e}")
+        logger.info(f"Error reading file {path}: {e}")
         return []
 
 
@@ -241,7 +243,7 @@ def main():
         help="Save extracted entities to the database",
     )
     args = parser.parse_args()
-    print(f"Starting analysis in {Path.cwd()}...")
+    logger.info(f"Starting analysis in {Path.cwd()}...")
     create_database()
     files_to_process = []
     current_dir = Path()
@@ -253,19 +255,19 @@ def main():
             if path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path):
                 files_to_process.append(path)
     if not files_to_process:
-        print("No Python files found to process.")
+        logger.info("No Python files found to process.")
         return
     all_entities = []
     for path in files_to_process:
         entities = process_single_file(path)
         all_entities.extend(entities)
-    print(f"Processing complete. Extracted {len(all_entities)} entities.")
+    logger.info(f"Processing complete. Extracted {len(all_entities)} entities.")
     if args.database:
-        print(f"Saving entities to database at {DB_PATH}...")
+        logger.info(f"Saving entities to database at {DB_PATH}...")
         for entity in all_entities:
             save_entity_to_db(entity)
-        print("All entities saved to database.")
-    print("All tasks finished successfully!")
+        logger.info("All entities saved to database.")
+    logger.info("All tasks finished successfully!")
 
 
 if __name__ == "__main__":

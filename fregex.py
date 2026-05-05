@@ -3,6 +3,8 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+from loguru import logger
 from tqdm import tqdm
 
 
@@ -52,11 +54,11 @@ def find_regex_in_dir(start_dir, output_dir, max_workers=4):
         for future in as_completed(futures):
             _, regex_count = future.result()
             if regex_count:
-                print(f"Processed file '{futures[future]}' with {regex_count} regex patterns.")
+                logger.info(f"Processed file '{futures[future]}' with {regex_count} regex patterns.")
             processed_files += 1
             progress_bar.update(1)
     progress_bar.close()
-    print(f"Scanning complete. Processed {total_files} files.")
+    logger.info(f"Scanning complete. Processed {total_files} files.")
 
 
 if __name__ == "__main__":
@@ -66,4 +68,4 @@ if __name__ == "__main__":
         output_directory,
         max_workers=4,
     )
-    print(f"Regex extraction complete. Results saved in {output_directory}")
+    logger.info(f"Regex extraction complete. Results saved in {output_directory}")

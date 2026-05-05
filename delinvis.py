@@ -4,6 +4,8 @@ import string
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def find_unprintable_positions(text):
     allowed = set(string.printable) | {
@@ -40,22 +42,22 @@ def clean_file(path: str) -> None:
     data = Path(path).read_text(encoding="utf-8", errors="ignore")
     positions = find_unprintable_positions(data)
     if positions:
-        print(f"Found {len(positions)} unprintable character(s):")
+        logger.info(f"Found {len(positions)} unprintable character(s):")
         for line, col, _ch, code in positions:
-            print(f"  Line {line}, Col {col}: char code {code} (0x{code:02X})")
+            logger.info(f"  Line {line}, Col {col}: char code {code} (0x{code:02X})")
     else:
-        print("No unprintable characters found.")
+        logger.info("No unprintable characters found.")
     cleaned = clean_text(data)
     Path(path).write_text(cleaned, encoding="utf-8", errors="ignore")
 
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {Path(sys.argv[0]).name} <filename>")
+        logger.info(f"Usage: {Path(sys.argv[0]).name} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     if not Path(fname).is_file():
-        print(f"Error: '{fname}' is not a file")
+        logger.info(f"Error: '{fname}' is not a file")
         sys.exit(1)
     clean_file(fname)
 

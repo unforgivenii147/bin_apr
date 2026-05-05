@@ -5,7 +5,9 @@ import mimetypes
 import re
 import sys
 from pathlib import Path
+
 from dh import MIME_TO_EXT
+from loguru import logger
 
 DATA_URL_RE = re.compile(
     r"url\(\s*(['\"]?)data:(?P<mime>application/(?:vnd\.ms-fontobject|font-[^;]+|font/[^;]+))(?:;charset=[^;]+)?;base64,(?P<data>[A-Za-z0-9+/=\s]+)\1\s*\)",
@@ -46,19 +48,19 @@ def extract_css_base64(css_path: Path, out_dir: Path):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: extract_css_base64.py file1.css [file2.css ...]")
+        logger.info("Usage: extract_css_base64.py file1.css [file2.css ...]")
         sys.exit(1)
     out_dir = Path("_static")
     total = 0
     for css_file in map(Path, sys.argv[1:]):
         if not css_file.exists():
-            print(f"skip: {css_file}")
+            logger.info(f"skip: {css_file}")
             continue
         count = extract_css_base64(css_file, out_dir)
         total += count
-        print(f"{css_file}: extracted {count} assets")
-    print(f"\nTotal saved assets: {total}")
-    print(f"Output directory: ./{out_dir}")
+        logger.info(f"{css_file}: extracted {count} assets")
+    logger.info(f"\nTotal saved assets: {total}")
+    logger.info(f"Output directory: ./{out_dir}")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ import shutil
 import subprocess
 import sys
 
+from loguru import logger
+
 
 def run_git_command(cmd, check=True, capture_output=True):
     try:
@@ -14,10 +16,10 @@ def run_git_command(cmd, check=True, capture_output=True):
             text=True,
         )
     except subprocess.CalledProcessError as e:
-        print(f"Error running command: {cmd}")
-        print(f"Error: {e}")
+        logger.info(f"Error running command: {cmd}")
+        logger.info(f"Error: {e}")
         if e.stderr:
-            print(f"Stderr: {e.stderr}")
+            logger.info(f"Stderr: {e.stderr}")
         return None
 
 
@@ -62,31 +64,31 @@ def get_all_branches():
 def delete_branches_except_main():
     main_branch = get_main_branch_name()
     branches = get_all_branches()
-    print(f"Main branch: {main_branch}")
-    print(f"Found branches: {', '.join(branches)}")
+    logger.info(f"Main branch: {main_branch}")
+    logger.info(f"Found branches: {', '.join(branches)}")
     deleted_branches = []
     for branch in branches:
         if branch != main_branch:
-            print(f"Deleting branch: {branch}")
+            logger.info(f"Deleting branch: {branch}")
             result = run_git_command(
                 f"git branch -D {branch}",
                 check=False,
             )
             if result and result.returncode == 0:
                 deleted_branches.append(branch)
-                print(f"✓ Deleted branch: {branch}")
+                logger.info(f"✓ Deleted branch: {branch}")
             else:
-                print(f"✗ Failed to delete branch: {branch}")
+                logger.info(f"✗ Failed to delete branch: {branch}")
     return deleted_branches
 
 
 def reset_to_last_commit() -> bool:
-    print("Resetting to last commit...")
+    logger.info("Resetting to last commit...")
     result = run_git_command("git rev-parse HEAD")
     if not result:
         return False
     current_commit = result.stdout.strip()
-    print(f"Current commit: {current_commit}")
+    logger.info(f"Current commit: {current_commit}")
     main_branch = get_main_branch_name()
     commands = [
         "git checkout --orphan temp_branch",
@@ -96,17 +98,17 @@ def reset_to_last_commit() -> bool:
         f"git branch -m {main_branch}",
     ]
     for cmd in commands:
-        print(f"Running: {cmd}")
+        logger.info(f"Running: {cmd}")
         result = run_git_command(cmd, check=False)
         if not result or result.returncode != 0:
-            print(f"Failed to run: {cmd}")
+            logger.info(f"Failed to run: {cmd}")
             return False
-    print("✓ Successfully reset to last commit")
+    logger.info("✓ Successfully reset to last commit")
     return True
 
 
 def alternative_reset_method() -> None:
-    print("Using alternative reset method...")
+    logger.info("Using alternative reset method...")
     commands = [
         "git branch backup-before-cleanup",
         "git reset --hard HEAD",
@@ -114,93 +116,93 @@ def alternative_reset_method() -> None:
         "git gc --prune=now --aggressive",
     ]
     for cmd in commands:
-        print(f"Running: {cmd}")
+        logger.info(f"Running: {cmd}")
         result = run_git_command(cmd, check=False)
         if not result or result.returncode != 0:
-            print(f"Warning: Command failed: {cmd}")
-    print("✓ Alternative reset completed")
+            logger.info(f"Warning: Command failed: {cmd}")
+    logger.info("✓ Alternative reset completed")
 
 
 def create_backup() -> bool | None:
     backup_dir = f"git_backup_{subprocess.getoutput('date +%Y%m%d_%H%M%S')}"
-    print(f"Creating backup in: {backup_dir}")
+    logger.info(f"Creating backup in: {backup_dir}")
     try:
         shutil.copytree(
             ".",
             backup_dir,
             ignore=shutil.ignore_patterns(".git"),
         )
-        print(f"✓ Backup created: {backup_dir}")
+        logger.info(f"✓ Backup created: {backup_dir}")
         return True
     except Exception as e:
-        print(f"✗ Failed to create backup: {e}")
+        logger.info(f"✗ Failed to create backup: {e}")
         return False
 
 
 def main() -> None:
-    print("=" * 60)
-    print("GIT REPOSITORY CLEANER")
-    print("WARNING: This is a DESTRUCTIVE operation!")
-    print("It will delete all commits except the last one")
-    print("and delete all branches except main/master.")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("GIT REPOSITORY CLEANER")
+    logger.info("WARNING: This is a DESTRUCTIVE operation!")
+    logger.info("It will delete all commits except the last one")
+    logger.info("and delete all branches except main/master.")
+    logger.info("=" * 60)
     if not is_git_repository():
-        print("Error: Not a git repository!")
+        logger.info("Error: Not a git repository!")
         sys.exit(1)
     response = input("\nAre you sure you want to continue? (yes/NO): ")
     if response.lower() not in {"yes", "y"}:
-        print("Operation cancelled.")
+        logger.info("Operation cancelled.")
         sys.exit(0)
-    print("\n1. Creating backup...")
+    logger.info("\n1. Creating backup...")
     if not create_backup():
         response = input("Backup failed. Continue anyway? (yes/NO): ")
         if response.lower() not in {"yes", "y"}:
-            print("Operation cancelled.")
+            logger.info("Operation cancelled.")
             sys.exit(0)
-    print("\n2. Checking repository status...")
+    logger.info("\n2. Checking repository status...")
     main_branch = get_main_branch_name()
     current_branch = get_current_branch()
     branches = get_all_branches()
-    print(f"   Current branch: {current_branch}")
-    print(f"   Main branch: {main_branch}")
-    print(f"   All branches: {', '.join(branches)}")
+    logger.info(f"   Current branch: {current_branch}")
+    logger.info(f"   Main branch: {main_branch}")
+    logger.info(f"   All branches: {', '.join(branches)}")
     if current_branch != main_branch:
-        print(f"\n3. Switching to main branch: {main_branch}")
+        logger.info(f"\n3. Switching to main branch: {main_branch}")
         result = run_git_command(
             f"git checkout {main_branch}",
             check=False,
         )
         if not result or result.returncode != 0:
-            print(f"Failed to switch to {main_branch}")
+            logger.info(f"Failed to switch to {main_branch}")
             sys.exit(1)
-    print(f"\n4. Deleting branches except {main_branch}...")
+    logger.info(f"\n4. Deleting branches except {main_branch}...")
     deleted_branches = delete_branches_except_main()
     if deleted_branches:
-        print(f"   Deleted {len(deleted_branches)} branches")
+        logger.info(f"   Deleted {len(deleted_branches)} branches")
     else:
-        print("   No branches to delete")
-    print("\n5. Resetting ...")
+        logger.info("   No branches to delete")
+    logger.info("\n5. Resetting ...")
     if not alternative_reset_method():
         reset_to_last_commit()
-    print("\n6. Final status:")
+    logger.info("\n6. Final status:")
     result = run_git_command("git log --oneline")
     if result:
-        print("   Commit history:")
+        logger.info("   Commit history:")
         for line in result.stdout.strip().split("\n"):
-            print(f"     {line}")
+            logger.info(f"     {line}")
     branches = get_all_branches()
-    print(f"   Remaining branches: {', '.join(branches)}")
-    print("\n✓ Cleanup completed!")
-    print("⚠️  Remember: You may need to force push to remote:")
-    print(f"   git push --force origin {main_branch}")
+    logger.info(f"   Remaining branches: {', '.join(branches)}")
+    logger.info("\n✓ Cleanup completed!")
+    logger.info("⚠️  Remember: You may need to force push to remote:")
+    logger.info(f"   git push --force origin {main_branch}")
 
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\nOperation cancelled by user.")
+        logger.info("\nOperation cancelled by user.")
         sys.exit(1)
     except Exception as e:
-        print(f"\nAn error : {e}")
+        logger.info(f"\nAn error : {e}")
         sys.exit(1)

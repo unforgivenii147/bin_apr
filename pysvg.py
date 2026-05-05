@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 from pathlib import Path
-from dh import get_files, runcmd, mpf, gsz, fsz
+
+from dh import fsz, get_files, gsz, mpf, runcmd
+from loguru import logger
 from termcolor import cprint
 
 
@@ -14,9 +15,9 @@ def process_file(path):
             show_output=False,
         )
         diff_size = before - gsz(path)
-        print(f"{path.name}", end=" | ")
+        logger.info(f"{path.name}", end=" | ")
         if not diff_size:
-            cprint(f" NO CHANGE", "green")
+            cprint(" NO CHANGE", "green")
         if diff_size < 0:
             cprint(f" - {fsz(diff_size)}", "cyan")
         if diff_size > 0:

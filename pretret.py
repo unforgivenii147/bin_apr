@@ -3,7 +3,9 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from dh import get_filez
+from loguru import logger
 
 
 def process_file(fp):
@@ -49,7 +51,7 @@ def main():
     for future in as_completed(futures):
         s = future.result()
         if not s[0]:
-            print(s[1])
+            logger.info(s[1])
 
 
 if __name__ == "__main__":

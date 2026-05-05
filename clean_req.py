@@ -3,6 +3,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 _VERSION_OP_RE = re.compile(r"\s*(?:===|==|!=|>=|<=|~=|>|<)\s*")
 
 
@@ -31,7 +33,7 @@ def group_key(name: str):
 
 def main() -> None:
     if len(sys.argv) != 2:
-        print(
+        logger.info(
             f"Usage: {sys.argv[0]} requirements.txt",
             file=sys.stderr,
         )
@@ -41,7 +43,7 @@ def main() -> None:
         with Path(fname).open(encoding="utf-8") as f:
             lines = f.readlines()
     except FileNotFoundError:
-        print(
+        logger.info(
             f"Error: File '{fname}' not found.",
             file=sys.stderr,
         )
@@ -56,9 +58,9 @@ def main() -> None:
     cleaned = sorted(cleaned, key=group_key)
     with Path(fname).open("w", encoding="utf-8") as f:
         f.writelines(item + "\n" for item in cleaned)
-    print("\n=== Cleaned Requirements ===")
+    logger.info("\n=== Cleaned Requirements ===")
     for item in cleaned:
-        print(item)
+        logger.info(item)
 
 
 if __name__ == "__main__":

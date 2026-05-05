@@ -2,8 +2,10 @@
 import ast
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_pyfiles, mpf
+from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 QUERY_STRING = """
@@ -73,14 +75,14 @@ def process_file(fp):
     ts_rmc.remove_comments(code)
     result, comments, docstrings = ts_rmc.remove_comments(code)
     if comments == 0 and docstrings == 0:
-        print(f"[NO CHANGE] : {file_path.name}")
+        logger.info(f"[NO CHANGE] : {file_path.name}")
         return
     try:
         ast.parse(result)
-        print(f"{file_path.name}: comments: {comments}   docstrings: {docstrings}")
+        logger.info(f"{file_path.name}: comments: {comments}   docstrings: {docstrings}")
         fp.write_text(result, encoding="utf-8")
     except:
-        print(f"{file_path.name} : invalid code")
+        logger.info(f"{file_path.name} : invalid code")
 
 
 def main():
@@ -88,11 +90,11 @@ def main():
     before = gsz(".")
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_pyfiles(cwd)
-    print(f"Processing {len(files)} files using QueryCursor...")
+    logger.info(f"Processing {len(files)} files using QueryCursor...")
     mpf(process_file, files)
     diff_size = before - gsz(".")
     if diff_size != 0:
-        print(fsz(diff_size))
+        logger.info(fsz(diff_size))
 
 
 if __name__ == "__main__":

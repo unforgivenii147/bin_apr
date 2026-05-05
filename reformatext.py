@@ -3,6 +3,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def restructure_text_file(filepath: Path):
     """
@@ -13,22 +15,22 @@ def restructure_text_file(filepath: Path):
     - Creates a .bak backup file.
     """
     if not filepath.is_file():
-        print(f"Error: File not found at {filepath}")
+        logger.info(f"Error: File not found at {filepath}")
         return
     try:
         with filepath.open("r", encoding="utf-8") as f:
             content = f.read()
     except Exception as e:
-        print(f"Error reading file {filepath}: {e}")
+        logger.info(f"Error reading file {filepath}: {e}")
         return
     # Create backup
     bak_filepath = filepath.with_suffix(filepath.suffix + ".bak")
     try:
         with filepath.open("r", encoding="utf-8") as src, bak_filepath.open("w", encoding="utf-8") as dst:
             dst.write(src.read())
-        print(f"Backup created at: {bak_filepath}")
+        logger.info(f"Backup created at: {bak_filepath}")
     except Exception as e:
-        print(f"Error creating backup file {bak_filepath}: {e}")
+        logger.info(f"Error creating backup file {bak_filepath}: {e}")
         return
     restructured_lines = []
     paragraphs = content.split("\n\n")  # Split into paragraphs first
@@ -81,14 +83,14 @@ def restructure_text_file(filepath: Path):
     try:
         with filepath.open("w", encoding="utf-8") as f:
             f.write("\n".join(restructured_lines))
-        print(f"File successfully restructured: {filepath}")
+        logger.info(f"File successfully restructured: {filepath}")
     except Exception as e:
-        print(f"Error writing to file {filepath}: {e}")
+        logger.info(f"Error writing to file {filepath}: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script_name.py <filename>")
+        logger.info("Usage: python script_name.py <filename>")
         sys.exit(1)
     filename = sys.argv[1]
     file_path = Path(filename)

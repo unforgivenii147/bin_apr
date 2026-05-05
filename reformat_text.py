@@ -3,6 +3,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 MAX_LEN = 120
 BREAK_PUNCTS = [",", ";", ":", "?"]
 
@@ -20,8 +22,7 @@ def break_long_sentence(sentence: str, max_len: int = MAX_LEN):
         window = sentence[:max_len]
         for p in BREAK_PUNCTS:
             pos = window.rfind(p)
-            if pos > break_pos:
-                break_pos = pos
+            break_pos = max(break_pos, pos)
         if break_pos < 0:
             break_pos = max_len
         parts.append(sentence[: break_pos + 1].strip())
@@ -51,11 +52,11 @@ def restructure_file(filepath: Path):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python restructure_text.py <filename>")
+        logger.info("Usage: python restructure_text.py <filename>")
         sys.exit(1)
     file_arg = Path(sys.argv[1])
     if not file_arg.exists():
-        print(f"Error: file '{file_arg}' does not exist.")
+        logger.info(f"Error: file '{file_arg}' does not exist.")
         sys.exit(1)
     restructure_file(file_arg)
 

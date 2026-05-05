@@ -3,7 +3,9 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
+
 from dh import get_files, unique_path
+from loguru import logger
 
 
 def whl_to_tar_xz(whl_path: Path):
@@ -21,10 +23,10 @@ def whl_to_tar_xz(whl_path: Path):
                 with zf.open(member) as source:
                     tarinfo = tarfile.TarInfo(name=member.filename)
                     tf.addfile(tarinfo, source)
-        print(f"[OK] Created {target.name}")
+        logger.info(f"[OK] Created {target.name}")
         whl_path.unlink()
     except Exception as e:
-        print(f"[ERROR] {whl_path.name}: {e}")
+        logger.info(f"[ERROR] {whl_path.name}: {e}")
 
 
 def main():

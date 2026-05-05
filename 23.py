@@ -3,7 +3,9 @@ import subprocess
 import sys
 from multiprocessing import Lock, Pool
 from pathlib import Path
+
 from fastwalk import walk_files
+from loguru import logger
 
 print_lock = Lock()
 
@@ -41,7 +43,7 @@ def run_command(cmd):
 
 
 def process_file(file_path) -> None:
-    print(f"[OK] {file_path.name}")
+    logger.info(f"[OK] {file_path.name}")
     check_cmd = [
         "ruff",
         "check",
@@ -74,7 +76,7 @@ def process_file(file_path) -> None:
             output.append(err_fmt.strip())
     if output:
         with print_lock:
-            print("\n".join(output))
+            logger.info("\n".join(output))
             sys.stdout.flush()
 
 
@@ -98,13 +100,13 @@ def main() -> None:
         FileNotFoundError,
         subprocess.CalledProcessError,
     ):
-        print("Error: 'ruff' is not installed or not in PATH.")
-        print("Please run: pip install ruff")
+        logger.info("Error: 'ruff' is not installed or not in PATH.")
+        logger.info("Please run: pip install ruff")
         sys.exit(1)
     cwd = Path.cwd()
     files = get_all_files(cwd)
     if not files:
-        print("no file found.")
+        logger.info("no file found.")
         return
     pool = Pool(8)
     for f in files:

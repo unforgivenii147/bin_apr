@@ -3,6 +3,8 @@ import os
 import sqlite3
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_current_folder_name():
     return Path(Path.cwd()).name
@@ -57,7 +59,7 @@ def get_files_in_current_dir():
         for item in os.listdir(current_dir):
             item_path = os.path.join(current_dir, item)
             if Path(item_path).is_file():
-                print(f"  Reading: {item}")
+                logger.info(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
                 files.append(
                     {
@@ -66,7 +68,7 @@ def get_files_in_current_dir():
                     }
                 )
     except PermissionError:
-        print("Warning: Permission denied accessing some files")
+        logger.info("Warning: Permission denied accessing some files")
     return files
 
 
@@ -94,7 +96,7 @@ def main():
     create_folder_table(cursor, folder_name)
     files = get_files_in_current_dir()
     if not files:
-        print("No files found in current directory!")
+        logger.info("No files found in current directory!")
     else:
         insert_files(cursor, folder_name, files)
         conn.commit()

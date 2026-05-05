@@ -5,7 +5,9 @@ import os
 import shutil
 from collections import defaultdict
 from pathlib import Path
+
 import xxhash
+from loguru import logger
 
 CACHE_PATH = Path.home() / ".cache" / "dups_cache.json"
 DUPS_DIR = Path.home() / ".cache" / "dups"
@@ -89,36 +91,36 @@ def dedupe(root: Path, dry_run=False, force=False):
         stored_path = DUPS_DIR / stored_name
         if not stored_path.exists():
             if dry_run:
-                print(f"[DRY] move: {original} -> {stored_path}")
+                logger.info(f"[DRY] move: {original} -> {stored_path}")
             else:
                 stored_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.move(
                     str(original),
                     str(stored_path),
                 )
-                print(f"moved: {original} -> {stored_path}")
+                logger.info(f"moved: {original} -> {stored_path}")
             changed = True
         elif original.exists():
             if dry_run:
-                print(f"[DRY] remove original file before symlink: {original}")
+                logger.info(f"[DRY] remove original file before symlink: {original}")
             else:
                 original.unlink()
-                print(f"removed original file: {original}")
+                logger.info(f"removed original file: {original}")
         for p in paths_sorted[1:]:
             if p.is_symlink():
                 continue
             if dry_run:
-                print(f"[DRY] symlink: {p} -> {stored_path.resolve()}")
+                logger.info(f"[DRY] symlink: {p} -> {stored_path.resolve()}")
             else:
                 if p.exists():
                     try:
                         p.unlink()
                     except Exception as e:
-                        print(f"warning: could not remove {p}: {e}")
+                        logger.info(f"warning: could not remove {p}: {e}")
                         continue
                 p.parent.mkdir(parents=True, exist_ok=True)
                 Path(str(p)).symlink_to(str(stored_path.resolve()))
-                print(f"symlinked: {p} -> {stored_path.resolve()}")
+                logger.info(f"symlinked: {p} -> {stored_path.resolve()}")
             changed = True
         manifest[str(stored_path)] = {
             "hash": h,
@@ -127,59 +129,59 @@ def dedupe(root: Path, dry_run=False, force=False):
     if not dry_run and changed:
         save_json(MANIFEST_PATH, manifest)
         save_json(CACHE_PATH, cache)
-        print(f"manifest written to {MANIFEST_PATH}")
+        logger.info(f"manifest written to {MANIFEST_PATH}")
     elif dry_run:
-        print("dry-run complete; no changes written.")
+        logger.info("dry-run complete; no changes written.")
 
 
 def restore(dry_run=False):
     if not MANIFEST_PATH.exists():
-        print("No manifest found at ~/dups/manifest.json")
+        logger.info("No manifest found at ~/dups/manifest.json")
         return
     manifest = load_json(MANIFEST_PATH)
     for stored_str, info in manifest.items():
         stored = Path(stored_str)
         if not stored.exists():
-            print(f"stored file missing: {stored}")
+            logger.info(f"stored file missing: {stored}")
             continue
         originals = [Path(p) for p in info.get("originals", [])]
         for orig in originals:
             if orig.exists() and not orig.is_symlink():
-                print(f"skipping restore for {orig} (exists and not a symlink)")
+                logger.info(f"skipping restore for {orig} (exists and not a symlink)")
                 continue
             if orig.is_symlink():
                 try:
                     target = Path(Path(orig).readlink())
                 except Exception:
-                    print(f"skipping {orig} (broken symlink)")
+                    logger.info(f"skipping {orig} (broken symlink)")
                     continue
                 if target.resolve() != stored.resolve():
-                    print(f"skipping {orig} (symlink points elsewhere)")
+                    logger.info(f"skipping {orig} (symlink points elsewhere)")
                     continue
             if dry_run:
-                print(f"[DRY] restore {stored} -> {orig}")
+                logger.info(f"[DRY] restore {stored} -> {orig}")
             else:
                 if orig.exists() or orig.is_symlink():
                     try:
                         orig.unlink()
                     except Exception as e:
-                        print(f"warning: could not remove {orig}: {e}")
+                        logger.info(f"warning: could not remove {orig}: {e}")
                         continue
                 orig.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(stored, orig)
-                print(f"restored: {orig}")
+                logger.info(f"restored: {orig}")
         if dry_run:
-            print(f"[DRY] remove stored file {stored}")
+            logger.info(f"[DRY] remove stored file {stored}")
         else:
             try:
                 stored.unlink()
-                print(f"removed stored file: {stored}")
+                logger.info(f"removed stored file: {stored}")
             except Exception as e:
-                print(f"warning: could not remove stored file {stored}: {e}")
+                logger.info(f"warning: could not remove stored file {stored}: {e}")
     if not dry_run:
         try:
             MANIFEST_PATH.unlink()
-            print(f"removed manifest: {MANIFEST_PATH}")
+            logger.info(f"removed manifest: {MANIFEST_PATH}")
         except Exception:
             pass
 

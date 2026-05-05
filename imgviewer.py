@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+
 import numpy as np
+from loguru import logger
 from PIL import Image
 
 
@@ -30,8 +32,8 @@ def show_image(img_path):
     for x in range(h):
         for y in range(w):
             pix = img_arr[x][y]
-            print(get_color(pix[0], pix[1], pix[2]), end="")
-        print()
+            logger.info(get_color(pix[0], pix[1], pix[2]), end="")
+        logger.info()
 
 
 if __name__ == "__main__":

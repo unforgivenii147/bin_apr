@@ -2,6 +2,8 @@
 import ast
 from pathlib import Path
 
+from loguru import logger
+
 TARGET_FUNCS = {
     "compile",
     "search",
@@ -40,7 +42,7 @@ def fix_file(path: Path):
     try:
         tree = ast.parse(source)
     except SyntaxError:
-        print(f"[SKIP] {path} (syntax error)")
+        logger.info(f"[SKIP] {path} (syntax error)")
         return False
     fixer = RegexFixer()
     new_tree = fixer.visit(tree)
@@ -48,7 +50,7 @@ def fix_file(path: Path):
     new_source = ast.unparse(new_tree)
     if new_source != source:
         path.write_text(new_source, encoding="utf-8")
-        print(f"[FIXED] {path}")
+        logger.info(f"[FIXED] {path}")
         return True
     return False
 
@@ -60,7 +62,7 @@ def main():
     for f in files:
         if fix_file(f):
             changed += 1
-    print(f"\nDone. Modified {changed} files.")
+    logger.info(f"\nDone. Modified {changed} files.")
 
 
 if __name__ == "__main__":

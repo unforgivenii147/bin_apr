@@ -2,7 +2,8 @@
 import sys
 import tempfile
 from pathlib import Path
-from dh import get_nobinary, is_binary, fsz, gsz, cprint, mpf
+
+from dh import cprint, fsz, get_nobinary, gsz, mpf3
 
 
 def process_file(path: Path) -> int:
@@ -47,11 +48,13 @@ def main():
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     print(f"{len(files)} files found")
+
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     lines_removed = 0
-    results = mpf(process_file, files)
+    results = mpf3(process_file, files)
+
     for result in results:
         if result:
             lines_removed += result

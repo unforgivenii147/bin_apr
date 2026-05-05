@@ -1,22 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 import subprocess
+
 from dh import get_ipkgs
+from loguru import logger
 from Pathlib import Path
 
 
 def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
-    print("Starting search for packages with 'bin' scripts...")
+    logger.info("Starting search for packages with 'bin' scripts...")
     try:
         installed_packages = get_ipkgs()
         if not installed_packages:
-            print("No Python packages found via 'pip list'. Please ensure pip is installed and accessible.")
+            logger.info("No Python packages found via 'pip list'. Please ensure pip is installed and accessible.")
             return
-        print(f"Found {len(installed_packages)} installed packages. Checking each for 'bin' scripts...")
+        logger.info(f"Found {len(installed_packages)} installed packages. Checking each for 'bin' scripts...")
         packages_with_scripts = []
         total_packages = len(installed_packages)
         for i, package_name in enumerate(installed_packages):
-            print(f"[{i + 1}/{total_packages}] Checking '{package_name}'...", end="\r")
+            logger.info(f"[{i + 1}/{total_packages}] Checking '{package_name}'...", end="\r")
             try:
                 result = subprocess.run(
                     ["pip", "show", "-f", package_name],
@@ -66,19 +68,19 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
             except subprocess.CalledProcessError:
                 pass
             except Exception as e:
-                print(f"\nAn unexpected error occurred while checking '{package_name}': {e}")
+                logger.info(f"\nAn unexpected error occurred while checking '{package_name}': {e}")
         with Path(output_file).open("w", encoding="utf-8") as f:
             f.writelines(pkg + "\n" for pkg in packages_with_scripts)
-        print(f"\nSearch complete. Found {len(packages_with_scripts)} packages with 'bin' scripts.")
-        print(f"List saved to '{output_file}'.")
+        logger.info(f"\nSearch complete. Found {len(packages_with_scripts)} packages with 'bin' scripts.")
+        logger.info(f"List saved to '{output_file}'.")
     except FileNotFoundError:
-        print("Error: 'pip' command not found. Please ensure Python and pip are installed and in your PATH.")
+        logger.info("Error: 'pip' command not found. Please ensure Python and pip are installed and in your PATH.")
     except subprocess.CalledProcessError as e:
-        print(f"Error running pip command: {e.cmd}")
-        print(f"Stdout: {e.stdout}")
-        print(f"Stderr: {e.stderr}")
+        logger.info(f"Error running pip command: {e.cmd}")
+        logger.info(f"Stdout: {e.stdout}")
+        logger.info(f"Stderr: {e.stderr}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.info(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

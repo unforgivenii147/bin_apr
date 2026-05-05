@@ -4,6 +4,8 @@ import typing
 import zipfile
 from pathlib import Path
 
+from loguru import logger
+
 
 class WheelInspector:
     def __init__(self, verbose: bool = False) -> None:
@@ -12,7 +14,7 @@ class WheelInspector:
     @typing.override
     def log(self, message: str):
         if self.verbose:
-            print(f"[INSPECT] {message}")
+            logger.info(f"[INSPECT] {message}")
 
     @typing.override
     def inspect_wheel(self, wheel_path: Path) -> dict:
@@ -22,10 +24,11 @@ class WheelInspector:
             with zipfile.ZipFile(wheel_path, "r") as zf:
                 info = {
                     "filename": wheel_path.name,
-                    "size_mb": wheel_path.stat().st_size / (1024 * 1024),
+                    "size_mb": wheel_path.stat().st_size / 1024.0,
                     "file_count": len(zf.namelist()),
                     "files": zf.namelist(),
                     "metadata": {},
+                    "file_types": {},
                 }
                 metadata_files = [f for f in zf.namelist() if f.endswith("/METADATA")]
                 if metadata_files:
@@ -76,6 +79,7 @@ class WheelInspector:
         results = []
         for wheel in wheels:
             info = self.inspect_wheel(wheel)
+            logger.info(info)
             is_valid, issues = self.validate_wheel(wheel)
             info["is_valid"] = is_valid
             info["issues"] = issues
@@ -86,21 +90,31 @@ class WheelInspector:
     def print_inspection(self, wheel_path: Path):
         info = self.inspect_wheel(wheel_path)
         if "error" in info:
-            print(f"Error: {info['error']}")
+            logger.info(f"Error: {info['error']}")
             return
-        print(f"\n{'=' * 60}")
-        print(f"Wheel: {info['filename']}")
-        print(f"{'=' * 60}")
-        print("\nBasic Info:")
-        print(f"  Size: {info['size_mb']:.2f} MB")
-        print(f"  Files: {info['file_count']}")
+        logger.info(f"\n{'=' * 60}")
+        logger.info(f"Wheel: {info['filename']}")
+        logger.info(f"{'=' * 60}")
+        logger.info("\nBasic Info:")
+        logger.info(f"  Size: {info['size_mb']:.2f} KB")
+        logger.info(f"  Files: {info['file_count']}")
         if info["file_types"]:
-            print("\nFile Types:")
+            logger.info("\nFile Types:")
             for ext, count in info["file_types"].items():
+                if ext == ".py" and (not count or count == 1):
+                    logger.debug(f"pkg:{wheel_path}\ncount : {count}")
+                    outd = Path("/sdcard/test")
+                    wn = wheel_path.name
+                    outp = outd / wn
+                    wheel_path.rename(outp)
+                    continue
+
+                #                    sys.exit(1)
+
                 if count > 0:
-                    print(f"  {ext}: {count}")
+                    logger.info(f"  {ext}: {count}")
         if info["metadata"]:
-            print("\nMetadata:")
+            logger.info("\nMetadata:")
             for key, value in info["metadata"].items():
                 if key in {
                     "Name",
@@ -108,14 +122,14 @@ class WheelInspector:
                     "Summary",
                     "Author",
                 }:
-                    print(f"  {key}: {value}")
+                    logger.info(f"  {key}: {value}")
         is_valid, issues = self.validate_wheel(wheel_path)
-        print(f"\nValidation: {'✓ VALID' if is_valid else '✗ INVALID'}")
+        logger.info(f"\nValidation: {'✓ VALID' if is_valid else '✗ INVALID'}")
         if issues:
-            print("Issues:")
+            logger.info("Issues:")
             for issue in issues:
-                print(f"  - {issue}")
-        print(f"{'=' * 60}\n")
+                logger.info(f"  - {issue}")
+        logger.info(f"{'=' * 60}\n")
 
 
 def main():
@@ -135,31 +149,47 @@ def main():
     )
     args = parser.parse_args()
     if not args.wheel:
-        args.wheel = str(Path.home() / "tmp" / "whl")
+        args.wheel = Path("/sdcard/whl")
+
     path = Path(args.wheel)
     inspector = WheelInspector(verbose=args.verbose)
+
     if path.is_file() and path.suffix == ".whl":
         inspector.print_inspection(path)
+
     elif path.is_dir():
+        for p in path.rglob("*.whl"):
+            inspector.print_inspection(p)
+
+
+"""
         wheels = list(path.glob("*.whl"))
         if not wheels:
-            print(f"No .whl files found in {path}")
+            logger.info(f"No .whl files found in {path}")
             return
-        print(f"\nInspecting {len(wheels)} .whl files...\n")
-        results = inspector.inspect_directory(path)
+        logger.info(f"\nInspecting {len(wheels)} .whl files...\n")
+
+        results = inspector.inspect_directory(path)        
+
         valid_count = sum(1 for r in results if r.get("is_valid", True))
         invalid_count = len(results) - valid_count
+
         for result in results:
             status = "✓" if result.get("is_valid", True) else "✗"
+
             size = result.get("size_mb", 0)
             files = result.get("file_count", 0)
-            print(f"{status} {result['filename']:<50} {size:>8.2f} MB ({files} files)")
-        print(f"\nValid: {valid_count}/{len(results)}")
-        print(f"Invalid: {invalid_count}/{len(results)}")
+            
+            logger.info(f"{status} {result['filename']:<50} {size:>.2f} KB ({files} files)")
+            
+        logger.info(f"\nValid: {valid_count}/{len(results)}")
+        
+        logger.info(f"Invalid: {invalid_count}/{len(results)}")
     else:
-        print(f"Invalid path: {path}")
+        logger.info(f"Invalid path: {path}")
         sys.exit(1)
 
+"""
 
 if __name__ == "__main__":
     main()

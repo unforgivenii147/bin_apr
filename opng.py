@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 from pathlib import Path
-from dh import get_files, runcmd, mpf3
+
+from dh import get_files, mpf3, runcmd
 
 
 def process_file(file_path):

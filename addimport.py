@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import mpf3
+
 from fastwalk import walk_files
+from loguru import logger
 
 shebang = "#!/data/data/com.termux/files/usr/bin/python\n"
 
@@ -10,7 +11,7 @@ shebang = "#!/data/data/com.termux/files/usr/bin/python\n"
 def process_file(fp, module_name):
     if not fp.exists() or fp.is_symlink():
         return
-    print(f"processing {fp}")
+    logger.info(f"processing {fp}")
     data = []
     newdata = []
     with Path(fp).open(encoding="utf-8") as fin:

@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def samefile(path1: str, path2: str) -> bool:
     try:
@@ -9,5 +11,5 @@ def samefile(path1: str, path2: str) -> bool:
     except FileNotFoundError:
         return False
     except OSError as e:
-        print(f"error: {e}", file=sys.stderr)
+        logger.info(f"error: {e}", file=sys.stderr)
         return False

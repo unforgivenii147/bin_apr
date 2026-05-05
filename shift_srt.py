@@ -3,6 +3,8 @@ import argparse
 import re
 from pathlib import Path
 
+from loguru import logger
+
 TIMESTAMP_RE = re.compile(r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
 
 
@@ -21,6 +23,7 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
+
     def repl(m):
         start, end = m.groups()
         return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
@@ -32,7 +35,7 @@ def process_file(path: Path, shift_ms: int):
     data = path.read_text(encoding="utf-8")
     shifted = shift_content(data, shift_ms)
     path.write_text(shifted, encoding="utf-8")
-    print(f"✔ {path}")
+    logger.info(f"✔ {path}")
 
 
 def main():
@@ -68,7 +71,7 @@ def main():
     glob = "**/*.srt" if args.recursive else "*.srt"
     files = sorted(path.glob(glob))
     if not files:
-        print("No .srt files found")
+        logger.info("No .srt files found")
         return
     for f in files:
         process_file(f, shift_ms)

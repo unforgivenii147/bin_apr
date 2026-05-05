@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
+from pathlib import Path
 import re
+
+from loguru import logger
 
 
 def compress_python_file(filepath):
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read()
+    content = Path(filepath).read_text(encoding="utf-8")
     # Remove multiline strings (docstrings)
     # This regex handles """...""" and '''...''' and is careful about nested quotes
     content = re.sub(r'""".*?"""|\'\'\'.*?\'\'\'', "", content, flags=re.DOTALL)
@@ -15,17 +17,16 @@ def compress_python_file(filepath):
     lines = content.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]
     content = "\n".join(non_empty_lines)
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(content)
+    Path(filepath).write_text(content, encoding="utf-8")
 
 
 def compress_python_files_in_directory(directory="."):
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             filepath = os.path.join(directory, filename)
-            print(f"Compressing {filepath}...")
+            logger.info(f"Compressing {filepath}...")
             compress_python_file(filepath)
-    print("Compression complete.")
+    logger.info("Compression complete.")
 
 
 if __name__ == "__main__":

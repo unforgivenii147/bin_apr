@@ -4,14 +4,16 @@ import string
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <filename>")
+        logger.info(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     input_file = sys.argv[1]
     if not Path(input_file).is_file():
-        print(f"Error: file not found: {input_file}")
+        logger.info(f"Error: file not found: {input_file}")
         sys.exit(1)
     Path("output").mkdir(exist_ok=True, parents=True)
     files = {

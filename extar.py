@@ -5,7 +5,9 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
+
 import zstd
+from loguru import logger
 
 
 def get_dir_size(path):
@@ -45,7 +47,7 @@ def extract_tar_xz(archive_path, extract_path):
 def process_archive(archive_path, dry_run=False, quiet=False):
     if not archive_path.exists():
         if not quiet:
-            print(f"Error: File {archive_path} does not exist")
+            logger.info(f"Error: File {archive_path} does not exist")
         return False, 0, 0
     archive_size = archive_path.stat().st_size
     extract_path = archive_path.parent
@@ -55,12 +57,12 @@ def process_archive(archive_path, dry_run=False, quiet=False):
     is_standalone_zst = archive_name.endswith(".zst") and not is_tar_zst
     if not (is_tar_zst or is_tar_xz or is_standalone_zst):
         if not quiet:
-            print(f"Skipping unsupported file: {archive_path}")
+            logger.info(f"Skipping unsupported file: {archive_path}")
         return False, 0, 0
     try:
         if dry_run:
             if not quiet:
-                print(f"[DRY RUN] Would extract: {archive_name}")
+                logger.info(f"[DRY RUN] Would extract: {archive_name}")
             return True, archive_size, 0
         if is_standalone_zst:
             output_file = extract_zst_file(archive_path, extract_path)
@@ -83,11 +85,11 @@ def process_archive(archive_path, dry_run=False, quiet=False):
                     extracted_size += item.stat().st_size
         archive_path.unlink()
         if not quiet:
-            print(f"Extracted: {archive_name} -> original removed")
+            logger.info(f"Extracted: {archive_name} -> original removed")
         return True, archive_size, extracted_size
     except Exception as e:
         if not quiet:
-            print(f"Error processing {archive_name}: {e}")
+            logger.info(f"Error processing {archive_name}: {e}")
         return False, 0, 0
 
 
@@ -129,7 +131,7 @@ def main():
     if args.target:
         target_path = Path(args.target).resolve()
         if not target_path.exists():
-            print(f"Error: {target_path} does not exist")
+            logger.info(f"Error: {target_path} does not exist")
             return 1
         is_single_file = target_path.is_file()
     else:
@@ -137,7 +139,7 @@ def main():
         is_single_file = False
     if is_single_file:
         if not args.quiet:
-            print(f"Processing: {target_path.name}")
+            logger.info(f"Processing: {target_path.name}")
         parent_dir = target_path.parent
         before = get_dir_size(parent_dir)
         success, arch_size, ext_size = process_archive(
@@ -149,21 +151,21 @@ def main():
             after = get_dir_size(parent_dir)
             size_change = after - before
             size_change_mb = size_change / (1024 * 1024)
-            print("\nSummary:")
-            print(f"  Archive size: {arch_size / (1024 * 1024):.2f} MB")
-            print(f"  Extracted size: {ext_size / (1024 * 1024):.2f} MB")
+            logger.info("\nSummary:")
+            logger.info(f"  Archive size: {arch_size / (1024 * 1024):.2f} MB")
+            logger.info(f"  Extracted size: {ext_size / (1024 * 1024):.2f} MB")
             if arch_size > 0:
-                print(f"  Compression ratio: {ext_size / arch_size:.2f}:1")
-            print(f"  Directory size change: {size_change_mb:+.2f} MB")
+                logger.info(f"  Compression ratio: {ext_size / arch_size:.2f}:1")
+            logger.info(f"  Directory size change: {size_change_mb:+.2f} MB")
         return 0 if success else 1
     if not args.quiet:
-        print(f"Scanning {target_path} for archives...")
+        logger.info(f"Scanning {target_path} for archives...")
     archives = find_archives(target_path)
     if not archives:
-        print("No supported archives found.")
+        logger.info("No supported archives found.")
         return 0
     if not args.quiet:
-        print(f"Found {len(archives)} archives")
+        logger.info(f"Found {len(archives)} archives")
     before = get_dir_size(target_path)
     processed_count = 0
     failed_count = 0
@@ -185,20 +187,20 @@ def main():
         after = get_dir_size(target_path)
         size_change = after - before
         size_change_mb = size_change / (1024 * 1024)
-        print(f"\n{'=' * 50}")
-        print("Summary:")
-        print(f"  Processed: {processed_count} archives")
+        logger.info(f"\n{'=' * 50}")
+        logger.info("Summary:")
+        logger.info(f"  Processed: {processed_count} archives")
         if failed_count > 0:
-            print(f"  Failed: {failed_count} archives")
-        print(f"  Initial size: {before / (1024 * 1024):.2f} MB")
-        print(f"  Final size:   {after / (1024 * 1024):.2f} MB")
-        print(f"  Size change:  {size_change_mb:+.2f} MB")
+            logger.info(f"  Failed: {failed_count} archives")
+        logger.info(f"  Initial size: {before / (1024 * 1024):.2f} MB")
+        logger.info(f"  Final size:   {after / (1024 * 1024):.2f} MB")
+        logger.info(f"  Size change:  {size_change_mb:+.2f} MB")
         if total_archive_size > 0:
             compression_ratio = total_extracted_size / total_archive_size
-            print(f"  Compression ratio: {compression_ratio:.2f}:1")
+            logger.info(f"  Compression ratio: {compression_ratio:.2f}:1")
     else:
-        print(f"\n{'=' * 50}")
-        print(f"DRY RUN: Would process {len(archives)} archives")
+        logger.info(f"\n{'=' * 50}")
+        logger.info(f"DRY RUN: Would process {len(archives)} archives")
     return 0
 
 

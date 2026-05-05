@@ -3,6 +3,8 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
+from loguru import logger
+
 INPUT_FILE = Path("urls.txt")
 OUTPUT_FILE = Path("filtered_urls.txt")
 EXT_PATTERN = re.compile(r"\.(min\.)?(js|css)$", re.IGNORECASE)
@@ -19,7 +21,7 @@ def is_static_asset(url: str) -> bool:
 
 def main():
     if not INPUT_FILE.exists():
-        print("urls.txt not found.")
+        logger.info("urls.txt not found.")
         return
     seen = set()
     filtered = []
@@ -30,8 +32,8 @@ def main():
                 seen.add(url)
                 filtered.append(url)
     OUTPUT_FILE.write_text("\n".join(filtered), encoding="utf-8")
-    print(f"Kept {len(filtered)} URLs.")
-    print(f"Saved to {OUTPUT_FILE}")
+    logger.info(f"Kept {len(filtered)} URLs.")
+    logger.info(f"Saved to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

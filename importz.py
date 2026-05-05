@@ -3,6 +3,8 @@ import ast
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def is_python_file(path: Path) -> bool:
     if path.suffix == ".py":
@@ -50,9 +52,9 @@ def main():
             "\n".join(third_party),
             encoding="utf-8",
         )
-        print(f"✅ Saved {len(third_party)} 3rd-party imports to {output_file}")
+        logger.info(f"✅ Saved {len(third_party)} 3rd-party imports to {output_file}")
     else:
-        print("ℹ️ No 3rd-party imports found.")
+        logger.info("ℹ️ No 3rd-party imports found.")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
-import os
 import sys
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def extract_links(url: str):
@@ -47,7 +48,7 @@ def main():
     args = parser.parse_args()
     url = args.url or input("Enter URL: ").strip()
     if not url.startswith(("http://", "https://")):
-        print(
+        logger.info(
             "Error: URL must start with http:// or https://",
             file=sys.stderr,
         )
@@ -55,7 +56,7 @@ def main():
     try:
         links = extract_links(url)
     except Exception as e:
-        print(
+        logger.info(
             f"Failed to fetch or parse URL: {e}",
             file=sys.stderr,
         )
@@ -67,7 +68,7 @@ def main():
         save_links("all_links.txt", links)
         return
     save_links("all_links.txt", links)
-    print(f"Total links     : {len(links)}: {internal} + {external}")
+    logger.info(f"Total links     : {len(links)}: {internal} + {external}")
 
 
 if __name__ == "__main__":

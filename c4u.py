@@ -5,7 +5,9 @@ import re
 import sys
 import urllib.parse
 from pathlib import Path
+
 import requests
+from loguru import logger
 from packaging.version import Version
 from termcolor import cprint
 
@@ -19,7 +21,7 @@ def parse_version_obj(s):
 
 
 def extract_links(html_text):
-    pattern = re.compile(r'<a\s+[^>]*href=(["\'])(?P<href>.*?)\1[^>]*>(?P<text>.*?)</a>', re.I | re.S)
+    pattern = re.compile(r'<a\s+[^>]*href=(["\'])(?P<href>.*?)\1[^>]*>(?P<text>.*?)</a>', re.IGNORECASE | re.DOTALL)
     for m in pattern.finditer(html_text):
         href = _html.unescape(m.group("href")).strip()
         text = _html.unescape(re.sub(r"<[^>]+>", "", m.group("text"))).strip()
@@ -53,6 +55,13 @@ def ext_priority(fname) -> int:
 
 def extract_latest_version_link(html_text):
     entries = []
+    rev_html = html_text[::-1]
+    target_line = ""
+    for k in rev_html:
+        if "<a href" in k:
+            logger.info(k)
+            target_line = k
+            break
     for href, text in extract_links(html_text):
         href = href.split('"')[0].split("'")[0]
         fname = filename_from_href(href) or text
@@ -66,7 +75,7 @@ def extract_latest_version_link(html_text):
         pr = ext_priority(fname)
         entries.append((ver_obj, pr, href, fname))
     if not entries:
-        print("no versioned links found", file=sys.stderr)
+        logger.info("no versioned links found", file=sys.stderr)
         sys.exit(1)
     best = max(entries, key=lambda e: (e[0], -e[1]))
     return best[2]

@@ -4,6 +4,8 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
 
 
@@ -13,7 +15,7 @@ def parse_minutes() -> float:
     try:
         return float(sys.argv[1])
     except ValueError:
-        print("Invalid argument. Usage: script.py [minutes]")
+        logger.info("Invalid argument. Usage: script.py [minutes]")
         sys.exit(1)
 
 
@@ -38,7 +40,7 @@ def main() -> None:
         newct[pth] = ctime
         path_str = str(pth.relative_to(cwd))
         max_path_len = max(len(path_str), 20)
-        print(f"{path_str:<{max_path_len}}", end=" ")
+        logger.info(f"{path_str:<{max_path_len}}", end=" ")
         cprint(f"{ctime}", "yellow")
 
 

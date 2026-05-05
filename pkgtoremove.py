@@ -4,6 +4,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_installed_packages():
     installed_packages = []
@@ -72,10 +74,10 @@ def main():
         used_packages,
         top_n=100,
     )
-    print("Top unused packages (sorted by size):")
+    logger.info("Top unused packages (sorted by size):")
     for pkg, size in suggestions:
         if ("python" not in str(pkg)) and ("l8b" not in str(pkg)) and ("static" not in str(pkg)):
-            print(f"{pkg}: {size / 1024} MB")
+            logger.info(f"{pkg}: {size / 1024} MB")
 
 
 if __name__ == "__main__":

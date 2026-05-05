@@ -2,7 +2,9 @@
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import requests
+from loguru import logger
 
 
 def has_native_wheels(info) -> bool:
@@ -40,7 +42,7 @@ def check_package(name) -> tuple:
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print("Usage: python detect_pure_python.py <package_list.txt>")
+        logger.info("Usage: python detect_pure_python.py <package_list.txt>")
         sys.exit(1)
     infile = sys.argv[1]
     pure = set()
@@ -61,10 +63,10 @@ def main() -> None:
     Path("pure_python.txt").write_text("\n".join(sorted(pure)), encoding="utf-8")
     Path("native_extensions.txt").write_text("\n".join(sorted(native)), encoding="utf-8")
     Path("not_found.txt").write_text("\n".join(sorted(missing)), encoding="utf-8")
-    print("Done!")
-    print(f"Pure Python: {len(pure)}")
-    print(f"Native-required: {len(native)}")
-    print(f"Not found: {len(missing)}")
+    logger.info("Done!")
+    logger.info(f"Pure Python: {len(pure)}")
+    logger.info(f"Native-required: {len(native)}")
+    logger.info(f"Not found: {len(missing)}")
 
 
 if __name__ == "__main__":

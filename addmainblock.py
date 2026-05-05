@@ -3,7 +3,10 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 MAINBLOCK = r'if __name__ == "__main__":'
@@ -16,7 +19,7 @@ def process_file(filepath):
     content = filepath.read_text(encoding="utf-8")
     content.splitlines()
     if MAINBLOCK not in content:
-        print(f"{filepath.name} dont have main block")
+        logger.info(f"{filepath.name} dont have main block")
 
 
 """
@@ -30,7 +33,7 @@ def process_file(filepath):
         with open(filepath, "a", encoding="utf-8") as f:
             f.writelines(lines_to_write)
     else:
-        print(f"__main__ block already present in: {filepath.name}")
+        logger.info(f"__main__ block already present in: {filepath.name}")
 """
 
 

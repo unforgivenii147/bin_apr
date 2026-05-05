@@ -4,8 +4,10 @@ import os
 import sys
 from collections import Counter
 from pathlib import Path
+
 import pycld2
 from dh import is_binary
+from loguru import logger
 
 
 class LanguageDetector:
@@ -78,10 +80,10 @@ class LanguageDetector:
     ):
         directory = Path(directory)
         if not directory.exists():
-            print(f"Error: Directory '{directory}' does not exist")
+            logger.info(f"Error: Directory '{directory}' does not exist")
             return
-        print(f"🔍 Scanning directory: {directory.absolute()}")
-        print("=" * 60)
+        logger.info(f"🔍 Scanning directory: {directory.absolute()}")
+        logger.info("=" * 60)
         for root, dirs, files in os.walk(directory):
             root_path = Path(root)
             dirs[:] = [d for d in dirs if not d.startswith(".")]
@@ -91,7 +93,7 @@ class LanguageDetector:
                     continue
                 self.stats["total_files"] += 1
                 if show_progress:
-                    print(
+                    logger.info(
                         f"\n{filepath} [Files: {self.stats['total_files']}]",
                         end="",
                         flush=True,
@@ -124,27 +126,27 @@ class LanguageDetector:
                                 "confidence": percent,
                             }
                         )
-        print("\n" + "=" * 60)
+        logger.info("\n" + "=" * 60)
         self.report_results(only_report_non_english)
 
     def report_results(self, only_report_non_english=True):
-        print("\n📊 SCAN RESULTS")
-        print("=" * 60)
-        print(f"📁 Total files processed: {self.stats['total_files']}")
-        print(f"⏭️  Skipped binary files: {self.stats['skipped_binary']}")
-        print(f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}")
-        print(f"❌ Skipped (errors): {self.stats['skipped_error']}")
+        logger.info("\n📊 SCAN RESULTS")
+        logger.info("=" * 60)
+        logger.info(f"📁 Total files processed: {self.stats['total_files']}")
+        logger.info(f"⏭️  Skipped binary files: {self.stats['skipped_binary']}")
+        logger.info(f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}")
+        logger.info(f"❌ Skipped (errors): {self.stats['skipped_error']}")
         if only_report_non_english:
-            print(f"🌍 Non-English files found: {len(self.stats['non_english'])}")
+            logger.info(f"🌍 Non-English files found: {len(self.stats['non_english'])}")
         else:
-            print(f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}")
+            logger.info(f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}")
         if self.stats["languages"]:
-            print("\n📈 Language Distribution:")
+            logger.info("\n📈 Language Distribution:")
             for lang, count in self.stats["languages"].most_common():
-                print(f"  • {lang}: {count} files")
+                logger.info(f"  • {lang}: {count} files")
         if self.stats["non_english"]:
-            print(f"\n📝 Non-English Files ({len(self.stats['non_english'])}):")
-            print("-" * 60)
+            logger.info(f"\n📝 Non-English Files ({len(self.stats['non_english'])}):")
+            logger.info("-" * 60)
             non_english_by_lang = {}
             for item in self.stats["non_english"]:
                 lang = item["language"]
@@ -152,16 +154,16 @@ class LanguageDetector:
                     non_english_by_lang[lang] = []
                 non_english_by_lang[lang].append(item)
             for lang, files in sorted(non_english_by_lang.items()):
-                print(f"\n  [{lang}] - {len(files)} files:")
+                logger.info(f"\n  [{lang}] - {len(files)} files:")
                 for item in files[:10]:
                     reliability = "✓" if item["reliable"] else "?"
                     confidence = item["confidence"] or 0
                     rel_str = f"[{reliability} {confidence}%]" if confidence else "[?]"
-                    print(f"    {rel_str} {item['file']}")
+                    logger.info(f"    {rel_str} {item['file']}")
                 if len(files) > 10:
-                    print(f"    ... and {len(files) - 10} more")
+                    logger.info(f"    ... and {len(files) - 10} more")
         else:
-            print("\n✅ No non-English files found!")
+            logger.info("\n✅ No non-English files found!")
 
 
 def main():
@@ -220,17 +222,17 @@ def main():
             redirect_stdout(f),
         ):
             detector.report_results(only_report_non_english=not args.all)
-        print(f"\n✅ Results saved to: {args.output}")
+        logger.info(f"\n✅ Results saved to: {args.output}")
 
 
 if __name__ == "__main__":
     try:
         import pycld2
     except ImportError:
-        print("Error: pycld2 is not installed. Install it with:")
-        print("  pip install pycld2")
-        print("\nOn Termux, you might need:")
-        print("  pkg install clang")
-        print("  pip install pycld2")
+        logger.info("Error: pycld2 is not installed. Install it with:")
+        logger.info("  pip install pycld2")
+        logger.info("\nOn Termux, you might need:")
+        logger.info("  pkg install clang")
+        logger.info("  pip install pycld2")
         sys.exit(1)
     main()

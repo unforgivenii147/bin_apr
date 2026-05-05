@@ -5,6 +5,8 @@ import sys
 import traceback
 from importlib.machinery import SourceFileLoader
 
+from loguru import logger
+
 if __name__ == "__main__":
     files = sys.argv[1:]
     has_failure = False
@@ -14,7 +16,7 @@ if __name__ == "__main__":
             SourceFileLoader(module_name, file).load_module()
         except Exception:
             has_failure = True
-            print(file)
+            logger.info(file)
             traceback.print_exc()
-            print()
+            logger.info()
     sys.exit(1 if has_failure else 0)

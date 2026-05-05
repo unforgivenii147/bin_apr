@@ -2,7 +2,9 @@
 import re
 import sys
 from pathlib import Path
+
 from dh import get_files, mpf
+from loguru import logger
 
 
 def process_file(path):
@@ -31,9 +33,9 @@ def process_file(path):
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
         path.write_text(result, encoding="utf-8")
-        print(f"✓  {path.name}")
+        logger.info(f"✓  {path.name}")
     except Exception as e:
-        print(f"✗ Error: {e}", file=sys.stderr)
+        logger.info(f"✗ Error: {e}", file=sys.stderr)
         return
 
 

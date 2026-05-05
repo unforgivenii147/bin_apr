@@ -3,9 +3,11 @@ import shutil
 import sys
 from importlib import metadata
 from pathlib import Path
+
+from dh import cprint
+from loguru import logger
 from packaging.utils import parse_wheel_filename
 from packaging.version import Version
-from termcolor import cprint
 
 WHL_DIR = Path("/sdcard/whl")
 DEST_DIR = Path("/sdcard/installed")
@@ -32,7 +34,7 @@ EXCLUDED_PACKAGES = {
 
 def ensure_venv():
     if sys.prefix == sys.base_prefix:
-        print("⚠ Not running inside a virtual environment.")
+        logger.info("⚠ Not running inside a virtual environment.")
         sys.exit(1)
 
 
@@ -52,7 +54,7 @@ def normalize(name: str) -> str:
 
 def main():
     if not WHL_DIR.exists():
-        print(f"Directory not found: {WHL_DIR}")
+        logger.info(f"Directory not found: {WHL_DIR}")
         return
     installed_pkgs = get_installed_packages()
     moved = 0
@@ -61,7 +63,7 @@ def main():
             dist_name, version, *_ = parse_wheel_filename(wheel.name)
             norm_name = normalize(dist_name)
             if norm_name in EXCLUDED_PACKAGES:
-                print(f"[EXCLUDED] {dist_name}=={version} → skipped")
+                logger.info(f"[EXCLUDED] {dist_name}=={version} → skipped")
                 continue
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
@@ -75,11 +77,13 @@ def main():
                 else:
                     wheel.unlink()
                     moved += 1
-                    print(f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed")
+                    logger.info(
+                        f"[DIFF VERSION] {dist_name} (installed {installed_version}, wheel {version}) -> removed"
+                    )
         except Exception as e:
-            print(f"[ERROR] {wheel.name}: {e}")
+            logger.info(f"[ERROR] {wheel.name}: {e}")
             shutil.move(str(wheel), DEST_DIR2 / wheel.name)
-    print(f"\nDone. Removed {moved} wheel(s).")
+    logger.info(f"\nDone. Removed {moved} wheel(s).")
 
 
 if __name__ == "__main__":

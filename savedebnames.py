@@ -2,6 +2,8 @@
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def save_installed_packages(output_file="installed.txt"):
     try:
@@ -18,13 +20,13 @@ def save_installed_packages(output_file="installed.txt"):
         )
         installed_packages = result.stdout.splitlines()
         Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
-        print(f"Installed package names saved to '{output_file}'")
+        logger.info(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
-        print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
+        logger.info("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
     except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to retrieve installed packages. {e}")
+        logger.info(f"Error: Failed to retrieve installed packages. {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.info(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ import argparse
 import csv
 from pathlib import Path
 
+from loguru import logger
+
 
 def sort_packages_by_size(filename: str):
     with Path(filename).open(newline="", encoding="utf-8") as f:
@@ -10,7 +12,7 @@ def sort_packages_by_size(filename: str):
         rows = list(reader)
         fieldnames = reader.fieldnames
     if "Installed-Size" not in fieldnames:
-        print("Error: 'Installed-Size' column not found in CSV")
+        logger.info("Error: 'Installed-Size' column not found in CSV")
         return
     rows.sort(
         key=lambda x: int(x.get("Installed-Size") or 0),
@@ -20,7 +22,7 @@ def sort_packages_by_size(filename: str):
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-    print(f"File '{filename}' sorted by Installed-Size and overwritten.")
+    logger.info(f"File '{filename}' sorted by Installed-Size and overwritten.")
 
 
 if __name__ == "__main__":

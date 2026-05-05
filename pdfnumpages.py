@@ -2,8 +2,10 @@
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 import pdfplumber
 from fastwalk import walk_files
+from loguru import logger
 
 
 def process_file(fp):
@@ -12,15 +14,15 @@ def process_file(fp):
         with pdfplumber.open(fp) as pdf:
             numpages = len(pdf.pages)
             new_name = fp.stem + str(numpages) + ".pdf"
-            print(new_name)
+            logger.info(new_name)
             np = Path(f"{fp.parent}/{new_name}")
             if str(numpages) in fp.stem:
                 return
             if not np.exists():
                 Path(fp).rename(np)
-                print(f"{fp.name} --> {np.name}")
+                logger.info(f"{fp.name} --> {np.name}")
             else:
-                print(f"{np.name} exists.")
+                logger.info(f"{np.name} exists.")
     return
 
 

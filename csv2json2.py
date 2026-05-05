@@ -4,11 +4,13 @@ import json
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def csv_to_json(csv_file):
     csv_path = Path(csv_file)
     if not csv_path.exists():
-        print(f"Error: file not found: {csv_path}")
+        logger.info(f"Error: file not found: {csv_path}")
         sys.exit(1)
     json_path = csv_path.with_suffix(".json")
     with csv_path.open(newline="", encoding="utf-8") as f:
@@ -22,12 +24,12 @@ def csv_to_json(csv_file):
             ensure_ascii=False,
             sort_keys=True,
         )
-    print(f"Converted (pretty JSON): {csv_path} → {json_path}")
+    logger.info(f"Converted (pretty JSON): {csv_path} → {json_path}")
 
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file.csv>")
+        logger.info(f"Usage: {sys.argv[0]} <file.csv>")
         sys.exit(1)
     csv_to_json(sys.argv[1])
 

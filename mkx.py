@@ -1,12 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import stat
 from pathlib import Path
+from dh import is_binary
 
 
 def should_skip(fp):
-    if not fp.is_file() or ".git" in fp.parts or fp.name.startswith("."):
-        return True
-    return False
+    return bool(not fp.is_file() or ".git" in fp.parts)
 
 
 def has_shebang(path: Path) -> bool:
@@ -18,22 +17,39 @@ def has_shebang(path: Path) -> bool:
         return False
 
 
-def make_executable(path: Path) -> None:
+def make_exec(path: Path) -> None:
     current_mode = path.stat().st_mode
     executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
     new_mode = current_mode | executable_bits
     path.chmod(new_mode)
 
 
-def process_directory(root: Path) -> None:
-    for path in root.rglob("*"):
+def is_exec(path: Path) -> None:
+    return bool(path.stat().st_mode & stat.S_IXUSR)
+
+
+def process_directory(cwd: Path) -> None:
+    for path in cwd.rglob("*"):
         if should_skip(path):
             continue
+        pardir = path.parent.name
+        if pardir in {"sbin", "bin"} and not is_exec(path):
+            make_exec(path)
+            print(f"[+] Made executable: {path.relative_to(cwd)}")
+            continue
+        if not path.suffix or is_binary(path):
+            if path.name == "control" or "share" in path.parts:
+                continue
+            if not is_exec(path):
+                #                ans=input(f"mkx this one?\n {path}\n")
+                #                if ans=="y":
+                make_exec(path)
+                print(f"[+] Made executable: {path.relative_to(cwd)}")
+                continue
         if has_shebang(path):
-            mode = path.stat().st_mode
-            if not (mode & stat.S_IXUSR):
-                make_executable(path)
-                print(f"[+] Made executable: {path}")
+            if not is_exec(path):
+                make_exec(path)
+                print(f"[+] Made executable: {path.relative_to(cwd)}")
             else:
                 print(f"[=] Already executable: {path}")
 

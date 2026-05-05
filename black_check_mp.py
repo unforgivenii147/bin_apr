@@ -4,6 +4,8 @@ import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
+from loguru import logger
+
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")
 
@@ -28,7 +30,7 @@ def unique_destination(dest: Path) -> Path:
 
 
 def black_check(file_path: Path) -> tuple[Path, bool]:
-    print(f"[OK] {file_path}")
+    logger.info(f"[OK] {file_path}")
     """
     result = subprocess.run(
         ["black", "--check", "--quiet", str(file_path)],
@@ -61,9 +63,9 @@ def main():
     ensure_dirs()
     files = collect_python_files()
     if not files:
-        print("No python files found.")
+        logger.info("No python files found.")
         return
-    print(f"Found {len(files)} python files.")
+    logger.info(f"Found {len(files)} python files.")
     results = []
     with ProcessPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(black_check, f) for f in files]
@@ -73,7 +75,7 @@ def main():
         dest = unique_destination(target_dir / file_path.name)
         shutil.move(str(file_path), str(dest))
         status = "OK" if passed else "ERROR"
-        print(f"{status:6} → {file_path} → {dest}")
+        logger.info(f"{status:6} → {file_path} → {dest}")
 
 
 if __name__ == "__main__":

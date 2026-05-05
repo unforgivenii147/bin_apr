@@ -4,6 +4,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from loguru import logger
+
 
 def fetch_content_length(url: str) -> int | None:
     request = urllib.request.Request(url, method="HEAD")
@@ -35,7 +37,7 @@ def fsz(size_bytes: int) -> str:
 def process_url(url: str) -> str:
     try:
         size = fetch_content_length(url)
-        print(f"{url[:25]}:{size / (1024 * 1024)} mb")
+        logger.info(f"{url[:25]}:{size / (1024 * 1024)} mb")
         if size is None:
             return f"{url}\tUnknown"
         return f"{url}\t{fsz(size)}"
@@ -58,9 +60,9 @@ def main() -> None:
             "\n".join(updated_lines),
             encoding="utf-8",
         )
-        print(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
+        logger.info(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
     else:
-        print(process_url(args.input))
+        logger.info(process_url(args.input))
 
 
 if __name__ == "__main__":

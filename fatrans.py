@@ -6,12 +6,14 @@ import sys
 from difflib import get_close_matches
 from pathlib import Path
 
+from loguru import logger
+
 DICT_FILE = "/sdcard/isaac/dic.json"
 
 
 def load_dictionary(path: Path):
     if not path.exists():
-        print(
+        logger.info(
             f"Error: {path} not found",
             file=sys.stderr,
         )
@@ -54,18 +56,18 @@ def fuzzy_search(word, all_words, limit=5, cutoff=0.6):
 def interactive_mode(fa_en, en_fa):
     all_words = set(fa_en) | set(en_fa)
     setup_readline(all_words)
-    print("Offline Persian ↔ English Translator")
-    print("TAB for suggestions, Ctrl+C to exit\n")
+    logger.info("Offline Persian ↔ English Translator")
+    logger.info("TAB for suggestions, Ctrl+C to exit\n")
     while True:
         try:
             word = input("> ").strip()
         except (KeyboardInterrupt, EOFError):
-            print("\nBye.")
+            logger.info("\nBye.")
             break
         if not word:
             continue
         result = translate(word, fa_en, en_fa)
-        print(result or "Not found")
+        logger.info(result or "Not found")
 
 
 def main():
@@ -89,24 +91,24 @@ def main():
     if args.prefix:
         matches = prefix_search(args.prefix, all_words)
         if matches:
-            print("\n".join(matches))
+            logger.info("\n".join(matches))
             sys.exit(0)
-        print("No matches", file=sys.stderr)
+        logger.info("No matches", file=sys.stderr)
         sys.exit(1)
     if args.fuzzy:
         matches = fuzzy_search(args.fuzzy, all_words)
         if matches:
-            print("\n".join(matches))
+            logger.info("\n".join(matches))
             sys.exit(0)
-        print("No close matches", file=sys.stderr)
+        logger.info("No close matches", file=sys.stderr)
         sys.exit(1)
     if args.word:
         word = " ".join(args.word).strip()
         result = translate(word, fa_en, en_fa)
         if result:
-            print(result)
+            logger.info(result)
             sys.exit(0)
-        print("Not found", file=sys.stderr)
+        logger.info("Not found", file=sys.stderr)
         sys.exit(1)
     interactive_mode(fa_en, en_fa)
 

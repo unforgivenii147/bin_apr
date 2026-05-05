@@ -2,6 +2,8 @@
 import re
 from pathlib import Path
 
+from loguru import logger
+
 REMOTE_PREFIXES = ("http://", "https://", "//")
 IMG_TAG_RE = re.compile(
     r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>',
@@ -10,6 +12,7 @@ IMG_TAG_RE = re.compile(
 
 
 def remove_remote_html_images(text: str) -> str:
+
     def repl(match):
         src = match.group(1)
         if src.startswith(REMOTE_PREFIXES):
@@ -29,6 +32,7 @@ RST_IMG_RE = re.compile(
 
 
 def remove_remote_md_images(text: str) -> str:
+
     def inline_repl(match):
         url = match.group(1)
         if url.startswith(REMOTE_PREFIXES):
@@ -75,7 +79,7 @@ def process_file(path: Path):
         modified = remove_remote_md_images(modified)
     if modified != original:
         path.write_text(modified, encoding="utf-8")
-        print(f"Modified: {path}")
+        logger.info(f"Modified: {path}")
 
 
 def main():

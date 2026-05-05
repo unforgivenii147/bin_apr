@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import json
-import pathlib
+from pathlib import Path
 import re
 import time
+
 import requests
 from dh import get_installed_packages
+from loguru import logger
 from packaging.version import Version
 from termcolor import cprint
 
@@ -15,7 +17,7 @@ RESULTS_FILE = "/sdcard/c4u.json"
 
 
 def save_output(text, pkg):
-    pathlib.Path(f"/sdcard/whl/json/{pkg}.html").write_text(text, encoding="utf-8")
+    Path(f"/sdcard/whl/json/{pkg}.html").write_text(text, encoding="utf-8")
 
 
 def get_latest_version(pkg_name: str) -> str | None:
@@ -33,21 +35,21 @@ def get_latest_version(pkg_name: str) -> str | None:
         re.IGNORECASE,
     )
     versions = []
-    print(html[:-100])
+    logger.info(html[:-100])
     for match in wheel_pattern.finditer(html):
         version_str = match.group(1)
         with contextlib.suppress(BaseException):
             versions.append(Version(version_str))
     max_ver = str(max(versions)) if versions else None
     if max_ver is not None:
-        print(f"{pkg_name}:{max_ver}")
+        logger.info(f"{pkg_name}:{max_ver}")
     return max_ver
 
 
 def load_previous_results() -> dict[str, dict]:
-    if pathlib.Path(RESULTS_FILE).exists():
+    if Path(RESULTS_FILE).exists():
         try:
-            with pathlib.Path(RESULTS_FILE).open(encoding="utf-8") as f:
+            with Path(RESULTS_FILE).open(encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError:
             cprint(
@@ -59,7 +61,7 @@ def load_previous_results() -> dict[str, dict]:
 
 
 def save_results(results: dict[str, dict]):
-    with pathlib.Path(RESULTS_FILE).open("w", encoding="utf-8") as f:
+    with Path(RESULTS_FILE).open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)
 
 

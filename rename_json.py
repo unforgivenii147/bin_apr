@@ -3,6 +3,8 @@ import json
 import os
 from pathlib import Path
 
+from loguru import logger
+
 
 def rename_pypi_metadata_files():
     files = [f for f in os.listdir(".") if f.endswith(".json")]
@@ -18,16 +20,16 @@ def rename_pypi_metadata_files():
             if pkg_name:
                 new_name = f"{pkg_name}.json"
                 if filename == new_name:
-                    print(f"Skipping: {filename} is already correctly named.")
+                    logger.info(f"Skipping: {filename} is already correctly named.")
                     continue
                 Path(filename).rename(new_name)
-                print(f"Renamed: {filename} -> {new_name}")
+                logger.info(f"Renamed: {filename} -> {new_name}")
             else:
-                print(f"Warning: Could not find package name in {filename}")
+                logger.info(f"Warning: Could not find package name in {filename}")
         except json.JSONDecodeError:
-            print(f"Error: {filename} is not a valid JSON file.")
+            logger.info(f"Error: {filename} is not a valid JSON file.")
         except Exception as e:
-            print(f"An error occurred with {filename}: {e}")
+            logger.info(f"An error occurred with {filename}: {e}")
 
 
 if __name__ == "__main__":

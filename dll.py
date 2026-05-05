@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def delete_lines_from_file():
     filename = sys.argv[1]
@@ -15,7 +17,7 @@ def delete_lines_from_file():
         toline = len(lines)
     new_lines = lines[: fromline - 1] + lines[toline:]
     path.write_text("\n".join(new_lines), encoding="utf-8")
-    print(f"remained: {len(new_lines)} lines")
+    logger.info(f"remained: {len(new_lines)} lines")
 
 
 if __name__ == "__main__":

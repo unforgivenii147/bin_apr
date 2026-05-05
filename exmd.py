@@ -3,6 +3,8 @@ import os
 import re
 from pathlib import Path
 
+from loguru import logger
+
 OUTPUT_DIR = Path("output")
 if not OUTPUT_DIR.exists():
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -81,24 +83,22 @@ def process_markdown_files(directory="."):
             if file.endswith((".md", ".markdown", ".metadata", "METADATA", "PKGINFO", "PKG-INFO")):
                 filepath = os.path.join(root, file)
                 try:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        content = f.read()
+                    content = Path(filepath).read_text(encoding="utf-8")
                 except Exception as e:
-                    print(f"Error reading {filepath}: {e}")
+                    logger.info(f"Error reading {filepath}: {e}")
                     continue
                 code_details = extract_code_snippets_with_details(content)
                 if code_details:
                     base_name = os.path.splitext(file)[0]
-                    for i, details in enumerate(code_details):
+                    for _i, details in enumerate(code_details):
                         line_range = f"{details['start_line']}-{details['end_line']}"
                         language = details["language"]
                         extension = get_extension_from_language(language)
                         # Create a unique filename
                         output_filename = f"output/{base_name}_lines_{line_range}{extension}"
                         output_path = os.path.join(root, output_filename)
-                        with open(output_path, "w", encoding="utf-8") as snippet_file:
-                            snippet_file.write(details["content"].strip())
-                        print(
+                        Path(output_path).write_text(details["content"].strip(), encoding="utf-8")
+                        logger.info(
                             f"Saved snippet from {filepath} (Lines {line_range}, Lang: '{language}') to {output_path}"
                         )
 

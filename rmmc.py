@@ -4,7 +4,9 @@ import re
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 from dh import get_nobinary, is_binary
+from loguru import logger
 
 
 def process_file(file_path: Path) -> None:
@@ -19,15 +21,15 @@ def process_file(file_path: Path) -> None:
             ast.parse(orig)
             file_path.write_text(orig, encoding="utf-8")
             after = gsz(file_path)
-            print(f"{file_path.name} ", end=" ")
-            print(fsz(before - after))
+            logger.info(f"{file_path.name} ", end=" ")
+            logger.info(fsz(before - after))
         except:
             return
     else:
         file_path.write_text(orig, encoding="utf-8")
         after = gsz(file_path)
-        print(f"{file_path.name} ", end=" ")
-        print(fsz(before - after))
+        logger.info(f"{file_path.name} ", end=" ")
+        logger.info(fsz(before - after))
 
 
 def main():
@@ -41,7 +43,7 @@ def main():
     p.close()
     p.join()
     diff_size = before - gsz(cwd)
-    print(f"space change: {fsz(diff_size)}")
+    logger.info(f"space change: {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

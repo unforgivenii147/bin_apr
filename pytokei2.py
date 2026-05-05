@@ -1,12 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 
+from loguru import logger
+
 
 def count_lines_of_code(file_path, lang):
     if ".git" in str(file_path):
         return 0, 0, 0
     if is_binary(file_path):
-        print(f"{file_path} is binary")
+        logger.info(f"{file_path} is binary")
         return 0, 0, 0
     with Path(file_path).open(encoding="utf-8") as file:
         code_lines = 0
@@ -80,8 +82,7 @@ def scan_directory(directory="."):
 
 def display_stats(stats) -> None:
     for lang_stats in stats["languages"].values():
-        if lang_stats["code"] > 0:
-            pass
+        lang_stats["code"] > 0
 
 
 if __name__ == "__main__":

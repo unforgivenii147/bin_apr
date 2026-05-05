@@ -4,13 +4,15 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def parse_tree_file(tree_path):
     """
     Parse a tree diagram text file and return a nested structure.
     Returns a list of tuples: (path_parts, is_file)
     """
-    with open(tree_path, "r", encoding="utf-8") as f:
+    with Path(tree_path).open("r", encoding="utf-8") as f:
         lines = f.readlines()
     lines = [line.rstrip() for line in lines if line.strip()]
     # e.g., "dictionary-webapp/", or lines starting with '├──'/'└──'/'│'
@@ -27,7 +29,7 @@ def parse_tree_file(tree_path):
         match = re.match(r"^([├└│ ]*)([├└]──\s*)?(\S.*)$", line)
         if not match:
             continue  # Skip malformed lines
-        prefix, marker, name = match.groups()
+        prefix, _marker, name = match.groups()
         name = name.strip()
         if name.startswith("#") or name == "":
             continue
@@ -44,9 +46,9 @@ def parse_tree_file(tree_path):
         # - Else, it's a file
         # For simplicity, we assume: if name contains '/', treat as directory
         # Otherwise, we treat it as a file unless explicitly marked with '/'.
-        is_dir = name.endswith("/") or not "." in os.path.basename(name) or any(c in name for c in ["/", "\\"])
+        is_dir = name.endswith("/") or "." not in Path(name).name or any(c in name for c in ["/", "\\"])
         name = name.rstrip("/")
-        full_path = current_path + [name]
+        full_path = [*current_path, name]
         entries.append((indent, full_path, is_dir))
         if is_dir:
             stack.append((indent, full_path))
@@ -56,7 +58,7 @@ def parse_tree_file(tree_path):
 def create_tree_from_entries(entries):
     """Create actual folders and files from parsed entries."""
     created_dirs = set()
-    for indent, path_parts, is_dir in entries:
+    for _indent, path_parts, is_dir in entries:
         # Skip root (first entry, usually just the project name)
         if len(path_parts) == 1 and path_parts[0] == "dictionary-webapp":
             continue
@@ -73,18 +75,18 @@ def create_tree_from_entries(entries):
 
 def main():
     tree_file = sys.argv[1]
-    if not os.path.exists(tree_file):
-        print(f"❌ Error: '{tree_file}' not found in current directory.")
+    if not Path(tree_file).exists():
+        logger.info(f"❌ Error: '{tree_file}' not found in current directory.")
         return
-    print(f"📖 Parsing '{tree_file}'...")
+    logger.info(f"📖 Parsing '{tree_file}'...")
     entries = parse_tree_file(tree_file)
     if not entries:
-        print("⚠️  No valid entries found in tree file.")
+        logger.info("⚠️  No valid entries found in tree file.")
         return
-    print(f"✅ Parsed {len(entries)} entries.")
-    print("📁 Creating folder structure...")
+    logger.info(f"✅ Parsed {len(entries)} entries.")
+    logger.info("📁 Creating folder structure...")
     create_tree_from_entries(entries)
-    print("✨ Done! Folder structure created successfully.")
+    logger.info("✨ Done! Folder structure created successfully.")
 
 
 if __name__ == "__main__":

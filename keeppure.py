@@ -5,6 +5,8 @@ import site
 from multiprocessing import cpu_count
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_all_dist_info_dirs():
     dist_info_dirs = []
@@ -49,12 +51,12 @@ def get_binary_packages_parallel():
 
 def clean_requirements_txt(requirements_file="requirements.txt"):
     if not Path(requirements_file).exists():
-        print(f"Error: {requirements_file} not found")
+        logger.info(f"Error: {requirements_file} not found")
         return
     binary_packages = get_binary_packages_parallel()
     with Path("/sdcard/binary_pkgs").open("w", encoding="utf-8") as fbin:
         fbin.write("\n".join(binary_packages))
-        print("binary_pkgs created.")
+        logger.info("binary_pkgs created.")
     with Path(requirements_file).open(encoding="utf-8") as f:
         lines = [line.rstrip() for line in f]
     comments = [line for line in lines if line.startswith("#")]
@@ -71,11 +73,11 @@ def clean_requirements_txt(requirements_file="requirements.txt"):
         f.writelines(f"{comment}\n" for comment in comments)
         f.writelines(f"{pkg}\n" for pkg in sorted(pure_python))
     if removed:
-        print(f"\n🗑️  Removed binary packages ({len(removed)}):")
+        logger.info(f"\n🗑️  Removed binary packages ({len(removed)}):")
         for pkg in sorted(removed):
-            print(f"   - {pkg}")
+            logger.info(f"   - {pkg}")
     else:
-        print("✅ No binary packages found in requirements.txt")
+        logger.info("✅ No binary packages found in requirements.txt")
 
 
 if __name__ == "__main__":

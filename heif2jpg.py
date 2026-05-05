@@ -1,14 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import pillow_heif as ph
 from fastwalk import walk_files
+from loguru import logger
 
 
 def process_file(fp):
     if not fp.exists():
         return False
-    print(f"[OK] {fp.name}")
+    logger.info(f"[OK] {fp.name}")
     img = ph.open_heif(fp)
     outfile = fp.with_suffix(".jpg")
     img.save(outfile)
@@ -31,7 +33,7 @@ def main():
     pool.close()
     pool.join()
     after = gsz(cwd)
-    print(f"{fornat_size(after - start_size)}")
+    logger.info(f"{fornat_size(after - start_size)}")
 
 
 if __name__ == "__main__":

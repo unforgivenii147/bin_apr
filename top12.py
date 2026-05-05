@@ -3,6 +3,8 @@ import heapq
 import os
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_top_10_largest_files_optimized(directory="."):
     top_10 = []
@@ -24,4 +26,4 @@ def get_top_10_largest_files_optimized(directory="."):
 if __name__ == "__main__":
     top_10 = get_top_10_largest_files_optimized()
     for size, file_path in top_10:
-        print(f"{size} bytes - {file_path}")
+        logger.info(f"{size} bytes - {file_path}")

@@ -4,7 +4,9 @@ import multiprocessing
 import operator
 import os
 from pathlib import Path
+
 import tree_sitter_python as tspython
+from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 PY_LANGUAGE = Language(tspython.language())
@@ -79,17 +81,17 @@ def strip_file(file_path):
         except SyntaxError:
             pass
     except Exception as e:
-        print(f"Error in {file_path}: {e}")
+        logger.info(f"Error in {file_path}: {e}")
 
 
 def main():
     files = [os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs if f.endswith(".py")]
     if not files:
         return
-    print(f"Applying anchored query processing to {len(files)} files...")
+    logger.info(f"Applying anchored query processing to {len(files)} files...")
     with multiprocessing.get_context("spawn").Pool() as pool:
         pool.map(strip_file, files)
-    print("Done.")
+    logger.info("Done.")
 
 
 if __name__ == "__main__":

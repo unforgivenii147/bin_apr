@@ -2,6 +2,9 @@
 import ast
 import sys
 from pathlib import Path
+
+from loguru import logger
+
 from dhh import fsz, get_files, gsz, mpf
 
 
@@ -53,11 +56,11 @@ def process_file(fp):
         _ = ast.parse(result)
         fp.write_text(result, encoding="utf-8")
     except:
-        print("result code is not valid")
+        logger.info("result code is not valid")
         backup_path = fp.with_suffix(fp.suffix + ".bak")
         backup_path.write_text(data, encoding="utf-8")
         fp.write_text(result, encoding="utf-8")
-        print(f"backup created {backup_path.name}")
+        logger.info(f"backup created {backup_path.name}")
 
 
 def main():
@@ -70,7 +73,7 @@ def main():
         sys.exit(0)
     mpf(process_file, files)
     diff_size = before - gsz(cwd)
-    print(f"space saved : {fsz(diff_size)}")
+    logger.info(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

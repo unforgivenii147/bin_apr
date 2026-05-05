@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 import sys
-import tarfile
 from pathlib import Path
+
+from loguru import logger
 
 
 def compress_folder(folder_path: Path, output_path: Path):
@@ -17,24 +18,24 @@ def safe_remove(path: Path):
     try:
         if path.is_file():
             path.unlink()
-            print(f"Removed file: {path}")
+            logger.info(f"Removed file: {path}")
         elif path.is_dir():
             shutil.rmtree(path)
-            print(f"Removed directory: {path}")
+            logger.info(f"Removed directory: {path}")
     except Exception as e:
-        print(f"Error removing '{path}': {e}")
+        logger.info(f"Error removing '{path}': {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python tar_folder.py <folder_path>")
+        logger.info("Usage: python tar_folder.py <folder_path>")
         sys.exit(1)
     folder_to_compress = Path(sys.argv[1])
     if not folder_to_compress.exists():
-        print(f"Error: Folder '{folder_to_compress}' not found.")
+        logger.info(f"Error: Folder '{folder_to_compress}' not found.")
         sys.exit(1)
     if not folder_to_compress.is_dir():
-        print(f"Error: '{folder_to_compress}' is not a directory.")
+        logger.info(f"Error: '{folder_to_compress}' is not a directory.")
         sys.exit(1)
     output_tar_path = folder_to_compress.parent / f"{folder_to_compress.name}.tar"
     if compress_folder(folder_to_compress, output_tar_path):

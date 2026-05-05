@@ -3,7 +3,9 @@ import os
 import shutil
 import sys
 from pathlib import Path
+
 import ssdeep
+from loguru import logger
 
 
 def get_all_files(root="."):
@@ -23,7 +25,7 @@ def compute_hashes(files):
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
-            print(f"Skipping {f}: {e}")
+            logger.info(f"Skipping {f}: {e}")
     return hashes
 
 
@@ -57,29 +59,29 @@ def copy_groups(groups, output_dir="output"):
             try:
                 shutil.move(f, group_dir)
             except Exception as e:
-                print(f"Failed to copy {f}: {e}")
+                logger.info(f"Failed to copy {f}: {e}")
 
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <threshold>")
+        logger.info(f"Usage: {sys.argv[0]} <threshold>")
         sys.exit(1)
     try:
         threshold = int(sys.argv[1])
     except ValueError:
-        print("Threshold must be an integer (0–100).")
+        logger.info("Threshold must be an integer (0–100).")
         sys.exit(1)
     files = get_all_files(".")
-    print(f"Found {len(files)} files. Computing hashes...")
+    logger.info(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
-    print("Comparing files...")
+    logger.info("Comparing files...")
     groups = group_similar_files(hashes, threshold)
     if not groups:
-        print("No similar files found.")
+        logger.info("No similar files found.")
     else:
-        print(f"Found {len(groups)} groups of similar files.")
+        logger.info(f"Found {len(groups)} groups of similar files.")
         copy_groups(groups)
-        print("Copied groups to 'output' directory.")
+        logger.info("Copied groups to 'output' directory.")
 
 
 if __name__ == "__main__":

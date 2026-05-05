@@ -4,13 +4,15 @@ import re
 import shutil
 from pathlib import Path
 
+from loguru import logger
+
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 IMPORT_RE = re.compile(
     r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
-    re.I,
+    re.IGNORECASE,
 )
-URL_RE = re.compile(r'url\((["\']?)([^)]+)\1\)', re.I)
-RULE_RE = re.compile(r"([^{]+)\{([^}]*)\}", re.S)
+URL_RE = re.compile(r'url\((["\']?)([^)]+)\1\)', re.IGNORECASE)
+RULE_RE = re.compile(r"([^{]+)\{([^}]*)\}", re.DOTALL)
 FONT_EXTS = {
     ".woff",
     ".woff2",
@@ -59,6 +61,7 @@ def copy_asset(src, assets_dir):
 
 
 def rewrite_urls(css_text, css_dir, assets_dir):
+
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):
@@ -116,9 +119,9 @@ def main():
     merged = "\n\n".join(chunks)
     merged = deduplicate_rules(merged)
     Path(args.output).write_text(merged, encoding="utf-8")
-    print("Bundle complete.")
-    print("CSS:", args.output)
-    print("Assets:", assets_dir)
+    logger.info("Bundle complete.")
+    logger.info("CSS:", args.output)
+    logger.info("Assets:", assets_dir)
 
 
 if __name__ == "__main__":

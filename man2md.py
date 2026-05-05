@@ -4,6 +4,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def read_man_file(filename):
     try:
@@ -119,7 +121,7 @@ def man_to_markdown(content):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python man2md.py <manfile>")
+        logger.info("Usage: python man2md.py <manfile>")
         sys.exit(1)
     filename = sys.argv[1]
     raw = read_man_file(filename)
@@ -127,7 +129,7 @@ def main():
     base, _ = os.path.splitext(filename)
     outname = base + ".md"
     Path(outname).write_text(markdown, encoding="utf-8")
-    print(f"Converted {filename} → {outname}")
+    logger.info(f"Converted {filename} → {outname}")
 
 
 if __name__ == "__main__":

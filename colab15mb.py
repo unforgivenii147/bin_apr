@@ -3,7 +3,9 @@ import os
 import site
 import tarfile
 from pathlib import Path
+
 from google.colab import files
+from loguru import logger
 
 
 def gsz(path):
@@ -25,7 +27,7 @@ def compress_small_site_packages(max_size_mb=15):
             if Path(item_path).is_dir():
                 get_size_mb = gsz(item_path) / (1024 * 1024)
                 if get_size_mb <= max_size_mb:
-                    print(f"Including folder {item} ({get_size_mb:.2f} MB)")
+                    logger.info(f"Including folder {item} ({get_size_mb:.2f} MB)")
                     for (
                         root,
                         _dirs,
@@ -45,13 +47,13 @@ def compress_small_site_packages(max_size_mb=15):
             elif Path(item_path).is_file():
                 get_size_mb = Path(item_path).stat().st_size / (1024 * 1024)
                 if get_size_mb <= max_size_mb and not item.endswith(".pyc"):
-                    print(f"Including file {item} ({get_size_mb:.2f} MB)")
+                    logger.info(f"Including file {item} ({get_size_mb:.2f} MB)")
                     arcname = os.path.relpath(
                         item_path,
                         site_packages_dir,
                     )
                     tar.add(item_path, arcname=arcname)
-    print(f"Archive created: {output_file}")
+    logger.info(f"Archive created: {output_file}")
     files.download(output_file)
 
 

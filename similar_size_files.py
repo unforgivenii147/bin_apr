@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
 
 
@@ -20,7 +22,7 @@ def main() -> None:
         if len(v) > 1:
             cprint(f"{k}:", "cyan")
             for i in v:
-                print(f"    - {i}")
+                logger.info(f"    - {i}")
 
 
 if __name__ == "__main__":

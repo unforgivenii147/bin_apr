@@ -1,5 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import glob
+
+from loguru import logger
 from PIL import Image
 
 
@@ -17,9 +19,9 @@ def reduce_image_size(image_path, scale_factor=0.75) -> None:
                 optimize=True,
                 quality=85,
             )
-            print(f"Reduced: {image_path} ({img.width}x{img.height} -> {new_width}x{new_height})")
+            logger.info(f"Reduced: {image_path} ({img.width}x{img.height} -> {new_width}x{new_height})")
     except Exception as e:
-        print(f"Error processing {image_path}: {e!s}")
+        logger.info(f"Error processing {image_path}: {e!s}")
 
 
 def main() -> None:
@@ -36,12 +38,12 @@ def main() -> None:
         image_files.extend(glob.glob(extension))
         image_files.extend(glob.glob(extension.upper()))
     if not image_files:
-        print("No image files found in current directory.")
+        logger.info("No image files found in current directory.")
         return
-    print(f"Found {len(image_files)} image file(s) to process...")
+    logger.info(f"Found {len(image_files)} image file(s) to process...")
     for image_file in image_files:
         reduce_image_size(image_file)
-    print("All images processed!")
+    logger.info("All images processed!")
 
 
 if __name__ == "__main__":

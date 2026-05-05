@@ -2,9 +2,11 @@
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
-from fastwalk import walk_files
 from dh import is_binary
+from fastwalk import walk_files
+from loguru import logger
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
@@ -19,7 +21,7 @@ def translate_chunk(chunk: str) -> str:
     try:
         return GoogleTranslator(source="auto", target="en").translate(chunk)
     except Exception as e:
-        print(f"[ERROR] Chunk translation failed: {e}")
+        logger.info(f"[ERROR] Chunk translation failed: {e}")
         return chunk
 
 
@@ -28,43 +30,43 @@ def contains_non_english(text: str) -> bool:
 
 
 def translate_file(path: Path):
-    print(f"\n[INFO] Processing file: {path}")
+    logger.info(f"\n[INFO] Processing file: {path}")
     try:
         content = Path(path).read_text(encoding="utf-8")
     except Exception as e:
-        print(f"[ERROR] Cannot read file {path}: {e}")
+        logger.info(f"[ERROR] Cannot read file {path}: {e}")
         return
     if not contains_non_english(content):
-        print(f"[SKIP] File is already English: {path.name}")
+        logger.info(f"[SKIP] File is already English: {path.name}")
         return
-    print(f"[INFO] Non-English content detected in: {path.name}")
-    print(f"[INFO] Splitting into chunks of {CHUNK_SIZE} characters")
+    logger.info(f"[INFO] Non-English content detected in: {path.name}")
+    logger.info(f"[INFO] Splitting into chunks of {CHUNK_SIZE} characters")
     chunks = split_into_chunks(content, CHUNK_SIZE)
-    print(f"[INFO] Total chunks: {len(chunks)}")
-    print("[INFO] Translating chunks in parallel...")
+    logger.info(f"[INFO] Total chunks: {len(chunks)}")
+    logger.info("[INFO] Translating chunks in parallel...")
     with ThreadPoolExecutor(max_workers=8) as executor:
         translated_chunks = list(executor.map(translate_chunk, chunks))
     translated_text = "".join(translated_chunks)
     new_name = f"{path.stem}_eng{path.suffix}"
     new_path = path.parent / new_name
-    print(f"[INFO] Writing translated output to: {new_path}")
+    logger.info(f"[INFO] Writing translated output to: {new_path}")
     try:
         Path(new_path).write_text(translated_text, encoding="utf-8")
-        print(f"[DONE] Translated → {new_path.name}")
+        logger.info(f"[DONE] Translated → {new_path.name}")
     except Exception as e:
-        print(f"[ERROR] Failed to write output file {new_path}: {e}")
+        logger.info(f"[ERROR] Failed to write output file {new_path}: {e}")
 
 
 def process_directory(directory: str):
-    print(f"[INFO] Scanning directory: {directory}")
+    logger.info(f"[INFO] Scanning directory: {directory}")
     files = []
     for pth in walk_files(directory):
         path = Path(pth)
         if path.is_file() and not is_binary(path):
             files.append(path)
-            print(f"[FOUND] Text file: {path}")
-    print(f"\n[INFO] Total text files found: {len(files)}")
-    print("[INFO] Starting parallel file translation...\n")
+            logger.info(f"[FOUND] Text file: {path}")
+    logger.info(f"\n[INFO] Total text files found: {len(files)}")
+    logger.info("[INFO] Starting parallel file translation...\n")
     with ThreadPoolExecutor(max_workers=6) as executor:
         futures = {executor.submit(translate_file, f): f for f in files}
         for future in as_completed(futures):
@@ -72,7 +74,7 @@ def process_directory(directory: str):
             try:
                 future.result()
             except Exception as e:
-                print(f"[ERROR] Unexpected error processing {f}: {e}")
+                logger.info(f"[ERROR] Unexpected error processing {f}: {e}")
 
 
 if __name__ == "__main__":

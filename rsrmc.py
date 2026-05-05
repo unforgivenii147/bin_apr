@@ -1,10 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_rust
 from dh import clean_blank_lines
+from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
+
 from dhh import fsz, gsz
 
 EXCLUDE_PREFIXES = (b"#!/",)
@@ -13,7 +16,7 @@ parser.language = Language(tree_sitter_rust.language())
 
 
 def process_file(path: Path) -> None:
-    print(f"processing {path.name}")
+    logger.info(f"processing {path.name}")
     try:
         source = path.read_bytes()
         tree = parser.parse(source)
@@ -44,7 +47,7 @@ def process_file(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        print(f"[OK] {path.name}")
+        logger.info(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

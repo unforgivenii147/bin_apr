@@ -3,13 +3,15 @@ import os
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     cwd = Path.cwd()
     req = sys.argv[1].strip()
     found = [f for f in os.listdir(cwd) if f.startswith(req)]
     for k in found:
-        print(k)
+        logger.info(k)
 
 
 if __name__ == "__main__":

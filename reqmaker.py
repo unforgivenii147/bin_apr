@@ -4,6 +4,8 @@ import subprocess
 from collections.abc import Iterable
 from pathlib import Path
 
+from loguru import logger
+
 REQUIREMENTS_FILE = Path("requirements.txt")
 MISSING_PATTERN = re.compile(r"requires ([A-Za-z0-9_\-]+), which is not installed\.")
 BLACKLIST = {
@@ -80,27 +82,24 @@ def save_to_requirements(packages: Iterable[str]) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
     REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
-    print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
+    logger.info(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
 
 
 def main() -> None:
-    print("🔍 Running pip check...")
+    logger.info("🔍 Running pip check...")
     output = run_pip_check()
     if not output:
-        print("🎉 No issues found by pip check.")
+        logger.info("🎉 No issues found by pip check.")
         return
-    print("🔎 Parsing missing packages...")
+    logger.info("🔎 Parsing missing packages...")
     missing_packages = parse_missing_packages(output)
-    results = []
     if not missing_packages:
-        print("🎉 No missing libraries detected.")
+        logger.info("🎉 No missing libraries detected.")
         return
-    print("⚠️ Missing packages detected: ")
-    for pkg in missing_packages:
-        if pkg not in BLACKLIST:
-            results.append(pkg)
+    logger.info("⚠️ Missing packages detected: ")
+    results = [pkg for pkg in missing_packages if pkg not in BLACKLIST]
     for pkg in results:
-        print(f"    - {pkg}")
+        logger.info(f"    - {pkg}")
     save_to_requirements(results)
 
 

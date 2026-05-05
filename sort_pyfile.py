@@ -3,13 +3,15 @@ import ast
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def sort_python_script(file_path: Path):
     try:
         source_code = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source_code)
     except SyntaxError as e:
-        print(f"Error parsing Python code in {file_path}: {e}")
+        logger.info(f"Error parsing Python code in {file_path}: {e}")
         return
     constants = []
     classes = []
@@ -49,27 +51,27 @@ def sort_python_script(file_path: Path):
 
         sorted_code = astunparse.unparse(new_tree)
     except ImportError:
-        print("Warning: 'astunparse' library not found. Trying built-in 'ast.unparse' (Python 3.9+).")
+        logger.info("Warning: 'astunparse' library not found. Trying built-in 'ast.unparse' (Python 3.9+).")
         try:
             sorted_code = ast.unparse(new_tree)
         except AttributeError:
-            print("Error: Your Python version is too old to have 'ast.unparse'.")
-            print("Please install the 'astunparse' library: pip install astunparse")
+            logger.info("Error: Your Python version is too old to have 'ast.unparse'.")
+            logger.info("Please install the 'astunparse' library: pip install astunparse")
             return
     except Exception as e:
-        print(f"Error converting AST back to code: {e}")
+        logger.info(f"Error converting AST back to code: {e}")
         return
     try:
         with file_path.open("w", encoding="utf-8") as f:
             f.write(sorted_code)
-        print(f"Successfully sorted and saved: {file_path}")
+        logger.info(f"Successfully sorted and saved: {file_path}")
     except Exception as e:
-        print(f"Error writing sorted code back to {file_path}: {e}")
+        logger.info(f"Error writing sorted code back to {file_path}: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python sort_script.py <path_to_python_script>")
+        logger.info("Usage: python sort_script.py <path_to_python_script>")
         sys.exit(1)
     script_path = Path(sys.argv[1])
     sort_python_script(script_path)

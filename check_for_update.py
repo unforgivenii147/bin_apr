@@ -1,20 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 import os
-import pathlib
+from pathlib import Path
 import re
 import sys
 from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
     """
     Fetches the latest version, URL, and HTML content for a given package from a PyPI mirror.
+
     Args:
         pkg_name: The name of the package.
         mirror_url: The base URL of the PyPI mirror.
+
     Returns:
         A dictionary containing package name, latest version, URL of the latest version,
         and the HTML content, or None if an error occurs.
@@ -32,9 +36,9 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         response.raise_for_status()  # Raise an exception for bad status codes
         output_data["html_content"] = response.text
         output_dir = "output"
-        if not pathlib.Path(output_dir).exists():
-            pathlib.Path(output_dir).mkdir(parents=True)
-        pathlib.Path(os.path.join(output_dir, f"{pkg_name}_debug.html")).write_text(response.text, encoding="utf-8")
+        if not Path(output_dir).exists():
+            Path(output_dir).mkdir(parents=True)
+        Path(os.path.join(output_dir, f"{pkg_name}_debug.html")).write_text(response.text, encoding="utf-8")
         soup = BeautifulSoup(response.text, "html.parser")
         links = soup.find_all("a")
         if not links:
@@ -94,29 +98,29 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python script_name.py <path_to_package_list_file>")
+        logger.info("Usage: python script_name.py <path_to_package_list_file>")
         sys.exit(1)
     package_list_file = sys.argv[1]
     mirror_url = "https://mirror-pypi.runflare.com"
     output_json_file = "package_versions.json"
     all_results = []
     try:
-        with pathlib.Path(package_list_file).open("r", encoding="utf-8") as f:
+        with Path(package_list_file).open("r", encoding="utf-8") as f:
             package_names = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
-        print(f"Error: File not found at {package_list_file}")
+        logger.info(f"Error: File not found at {package_list_file}")
         sys.exit(1)
     for pkg_name in package_names:
-        print(f"Processing: {pkg_name}...")
+        logger.info(f"Processing: {pkg_name}...")
         result = get_latest_version_info(pkg_name, mirror_url)
         all_results.append(result)
         # Save results simultaneously to JSON
         try:
-            with pathlib.Path(output_json_file).open("w", encoding="utf-8") as f:
+            with Path(output_json_file).open("w", encoding="utf-8") as f:
                 json.dump(all_results, f, indent=4, ensure_ascii=False)
         except OSError as e:
-            print(f"Error writing to JSON file {output_json_file}: {e}")
-    print(f"\nProcessing complete. Results saved to {output_json_file}")
+            logger.info(f"Error writing to JSON file {output_json_file}: {e}")
+    logger.info(f"\nProcessing complete. Results saved to {output_json_file}")
 
 
 if __name__ == "__main__":

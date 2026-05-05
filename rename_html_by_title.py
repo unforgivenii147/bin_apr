@@ -5,6 +5,8 @@ import unicodedata
 from html.parser import HTMLParser
 from pathlib import Path
 
+from loguru import logger
+
 
 class TitleParser(HTMLParser):
     def __init__(self) -> None:
@@ -76,7 +78,7 @@ def rename_html_files(root: Path):
             new_path = unique_path(new_path)
             if old_path == new_path:
                 continue
-            print(f"{old_path} -> {new_path}")
+            logger.info(f"{old_path} -> {new_path}")
             old_path.rename(new_path)
 
 

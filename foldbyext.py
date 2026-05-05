@@ -2,6 +2,8 @@
 import shutil
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_size_str(size_bytes):
     for unit in ["B", "KB", "MB", "GB"]:
@@ -49,12 +51,12 @@ def folderize_by_extension(cwd):
         if dir_path.is_dir() and dir_path != root_path:
             try:
                 dir_path.rmdir()
-                print(f"Removed empty directory: {dir_path.relative_to(root_path)}")
+                logger.info(f"Removed empty directory: {dir_path.relative_to(root_path)}")
             except OSError:
                 pass
-    print("\n" + "=" * 50)
-    print("ORGANIZATION SUMMARY")
-    print("=" * 50)
+    logger.info("\n" + "=" * 50)
+    logger.info("ORGANIZATION SUMMARY")
+    logger.info("=" * 50)
     total_files = 0
     total_size = 0
     for ext in sorted(extension_stats.keys()):
@@ -63,16 +65,16 @@ def folderize_by_extension(cwd):
         total_size += stats["total_size"]
         ext_display = ext or "no_extension"
         size_str = get_size_str(stats["total_size"])
-        print(f"{ext_display:<15} : {stats['count']:4} file{'s' if stats['count'] != 1 else ' '}  {size_str:>8}")
-    print("-" * 50)
-    print(f"{'TOTAL':<15} : {total_files:4} files  {get_size_str(total_size):>8}")
-    print("=" * 50)
+        logger.info(f"{ext_display:<15} : {stats['count']:4} file{'s' if stats['count'] != 1 else ' '}  {size_str:>8}")
+    logger.info("-" * 50)
+    logger.info(f"{'TOTAL':<15} : {total_files:4} files  {get_size_str(total_size):>8}")
+    logger.info("=" * 50)
     return created_dirs, extension_stats
 
 
 if __name__ == "__main__":
     target_dir = Path.cwd()
-    print(f"Organizing files in: {target_dir}")
+    logger.info(f"Organizing files in: {target_dir}")
     created_dirs, stats = folderize_by_extension(target_dir)
-    print(f"\nCreated {len(created_dirs)} extension folders.")
-    print("Done!")
+    logger.info(f"\nCreated {len(created_dirs)} extension folders.")
+    logger.info("Done!")

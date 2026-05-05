@@ -3,7 +3,9 @@ import multiprocessing as mp
 import os
 import sys
 from pathlib import Path
+
 import tree_sitter_python
+from loguru import logger
 from tree_sitter import Node, Parser
 
 _parser = None
@@ -61,7 +63,7 @@ def process_file(filepath: str) -> tuple[str, bool]:
         Path(filepath).write_bytes(new_source)
         return filepath, True
     except Exception as e:
-        print(
+        logger.info(
             f"Error processing {filepath}: {e}",
             file=sys.stderr,
         )
@@ -74,26 +76,28 @@ def main():
         dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
         py_files.extend(os.path.join(root, file) for file in files if file.endswith(".py"))
     if not py_files:
-        print("No Python files found.")
+        logger.info("No Python files found.")
         return
-    print(f"Found {len(py_files)} Python files. Processing...")
+    logger.info(f"Found {len(py_files)} Python files. Processing...")
     pool = mp.Pool(initializer=init_worker)
     results = pool.map(process_file, py_files)
     pool.close()
     pool.join()
     successes = [f for f, ok in results if ok]
     failures = [f for f, ok in results if not ok]
-    print(f"Processed {len(successes)} files successfully.")
+    logger.info(f"Processed {len(successes)} files successfully.")
     if failures:
-        print(f"Failed to process {len(failures)} files:")
+        logger.info(f"Failed to process {len(failures)} files:")
         for f in failures:
-            print(f"  {f}")
+            logger.info(f"  {f}")
 
 
 if __name__ == "__main__":
     try:
         import tree_sitter_python
     except ImportError:
-        print("Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0")
+        logger.info(
+            "Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0"
+        )
         sys.exit(1)
     main()

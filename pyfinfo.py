@@ -1,6 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
 from collections import Counter
 from pathlib import Path
+import string
+
+
+def cliner(fn):
+    cl = ""
+    if "." in fn:
+        indx = fn.index(".", -1)
+        fname = fn[:indx]
+        for ch in string.digits:
+            if ch == "_":
+                continue
+            res = fname.strip(ch)
+    cleaned = name.replace("")
 
 
 def levenshtein_distance(a: str, b: str) -> int:
@@ -50,12 +63,12 @@ def group_similar(names: list[str], threshold: float = 0.8):
 
 
 def main():
-    root = Path()
-    counter = Counter(p.name for p in root.rglob("*") if p.is_file())
-    print("=== Filename Counts ===")
-    for name, count in counter.most_common():
+    cwd = Path.cwd()
+    counter = Counter(cliner(p.name) for p in cwd.rglob("*") if p.is_file() and not p.is_symlink())
+    for name, count in counter.most_common(100):
         if count > 2:
             print(f"{name}: {count}")
+
     print("\n=== Similar Filename Groups ===")
     groups = group_similar(list(counter.keys()), threshold=0.8)
     if not groups:

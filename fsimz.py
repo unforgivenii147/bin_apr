@@ -2,7 +2,9 @@
 import os
 import sys
 from collections import defaultdict
+
 from dh import get_files
+from loguru import logger
 from ppdeep import hash_from_file
 
 
@@ -20,7 +22,7 @@ def find_dups(cwd):
                 file_hash = hash_from_file(str(path))
                 files_by_hash[file_hash].append(path)
             except Exception as e:
-                print(f"Error processing file {path}: {e}")
+                logger.info(f"Error processing file {path}: {e}")
                 continue
     for (
         file_hash,
@@ -33,14 +35,14 @@ def find_dups(cwd):
                 reverse=True,
             )
             for dup_found in paths:
-                print(os.path.relpath(dup_found))
+                logger.info(os.path.relpath(dup_found))
             for filetodel in paths[1:]:
                 try:
                     get_size = filetodel.stat().st_size
                     deleted_count += 1
                     total_deleted_size += get_size
                 except Exception as e:
-                    print(f"Error deleting file {filetodel}: {e}")
+                    logger.info(f"Error deleting file {filetodel}: {e}")
         else:
             continue
     return (

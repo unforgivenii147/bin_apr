@@ -3,8 +3,10 @@ import sys
 from collections import deque
 from multiprocessing import Pool
 from pathlib import Path
+
 import cv2 as cv
 from dh import get_files
+from loguru import logger
 
 cwd = Path.cwd()
 
@@ -15,7 +17,7 @@ def process_file(fp):
         return
     img = 255 - img
     cv.imwrite(str(fp), img)
-    print(f"{fp.relative_to(cwd)} updated.")
+    logger.info(f"{fp.relative_to(cwd)} updated.")
 
 
 def main():
@@ -32,7 +34,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    print("done.")
+    logger.info("done.")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
+
 from dh import is_binary
+from loguru import logger
 
 
 def main():
@@ -13,14 +15,14 @@ def main():
         if f.is_file() and is_binary(Path(f)):
             try:
                 shutil.move(str(f), binary_dir / f.name)
-                print(f"Moved: {f.name} -> binary/{f.name}")
+                logger.info(f"Moved: {f.name} -> binary/{f.name}")
                 files_moved += 1
             except Exception as e:
-                print(f"Failed to move {f.name}: {e}")
+                logger.info(f"Failed to move {f.name}: {e}")
     if files_moved == 0:
-        print("No binary files found to move.")
+        logger.info("No binary files found to move.")
     else:
-        print(f"Total binary files moved: {files_moved}")
+        logger.info(f"Total binary files moved: {files_moved}")
 
 
 if __name__ == "__main__":

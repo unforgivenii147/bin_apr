@@ -4,6 +4,8 @@ import os
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+from loguru import logger
 from tqdm import tqdm
 
 binf = Path("/sdcard/bin").open(encoding="utf-8")
@@ -20,7 +22,7 @@ def process_file(filepath):
                 if line:
                     counter[line] += 1
     except Exception as e:
-        print(f"Error reading {filepath}: {e}")
+        logger.info(f"Error reading {filepath}: {e}")
     return counter
 
 
@@ -62,13 +64,13 @@ def collect_lines_for_extension(ext, files):
         ) in global_counter.most_common():
             if count >= 2:
                 writer.writerow([count, line])
-    print(f"Saved results to {output_file}")
+    logger.info(f"Saved results to {output_file}")
 
 
 def main():
     ext_map = collect_files_by_extension()
     if not ext_map:
-        print("No eligible files found.")
+        logger.info("No eligible files found.")
         return
     for ext, files in ext_map.items():
         collect_lines_for_extension(ext, files)

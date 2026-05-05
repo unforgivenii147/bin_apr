@@ -2,8 +2,11 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
@@ -50,7 +53,7 @@ def process_file(fp):
         data = fp.read_bytes()
         decompressed_data = brotlicffi.decompress(data)
         outfile.write_bytes(decompressed_data)
-        print("it worked")
+        logger.info("it worked")
         fp.unlink()
         return
     except:
@@ -76,7 +79,7 @@ def main():
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)
-    print(f"{fsz(diff_size)}")
+    logger.info(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

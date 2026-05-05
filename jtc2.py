@@ -2,7 +2,9 @@
 import ast
 from pathlib import Path
 from sys import argv
+
 from dh import run_command
+from loguru import logger
 
 if __name__ == "__main__":
     path = Path(argv[1])
@@ -18,6 +20,6 @@ if __name__ == "__main__":
                 tree = ast.parse(new_code)
                 path.write_text(new_code, encoding="utf-8")
             except:
-                print("error")
+                logger.info("error")
         else:
             path.write_text(new_code, encoding="utf-8")

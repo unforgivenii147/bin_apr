@@ -2,8 +2,8 @@
 import ast
 import sys
 from pathlib import Path
-from dh import get_pyfiles, mpf3
-from loguru import logger
+
+from dh import get_pyfiles
 from pbar import Pbar
 
 cwd = Path.cwd()

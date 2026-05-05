@@ -2,8 +2,10 @@
 import re
 import sys
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
+from loguru import logger
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
@@ -21,14 +23,14 @@ def translate_text(text):
     try:
         return GoogleTranslator(source="auto", target=TARGET_LANGUAGE).translate(text)
     except Exception as e:
-        print(f"Error translating text chunk: {e}")
+        logger.info(f"Error translating text chunk: {e}")
         return text
 
 
 def translate_file(filepath):
     content = Path(filepath).read_text(encoding="utf-8")
     if not non_english_pattern.search(content):
-        print(f"No non-English content found in {filepath}, skipping.")
+        logger.info(f"No non-English content found in {filepath}, skipping.")
         return
     translated_chunks = []
     for chunk in chunk_text(content):
@@ -37,7 +39,7 @@ def translate_file(filepath):
     translated_content = "\n\n".join(translated_chunks)
     new_filepath = Path(filepath).parent / f"translated_{Path(filepath).name}"
     new_filepath.write_text(translated_content, encoding="utf-8")
-    print(f"saved as {new_filepath}")
+    logger.info(f"saved as {new_filepath}")
 
 
 def translate_folder(directory):
@@ -55,5 +57,5 @@ if __name__ == "__main__":
         fn = input("filename:").strip()
         translate_file(fn)
     else:
-        print("enter d for dir and f for file.")
+        logger.info("enter d for dir and f for file.")
         sys.exit(1)

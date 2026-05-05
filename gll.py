@@ -2,10 +2,12 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main() -> int:
     if len(sys.argv) < 3:
-        print(
+        logger.info(
             f"get from line X to Y of a file:\nUsage: {sys.argv[0]} <filename> <start_line> [end_line]",
             file=sys.stderr,
         )
@@ -15,20 +17,20 @@ def main() -> int:
         start = int(sys.argv[2])
         end = int(sys.argv[3]) if len(sys.argv) >= 4 else -1
     except ValueError:
-        print(
+        logger.info(
             "Error: start_line and end_line must be integers.",
             file=sys.stderr,
         )
         return 1
     if start < 1 or (end != -1 and end < start):
-        print(
+        logger.info(
             "Invalid range: start must be >=1 and end >= start.",
             file=sys.stderr,
         )
         return 1
     path = Path(filename)
     if not path.is_file():
-        print(
+        logger.info(
             "Error: Cannot open input file.",
             file=sys.stderr,
         )
@@ -51,12 +53,12 @@ def main() -> int:
                     break
                 outfile.write(line)
     except OSError:
-        print(
+        logger.info(
             "Error: Cannot create output file.",
             file=sys.stderr,
         )
         return 1
-    print(f"Saved to {outname}")
+    logger.info(f"Saved to {outname}")
     return 0
 
 

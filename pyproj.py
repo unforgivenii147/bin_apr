@@ -9,11 +9,11 @@ def create_initpy(current_dir, pkg_name):
     pkg_dir.mkdir(parents=True, exist_ok=True)
     init_file = pkg_dir / "__init__.py"
     init_content = r"""__version__ = (1, 4, 7)
+from contextlib import suppress
 from importlib.metadata import PackageNotFoundError,version
-try:
+with suppress(PackageNotFoundError):
     __version__ = version(__name__)
-except PackageNotFoundError:
-    pass
+
 """
     if not init_file.exists():
         init_file.write_text(init_content, encoding="utf-8")

@@ -3,9 +3,11 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from dh import unique_path
 from fastwalk import walk_files
+from loguru import logger
 from tqdm import tqdm
 
 DIRECTORY = "."
@@ -60,9 +62,9 @@ def rename_files(directory):
         new_fp = unique_path(new_fp)
         try:
             Path(fp).rename(new_fp)
-            print(f"Renamed: {fp.name} -> {new_fp.name}")
+            logger.info(f"Renamed: {fp.name} -> {new_fp.name}")
         except OSError as e:
-            print(f"Error renaming {fp.name}: {e}")
+            logger.info(f"Error renaming {fp.name}: {e}")
 
 
 if __name__ == "__main__":

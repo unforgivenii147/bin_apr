@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
-import sys
 from pathlib import Path
-from loguru import logger
 
 
 def get_all_files(root: Path) -> list[Path]:
-    return [p for p in root.rglob("*") if p.is_file() and not p.name.startswith(".") and p.name != "folderize.py"]
+    return [p for p in root.glob("*") if p.is_file() and not p.name.startswith(".") and p.name != "folderize.py"]
 
 
 def safe_rename(src: Path, dest_dir: Path) -> Path:
@@ -72,11 +70,11 @@ def main():
     logger.info(f"   Files processed: {total_files:,}")
     logger.info(f"   Directories created: {len(created_dirs)}")
     logger.info("=" * 50)
-    print(f"\n{'Dir Name':<20} {'Files':>8}")
-    print("-" * 30)
+    logger.info(f"\n{'Dir Name':<20} {'Files':>8}")
+    logger.info("-" * 30)
     for name, cnt in created_dirs:
-        print(f"{name:<20} {cnt:>8}")
-    print(f"\nTotal directories: {len(created_dirs)}")
+        logger.info(f"{name:<20} {cnt:>8}")
+    logger.info(f"\nTotal directories: {len(created_dirs)}")
 
 
 if __name__ == "__main__":

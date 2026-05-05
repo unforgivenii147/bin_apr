@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 from fastwalk import walk_files
+from loguru import logger
 
 
 def is_python_file(path: str) -> bool:
@@ -35,7 +37,7 @@ def remove_header(path) -> None:
     except Exception:
         return
     cleaned = [line for line in original if not (line.startswith(("# Author ", "# Email ", "# Time ")))]
-    print(f"{len(original)}=={len(cleaned)}")
+    logger.info(f"{len(original)}=={len(cleaned)}")
     if cleaned != original:
         ans = "y"
         if ans == "y":

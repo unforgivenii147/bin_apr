@@ -3,6 +3,8 @@ import os
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def get_files(directory: Path, extensions: list[str]) -> list[Path]:
     found_files = []
@@ -45,7 +47,7 @@ def add_main_block_if_missing(filepath: Path):
         content_lines = original_content.splitlines()
         if MAINBLOCK_INDICATOR in original_content:
             return
-        print(f"Adding __main__ block to: '{filepath.name}'")
+        logger.info(f"Adding __main__ block to: '{filepath.name}'")
         lines_to_add = [
             "",
             MAINBLOCK_INDICATOR,
@@ -60,11 +62,11 @@ def add_main_block_if_missing(filepath: Path):
         new_content = "\n".join(new_content_lines)
         Path(filepath).write_text(new_content, encoding="utf-8")
     except UnicodeDecodeError:
-        print(f"Skipping '{filepath.name}' due to encoding issues (expected UTF-8).")
+        logger.info(f"Skipping '{filepath.name}' due to encoding issues (expected UTF-8).")
     except OSError as e:
-        print(f"Error processing '{filepath.name}': {e}")
+        logger.info(f"Error processing '{filepath.name}': {e}")
     except Exception as e:
-        print(f"An unexpected error occurred with '{filepath.name}': {e}")
+        logger.info(f"An unexpected error occurred with '{filepath.name}': {e}")
 
 
 def main():
@@ -78,15 +80,15 @@ def main():
             if path.is_file() and path.suffix == ".py":
                 files_to_process.append(path)
             elif path.is_dir():
-                print(f"Searching for Python files in directory: {path}")
+                logger.info(f"Searching for Python files in directory: {path}")
                 files_to_process.extend(get_files(path, extensions=[".py"]))
             else:
-                print(f"Warning: '{arg}' is not a Python file or directory. Skipping.")
+                logger.info(f"Warning: '{arg}' is not a Python file or directory. Skipping.")
     else:
-        print(f"No arguments provided. Searching for Python files in '{cwd}' and its subdirectories...")
+        logger.info(f"No arguments provided. Searching for Python files in '{cwd}' and its subdirectories...")
         files_to_process = get_files(cwd, extensions=[".py"])
     if not files_to_process:
-        print("No Python files found to process.")
+        logger.info("No Python files found to process.")
         sys.exit(0)
     if len(files_to_process) == 1:
         add_main_block_if_missing(files_to_process[0])
@@ -95,16 +97,16 @@ def main():
         from multiprocessing import get_context
 
         num_processes = min(len(files_to_process), os.cpu_count() or 4)
-        print(f"Processing {len(files_to_process)} files using {num_processes} processes...")
+        logger.info(f"Processing {len(files_to_process)} files using {num_processes} processes...")
         with get_context("spawn").Pool(num_processes) as pool:
             for _ in pool.imap_unordered(add_main_block_if_missing, files_to_process):
                 pass
     except ImportError:
-        print("Multiprocessing not available or failed to import. Falling back to sequential processing.")
+        logger.info("Multiprocessing not available or failed to import. Falling back to sequential processing.")
         for f in files_to_process:
             add_main_block_if_missing(f)
     except Exception as e:
-        print(f"An error occurred during multiprocessing: {e}. Falling back to sequential processing.")
+        logger.info(f"An error occurred during multiprocessing: {e}. Falling back to sequential processing.")
         for f in files_to_process:
             add_main_block_if_missing(f)
     final_directory_size = gsz(cwd)
@@ -114,7 +116,7 @@ def main():
 
         cprint(f"Operation complete. Space saved: {fsz(space_saved)}", "cyan")
     except ImportError:
-        print(f"Operation complete. Space saved: {fsz(space_saved)}")
+        logger.info(f"Operation complete. Space saved: {fsz(space_saved)}")
 
 
 if __name__ == "__main__":

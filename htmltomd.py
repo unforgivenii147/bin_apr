@@ -3,8 +3,10 @@ import argparse
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
+
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
+from loguru import logger
 
 
 def clean_html(html_content: str) -> str:
@@ -38,7 +40,7 @@ def convert_html_to_md(
         ".html",
         ".htm",
     }:
-        print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
+        logger.info(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
         return (html_file, False)
     try:
         html_content = html_file.read_text(encoding="utf-8")
@@ -58,10 +60,10 @@ def convert_html_to_md(
         markdown_content = re.sub(r"\n{3,}", "\n\n", markdown_content)
         md_file = html_file.with_suffix(".md")
         md_file.write_text(markdown_content, encoding="utf-8")
-        print(f"✓ Converted: {html_file.name} -> {md_file.name}")
+        logger.info(f"✓ Converted: {html_file.name} -> {md_file.name}")
         return (md_file, True)
     except Exception as e:
-        print(
+        logger.info(
             f"✗ Error converting {html_file.name}: {e}",
             file=sys.stderr,
         )
@@ -140,7 +142,7 @@ Examples:
     )
     input_path = Path(args.path).resolve()
     if not input_path.exists():
-        print(
+        logger.info(
             f"Error: Path '{input_path}' does not exist.",
             file=sys.stderr,
         )
@@ -150,11 +152,11 @@ Examples:
     elif input_path.is_dir():
         html_files = find_html_files(input_path, args.recursive)
         if not html_files:
-            print(f"No HTML files found in {input_path}")
+            logger.info(f"No HTML files found in {input_path}")
             sys.exit(0)
-        print(f"Found {len(html_files)} HTML file(s) to process")
+        logger.info(f"Found {len(html_files)} HTML file(s) to process")
     else:
-        print(
+        logger.info(
             f"Error: '{input_path}' is neither a file nor a directory.",
             file=sys.stderr,
         )
@@ -162,13 +164,13 @@ Examples:
     if len(html_files) == 1:
         convert_html_to_md(html_files[0], options)
     else:
-        print(f"Using {args.workers} worker process(es)")
+        logger.info(f"Using {args.workers} worker process(es)")
         process_args = [(f, options) for f in html_files]
         with Pool(processes=args.workers) as pool:
             results = pool.map(process_file_wrapper, process_args)
         successful = sum(1 for _, success in results if success)
-        print(f"\n{'=' * 50}")
-        print(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
+        logger.info(f"\n{'=' * 50}")
+        logger.info(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
 
 
 if __name__ == "__main__":

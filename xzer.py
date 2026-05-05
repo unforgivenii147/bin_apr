@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import asyncio
-import contextlib
 import shutil
 import sys
-import tarfile
 import tempfile
 from pathlib import Path
+
 import lzma_mt
 from loguru import logger
 
@@ -108,7 +107,7 @@ async def compress_file_async(path: Path) -> bool:
         original_size = path.stat().st_size
 
         def _compress():
-            return lzma_mt.compress(data, threads=4, preset=9)
+            return lzma_mt.compress(data, threads=4, preset=lzma_mt.PRESET_EXTREME)
 
         compressed_data = await loop.run_in_executor(None, _compress)
         if not await atomic_write_async(compressed_data, compressed_path):

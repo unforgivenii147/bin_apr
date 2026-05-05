@@ -5,7 +5,9 @@ import os
 import shutil
 import sys
 from pathlib import Path
+
 import ssdeep
+from loguru import logger
 
 try:
     from tabulate import tabulate
@@ -39,7 +41,7 @@ def compute_hashes(files):
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
-            print(f"Skipping {f}: {e}")
+            logger.info(f"Skipping {f}: {e}")
     return hashes
 
 
@@ -65,7 +67,7 @@ def group_similar_files(hashes, threshold):
             groups.append(group)
     with Path("similars.json").open("w", encoding="utf-8") as f:
         json.dump(matrx, f)
-    print("similars.json created.")
+    logger.info("similars.json created.")
     return groups
 
 
@@ -78,7 +80,7 @@ def copy_groups(groups, output_dir="output") -> None:
             try:
                 shutil.move(f, group_dir)
             except Exception as e:
-                print(f"Failed to copy {f}: {e}")
+                logger.info(f"Failed to copy {f}: {e}")
 
 
 def write_report(groups, format="csv", output_dir="output") -> None:
@@ -91,13 +93,13 @@ def write_report(groups, format="csv", output_dir="output") -> None:
             for idx, group in enumerate(groups, start=1):
                 for f in group:
                     writer.writerow([idx, f])
-        print(f"CSV report written to {report_file}")
+        logger.info(f"CSV report written to {report_file}")
     elif format == "json":
         report_file = os.path.join(output_dir, "similar_report.json")
         data = {f"group_{idx}": group for idx, group in enumerate(groups, start=1)}
         with Path(report_file).open("w", encoding="utf-8") as jf:
             json.dump(data, jf, indent=2)
-        print(f"JSON report written to {report_file}")
+        logger.info(f"JSON report written to {report_file}")
 
 
 def colorize_score(score, threshold):
@@ -134,14 +136,14 @@ def write_matrix(
                 row.append(score)
             writer.writerow(row)
             table.append(row)
-    print(f"Threshold-filtered similarity matrix written to {matrix_file}")
+    logger.info(f"Threshold-filtered similarity matrix written to {matrix_file}")
     if pretty:
         if USE_TABULATE:
             colored_table = []
             for row in table[1:]:
                 colored_row = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
                 colored_table.append(colored_row)
-            print(
+            logger.info(
                 tabulate(
                     colored_table,
                     headers=table[0],
@@ -150,41 +152,41 @@ def write_matrix(
             )
         else:
             header = " | ".join(table[0])
-            print(header)
-            print("-" * len(header))
+            logger.info(header)
+            logger.info("-" * len(header))
             for row in table[1:]:
                 formatted = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
-                print(" | ".join(str(x) if x else "." for x in formatted))
+                logger.info(" | ".join(str(x) if x else "." for x in formatted))
 
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <threshold> [copy|csv|json|matrix]")
+        logger.info(f"Usage: {sys.argv[0]} <threshold> [copy|csv|json|matrix]")
         sys.exit(1)
     try:
         threshold = int(sys.argv[1])
     except ValueError:
-        print("Threshold must be an integer (0–100).")
+        logger.info("Threshold must be an integer (0–100).")
         sys.exit(1)
     mode = sys.argv[2] if len(sys.argv) > 2 else "copy"
     files = get_all_files(".")
-    print(f"Found {len(files)} files. Computing hashes...")
+    logger.info(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
-    print("Comparing files...")
+    logger.info("Comparing files...")
     groups = group_similar_files(hashes, threshold)
     if not groups and mode != "matrix":
-        print("No similar files found.")
+        logger.info("No similar files found.")
     elif mode == "copy":
-        print(f"Found {len(groups)} groups of similar files.")
+        logger.info(f"Found {len(groups)} groups of similar files.")
         copy_groups(groups)
-        print("Copied groups to 'output' directory.")
+        logger.info("Copied groups to 'output' directory.")
     elif mode in {"csv", "json"}:
-        print(f"Found {len(groups)} groups of similar files.")
+        logger.info(f"Found {len(groups)} groups of similar files.")
         write_report(groups, format=mode)
     elif mode == "matrix":
         write_matrix(hashes, threshold, pretty=True)
     else:
-        print("Unknown mode. Use 'copy', 'csv', 'json', or 'matrix'.")
+        logger.info("Unknown mode. Use 'copy', 'csv', 'json', or 'matrix'.")
 
 
 if __name__ == "__main__":

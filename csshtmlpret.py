@@ -10,11 +10,13 @@ from pathlib import Path
 from subprocess import getoutput
 from time import sleep
 
+from loguru import logger
+
 try:
     from bs4 import BeautifulSoup
 except ImportError:
     BeautifulSoup = None
-    print("BeautifulSoup4 Not Found, use: pip install BeautifulSoup4")
+    logger.info("BeautifulSoup4 Not Found, use: pip install BeautifulSoup4")
 start_time = datetime.now()
 CSS_PROPS_TEXT = """
 alignment-adjust alignment-baseline animation animation-delay
@@ -203,7 +205,7 @@ def condense_semicolons(css: str) -> str:
 
 
 def wrap_css_lines(css: str, line_length: int = 80) -> str:
-    print(f"Wrapping lines to ~{line_length} max line lenght.")
+    logger.info(f"Wrapping lines to ~{line_length} max line lenght.")
     lines, line_start = [], 0
     for i, char in enumerate(css):
         if char == "}" and (i - line_start >= line_length):
@@ -308,7 +310,7 @@ if BeautifulSoup:
         formatter="minimal",
         indent_width=4,
     ):
-        print("Monkey Patching BeautifulSoup on-the-fly to process HTML...")
+        logger.info("Monkey Patching BeautifulSoup on-the-fly to process HTML...")
         return regez.sub(
             r"\1" * indent_width,
             orig_prettify(self, encoding, formatter),
@@ -355,17 +357,17 @@ def walk2list(
 
 
 def process_multiple_files(file_path):
-    print(f"Process {os.getpid()} is processing {file_path}.")
+    logger.info(f"Process {os.getpid()} is processing {file_path}.")
     if args.watch:
         previous = int(os.stat(file_path).st_mtime)
-        print(f"Process {os.getpid()} is Watching {file_path}.")
+        logger.info(f"Process {os.getpid()} is Watching {file_path}.")
         while True:
             actual = int(os.stat(file_path).st_mtime)
             if previous == actual:
                 sleep(60)
             else:
                 previous = actual
-                print(f"Modification detected on {file_path}.")
+                logger.info(f"Modification detected on {file_path}.")
                 if file_path.endswith((".css", ".scss")):
                     process_single_css_file(file_path)
                 else:
@@ -479,18 +481,18 @@ def main():
     make_arguments_parser()
     global log
     if args.before and getoutput:
-        print(getoutput(str(args.before)))
+        logger.info(getoutput(str(args.before)))
     if Path(args.fullpath).is_file() and args.fullpath.endswith((".css", ".scss")):
-        print("Target is a CSS / SCSS File.")
+        logger.info("Target is a CSS / SCSS File.")
         list_of_files = str(args.fullpath)
         process_single_css_file(args.fullpath)
     elif Path(args.fullpath).is_file() and args.fullpath.endswith((".htm", ".html")):
-        print("Target is a HTML File.")
+        logger.info("Target is a HTML File.")
         list_of_files = str(args.fullpath)
         process_single_html_file(args.fullpath)
     elif Path(args.fullpath).is_dir():
-        print("Target is a Folder with CSS / SCSS, HTML, JS.")
-        print("Processing a whole Folder may take some time...")
+        logger.info("Target is a Folder with CSS / SCSS, HTML, JS.")
+        logger.info("Processing a whole Folder may take some time...")
         list_of_files = walk2list(
             args.fullpath,
             (".css", ".scss", ".html", ".htm"),
@@ -501,12 +503,12 @@ def main():
         pool.close()
         pool.join()
     else:
-        print("File or folder not found,or cant be read,or I/O Error.")
+        logger.info("File or folder not found,or cant be read,or I/O Error.")
         sys.exit(1)
     if args.after and getoutput:
-        print(getoutput(str(args.after)))
-    print(f"\n {'-' * 80} \n Files Processed: {list_of_files}.")
-    print(f"""Number of Files Processed:
+        logger.info(getoutput(str(args.after)))
+    logger.info(f"\n {'-' * 80} \n Files Processed: {list_of_files}.")
+    logger.info(f"""Number of Files Processed:
           {len(list_of_files) if isinstance(list_of_files, tuple) else 1}""")
 
 

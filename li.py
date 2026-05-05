@@ -5,6 +5,8 @@ import stat
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 CYAN = "\033[36m"
 BLUE = "\033[34m"
 GREEN = "\033[32m"
@@ -69,11 +71,11 @@ def list_dir(path="."):
         items.append((size, entry, color))
     size_col_width = max(len(human_readable_size(s)) for s, _, _ in items)
     name_col_width = max(len(n) for _, n, _ in items)
-    print(f"{'size'.ljust(size_col_width)}  {'name'}")
-    print("-" * (size_col_width + name_col_width + 2))
+    logger.info(f"{'size'.ljust(size_col_width)}  {'name'}")
+    logger.info("-" * (size_col_width + name_col_width + 2))
     for size, name, color in sorted(items, key=operator.itemgetter(0)):
         size_str = human_readable_size(size).ljust(size_col_width)
-        print(f"{size_str}  {color}{name}{RESET}")
+        logger.info(f"{size_str}  {color}{name}{RESET}")
 
 
 if __name__ == "__main__":

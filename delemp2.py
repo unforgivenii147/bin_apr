@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_nobinary
+from loguru import logger
 
 
 def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
@@ -29,7 +31,7 @@ def process_file(
     path: Path,
     collapse: bool,
 ) -> tuple[bool, int, str]:
-    print(f"processing {path.name}")
+    logger.info(f"processing {path.name}")
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()

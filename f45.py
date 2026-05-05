@@ -4,6 +4,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from loguru import logger
+
 
 def fold_content_pure(fname, width=45):
     content = ""
@@ -19,12 +21,12 @@ def fold_content_pure(fname, width=45):
     with Path(fname).open("w", encoding="utf-8") as fo:
         for line in folded_lines:
             fo.write(line + "\n")
-    print(f"{fname} updated.")
+    logger.info(f"{fname} updated.")
 
 
 def fold_file_inplace(filename):
     if not Path(filename).exists():
-        print(
+        logger.info(
             f"Error: File '{filename}' not found.",
             file=sys.stderr,
         )
@@ -53,7 +55,7 @@ def fold_file_inplace(filename):
             encoding="utf-8",
         )
         if result.returncode != 0:
-            print(
+            logger.info(
                 f"Error running fold: {result.stderr}",
                 file=sys.stderr,
             )
@@ -61,7 +63,7 @@ def fold_file_inplace(filename):
             sys.exit(1)
         Path(filename).write_text(result.stdout, encoding="utf-8")
     Path(temp_filename).unlink()
-    print(f"Successfully folded '{filename}' in place.")
+    logger.info(f"Successfully folded '{filename}' in place.")
 
 
 if __name__ == "__main__":

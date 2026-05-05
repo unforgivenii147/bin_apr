@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_nobinary, is_binary
+from loguru import logger
 
 
 def unicode_unescape(text: str) -> str:
@@ -13,8 +15,8 @@ def process_file(path: Path) -> None:
     for line in lines:
         nl = "\\u" + str(line.strip())
         decoded = unicode_unescape(nl)
-        print(nl)
-        print(decoded)
+        logger.info(nl)
+        logger.info(decoded)
 
 
 def main() -> None:

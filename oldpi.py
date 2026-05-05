@@ -6,7 +6,9 @@ import re
 import tokenize
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from dh import get_pyfiles
+from loguru import logger
 from tqdm import tqdm
 
 SIZE_THRESHOLD = 1 * 1024 * 1024
@@ -124,7 +126,7 @@ def main() -> None:
             result = future.result()
             if result:
                 path, line = result
-                print(f"{path}\n  {line}")
+                logger.info(f"{path}\n  {line}")
 
 
 if __name__ == "__main__":

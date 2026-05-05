@@ -3,6 +3,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     if not Path(input_file).exists():
@@ -21,9 +23,9 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     ]
     try:
         subprocess.run(cmd, check=True)
-        print(f"Subtitles extracted to: {output_file}")
+        logger.info(f"Subtitles extracted to: {output_file}")
     except subprocess.CalledProcessError as e:
-        print(f"Error extracting subtitles: {e}")
+        logger.info(f"Error extracting subtitles: {e}")
 
 
 extract_subtitles("your_movie.mkv")

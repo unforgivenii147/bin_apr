@@ -2,10 +2,12 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <filename>")
+        logger.info(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     content = Path(fname).read_text(encoding="utf-8")

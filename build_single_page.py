@@ -4,8 +4,10 @@ import hashlib
 import mimetypes
 import re
 from pathlib import Path
+
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 cwd = Path.cwd()
 OUTPUT_DIR = cwd / "output"
@@ -103,11 +105,11 @@ def process_html(path: Path):
     for link in soup.find_all("link", href=True):
         href = link["href"]
         if href.startswith("http") and DOWNLOAD_REMOTE:
-            print(href)
+            logger.info(href)
     out_path = OUTPUT_DIR / path.relative_to(cwd)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(str(soup), encoding="utf-8")
-    print("Processed:", path)
+    logger.info("Processed:", path)
 
 
 def build_single_page():
@@ -144,7 +146,7 @@ def build_single_page():
             script.replace_with(new_script)
     out_file = OUTPUT_DIR / "single_page_local.html"
     out_file.write_text(str(merged), encoding="utf-8")
-    print("\nCreated:", out_file)
+    logger.info("\nCreated:", out_file)
 
 
 if __name__ == "__main__":
@@ -152,4 +154,4 @@ if __name__ == "__main__":
         if path.suffix.lower() in {".html", ".htm"} and "output" not in path.parts:
             process_html(path)
     build_single_page()
-    print("\nDONE — all assets extracted, deduped, hashed, and packed!")
+    logger.info("\nDONE — all assets extracted, deduped, hashed, and packed!")

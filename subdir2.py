@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def safe_mkdir(base: Path) -> Path:
     if not base.exists():
@@ -47,9 +49,9 @@ def main() -> None:
         ok = unzip_file(moved_file, target_dir)
         if ok:
             moved_file.unlink()
-            print(f"[OK] Unzipped and removed: {item.name}")
+            logger.info(f"[OK] Unzipped and removed: {item.name}")
         else:
-            print(f"[SKIP] Not a zip or unzip failed: {item.name}")
+            logger.info(f"[SKIP] Not a zip or unzip failed: {item.name}")
 
 
 if __name__ == "__main__":

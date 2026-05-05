@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import trafilatura
+from loguru import logger
+
 from dhh import get_files, mpf3
 
 
@@ -19,12 +22,12 @@ def process_file(html_file: Path):
         if markdown:
             md_file = html_file.with_suffix(".md")
             md_file.write_text(markdown, encoding="utf-8")
-            print(f"✓ Converted: {html_file.name} -> {md_file.name}")
+            logger.info(f"✓ Converted: {html_file.name} -> {md_file.name}")
             return (md_file, True)
-        print(f"✗ No content extracted from {html_file.name}")
+        logger.info(f"✗ No content extracted from {html_file.name}")
         return (html_file, False)
     except Exception as e:
-        print(f"✗ Error: {e}")
+        logger.info(f"✗ Error: {e}")
         return (html_file, False)
 
 

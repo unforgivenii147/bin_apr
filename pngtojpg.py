@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
+from loguru import logger
 from PIL import Image
 
 for root, _dirs, files in os.walk("."):
@@ -12,6 +14,6 @@ for root, _dirs, files in os.walk("."):
                 img = Image.open(png_path).convert("RGB")
                 img.save(jpg_path, "JPEG")
                 Path(png_path).unlink()
-                print(f"Converted and deleted: {png_path} -> {jpg_path}")
+                logger.info(f"Converted and deleted: {png_path} -> {jpg_path}")
             except Exception as e:
-                print(f"Failed to convert {png_path}: {e}")
+                logger.info(f"Failed to convert {png_path}: {e}")

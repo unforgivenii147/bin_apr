@@ -3,6 +3,8 @@ from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from loguru import logger
+
 CHUNK_SIZE = 524288
 MAX_BYTE_INDEX = 19
 
@@ -43,7 +45,7 @@ def calculate_xorhash(path: Path) -> tuple[str, Path]:
                 q.update(chunk)
         return q.hexdigest(), path
     except Exception as e:
-        print(f"Error hashing file {path}: {e}")
+        logger.info(f"Error hashing file {path}: {e}")
         return None, path
 
 
@@ -55,7 +57,7 @@ def find_dups_optimized(root: Path):
             if not path.is_symlink() and path.is_file():
                 paths_to_process.append(path)
         except OSError as e:
-            print(f"Error accessing path {path}: {e}")
+            logger.info(f"Error accessing path {path}: {e}")
             continue
     if not paths_to_process:
         return {}
@@ -65,7 +67,7 @@ def find_dups_optimized(root: Path):
             size = path.stat().st_size
             files_by_size.setdefault(size, []).append(path)
         except OSError as e:
-            print(f"Error getting size for {path}: {e}")
+            logger.info(f"Error getting size for {path}: {e}")
             continue
     paths_to_hash = []
     for paths in files_by_size.values():
@@ -82,13 +84,13 @@ def find_dups_optimized(root: Path):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    print(f"Scanning directory: {cwd}")
+    logger.info(f"Scanning directory: {cwd}")
     dupes = find_dups_optimized(cwd)
     if not dupes:
-        print("No duplicate files found.")
+        logger.info("No duplicate files found.")
     else:
-        print(f"Found {len(dupes)} group(s) of duplicate files:")
+        logger.info(f"Found {len(dupes)} group(s) of duplicate files:")
         for h, paths in dupes.items():
-            print(f"Duplicate group ({h}):")
+            logger.info(f"Duplicate group ({h}):")
             for p in paths:
-                print("  ", p)
+                logger.info("  ", p)

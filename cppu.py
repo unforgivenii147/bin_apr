@@ -2,7 +2,10 @@
 import subprocess
 import sys
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
@@ -23,7 +26,7 @@ EXT = [
 
 def process_file(path):
     before = gsz(path)
-    print(f"{path.name} ", end=" ")
+    logger.info(f"{path.name} ", end=" ")
     try:
         res = subprocess.run(
             [
@@ -62,10 +65,7 @@ def main() -> None:
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    if args:
-        cfiles = [Path(arg) for arg in args]
-    else:
-        cfiles = get_files(cwd, extensions=EXT)
+    cfiles = [Path(arg) for arg in args] if args else get_files(cwd, extensions=EXT)
     all_count = len(cfiles)
     cprint(f"{all_count} files found", "cyan")
     if all_count == 1:
@@ -74,7 +74,7 @@ def main() -> None:
     mpf3(process_file, cfiles)
     after = gsz(cwd)
     diffsize = before - gsz(cwd)
-    print(f"space change: {fsz(diffsize)}")
+    logger.info(f"space change: {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

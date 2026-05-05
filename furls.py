@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import contextlib
 import io
@@ -8,32 +9,26 @@ import sys
 import tarfile
 import tempfile
 import zipfile
-from string import printable as _printable
 from pathlib import Path
 from urllib.parse import urlparse
-import zstd
-from dh import is_valid_url, get_files, write_to_file, should_skip
 
+import zstd
+from dh import is_valid_url, write_txt_file, append_text
 from loguru import logger
 
-logger.add("/data/data/com.termux/files/home/tmp/log/apps/furls.log")
-
 DEFAULT_MAX_MB = 55
-
 EXCLUDE_DIRS = {
     ".git",
     "__pycache__",
 }
-
-
 URL_RE = re.compile(
     r'(https?://[^\s\'"<>\\)\\(]+)',
     flags=re.IGNORECASE,
 )
 
+GIT_FILE = Path("gitlinks.txt")
+REPO_FILE = Path("repos.txt")
 
-GIT_FILE = Path("/sdcard/gitlinks.txt")
-REPO_FILE = Path("/sdcard/repos.txt")
 ARCHIVE_SUFFIXES = (
     ".tar.gz",
     ".tgz",
@@ -51,26 +46,29 @@ ARCHIVE_SUFFIXES = (
     ".gz",
     ".7z",
     ".tar.7z",
+    ".tar.br",
+    ".tar.7z",
+    ".t7z",
+    ".tbz",
+    "tzz",
 )
 
 
+def should_skip_dir(dirname):
+    return any(part in EXCLUDE_DIRS for part in dirname.split(os.sep))
+
+
 def find_urls_in_text(text):
-    text = tect.encode("utf-8")
     found = set()
     for m in URL_RE.findall(text):
         url = m.rstrip(".,;:)]}>\"'")
         if url:
             found.add(url)
-    #            cleaned = ""
-    #            for char in url:
-    #                if char in _printable:
-    #                    cleaned += char
-    #            found.add(cleaned)
     return found
 
 
 def decode_bytes_to_text(b):
-    for enc in ("utf-8", "latin-1", "utf-16", "ascii", "utf-32", "ucs-4"):
+    for enc in ("utf-8", "latin-1", "utf-16"):
         try:
             return b.decode(enc)
         except Exception:
@@ -337,12 +335,12 @@ def process_path(
     recursion_limit=999,
 ):
     try:
-        size = path.stat().st_size
+        size = Path(path).stat().st_size
     except Exception:
         return
     if size > max_bytes and not is_archive_name(path):
         return
-    lname = path.name.lower()
+    lname = path.lower()
     try:
         if any(lname.endswith(suf) for suf in (".zip", ".whl")):
             try:
@@ -434,7 +432,9 @@ def process_path(
 # _____________________________
 #                             |
 #      save git urls          |
-# ____________________________|
+# _____________________________|
+
+
 def is_github_url(url):
     try:
         result = urlparse(url)
@@ -446,33 +446,32 @@ def is_github_url(url):
 def extract_git_repos(urls):
     repo_urls = []
     github_regex = re.compile(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$|\.git|\?|#)")
+
     for url in urls:
-        mattch = github_regex.search(url)
-        if mattch:
-            user = mattch.group(1)
-            repo = mattch.group(2)
+        matchz = github_regex.search(url)
+        if matchz:
+            user = matchz.group(1)
+            repo = matchz.group(2)
             if "/" not in repo and "." not in repo.split("/")[0]:
                 repo_urls.append(f"{user}/{repo}")
-    repo_urls = sorted(list(set(repo_urls)))
     return repo_urls
 
 
-def extract_gitlinks(urllist) -> None:
+def extract_and_save_gitlinks(urllist) -> None:
     glinks = []
     for url in urllist:
         if is_github_url(url):
             glinks.append(url)
             logger.info(url)
-    glinks = sorted(list(set(glinks)))
     repoz = extract_git_repos(glinks)
-
     if repoz:
         repos = "\n".join(repoz)
-        write_to_file(REPO_FILE, repos, append=True)
+        append_text(REPO_FILE, repos)
 
         git_links = "\n".join(glinks)
 
-        write_to_file(GIT_FILE, git_links, append=True)
+        append_text(GIT_FILE, git_links)
+
         logger.info(f"{len(glinks)} links found.")
     else:
         logger.info("no git link")
@@ -482,6 +481,8 @@ def extract_gitlinks(urllist) -> None:
 #
 #      main function
 # __________________________
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Find URLs in files and supported archives recursively and save them to a file."
@@ -489,7 +490,7 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        default="/sdcard/urls.txt",
+        default="urls.txt",
         help="Output file (one URL per line).",
     )
     parser.add_argument(
@@ -515,23 +516,28 @@ def main():
     max_bytes = int(args.max_mb * 1024 * 1024)
     exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()} if args.extensions else None
     found = set()
-    cwd = Path.cwd()
-    for path in get_files(cwd):
-        if should_skip(path):
+
+    for root, dirs, files in os.walk(".", topdown=True, followlinks=False):
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        if should_skip_dir(root):
             continue
-        logger.info(f"processing {path.relative_to(cwd)}")
-        process_path(
-            path,
-            max_bytes,
-            exts,
-            found,
-            recursion_limit=args.max_recursion,
-        )
+        for fname in files:
+            path = os.path.join(root, fname)
+            logger.info(f"processing {os.path.relpath(path)}")
+            process_path(
+                path,
+                max_bytes,
+                exts,
+                found,
+                recursion_limit=args.max_recursion,
+            )
     if not found:
         logger.info("no url found")
         sys.exit(0)
+
     sorted_urls = sorted(found)
-    extract_gitlinks(sorted_urls)
+    extract_and_save_gitlinks(sorted_urls)
+
     try:
         if Path(args.output).exists():
             logger.info("urls.txt exists. appending new urls")
@@ -540,17 +546,13 @@ def main():
                 for u in sorted_urls:
                     if is_valid_url(u):
                         out.write(u + "\n")
-                    else:
-                        logger.info(f"{u} is invalid url.")
         else:
-            with Path(args.output).open("a", encoding="utf-8") as out:
-                out.write("\n\n")
+            with Path(args.output).open("w", encoding="utf-8") as out:
                 for u in sorted_urls:
                     if is_valid_url(u):
                         out.write(u + "\n")
         logger.info(f"Wrote {len(sorted_urls)} unique URLs to {args.output}")
-        if any(p.endswith(".tar.zst") for p in sorted_urls):
-            pass
+        any(p.endswith(".tar.zst") for p in sorted_urls)
     except OSError as e:
         logger.info(
             f"Error writing output file: {e}",

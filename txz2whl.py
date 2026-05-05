@@ -3,7 +3,9 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
+
 from dh import get_files, unique_path
+from loguru import logger
 
 
 def tar_xz_to_whl(tar_path: Path):
@@ -11,9 +13,9 @@ def tar_xz_to_whl(tar_path: Path):
     tt = str(target).replace(".tar", "")
     target = Path(tt)
     if target.exists():
-        print(f"[SKIP] {target.name} already exists")
+        logger.info(f"[SKIP] {target.name} already exists")
         target = unique_path(target)
-    print(f"[TAR.XZ → WHL] {tar_path.name}")
+    logger.info(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
         with (
             tarfile.open(tar_path, "r:xz") as tf,
@@ -30,9 +32,9 @@ def tar_xz_to_whl(tar_path: Path):
                 if extracted is None:
                     continue
                 zf.writestr(member.name, extracted.read())
-        print(f"[OK] {target.name}")
+        logger.info(f"[OK] {target.name}")
     except Exception as e:
-        print(f"[ERROR] {tar_path.name}: {e}")
+        logger.info(f"[ERROR] {tar_path.name}: {e}")
 
 
 def main():

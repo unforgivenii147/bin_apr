@@ -3,12 +3,15 @@ import argparse
 import os
 import re
 import sys
+from os.path import commonpath
 from pathlib import Path
+
+from loguru import logger
 
 try:
     from termcolor import colored
 except ImportError:
-    print("Install termcolor: pip install termcolor")
+    logger.info("Install termcolor: pip install termcolor")
     sys.exit(1)
 REGEX_RULES = [
     r"\bOutcast\b",
@@ -23,11 +26,11 @@ EXTENSIONS = {".srt", ".mkv", ".mp4", ".avi"}
 
 
 def common_prefix(strings):
-    return os.path.commonprefix(strings)
+    return commonpath(strings)
 
 
 def common_suffix(strings):
-    return os.path.commonprefix([s[::-1] for s in strings])[::-1]
+    return commonpath([s[::-1] for s in strings])[::-1]
 
 
 def apply_regex(name):
@@ -59,12 +62,12 @@ def main():
     args = ap.parse_args()
     files = collect_files(Path(), args.recursive)
     if not files:
-        print("No matching files found")
+        logger.info("No matching files found")
         return
     names = [f.name for f in files]
     prefix = common_prefix(names)
     suffix = common_suffix(names)
-    print(colored("\nPreview:", "cyan", attrs=["bold"]))
+    logger.info(colored("\nPreview:", "cyan", attrs=["bold"]))
     for f in files:
         name = f.name
         core = name[len(prefix) : len(name) - len(suffix)]
@@ -73,7 +76,7 @@ def main():
         new_name = re.sub(r"\.+", ".", new_name)
         if name == new_name:
             continue
-        print(
+        logger.info(
             colored("OLD:", "red"),
             name,
             colored("-> NEW:", "green"),
@@ -82,7 +85,7 @@ def main():
         if args.write:
             target = f.with_name(new_name)
             if target.exists():
-                print(
+                logger.info(
                     colored(
                         "SKIPPED (exists)",
                         "yellow",
@@ -92,7 +95,7 @@ def main():
             else:
                 f.rename(target)
     if not args.write:
-        print(
+        logger.info(
             colored(
                 "\nDry-run only. Use -w to apply changes.",
                 "yellow",

@@ -3,6 +3,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from loguru import logger
+
 EXCLUDED_DIRS = {".git", "__pycache__"}
 N = 10
 
@@ -29,10 +31,10 @@ def main():
             if p.is_file():
                 files.append(p)
     files.sort(key=lambda f: f.stat().st_ctime, reverse=True)
-    print(f"\nTop {N} oldest files (excluding .git & __pycache__):\n")
+    logger.info(f"\nTop {N} oldest files (excluding .git & __pycache__):\n")
     for f in files[:N]:
         mtime = f.stat().st_ctime
-        print(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
+        logger.info(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
 
 
 if __name__ == "__main__":

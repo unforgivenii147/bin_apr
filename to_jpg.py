@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from pathlib import Path
+
 from dh import fsz, gsz, is_image, mpf, unique_path
+from loguru import logger
 
 try:
     import cv2
@@ -81,21 +83,20 @@ def process_file(file_path: str) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="jpg")
-    p.add_argument("files", nargs="*")
-    args = p.parse_args()
-    before = gsz(".")
-    if args.files:
-        files = [Path(f) for f in args.files if Path(f).is_file() and is_image(f)]
+    cwd = Path.cwd()
+    argv = sys.argv[1:]
+    if args:
+        files = [Path(f) for f in args]
     else:
         files = [
             f
-            for f in Path().rglob("*")
+            for f in cwd.rglob("*")
             if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS for part in f.parts)
         ]
     if not files:
         print("No image files detected.")
         return
+
     print(f"converting {len(files)} files...")
     mpf(process_file, files)
     diffsize = before - gsz(".")

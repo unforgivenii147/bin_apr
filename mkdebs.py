@@ -8,6 +8,8 @@ import tarfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from loguru import logger
+
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -106,11 +108,11 @@ def main() -> None:
     )
     args = parser.parse_args()
     pkgs = ["tor"]
-    print(f"[+] Building {len(pkgs)} packages using {args.workers} workers…\n")
+    logger.info(f"[+] Building {len(pkgs)} packages using {args.workers} workers…\n")
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = {executor.submit(process_package, pkg): pkg for pkg in pkgs}
         for future in as_completed(futures):
-            print(future.result())
+            logger.info(future.result())
 
 
 if __name__ == "__main__":

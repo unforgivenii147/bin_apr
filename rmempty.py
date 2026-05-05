@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from termcolor import cprint
 
-TIMEOUT = 10
+from dh import cprint
+
+TIMEOUT = 3
 
 
 def get_files(folder: Path):

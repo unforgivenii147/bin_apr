@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-from dh import get_nobinary
+
+from dh import get_nobinary, fsz, gsz
 from termcolor import cprint
-from dhh import fsz, gsz
+
 
 LIC_FILE = Path("/sdcard/lic")
 MIN_BLANK_LINES = 3

@@ -2,7 +2,9 @@
 import re
 import sys
 from pathlib import Path
+
 from dh import atomic_write
+from loguru import logger
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 FONT_EXTS = {
@@ -22,7 +24,7 @@ IMG_EXTS = {
 }
 IMPORT_RE = re.compile(
     r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
-    re.I,
+    re.IGNORECASE,
 )
 FAMILY_RULES = {
     "roboto": "roboto",
@@ -34,7 +36,7 @@ FAMILY_RULES = {
 }
 URL_RE = re.compile(
     r'url\((["\']?)(https?://[^)]+?\.(?:woff2?|ttf|otf|eot))\1\)',
-    re.I,
+    re.IGNORECASE,
 )
 
 
@@ -56,7 +58,7 @@ def find_css(paths):
                     seen.add(rp)
                     result.append(rp)
         else:
-            print(
+            logger.info(
                 f"Skipping invalid path: {p}",
                 file=sys.stderr,
             )
@@ -103,10 +105,10 @@ def join_css(files, output):
 def main():
     files = find_css(".")
     if not files:
-        print("No CSS files found.", file=sys.stderr)
+        logger.info("No CSS files found.", file=sys.stderr)
         sys.exit(1)
     join_css(files, "merged.css")
-    print(f"Joined {len(files)} files -> merged.css")
+    logger.info(f"Joined {len(files)} files -> merged.css")
 
 
 if __name__ == "__main__":

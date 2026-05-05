@@ -2,7 +2,9 @@
 import json
 import sys
 from pathlib import Path
+
 from defusedxml.ElementTree import parse as _parse
+from loguru import logger
 
 
 def etree_to_dict(element):
@@ -37,9 +39,9 @@ def xml_to_json(xml_file_path):
         json_data = etree_to_dict(root)
         with json_file_path.open("w", encoding="utf-8") as json_file:
             json.dump(json_data, json_file, indent=2, ensure_ascii=False)
-        print(f"Successfully converted '{xml_file_path}' to '{json_file_path}'")
+        logger.info(f"Successfully converted '{xml_file_path}' to '{json_file_path}'")
     except:
-        print("Error parsing XML file")
+        logger.info("Error parsing XML file")
 
 
 if __name__ == "__main__":

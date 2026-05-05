@@ -1,7 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, get_files, gsz, mpf, run_command
 
 
@@ -9,7 +12,7 @@ def process_file(fp):
     before = gsz(fp)
     if not fp.exists():
         return False
-    print(f"{fp.name}", end=" ")
+    logger.info(f"{fp.name}", end=" ")
     cmd = f"terser {fp}"
     code, output, err = run_command(cmd)
     if code == 0:

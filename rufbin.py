@@ -2,6 +2,8 @@
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def is_python_file(file_path):
     try:
@@ -33,7 +35,7 @@ def is_python_file(file_path):
 
 def format_with_ruff(file_path):
     try:
-        print(f"processing {file_path.name}")
+        logger.info(f"processing {file_path.name}")
         result = subprocess.run(
             ["ruff", "format", str(file_path)],
             check=False,

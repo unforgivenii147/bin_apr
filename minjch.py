@@ -4,6 +4,8 @@ import multiprocessing
 import os
 import re
 from pathlib import Path
+
+from loguru import logger
 from rcssmin import cssmin
 
 
@@ -52,12 +54,12 @@ def collect_files() -> list:
 def main() -> None:
     files = collect_files()
     if not files:
-        print("No supported files found.")
+        logger.info("No supported files found.")
         return
-    print(f"Found {len(files)} files. Starting multiprocessing...")
+    logger.info(f"Found {len(files)} files. Starting multiprocessing...")
     with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
         for result in pool.imap_unordered(process_file, files):
-            print(result)
+            logger.info(result)
 
 
 if __name__ == "__main__":

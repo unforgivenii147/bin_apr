@@ -2,6 +2,8 @@
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 
 def alias_name(line: str) -> str:
     return line.split("=", 1)[0].replace("alias ", "").strip()
@@ -9,7 +11,7 @@ def alias_name(line: str) -> str:
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file>")
+        logger.info(f"Usage: {sys.argv[0]} <file>")
         sys.exit(1)
     fname = sys.argv[1]
     with Path(fname).open(encoding="utf-8") as f:

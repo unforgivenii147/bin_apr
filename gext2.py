@@ -9,6 +9,8 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
 
+from loguru import logger
+
 OUTPUT_DIR = Path("output")
 ARCHIVE_EXTENSIONS = (
     ".whl",
@@ -129,7 +131,7 @@ def save_entity(entity: dict[str, Any]):
     try:
         Path(final_py_path).write_text(content, encoding="utf-8")
     except Exception as e:
-        print(f"Error saving {final_py_path}: {e}")
+        logger.info(f"Error saving {final_py_path}: {e}")
         return
 
 
@@ -142,7 +144,7 @@ def extract_entities_from_content(content: str, path: Path) -> list[dict[str, An
     except SyntaxError:
         return []
     except Exception as e:
-        print(f"Error parsing AST for {path}: {e}")
+        logger.info(f"Error parsing AST for {path}: {e}")
         return []
 
 
@@ -168,7 +170,7 @@ def process_single_file(path: Path) -> list[dict[str, Any]]:
             return extract_entities_from_content(content, path)
         return []
     except Exception as e:
-        print(f"Error reading file {path}: {e}")
+        logger.info(f"Error reading file {path}: {e}")
         return []
 
 
@@ -180,7 +182,7 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
             content = dctx.decompress(path.read_bytes()).decode("utf-8", errors="ignore")
             return extract_entities_from_content(content, path)
         except Exception as e:
-            print(f"Error decompressing ZST file {path}: {e}")
+            logger.info(f"Error decompressing ZST file {path}: {e}")
             return []
     if path.suffix in {".zip", ".whl"}:
         try:
@@ -201,7 +203,7 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
                                 )
                             )
         except Exception as e:
-            print(f"Error processing ZIP/WHL archive {path}: {e}")
+            logger.info(f"Error processing ZIP/WHL archive {path}: {e}")
     elif any(
         path.name.endswith(ext)
         for ext in [
@@ -244,7 +246,7 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
         except tarfile.ReadError:
             pass
         except Exception as e:
-            print(f"Error processing TAR archive {path}: {e}")
+            logger.info(f"Error processing TAR archive {path}: {e}")
     return entities
 
 
@@ -256,10 +258,10 @@ def worker_process(path_str: str) -> list[dict[str, Any]]:
 
 
 def main():
-    print(f"Starting analysis in {Path.cwd()}...")
+    logger.info(f"Starting analysis in {Path.cwd()}...")
     if OUTPUT_DIR.exists():
         shutil.rmtree(OUTPUT_DIR)
-        print(f"Cleaned previous output directory: {OUTPUT_DIR}")
+        logger.info(f"Cleaned previous output directory: {OUTPUT_DIR}")
     OUTPUT_DIR.mkdir(exist_ok=True)
     files_to_process = []
     current_dir = Path()
@@ -273,21 +275,23 @@ def main():
             if is_archive or is_py:
                 files_to_process.append(str(path))
     if not files_to_process:
-        print("No Python files or archives found to process.")
+        logger.info("No Python files or archives found to process.")
         return
-    print(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
+    logger.info(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
     num_cpus = cpu_count()
     all_entities = []
     with Pool(processes=num_cpus) as pool:
         results_list = pool.map(worker_process, files_to_process)
         for result in results_list:
             all_entities.extend(result)
-    print(f"Processing complete. Extracted {len(all_entities)} entities.")
-    print(f"Saving entities to {OUTPUT_DIR}...")
+    logger.info(f"Processing complete. Extracted {len(all_entities)} entities.")
+    logger.info(f"Saving entities to {OUTPUT_DIR}...")
     for entity in all_entities:
         save_entity(entity)
-    print("\n\nAll tasks finished successfully!")
-    print(f"Results are saved in the '{OUTPUT_DIR}' folder, organized by entity type (class, function, constant).")
+    logger.info("\n\nAll tasks finished successfully!")
+    logger.info(
+        f"Results are saved in the '{OUTPUT_DIR}' folder, organized by entity type (class, function, constant)."
+    )
 
 
 if __name__ == "__main__":

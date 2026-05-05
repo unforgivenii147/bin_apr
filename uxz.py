@@ -4,8 +4,10 @@ import sys
 import tarfile
 import tempfile
 from pathlib import Path
+
 import lzma_mt
 from loguru import logger
+
 from dhh import get_files
 
 
@@ -90,7 +92,7 @@ def main() -> None:
             successful += 1
         else:
             errors += 1
-    print(f"successfull: {successful}\nerrors: {errors}")
+    logger.info(f"successfull: {successful}\nerrors: {errors}")
 
 
 if __name__ == "__main__":

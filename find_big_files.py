@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import fsz, get_filez
+from loguru import logger
 
 THRESHOLD = 1024 * 1024
 cwd = Path.cwd()
@@ -10,7 +12,7 @@ cwd = Path.cwd()
 def process_file(fp, threshold=THRESHOLD) -> None:
     sz = fp.stat().st_size
     if sz > threshold:
-        print(f"{fp.relative_to(cwd)} : {fsz(sz)}")
+        logger.info(f"{fp.relative_to(cwd)} : {fsz(sz)}")
 
 
 def main():

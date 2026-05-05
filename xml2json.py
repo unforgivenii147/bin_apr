@@ -4,13 +4,16 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 import xmltodict
-from termcolor import cprint
+from dh import cprint, get_files
 
 MAX_QUEUE = 16
+REMOVE_ORIG = True
 
 
 def process_file(path):
+
     try:
         jsonpath = path.with_suffix(".json")
         cprint(f"{jsonpath} created.", "cyan")
@@ -18,7 +21,8 @@ def process_file(path):
         with jsonpath.open("w") as f:
             data = xmltodict.parse(xml_content)
             json.dump(data, f, ensure_ascii=False, indent=2)
-        path.unlink()
+        if path.suffix == ".xml" and REMOVE_ORIG:
+            path.unlink()
     except OSError as e:
         print(f"error {e}")
 
@@ -26,7 +30,7 @@ def process_file(path):
 def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else list(cwd.rglob("*.xml"))
+    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".xml", ".svg"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

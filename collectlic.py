@@ -2,6 +2,8 @@
 import os
 from pathlib import Path
 
+from loguru import logger
+
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "/sdcard/all2.txt"
 
@@ -26,18 +28,18 @@ def collect_files(root):
 
 def build_all_txt(root) -> None:
     files = list(collect_files(root))
-    print(f"Found {len(files)} files")
+    logger.info(f"Found {len(files)} files")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as out:
         for i, path in enumerate(files, 1):
             content = read_file(path)
             if content is None:
-                print(f"Skipping unreadable file: {path}")
+                logger.info(f"Skipping unreadable file: {path}")
                 continue
             out.write(content)
             if i != len(files):
                 out.write("\n\n\n")
-            print(f"Added: {path}")
-    print(f"\nFinished: {OUTPUT_FILE} created.")
+            logger.info(f"Added: {path}")
+    logger.info(f"\nFinished: {OUTPUT_FILE} created.")
 
 
 if __name__ == "__main__":

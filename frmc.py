@@ -2,8 +2,11 @@
 import ast
 import sys
 from pathlib import Path
+
 from dh import SOURCE_CODE_EXT, clean_blank_lines, get_nobinary, is_binary
+from loguru import logger
 from termcolor import cprint
+
 from dhh import fsz, gsz, mpf3
 
 
@@ -13,11 +16,11 @@ def process_file(fp):
     removed: int = 0
     inline: int = 0
     if is_binary(fp) or fp.suffix in SOURCE_CODE_EXT:
-        print(f"[skip] {fp.name} is binary or source code")
+        logger.info(f"[skip] {fp.name} is binary or source code")
         return
     before: int = gsz(fp)
     lines = fp.read_text(encoding="utf-8").splitlines(keepends=True)
-    print(f"{fp.name}", end="|")
+    logger.info(f"{fp.name}", end="|")
     if not lines:
         return
     cleaned = []
@@ -63,7 +66,7 @@ def main() -> None:
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_nobinary(cwd)
     if not files:
-        print("no files found")
+        logger.info("no files found")
         return
     if len(files) == 1:
         process_file(files[0])

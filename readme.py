@@ -3,6 +3,7 @@ import pydoc
 import sys
 from pathlib import Path
 
+
 README_CANDIDATES = [
     "README.md",
     "README.rst",

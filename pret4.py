@@ -3,7 +3,9 @@ import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+
 from dh import unique_path  # Ensure this is available in your environment
+from loguru import logger
 
 EXTENSIONS = {".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"}
 EXCLUDE_PATTERNS = {".py", ".ipynb"}
@@ -36,9 +38,9 @@ def main():
     cwd = Path.cwd()
     files = get_files_to_format(cwd)
     if not files:
-        print("ℹ️  No files found to format")
+        logger.info("ℹ️  No files found to format")
         return
-    print(f"📁 Scanning: {cwd} | 📝 Found {len(files)} files")
+    logger.info(f"📁 Scanning: {cwd} | 📝 Found {len(files)} files")
     success_count = 0
     error_count = 0
     with ProcessPoolExecutor(max_workers=8) as executor:
@@ -46,16 +48,16 @@ def main():
         for future in as_completed(futures):
             path, success, error_msg = future.result()
             if success:
-                print(f"  ✅ Formatted: {path.name}")
+                logger.info(f"  ✅ Formatted: {path.name}")
                 success_count += 1
             else:
-                print(f"  ❌ Error: {path.name} -> {error_msg}")
+                logger.info(f"  ❌ Error: {path.name} -> {error_msg}")
                 error_dir = path.parent / "error"
                 error_dir.mkdir(exist_ok=True)
                 dest = unique_path(error_dir / path.name)
                 shutil.move(str(path), str(dest))
                 error_count += 1
-    print(f"\n✅ Success: {success_count} | ❌ Errors: {error_count}")
+    logger.info(f"\n✅ Success: {success_count} | ❌ Errors: {error_count}")
 
 
 if __name__ == "__main__":

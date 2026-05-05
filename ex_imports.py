@@ -2,8 +2,10 @@
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import get_files
+from loguru import logger
 from tree_sitter import Language, Parser
 
 OUTPUT_DIR = Path("output")
@@ -40,7 +42,7 @@ def main():
                     all_imports.append(k)
     all_imports = sorted(set(all_imports))
     outfile.write_text("\n".join(all_imports), encoding="utf-8")
-    print("done.")
+    logger.info("done.")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,9 @@
 import argparse
 import sys
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
+from loguru import logger
 
 
 def read_text_file(path: Path) -> str:
@@ -50,7 +52,7 @@ def main() -> None:
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        print(
+        logger.info(
             f"Error: File not found: {in_path}",
             file=sys.stderr,
         )
@@ -58,12 +60,12 @@ def main() -> None:
     try:
         original_text = read_text_file(in_path)
     except Exception as exc:
-        print(f"Read error: {exc}", file=sys.stderr)
+        logger.info(f"Read error: {exc}", file=sys.stderr)
         sys.exit(1)
     try:
         translated = translate_text(original_text)
     except Exception as exc:
-        print(
+        logger.info(
             f"Translation error: {exc}",
             file=sys.stderr,
         )
@@ -72,9 +74,9 @@ def main() -> None:
     try:
         write_text_file(out_path, translated)
     except Exception as exc:
-        print(f"Write error: {exc}", file=sys.stderr)
+        logger.info(f"Write error: {exc}", file=sys.stderr)
         sys.exit(1)
-    print(f"Saved translated file → {out_path}")
+    logger.info(f"Saved translated file → {out_path}")
 
 
 if __name__ == "__main__":

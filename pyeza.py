@@ -10,6 +10,8 @@ import stat
 import subprocess
 from pathlib import Path
 
+from loguru import logger
+
 
 def colorize(
     text: str,
@@ -150,7 +152,7 @@ def output_long(
         gitmark = ""
         if e.git:
             gitmark = f" {e.git['raw']}"
-        print(f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}")
+        logger.info(f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}")
 
 
 def output_columns(
@@ -173,7 +175,7 @@ def output_columns(
     col_width = width // cols
 
     def real_len(s: str) -> int:
-        import regex as re
+        import re
 
         return len(re.sub(r"\x1b\[[0-9;]*m", "", s))
 
@@ -197,7 +199,7 @@ def output_columns(
     for i in range(0, len(rendered), cols):
         row = rendered[i : i + cols]
         padded = [r + " " * (col_width - real_len(r)) for r in row]
-        print("".join(padded))
+        logger.info("".join(padded))
 
 
 def print_tree(
@@ -209,7 +211,7 @@ def print_tree(
     try:
         names = sorted(os.listdir(base))
     except PermissionError:
-        print(prefix + " [permission denied]")
+        logger.info(prefix + " [permission denied]")
         return
     for i, name in enumerate(names):
         path = os.path.join(base, name)
@@ -224,7 +226,7 @@ def print_tree(
             txt = f"{detect_icon(name, st.st_mode)} {txt}"
         if colors:
             txt = colorize(txt, st.st_mode)
-        print(prefix + connector + txt)
+        logger.info(prefix + connector + txt)
         if stat.S_ISDIR(st.st_mode):
             new_prefix = prefix + ("    " if is_last else "│   ")
             print_tree(path, new_prefix, icons, colors)
@@ -232,11 +234,11 @@ def print_tree(
 
 def list_recursive(base: str, args, depth=0) -> None:
     if depth > 0:
-        print(f"\n{base}:")
+        logger.info(f"\n{base}:")
     try:
         names = os.listdir(base)
     except PermissionError:
-        print("Permission denied:", base)
+        logger.info("Permission denied:", base)
         return
     names = sorted(names)
     gitmap = get_git_status_for_dir(base) if args.git else {}
@@ -278,7 +280,7 @@ def print_entries(entries: list[Entry], args) -> None:
             }
             for e in entries
         ]
-        print(json.dumps(out, indent=2))
+        logger.info(json.dumps(out, indent=2))
         return
     if args.long:
         output_long(
@@ -313,7 +315,7 @@ def main() -> None:
     args = p.parse_args()
     for path in args.paths:
         if len(args.paths) > 1:
-            print(f"{path}:")
+            logger.info(f"{path}:")
         if args.tree:
             print_tree(
                 path,
@@ -344,7 +346,7 @@ def main() -> None:
         try:
             names = os.listdir(path)
         except PermissionError:
-            print("Permission denied:", path)
+            logger.info("Permission denied:", path)
             continue
         names = sorted(names)
         gitmap = get_git_status_for_dir(path) if args.git else {}

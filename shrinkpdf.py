@@ -1,29 +1,31 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import fsz, gsz, runcmd
+
+from dh import fsz, runcmd
+from loguru import logger
 
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} input.pdf")
+        logger.info(f"Usage: {sys.argv[0]} input.pdf")
         sys.exit(1)
     input_path = Path(sys.argv[1]).resolve()
     if not input_path.exists():
-        print(
+        logger.info(
             "Input file not found.",
             file=sys.stderr,
         )
         sys.exit(1)
     if input_path.suffix.lower() != ".pdf":
-        print(
+        logger.info(
             "Input must be a PDF file.",
             file=sys.stderr,
         )
         sys.exit(1)
     temp_gs = input_path.with_name(f"temp_gs_{input_path.name}")
     size_before = input_path.stat().st_size
-    print(f"Before : {fsz(size_before)}")
+    logger.info(f"Before : {fsz(size_before)}")
     gs_cmd = [
         "gs",
         "-sDEVICE=pdfwrite",
@@ -45,14 +47,14 @@ def main() -> None:
     ]
     runcmd(gs_cmd, show_output=True)
     size_after = temp_gs.stat().st_size
-    print(f"After  : {fsz(size_after)}")
+    logger.info(f"After  : {fsz(size_after)}")
     diff = size_before - size_after
     sign = "-" if diff >= 0 else "+"
     if size_after < size_before:
         temp_gs.replace(input_path)
-        print(f"Saved  : {sign}{fsz(diff)}")
+        logger.info(f"Saved  : {sign}{fsz(diff)}")
     else:
-        print("original file is smaller")
+        logger.info("original file is smaller")
         temp_gs.unlink(missing_ok=True)
 
 

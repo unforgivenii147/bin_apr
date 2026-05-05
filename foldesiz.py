@@ -3,14 +3,14 @@ import operator
 import os
 import shutil
 from pathlib import Path
-from dh import unique_path
-from fastwalk import walk_files
+
+from dh import unique_path, get_files
+from loguru import logger
 
 
 def get_all_files(cwd):
     files = []
-    for pth in walk_files(cwd):
-        path = Path(pth)
+    for path in get_files(cwd):
         if path.is_file():
             size = path.stat().st_size
             files.append((path, size))
@@ -31,7 +31,7 @@ def calculate_optimal_folders(files):
     return min(num_folders, len(files))
 
 
-def create_range_folders(base_dir, files, num_folders):
+def create_range_folders(cwd, files, num_folders):
     sizes = sorted([size for _, size in files])
     folder_ranges = []
     files_per_folder = len(files) // num_folders
@@ -54,13 +54,13 @@ def create_range_folders(base_dir, files, num_folders):
 
             folder_name = f"{fsz(min_size)}-{fsz(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))
-            folder_path = os.path.join(base_dir, folder_name)
+            folder_path = os.path.join(cwd, folder_name)
             Path(folder_path).mkdir(exist_ok=True, parents=True)
         start_idx = end_idx
     return folder_ranges
 
 
-def distribute_files(files, folders, base_dir):
+def distribute_files(files, folders, cwd):
     size_to_folder = {}
     for (
         min_size,
@@ -75,7 +75,7 @@ def distribute_files(files, folders, base_dir):
             max_size,
         ), folder_name in size_to_folder.items():
             if min_size <= size <= max_size:
-                dest_folder = os.path.join(base_dir, folder_name)
+                dest_folder = os.path.join(cwd, folder_name)
                 dest_path = os.path.join(
                     dest_folder,
                     Path(filepath).name,
@@ -86,23 +86,23 @@ def distribute_files(files, folders, base_dir):
                     moved_count += 1
                     break
                 except Exception as e:
-                    print(f"Failed to move {filepath}: {e}")
+                    logger.info(f"Failed to move {filepath}: {e}")
                 break
         else:
-            print(f"No folder match for {Path(filepath).name} ({size:,} bytes)")
+            logger.info(f"No folder match for {Path(filepath).name} ({size:,} bytes)")
 
 
 def main():
-    base_dir = Path.cwd()
-    files = get_all_files(base_dir)
+    cwd = Path.cwd()
+    files = get_all_files(cwd)
     if not files:
-        print("No files found.")
+        logger.info("No files found.")
         return
     #    num_folders = calculate_optimal_folders(files)
     num_folders = 4
-    folders = create_range_folders(base_dir, files, num_folders)
-    distribute_files(files, folders, base_dir)
-    print("Folderization complete!")
+    folders = create_range_folders(cwd, files, num_folders)
+    distribute_files(files, folders, cwd)
+    logger.info("Folderization complete!")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
+
 from dh import get_filez, is_binary
+from loguru import logger
 from termcolor import cprint
 
 COLOR_RE = re.compile(r"#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b")
@@ -13,7 +15,7 @@ def pf(path):
     found = COLOR_RE.findall(content)
     found = list(set(found))
     if found:
-        print(f"{path.name}", end=" : ")
+        logger.info(f"{path.name}", end=" : ")
         cprint(f"{len(found)}", "cyan")
         return found
     return []

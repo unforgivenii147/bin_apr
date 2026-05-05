@@ -3,6 +3,9 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
+from loguru import logger
+
 from dhh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
@@ -17,7 +20,7 @@ def process_file(path) -> None:
             new_lines = lines[1:]
             content = "\n".join(new_lines)
             path.write_text(content, encoding="utf-8")
-            print(f"{path.name} updated.")
+            logger.info(f"{path.name} updated.")
             return
         return
     except Exception:
@@ -38,7 +41,7 @@ def main() -> None:
         while pending:
             pending.popleft().get()
     diffsize = before - gsz(cwd)
-    print(f"space saved: {fsz(diffsize)}")
+    logger.info(f"space saved: {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

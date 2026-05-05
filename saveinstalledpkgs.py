@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 OUTPUT_FILE = Path("/sdcard/installed_packages.txt")
 
 
@@ -35,7 +37,7 @@ def save_packages(packages: list[str], path: Path) -> None:
 def main() -> None:
     packages = get_installed_debian_packages()
     save_packages(packages, OUTPUT_FILE)
-    print(f"Saved {len(packages)} packages to {OUTPUT_FILE.resolve()}")
+    logger.info(f"Saved {len(packages)} packages to {OUTPUT_FILE.resolve()}")
 
 
 if __name__ == "__main__":

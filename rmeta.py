@@ -1,7 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
+
 from bs4 import BeautifulSoup
+from loguru import logger
 
 meta_tag_pattern = re.compile(r"<meta[^>]*>", re.IGNORECASE)
 
@@ -15,11 +17,11 @@ def remove_meta_tags(filepath: Path):
             new_html_content = meta_tag_pattern.sub("", html_content)
         if new_html_content != html_content:
             filepath.write_text(new_html_content, encoding="utf-8")
-            print(f"Removed meta tags from: {filepath}")
+            logger.info(f"Removed meta tags from: {filepath}")
         else:
-            print(f"No meta tags found or removed in: {filepath}")
+            logger.info(f"No meta tags found or removed in: {filepath}")
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
+        logger.info(f"Error processing {filepath}: {e}")
 
 
 def process_directory(directory: Path):
@@ -30,6 +32,8 @@ def process_directory(directory: Path):
 
 if __name__ == "__main__":
     current_dir = Path()
-    print(f"Starting to remove meta tags from HTML files in '{current_dir.resolve()}' and its subdirectories...\n")
+    logger.info(
+        f"Starting to remove meta tags from HTML files in '{current_dir.resolve()}' and its subdirectories...\n"
+    )
     process_directory(current_dir)
-    print("\nFinished processing. Meta tags have been removed from applicable HTML files.")
+    logger.info("\nFinished processing. Meta tags have been removed from applicable HTML files.")

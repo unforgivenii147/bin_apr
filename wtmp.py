@@ -3,6 +3,8 @@ import shutil
 import sys
 import time
 from pathlib import Path
+
+from loguru import logger
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -23,9 +25,9 @@ def copy_if_match(src: Path) -> None:
             DEST_DIR.mkdir(parents=True, exist_ok=True)
             dest = DEST_DIR / src.name
             shutil.copy2(src, dest)
-            print(src.relative_to(TEMPDIR))
+            logger.info(src.relative_to(TEMPDIR))
         except Exception as e:
-            print(f"Failed to copy {src.relative_to(TEMPDIR)}: {e}")
+            logger.info(f"Failed to copy {src.relative_to(TEMPDIR)}: {e}")
 
 
 def startup_scan(root: Path) -> None:

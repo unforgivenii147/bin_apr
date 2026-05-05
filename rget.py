@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-import pathlib
+from pathlib import Path
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from urllib.parse import parse_qs, unquote, urlparse
+from urllib.parse import unquote, urlparse
+
 import requests
+from loguru import logger
 from tqdm import tqdm
 
 # ----------------------------
@@ -53,6 +55,7 @@ def sanitize_filename(name):
 def extract_filename(url):
     """
     Extract filename from URL, handling query params and paths.
+
     Examples:
         - 'font.woff2?v=1.2' → 'font.woff2'
         - 'style.min.css?ver=3.2' → 'style.min.css'
@@ -104,8 +107,8 @@ def download_one(url, session, output_dir, resume_from=None):
     filepath = os.path.join(output_dir, filename)
     # Determine resume offset
     offset = 0
-    if resume_from and pathlib.Path(filepath).exists():
-        offset = pathlib.Path(filepath).stat().st_size
+    if resume_from and Path(filepath).exists():
+        offset = Path(filepath).stat().st_size
         # If file is already complete, skip
         remote_size = get_filesize(url, session)
         if remote_size is not None and offset >= remote_size:
@@ -119,7 +122,7 @@ def download_one(url, session, output_dir, resume_from=None):
             content_length = int(r.headers.get("Content-Length", 0))
             total_size = content_length + offset if content_length else None
             mode = "ab" if offset else "wb"
-            with pathlib.Path(filepath).open(mode) as f:
+            with Path(filepath).open(mode) as f:
                 for chunk in r.iter_content(chunk_size=65536):
                     if chunk:
                         f.write(chunk)
@@ -135,15 +138,15 @@ def download_one(url, session, output_dir, resume_from=None):
 # ----------------------------
 def download_urls(urls, output_dir=OUTPUT_DIR):
     """Download all URLs in parallel, resuming where possible."""
-    pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+    Path(output_dir).mkdir(exist_ok=True, parents=True)
     safe_urls = [url for url in urls if is_safe_extension(url)]
     skipped = len(urls) - len(safe_urls)
     if skipped > 0:
-        print(f"⚠️  Skipped {skipped} URLs (not matching safe extensions).")
+        logger.info(f"⚠️  Skipped {skipped} URLs (not matching safe extensions).")
     if not safe_urls:
-        print("❌ No valid URLs to download.")
+        logger.info("❌ No valid URLs to download.")
         return
-    print(f"🚀 Starting download of {len(safe_urls)} URLs...\n")
+    logger.info(f"🚀 Starting download of {len(safe_urls)} URLs...\n")
     session = requests.Session()
     session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; ResumableDownloader/1.0)"})
     results = []
@@ -169,16 +172,16 @@ def download_urls(urls, output_dir=OUTPUT_DIR):
 # ----------------------------
 if __name__ == "__main__":
     try:
-        with pathlib.Path(URLS_FILE).open("r", encoding="utf-8") as f:
+        with Path(URLS_FILE).open("r", encoding="utf-8") as f:
             urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
     except FileNotFoundError:
-        print(f"❌ Error: {URLS_FILE} not found.")
+        logger.info(f"❌ Error: {URLS_FILE} not found.")
         sys.exit(1)
     if not urls:
-        print(f"⚠️  No URLs found in {URLS_FILE}.")
+        logger.info(f"⚠️  No URLs found in {URLS_FILE}.")
         sys.exit(0)
     if len(sys.argv) > 1:
         URLS_FILE = sys.argv[1]
-        print(f"Using input file: {URLS_FILE}")
+        logger.info(f"Using input file: {URLS_FILE}")
         download_urls(urls)
-    print("\n✅ All downloads completed.")
+    logger.info("\n✅ All downloads completed.")

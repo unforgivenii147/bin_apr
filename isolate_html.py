@@ -4,7 +4,9 @@ import os
 import re
 import sys
 from pathlib import Path
+
 from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def encode_local_file_to_base64(file_path):
@@ -12,10 +14,10 @@ def encode_local_file_to_base64(file_path):
         with Path(file_path).open("rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
     except FileNotFoundError:
-        print(f"Internal Error: encode_local_file_to_base64 called with non-existent file: {file_path}")
+        logger.info(f"Internal Error: encode_local_file_to_base64 called with non-existent file: {file_path}")
         return None
     except Exception as e:
-        print(f"Error encoding file {file_path}: {e}")
+        logger.info(f"Error encoding file {file_path}: {e}")
         return None
 
 
@@ -33,16 +35,18 @@ def find_local_resource(resource_name, base_html_dir):
         abs_search_dir = Path(str(search_dir)).resolve()
         potential_path = os.path.join(abs_search_dir, normalized_resource_name)
         if Path(potential_path).exists():
-            print(f"Found resource '{resource_name}' at: {potential_path}")
+            logger.info(f"Found resource '{resource_name}' at: {potential_path}")
             return potential_path
         path_relative_to_html_dir = os.path.join(base_html_dir, resource_name)
         if Path(path_relative_to_html_dir).exists():
-            print(f"Found resource '{resource_name}' relative to HTML dir: {path_relative_to_html_dir}")
+            logger.info(f"Found resource '{resource_name}' relative to HTML dir: {path_relative_to_html_dir}")
             return path_relative_to_html_dir
         if resource_name.startswith("/"):
             path_stripped_slash = os.path.join(base_html_dir, resource_name.lstrip("/"))
             if Path(path_stripped_slash).exists():
-                print(f"Found resource '{resource_name}' (stripped slash) relative to HTML dir: {path_stripped_slash}")
+                logger.info(
+                    f"Found resource '{resource_name}' (stripped slash) relative to HTML dir: {path_stripped_slash}"
+                )
                 return path_stripped_slash
         fallback_search_dirs = [
             Path.cwd(),
@@ -53,16 +57,16 @@ def find_local_resource(resource_name, base_html_dir):
             abs_fallback_dir = Path(fallback_dir).resolve()
             potential_path = os.path.join(abs_fallback_dir, resource_name)
             if Path(potential_path).exists():
-                print(f"Found resource '{resource_name}' in fallback dir {abs_fallback_dir}: {potential_path}")
+                logger.info(f"Found resource '{resource_name}' in fallback dir {abs_fallback_dir}: {potential_path}")
                 return potential_path
             if resource_name.startswith("/"):
                 potential_path_stripped = os.path.join(abs_fallback_dir, resource_name.lstrip("/"))
                 if Path(potential_path_stripped).exists():
-                    print(
+                    logger.info(
                         f"Found resource '{resource_name}' (stripped slash) in fallback dir {abs_fallback_dir}: {potential_path_stripped}"
                     )
                     return potential_path_stripped
-    print(f"Resource '{resource_name}' not found in primary or fallback locations.")
+    logger.info(f"Resource '{resource_name}' not found in primary or fallback locations.")
     return None
 
 
@@ -79,7 +83,7 @@ def make_html_standalone(path):
                 if encoded_img:
                     img_tag["src"] = f"data:{get_mime_type(local_img_path)};base64,{encoded_img}"
             else:
-                print(f"Warning: Image resource '{src}' not found, removing tag.")
+                logger.info(f"Warning: Image resource '{src}' not found, removing tag.")
                 img_tag.decompose()
     for link_tag in soup.find_all("link"):
         if link_tag.get("rel") == ["stylesheet"]:
@@ -87,7 +91,7 @@ def make_html_standalone(path):
             if href and not href.startswith(("http://", "https://", "data:")):
                 local_css_path = find_local_resource(href, base_html_dir)
                 if local_css_path:
-                    print(f"Processing CSS file: {local_css_path}")
+                    logger.info(f"Processing CSS file: {local_css_path}")
                     try:
                         css_content = Path(local_css_path).read_text(encoding="utf-8")
                         font_url_matches = re.findall(r'url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)', css_content)
@@ -105,17 +109,17 @@ def make_html_standalone(path):
                                             flags=re.IGNORECASE,
                                         )
                                 else:
-                                    print(
+                                    logger.info(
                                         f"Warning: Font file '{font_url}' referenced in CSS not found, leaving reference."
                                     )
                         style_tag = soup.new_tag("style")
                         style_tag.string = css_content
                         link_tag.replace_with(style_tag)
                     except Exception as e:
-                        print(f"Error processing CSS file {local_css_path}: {e}")
+                        logger.info(f"Error processing CSS file {local_css_path}: {e}")
                         link_tag.decompose()
                 else:
-                    print(f"Warning: CSS resource '{href}' not found, removing link tag.")
+                    logger.info(f"Warning: CSS resource '{href}' not found, removing link tag.")
                     link_tag.decompose()
     for style_tag in soup.find_all("style"):
         style_content = style_tag.string
@@ -135,7 +139,7 @@ def make_html_standalone(path):
                                 flags=re.IGNORECASE,
                             )
                     else:
-                        print(
+                        logger.info(
                             f"Warning: Font file '{font_url}' referenced in inline style not found, leaving reference."
                         )
             style_tag.string = style_content
@@ -149,15 +153,15 @@ def make_html_standalone(path):
                     script_tag.string = script_content
                     script_tag["src"] = ""
                 except Exception as e:
-                    print(f"Error reading script content from {local_script_path}: {e}")
+                    logger.info(f"Error reading script content from {local_script_path}: {e}")
                     script_tag.decompose()
             else:
-                print(f"Warning: Local script resource '{src}' not found, removing tag.")
+                logger.info(f"Warning: Local script resource '{src}' not found, removing tag.")
                 script_tag.decompose()
         elif not src:
             pass
         elif src.startswith(("http://", "https://")):
-            print(f"Removing external script: {src}")
+            logger.info(f"Removing external script: {src}")
             script_tag.decompose()
     return soup.prettify()
 
@@ -189,6 +193,6 @@ if __name__ == "__main__":
     if standalone_html:
         try:
             output_path.write_text(standalone_html, encoding="utf-8")
-            print(f"Standalone HTML saved to: {output_file}")
+            logger.info(f"Standalone HTML saved to: {output_file}")
         except Exception as e:
-            print(f"Error writing to output file {output_file}: {e}")
+            logger.info(f"Error writing to output file {output_file}: {e}")

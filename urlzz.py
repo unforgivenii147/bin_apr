@@ -4,8 +4,10 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import py7zr
 from dh import BIN_EXT, TXT_EXT, get_files
+from loguru import logger
 
 url_pattern = re.compile(r'https?://[^\s"\']+')
 EXT = BIN_EXT
@@ -22,7 +24,7 @@ def extract_urls_from_file(filepath):
         content = filepath.read_text(encoding="utf-8", errors="ignore")
         urls.update(extract_urls_from_text(content))
     except Exception as e:
-        print(f"Failed to read {filepath}: {e}")
+        logger.info(f"Failed to read {filepath}: {e}")
     return urls
 
 
@@ -38,7 +40,7 @@ def extract_urls_from_tar(filepath):
                         content = f.read().decode("utf-8", errors="ignore")
                         urls.update(extract_urls_from_text(content))
     except Exception as e:
-        print(f"Failed to read tar {filepath}: {e}")
+        logger.info(f"Failed to read tar {filepath}: {e}")
     return urls
 
 
@@ -57,7 +59,7 @@ def extract_urls_from_zip(filepath):
                 except:
                     pass
     except Exception as e:
-        print(f"Failed to read zip {filepath}: {e}")
+        logger.info(f"Failed to read zip {filepath}: {e}")
     return urls
 
 
@@ -73,7 +75,7 @@ def extract_urls_from_7z(filepath):
                 except:
                     pass
     except Exception as e:
-        print(f"Failed to read 7z {filepath}: {e}")
+        logger.info(f"Failed to read 7z {filepath}: {e}")
     return urls
 
 
@@ -105,4 +107,4 @@ if __name__ == "__main__":
             all_urls.update(future.result())
     with Path("urls.txt").open("w", encoding="utf-8") as f:
         f.writelines(url + "\n" for url in sorted(all_urls))
-    print(f"Extracted {len(all_urls)} unique URLs to urls.txt")
+    logger.info(f"Extracted {len(all_urls)} unique URLs to urls.txt")

@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
+from loguru import logger
+
 
 def main():
     with Path("/sdcard/colors").open(encoding="utf-8") as file:
@@ -17,7 +19,7 @@ def main():
         html_content += f'<div style="background-color: {color}; color: white; padding: 10px; margin: 5px; border-radius: 5px;">{color}</div>\n'
     html_content += "</body>\n</html>"
     Path("/sdcard/colors.html").write_text(html_content, encoding="utf-8")
-    print("/sdcard/colors.html created")
+    logger.info("/sdcard/colors.html created")
 
 
 if __name__ == "__main__":

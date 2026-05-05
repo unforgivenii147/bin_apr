@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import subprocess
 import sys
 from pathlib import Path
-from dh import get_filez
+
+from dh import get_nobinary, mpf3, runcmd
 
 
 def has_shell_shebang(path):
@@ -17,31 +17,27 @@ def has_shell_shebang(path):
 
 
 def process_file(fp):
-    print("Formatting: ", fp.name)
+    print(f"Formatting:  {fp.name}")
     try:
-        res = subprocess.run(["shfmt", "-w", str(fp)], capture_output=True, text=True)
-        if res.returncode != 0:
+        res, _, _ = runcmd(["shfmt", "-w", str(fp)], show_output=True)
+        if res != 0:
             print("  shfmt failed:", res.stderr.strip(), file=sys.stderr)
-            return False
+            return False, fp
     except Exception as e:
         print("  error running shfmt:", e, file=sys.stderr)
-        return False
-    return True
+        return False, fp
+    return True, fp
 
 
 def main():
     cwd = Path.cwd()
-    failed = [
-        path
-        for path in get_filez(cwd)
-        if ((not path.suffix and has_shell_shebang(path)) or path.suffix == ".sh") and not process_file(path)
-    ]
-    if failed:
-        print(f"Finished with {len(failed)} failures: ", file=sys.stderr)
-        for f in failed:
-            print("  - ", f.relative_to(cwd))
-    else:
-        print("All done.")
+    files = [p for p in get_nobinary(cwd) if ((not p.suffix and has_shell_shebang(p)) or p.suffix == ".sh")]
+
+    results = mpf3(process_file, files)
+    for res in results:
+        ret, k = res
+        if not ret:
+            print(f"  - {k.relative_to(cwd)}")
 
 
 if __name__ == "__main__":

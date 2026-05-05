@@ -6,7 +6,9 @@ import tarfile
 import zipfile
 from collections import defaultdict
 from pathlib import Path
+
 from dh import STDLIB
+from loguru import logger
 
 SHEBANG_PATTERNS = [
     r"#!/data/data/com.termux/files/usr/bin/python",
@@ -53,7 +55,7 @@ def is_python_file(path):
                 if re.search(
                     r"\bimport\b|\bfrom\b\s+\w",
                     content,
-                    re.I,
+                    re.IGNORECASE,
                 ):
                     return True
         except:
@@ -85,7 +87,7 @@ def extract_imports_regex(content):
     ]
     for line in content.splitlines():
         for pattern in patterns:
-            match = re.search(pattern, line, re.I)
+            match = re.search(pattern, line, re.IGNORECASE)
             if match:
                 pkg = match.group(1).split(".")[0].lower()
                 imports.add(pkg)
@@ -194,8 +196,7 @@ def handle_compressed_file(archive_path):
                     text=True,
                 )
                 for line in result.stdout.splitlines():
-                    if ".py" in line or ("python" in line.lower() and "bin" not in line.lower()):
-                        pass
+                    ".py" in line or ("python" in line.lower() and "bin" not in line.lower())
             except:
                 pass
     except Exception:
@@ -244,18 +245,18 @@ def generate_requirements(imports_count):
                 f.write(f"{norm_pkg}\n")
             else:
                 f.write(f"{norm_pkg}\n")
-    print(f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)")
-    print("Top 10 most used packages:")
+    logger.info(f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)")
+    logger.info("Top 10 most used packages:")
     for pkg, count in sorted_imports[:10]:
-        print(f"  {pkg}: {count} files")
+        logger.info(f"  {pkg}: {count} files")
 
 
 def main():
     load_known_packages()
-    print(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
-    print("Scanning current directory...")
+    logger.info(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
+    logger.info("Scanning current directory...")
     imports_count = walk_directory(".")
-    print(f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages")
+    logger.info(f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages")
     generate_requirements(imports_count)
 
 

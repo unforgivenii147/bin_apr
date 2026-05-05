@@ -1,8 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import io
 import os
+from pathlib import Path
 import re
 import tokenize
-import io
+
+from loguru import logger
 
 
 def remove_comments_and_docstrings(source_code):
@@ -16,7 +19,7 @@ def remove_comments_and_docstrings(source_code):
         toktype = tok[0]
         tok_string = tok[1]
         start_lineno, start_col = tok[2]
-        end_lineno, end_col = tok[3]
+        _end_lineno, end_col = tok[3]
         if start_lineno > last_lineno:
             last_col = 0
         if (toktype == tokenize.COMMENT) or (toktype == tokenize.STRING and prev_toktype == tokenize.INDENT):
@@ -44,8 +47,7 @@ def shorten_variable_name(name):
 
 
 def compress_python_file_aggressively(filepath):
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read()
+    content = Path(filepath).read_text(encoding="utf-8")
     # Step 1: Remove comments and docstrings using tokenize (more robust)
     content_no_comments = remove_comments_and_docstrings(content)
     # Step 2: Remove excess whitespace and empty lines
@@ -115,30 +117,29 @@ def compress_python_file_aggressively(filepath):
     lines = content_no_comments_single.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]
     final_content = "\n".join(non_empty_lines)
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(final_content)
+    Path(filepath).write_text(final_content, encoding="utf-8")
 
 
 def compress_python_files_in_directory(directory="."):
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             filepath = os.path.join(directory, filename)
-            print(f"Compressing {filepath} (removing comments, docstrings, whitespace)...")
+            logger.info(f"Compressing {filepath} (removing comments, docstrings, whitespace)...")
             compress_python_file_aggressively(filepath)
-    print("Compression complete.")
+    logger.info("Compression complete.")
 
 
 if __name__ == "__main__":
     # IMPORTANT: This script modifies files in place. BACK UP YOUR CODE FIRST!
-    print("WARNING: This script will modify your Python files by removing comments,")
-    print("docstrings, and whitespace. It DOES NOT perform aggressive variable renaming")
-    print("due to the high risk of breaking code and reducing AI understandability.")
-    print("Please ensure you have backups before proceeding.")
+    logger.info("WARNING: This script will modify your Python files by removing comments,")
+    logger.info("docstrings, and whitespace. It DOES NOT perform aggressive variable renaming")
+    logger.info("due to the high risk of breaking code and reducing AI understandability.")
+    logger.info("Please ensure you have backups before proceeding.")
     # Example: To run this on all .py files in the current directory:
     # compress_python_files_in_directory('.')
     # For demonstration, I'll just print a message.
     # To actually run it, uncomment the line below and ensure you have backups.
     # compress_python_files_in_directory('.')
-    print(
+    logger.info(
         "\nScript finished. No files were modified by default. Uncomment 'compress_python_files_in_directory('.')' to run."
     )

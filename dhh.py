@@ -9,7 +9,9 @@ from subprocess import run as _run
 from tempfile import NamedTemporaryFile as _tmpfile
 from time import sleep as _sleep
 from typing import Any
+
 from joblib import Parallel, delayed
+from loguru import logger
 
 SKIP_DIRS = {"__pycache__", ".git"}
 CHUNK_SIZE = 32768
@@ -50,13 +52,13 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         temp_path.rename(final_path)
         return True
     except OSError as e:
-        print(f"Error during atomic write: {e}")  # Log or handle appropriately
+        logger.info(f"Error during atomic write: {e}")  # Log or handle appropriately
         if temp_path and temp_path.exists():
             with _suppress(OSError):  # Suppress errors during cleanup
                 temp_path.unlink()
         return False
     except Exception as e:
-        print(f"Unexpected error during atomic write: {e}")
+        logger.info(f"Unexpected error during atomic write: {e}")
         if temp_path and temp_path.exists():
             with _suppress(OSError):
                 temp_path.unlink()
@@ -74,13 +76,13 @@ def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bo
             if attempt < max_retries - 1:
                 _sleep(delay * (attempt + 1))  # Exponential backoff can be better, but linear is fine
                 continue
-            print(f"PermissionError: Could not delete {file_path} after {max_retries} retries.")
+            logger.info(f"PermissionError: Could not delete {file_path} after {max_retries} retries.")
             return False
         except OSError as e:
-            print(f"OSError deleting {file_path}: {e}")
+            logger.info(f"OSError deleting {file_path}: {e}")
             return False
         except Exception as e:
-            print(f"Unexpected error deleting {file_path}: {e}")
+            logger.info(f"Unexpected error deleting {file_path}: {e}")
             return False
     return False
 
@@ -218,3 +220,20 @@ def get_pyfiles(path: str | Path) -> list[Path]:
                 if is_python_file(f):
                     pyfiles.append(f)
     return pyfiles
+
+
+def cprint(text, color="cyan"):
+    colors = {
+        "black": 30,
+        "red": 91,
+        "green": 92,
+        "yellow": 93,
+        "blue": 94,
+        "magenta": 95,
+        "cyan": 96,
+        "white": 97,
+        "gray": 90,
+        "default": 39,
+    }
+    color_code = colors.get(color.lower(), 39)
+    print(f"\033[5;{color_code}m{text}\033[0m")

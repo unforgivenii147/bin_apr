@@ -4,8 +4,11 @@ import os
 import re
 import sys
 from pathlib import Path
+
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 from loguru import logger
+
+N_JOBS = -1
 
 LANGS = [
     ("Auto-detect by extension", "auto"),
@@ -69,21 +72,6 @@ EXT_TO_LANG = {
     ".conf": "ini",
     ".json": "jsonc",
 }
-
-
-def choose_language() -> str:
-    logger.info("Select language:")
-    for i, (label, code) in enumerate(LANGS, start=1):
-        logger.info(f"  {i:2d}) {label}")
-    while True:
-        choice = input("Enter number: ").strip()
-        if not choice.isdigit():
-            logger.info("Please enter a number.")
-            continue
-        idx = int(choice)
-        if 1 <= idx <= len(LANGS):
-            return LANGS[idx - 1][1]
-        logger.info("Invalid choice, try again.")
 
 
 def auto_detect_language_from_path(path: Path) -> str | None:
@@ -196,15 +184,14 @@ def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, su
             removed_chars += j - i
             i = j
             continue
-        if treat_hash_as_line_comment and ch == "#":
-            if not (i == 0 and i + 1 < n and src[i + 1] == "!"):
-                comments += 1
-                j = i + 1
-                while j < n and src[j] not in "\n\r":
-                    j += 1
-                removed_chars += j - i
-                i = j
-                continue
+        if treat_hash_as_line_comment and ch == "#" and not (i == 0 and i + 1 < n and src[i + 1] == "!"):
+            comments += 1
+            j = i + 1
+            while j < n and src[j] not in "\n\r":
+                j += 1
+            removed_chars += j - i
+            i = j
+            continue
         out.append(ch)
         i += 1
     return Result("".join(out), comments, removed_chars)
@@ -213,12 +200,86 @@ def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, su
 TRIPLE_STR_OPENERS = (DOC_TH1, DOC_TH2)
 
 
-def strip_comments_python(src: str) -> Result:
+def rm_doc(content: str) -> str:
+    removed_count = 0
+    lines = content.split("\n")
+    result_lines = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if DOC_TH1 in line or DOC_TH2 in line:
+            delimiter = DOC_TH1 if DOC_TH1 in line else DOC_TH2
+            count = line.count(delimiter)
+            if count >= 2:
+                first = line.find(delimiter)
+                second = line.find(delimiter, first + 3)
+                before = line[:first].rstrip()
+                if before.endswith(":") or before.strip() == "":
+                    result_lines.append(line[:first] + line[second + 3 :])
+                    removed_count += 1
+                    i += 1
+                    continue
+            before = line[: line.find(delimiter)].rstrip()
+            if before.endswith(":") or before.strip() == "" or "=" not in before:
+                removed_count += 1
+                if before:
+                    result_lines.append(before)
+                j = i + 1
+                while j < len(lines):
+                    if delimiter in lines[j]:
+                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
+                        if after:
+                            result_lines.append(after)
+                        i = j + 1
+                        break
+                    j += 1
+                else:
+                    i = j
+            else:
+                result_lines.append(line)
+                i += 1
+        else:
+            result_lines.append(line)
+            i += 1
+    return "\n".join(result_lines)
+
+
+def rmsl(data):
+
+    lines = data.splitlines(keepends=False)
+    nl = []
+    removed = 0
+    for line in lines:
+        stripped = line.lstrip(" ").rstrip(" ").strip()
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and stripped != DOC_TH1 * 2:
+            removed += 1
+            continue
+        nl.append(line)
+
+    if removed:
+        try:
+            code = "\n".join(nl)
+            _ = ast.parse(code)
+            return code
+        except:
+            return data
+    else:
+        return data
+
+
+def strip_comments_python(code: str) -> Result:
+    src = ""
     try:
-        _ = ast.parse(src)
+        _ = ast.parse(code)
     except:
         logger.warning("source code isnot valid python code.")
-        return
+        return None
+    streeped = rm_doc(code)
+    try:
+        _ = ast.parse(streeped)
+        src = rmsl(streeped)
+    except:
+        src = rmsl(code)
     i, n = 0, len(src)
     out = []
     comments = 0
@@ -254,8 +315,7 @@ def strip_comments_python(src: str) -> Result:
         if state == IN_TSQ:
             out.append(ch)
             if ch == "'" and ch2 == "'" and ch3 == "'":
-                out.append(ch2)
-                out.append(ch3)
+                out.extend((ch2, ch3))
                 i += 3
                 state = 0
                 continue
@@ -264,24 +324,19 @@ def strip_comments_python(src: str) -> Result:
         if state == IN_TDQ:
             out.append(ch)
             if ch == '"' and ch2 == '"' and ch3 == '"':
-                out.append(ch2)
-                out.append(ch3)
+                out.extend((ch2, ch3))
                 i += 3
                 state = 0
                 continue
             i += 1
             continue
         if ch == "'" and ch2 == "'" and ch3 == "'":
-            out.append(ch)
-            out.append(ch2)
-            out.append(ch3)
+            out.extend((ch, ch2, ch3))
             i += 3
             state = IN_TSQ
             continue
         if ch == '"' and ch2 == '"' and ch3 == '"':
-            out.append(ch)
-            out.append(ch2)
-            out.append(ch3)
+            out.extend((ch, ch2, ch3))
             i += 3
             state = IN_TDQ
             continue
@@ -295,15 +350,14 @@ def strip_comments_python(src: str) -> Result:
             i += 1
             state = IN_DBL
             continue
-        if ch == "#":
-            if not (i == 0 and ch2 == "!"):
-                comments += 1
-                j = i + 1
-                while j < n and src[j] not in "\n\r":
-                    j += 1
-                removed_chars += j - i
-                i = j
-                continue
+        if ch == "#" and not (i == 0 and ch2 == "!"):
+            comments += 1
+            j = i + 1
+            while j < n and src[j] not in "\n\r":
+                j += 1
+            removed_chars += j - i
+            i = j
+            continue
         out.append(ch)
         i += 1
         final_code = "".join(out)
@@ -319,8 +373,7 @@ def strip_comments_html(src: str) -> Result:
     comments = 0
     removed_chars = 0
     pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
-    out = pattern.sub("", src)
-    return out
+    return pattern.sub("", src)
 
 
 def strip_comments_hash_and_semicolon(src: str, allow_semicolon: bool = True) -> Result:
@@ -400,8 +453,14 @@ def strip_comments(src: str, lang: str) -> Result:
 
 def process_file(path, lang):
     src = path.read_text(encoding="utf-8")
-    result = strip_comments(src, lang)
-    path.write_text(result.text, encoding="utf-8")
+    try:
+        result = strip_comments(src, lang)
+        _ = ast.parse(result)
+        backupfile = path.with_name(path.name + ".bak")
+        backupfile.write_text(src, encoding="utf8")
+        path.write_text(result.text, encoding="utf-8")
+    except:
+        return
 
 
 def main() -> None:

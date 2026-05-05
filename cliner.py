@@ -1,12 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 import mmap
 import re
-from multiprocessing import cpu_count
 from pathlib import Path
+from dh import mpf3
+
+from loguru import logger
 
 LOG_EXT = ".log"
-MMAP_THRESHOLD = 5 * 1024 * 1024
-NUM_WORKERS = cpu_count()
+MMAP_THRESHOLD = 1 * 1024 * 1024
+NUM_WORKERS = 4
 PATTERNS = [
     r"\^\[",
     r"\[[\dA-Z;]+m",
@@ -31,26 +33,26 @@ def clean_line(line: str) -> str:
     return re.sub(r" {2,}", " ", cleaned)
 
 
-def clean_file_small(file_path: Path) -> tuple:
+def clean_file_small(path: Path) -> tuple:
     try:
-        with Path(file_path).open(encoding="utf-8", errors="ignore") as f:
+        with path.open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
         cleaned_lines = [clean_line(line) for line in lines]
-        with Path(file_path).open("w", encoding="utf-8") as f:
+        with path.open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)
-        return (file_path, True, "small file")
+        return (path, True, "small file")
     except Exception as e:
-        return (file_path, False, str(e))
+        return (path, False, str(e))
 
 
-def clean_file_large(file_path: Path) -> tuple:
+def clean_file_large(path: Path) -> tuple:
     try:
-        with Path(file_path).open("r+b") as f:
+        with path.open("r+b") as f:
             get_size = f.seek(0, 2)
             f.seek(0)
             if get_size == 0:
                 return (
-                    file_path,
+                    path,
                     True,
                     "empty file",
                 )
@@ -59,24 +61,24 @@ def clean_file_large(file_path: Path) -> tuple:
         lines = content.splitlines(keepends=True)
         cleaned_lines = [clean_line(line) for line in lines]
         cleaned_content = "".join(cleaned_lines)
-        Path(file_path).write_text(cleaned_content, encoding="utf-8")
+        Path(path).write_text(cleaned_content, encoding="utf-8")
         return (
-            file_path,
+            path,
             True,
             "large file (mmap)",
         )
     except Exception as e:
-        return (file_path, False, str(e))
+        return (path, False, str(e))
 
 
-def clean_file_worker(file_path: Path) -> tuple:
+def clean_file_worker(path: Path) -> tuple:
     try:
-        get_size = file_path.stat().st_size
+        get_size = path.stat().st_size
         if get_size > MMAP_THRESHOLD:
-            return clean_file_large(file_path)
-        return clean_file_small(file_path)
+            return clean_file_large(path)
+        return clean_file_small(path)
     except Exception as e:
-        return (file_path, False, str(e))
+        return (path, False, str(e))
 
 
 def main():
@@ -85,24 +87,20 @@ def main():
     if not log_files:
         print(f"No {LOG_EXT} files found.")
         return
-    print(f"Found {len(log_files)} log file(s).")
-    print(f"Using {NUM_WORKERS} worker(s).")
-    print(f"Files larger than {MMAP_THRESHOLD / (1024 * 1024):.1f} MB will use mmap.\n")
-    print("Cleaning...\n")
-    with Pool(processes=NUM_WORKERS) as pool:
-        results = pool.map(clean_file_worker, log_files)
+    logger.info(f"Found {len(log_files)} log file(s).")
+    results = mpf3(clean_file_worker, log_files)
     success_count = 0
     error_count = 0
-    for file_path, success, message in results:
+    for path, success, message in results:
         if success:
-            print(f"✓ Cleaned: {file_path} ({message})")
+            logger.info(f"✓ Cleaned: {path} ({message})")
             success_count += 1
         else:
-            print(f"✗ Error: {file_path} - {message}")
+            logger.info(f"✗ Error: {path} - {message}")
             error_count += 1
-    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
+    logger.info(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
     if error_count > 0:
-        print(f"Failed: {error_count} file(s).")
+        logger.info(f"Failed: {error_count} file(s).")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from pathlib import Path
+
+from loguru import logger
+
+major, minor, _, _, _ = sys.version_info
+py_version = f"{major}{minor}"
 
 OLD = {
     "#!/data/data/com.termux/files/usr/bin/env python",
     "#!/data/data/com.termux/files/usr/bin/env python3",
     "#!/data/data/com.termux/files/usr/bin/python3",
-    "#!/data/data/com.termux/files/usr/bin/python3.12",
+    f"#!/data/data/com.termux/files/usr/bin/python{py_version}",
     "#!/usr/bin/env python",
     "#!/usr/bin/env python3",
 }
@@ -39,8 +45,8 @@ def main() -> None:
     for file in cwd.rglob("*.py"):
         if fix_file(file):
             fixed += 1
-            print(f"Updated: {file}")
-    print(f"\nDone. Updated {fixed} files.")
+            logger.info(f"Updated: {file}")
+    logger.info(f"\nDone. Updated {fixed} files.")
 
 
 if __name__ == "__main__":

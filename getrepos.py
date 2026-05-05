@@ -1,13 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
+from pathlib import Path
 import sys
+
 import requests
 
 
 def get_repos(username: str) -> None:
     url = f"https://api.github.com/users/{username}/repos"
     try:
-        response = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=60)
         if response.status_code == 404:
             print(f"Error: User '{username}' not found.")
             sys.exit(1)
@@ -15,27 +16,25 @@ def get_repos(username: str) -> None:
         repos = response.json()
         if not repos:
             print(f"No public repositories found for user '{username}'.")
-            return
-        print(f"Repositories of '{username}':")
-        for repo in repos:
-            print(f"- {repo['name']}: {repo['html_url']}")
-        with open(f"{username}.txt", "w") as f:
-            for repo in repos:
-                f.write(f"- {repo['name']}: {repo['html_url']}\n")
+            return []
+        return repos
     except requests.RequestException as e:
         print(f"Error fetching repos: {e}")
         sys.exit(1)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Get GitHub repositories for a user")
-    parser.add_argument(
-        "username",
-        type=str,
-        help="GitHub username",
-    )
-    args = parser.parse_args()
-    get_repos(args.username)
+    user = sys.argv[1]
+    repos = get_repos(user)
+
+    print(f"Repositories of '{username}':")
+
+    for repo in repos:
+        print(f"- {repo['name']}")
+
+    with Path(f"{username}.txt").open("w", encoding="utf-8") as f:
+        for repo in repos:
+            f.write(f"- {repo['name']}")
 
 
 if __name__ == "__main__":

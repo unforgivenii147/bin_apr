@@ -2,7 +2,9 @@
 import sys
 from importlib.metadata import distributions
 from pathlib import Path
+
 from dh import STDLIB
+from loguru import logger
 
 
 def get_installed_packages():
@@ -31,7 +33,7 @@ def strip_installed_from_requirements(fname):
     new_lines = [line for line in new_lines if line not in stdlib]
     write_requirements(new_lines, fname)
     removed = len(lines) - len(new_lines)
-    print(f"Removed {removed} installed package(s).")
+    logger.info(f"Removed {removed} installed package(s).")
 
 
 if __name__ == "__main__":

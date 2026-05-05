@@ -4,7 +4,9 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
-import py7zr
+
+# import py7zr
+from loguru import logger
 
 
 def safe_mkdir(base: Path) -> Path:
@@ -43,12 +45,12 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 zip_ref.extractall(target_dir)
             return True
-        try:
-            with py7zr.SevenZipFile(archive, mode="r") as sz:
-                sz.extractall(target_dir)
-            return True
-        except py7zr.exceptions.Bad7zFile:
-            return False
+    #        try:
+    #            with py7zr.SevenZipFile(archive, mode="r") as sz:
+    #                sz.extractall(target_dir)
+    #            return True
+    #        except py7zr.exceptions.Bad7zFile:
+    #            return False
     except (
         tarfile.TarError,
         zipfile.BadZipFile,
@@ -72,9 +74,9 @@ def main() -> None:
         ok = unzip_file(moved_file, target_dir)
         if ok:
             moved_file.unlink()
-            print(f"[OK] Unzipped and removed: {item.name}")
+            logger.info(f"[OK] Unzipped and removed: {item.name}")
         else:
-            print(f"[SKIP] Not a zip or unzip failed: {item.name}")
+            logger.info(f"[SKIP] Not a zip or unzip failed: {item.name}")
 
 
 if __name__ == "__main__":

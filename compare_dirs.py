@@ -1,25 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 import argparse
 import os
 import shlex
 import stat
 from pathlib import Path
+from dh import expand_arg
+from hashlib import sha256
+
+CHUNK_SIZE = 32768
 
 
-def collect_tree(root: Path):
-    files = set()
-    dirs = set()
-    for dirpath, dirnames, filenames in os.walk(root, topdown=True, followlinks=False):
-        rel_dir = os.path.relpath(dirpath, root)
-        if rel_dir == ".":
-            rel_dir = ""
-            for d in dirnames:
-                rel = os.path.normpath(os.path.join(rel_dir, d))
-                dirs.add(rel)
-                for f in filenames:
-                    rel = os.path.normpath(os.path.join(rel_dir, f))
-                    files.add(rel)
-    return files, dirs
+def get_sha256(path: str | Path) -> str:
+    path = Path(path)
+    h = sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def write_shell_copy(script_path: Path, src_root: Path, dst_root: Path, only_dirs, only_files):
@@ -40,31 +38,44 @@ def write_shell_copy(script_path: Path, src_root: Path, dst_root: Path, only_dir
 
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("first")
-    p.add_argument("second")
-    p.add_argument("--out-dir", default=".")
-    args = p.parse_args()
-    first = Path(args.first).resolve()
-    second = Path(args.second).resolve()
-    outdir = Path(args.out_dir).resolve()
-    outdir.mkdir(parents=True, exist_ok=True)
-    f_files, f_dirs = collect_tree(first)
-    s_files, s_dirs = collect_tree(second)
-    only_files_first = f_files - s_files
-    only_files_second = s_files - f_files
-    only_dirs_first = f_dirs - s_dirs
-    only_dirs_second = s_dirs - f_dirs
-    only_in_first_sh = outdir / "only_in_first.sh"
-    only_in_second_sh = outdir / "only_in_second.sh"
-    common_txt = outdir / "common.txt"
-    write_shell_copy(only_in_first_sh, first, second, only_dirs_first, only_files_first)
-    write_shell_copy(only_in_second_sh, second, first, only_dirs_second, only_files_second)
-    commons = sorted((f_files & s_files) | (f_dirs & s_dirs))
-    with common_txt.open("w", encoding="utf-8") as cf:
-        for c in commons:
-            cf.write(c + "\n")
-    print("Wrote:", only_in_first_sh, only_in_second_sh, common_txt)
+    cwd = Path.cwd()
+    dir1 = sys.argv[1]
+    dir2 = sys.argv[2]
+    first = expand_arg(dir1)
+    second = expand_arg(dir2)
+
+    f_files = [p.name for p in first if p.is_file()]
+    f_dirs = [p.name for p in first if p.is_dir()]
+
+    s_files = [p.name for p in second if p.is_file()]
+    s_dirs = [p.name for p in second if p.is_dir()]
+
+    common1 = [Path(dir1).resolve() / p for p in f_files if p in s_files]
+    common2 = {str(Path(dir1).resolve() / p): str(Path(dir2).resolve() / p) for p in f_files if p in s_files}
+
+    if common1:
+        for k in common1:
+            print(f"  - {k}")
+    else:
+        print("no common files")
+        sys.exit(1)
+
+    only_files_first = [p for p in f_files if p not in s_files]
+    only_files_second = [p for p in s_files if p not in f_files]
+
+    common_txt = cwd / "common.txt"
+    common_txt.write_text("\n".join([str(p) for p in common1]))
+
+    ans = input(f"delete from {dir1}  ? ")
+    if ans == "y":
+        for k, v in common2.items():
+            if get_sha256(k) == get_sha256(v):
+                print(f"the files are identical \n{k}\n{v}")
+            else:
+                print(f"similar name filed:\n{k}\n{v}\n")
+
+
+#            k.unlink()
 
 
 if __name__ == "__main__":

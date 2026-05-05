@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
+from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
@@ -83,7 +85,7 @@ def main():
     filterd = []
     for rq in impoz:
         if rq.strip() not in stdlib_plus_installed:
-            print(rq.strip())
+            logger.info(rq.strip())
             filterd.append(rq)
     outfile.write_text("\n".join(filterd), encoding="utf-8")
 

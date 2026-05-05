@@ -4,7 +4,9 @@ import importlib.metadata
 import importlib.util
 import sys
 from pathlib import Path
+
 from dh import is_python_file
+from loguru import logger
 
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",
@@ -77,9 +79,9 @@ def main():
             "\n".join(sorted(third_party)),
             encoding="utf-8",
         )
-        print(f"✅ Found {len(third_party)} 3rd-party dependencies.")
+        logger.info(f"✅ Found {len(third_party)} 3rd-party dependencies.")
         if already_installed:
-            print(f"📦 Already installed: {', '.join(already_installed)}")
+            logger.info(f"📦 Already installed: {', '.join(already_installed)}")
         if missing_for_pip:
             install_cmd = f"pip install {' '.join(missing_for_pip)}"
             pip_script.write_text(
@@ -87,14 +89,14 @@ def main():
                 encoding="utf-8",
             )
             pip_script.chmod(pip_script.stat().st_mode | 0o111)
-            print(f"⚠️  Missing: {', '.join(missing_for_pip)}")
-            print(f"🚀 Run this to install missing: ./{pip_script.name}")
+            logger.info(f"⚠️  Missing: {', '.join(missing_for_pip)}")
+            logger.info(f"🚀 Run this to install missing: ./{pip_script.name}")
         else:
             if pip_script.exists():
                 pip_script.unlink()
-            print("✨ Environment is fully satisfied!")
+            logger.info("✨ Environment is fully satisfied!")
     else:
-        print("ℹ️ No 3rd-party imports found.")
+        logger.info("ℹ️ No 3rd-party imports found.")
 
 
 if __name__ == "__main__":

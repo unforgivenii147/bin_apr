@@ -4,6 +4,8 @@ import re
 import sys
 from pathlib import Path
 
+from loguru import logger
+
 HEX_RE = re.compile(r"^#([0-9a-fA-F]{6})$")
 
 
@@ -29,6 +31,6 @@ def main(path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: sort_colors.py colors.txt")
+        logger.info("Usage: sort_colors.py colors.txt")
         sys.exit(1)
     main(sys.argv[1])

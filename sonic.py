@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+import pdb
 import argparse
 import mmap
 import os
@@ -11,6 +12,8 @@ from collections.abc import Generator
 from datetime import UTC, datetime
 from pathlib import Path
 
+from loguru import logger
+
 
 class LineProcessor:
     def __init__(self, verbose: bool = False) -> None:
@@ -18,7 +21,7 @@ class LineProcessor:
 
     def log(self, message: str):
         if self.verbose:
-            print(f"[INFO] {message}")
+            logger.info(f"[INFO] {message}")
 
     def get_file_size(self, file_path: Path) -> int:
         return file_path.stat().st_size
@@ -237,13 +240,13 @@ class FileSorter(LineProcessor):
         if output_path is None:
             output_path = file_path
         output_path = Path(output_path)
-        print("\n╔════════════════════════════════════════════════════════════╗")
-        print("║              File Line Sorter & Deduplicator               ║")
-        print("╚════════════════════════════════════════════════════════════╝\n")
-        print(f"Input file: {input_path}")
-        print(f"Output file: {output_path}")
-        print(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
-        print("-" * 60)
+        logger.info("\n╔════════════════════════════════════════════════════════════╗")
+        logger.info("║              File Line Sorter & Deduplicator               ║")
+        logger.info("╚════════════════════════════════════════════════════════════╝\n")
+        logger.info(f"Input file: {input_path}")
+        logger.info(f"Output file: {output_path}")
+        logger.info(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
+        logger.info("-" * 60)
         start_time = time.time()
         try:
             original_size = self.get_file_size(input_path)
@@ -311,23 +314,23 @@ class FileSorter(LineProcessor):
             raise RuntimeError(msg)
 
     def print_stats(self, stats: dict):
-        print("\n" + "=" * 60)
-        print("STATISTICS")
-        print("=" * 60)
-        print(f"Original lines: {stats['original_lines']:,}")
-        print(f"Final lines: {stats['final_lines']:,}")
+        logger.info("\n" + "=" * 60)
+        logger.info("STATISTICS")
+        logger.info("=" * 60)
+        logger.info(f"Original lines: {stats['original_lines']:,}")
+        logger.info(f"Final lines: {stats['final_lines']:,}")
         if stats["duplicate_lines"] > 0:
             dup_pct = (stats["duplicate_lines"] / stats["original_lines"] * 100) if stats["original_lines"] > 0 else 0
-            print(f"Duplicate lines removed: {stats['duplicate_lines']:,} ({dup_pct:.1f}%)")
-        print()
-        print(f"Original size: {stats['original_size']}")
-        print(f"Final size: {stats['after']}")
+            logger.info(f"Duplicate lines removed: {stats['duplicate_lines']:,} ({dup_pct:.1f}%)")
+        logger.info()
+        logger.info(f"Original size: {stats['original_size']}")
+        logger.info(f"Final size: {stats['after']}")
         if stats["size_reduction"] > 0:
-            print(f"Size reduction: {self.fsz(stats['size_reduction'])} ({stats['size_reduction_pct']:.1f}%)")
-        print()
-        print(f"Processing time: {stats['processing_time']:.2f} seconds")
-        print(f"Speed: {stats['lines_per_second']:,.0f} lines/second")
-        print("=" * 60)
+            logger.info(f"Size reduction: {self.fsz(stats['size_reduction'])} ({stats['size_reduction_pct']:.1f}%)")
+        logger.info()
+        logger.info(f"Processing time: {stats['processing_time']:.2f} seconds")
+        logger.info(f"Speed: {stats['lines_per_second']:,.0f} lines/second")
+        logger.info("=" * 60)
 
     def save_report(
         self,
@@ -345,9 +348,9 @@ class FileSorter(LineProcessor):
         try:
             with Path(report_file).open("w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
-            print(f"\n✓ Report saved: {report_file}")
+            logger.info(f"\n✓ Report saved: {report_file}")
         except Exception as e:
-            print(f"\n✗ Error saving report: {e!s}")
+            logger.info(f"\n✗ Error saving report: {e!s}")
 
 
 class FileAnalyzer(LineProcessor):
@@ -389,23 +392,23 @@ class FileAnalyzer(LineProcessor):
         encoding: str = "utf-8",
     ):
         analysis = self.analyze_file(file_path, encoding)
-        print(f"\n{'=' * 60}")
-        print(f"File Analysis: {file_path.name}")
-        print(f"{'=' * 60}")
-        print("\nBasic Statistics:")
-        print(f"  Size: {analysis['size']}")
-        print(f"  Total lines: {analysis['total_lines']:,}")
-        print(f"  Unique lines: {analysis['unique_lines']:,}")
-        print(f"  Duplicate lines: {analysis['duplicate_lines']:,} ({analysis['duplicate_percentage']:.1f}%)")
-        print("\nLine Length Statistics:")
-        print(f"  Maximum: {analysis['max_line_length']} characters")
-        print(f"  Average: {analysis['avg_line_length']:.1f} characters")
+        logger.info(f"\n{'=' * 60}")
+        logger.info(f"File Analysis: {file_path.name}")
+        logger.info(f"{'=' * 60}")
+        logger.info("\nBasic Statistics:")
+        logger.info(f"  Size: {analysis['size']}")
+        logger.info(f"  Total lines: {analysis['total_lines']:,}")
+        logger.info(f"  Unique lines: {analysis['unique_lines']:,}")
+        logger.info(f"  Duplicate lines: {analysis['duplicate_lines']:,} ({analysis['duplicate_percentage']:.1f}%)")
+        logger.info("\nLine Length Statistics:")
+        logger.info(f"  Maximum: {analysis['max_line_length']} characters")
+        logger.info(f"  Average: {analysis['avg_line_length']:.1f} characters")
         if analysis["most_common_lines"]:
-            print("\nMost Common Lines (Top 10):")
+            logger.info("\nMost Common Lines (Top 10):")
             for line, count in analysis["most_common_lines"]:
                 display_line = line[:47] + "..." if len(line) > 50 else line
-                print(f"  ({count}x) {display_line}")
-        print(f"{'=' * 60}\n")
+                logger.info(f"  ({count}x) {display_line}")
+        logger.info(f"{'=' * 60}\n")
 
 
 def main():
@@ -511,9 +514,10 @@ Examples:
     )
     args = parser.parse_args()
     try:
+        pdb.set_trace()
         input_path = Path(args.filename)
         if not input_path.exists():
-            print(f"Error: File not found: {args.filename}")
+            logger.info(f"Error: File not found: {args.filename}")
             sys.exit(1)
         if args.analyze:
             analyzer = FileAnalyzer(verbose=args.verbose)
@@ -538,7 +542,7 @@ Examples:
         if args.report:
             sorter.save_report(stats, args.report)
     except Exception as e:
-        print(f"Error: {e!s}", file=sys.stderr)
+        logger.info(f"Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

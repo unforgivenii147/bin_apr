@@ -5,7 +5,7 @@ from pathlib import Path
 from dh import IMG_EXT, is_image
 from loguru import logger
 
-from dhh import fsz, gsz
+from dh import fsz, gsz
 
 try:
     import cv2

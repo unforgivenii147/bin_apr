@@ -4,7 +4,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz, get_files
+from dh import fsz, get_files
 
 cwd = Path.cwd()
 

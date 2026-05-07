@@ -4,9 +4,47 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dh import MIME2EXT
-from loguru import logger
-from termcolor import cprint
+from dh import MIME2EXT, cprint, unique_path
+
+
+def fix_by_shebang(fp) -> bool:
+    content = fp.read_text(encoding="utf8")
+    fl = content.splitlines()[0]
+    if fl.startswith("#!") and ("bash" in fl or "/bin/sh" in fl):
+        new_path = fp.with_suffix(".sh")
+        if new_path.exists():
+            new_path = unique_path(new_path)
+        fp.rename(new_path)
+        return True
+    elif fl.startswith("#!") and "python" in fl:
+        new_path = fp.with_suffix(".py")
+        if new_path.exists():
+            new_path = unique_path(new_path)
+        fp.rename(new_path)
+        return True
+    elif fl.startswith("#!") and "perl" in fl:
+        new_path = fp.with_suffix(".pl")
+        if new_path.exists():
+            new_path = unique_path(new_path)
+        print(f"rename {fp.name} -> {new_path.name}")
+        ans = input("?")
+        if ans == "y":
+            fp.rename(new_path)
+            return True
+        return False
+    elif fl.startswith("#!") and "node" in fl:
+        new_path = fp.with_suffix(".js")
+        if new_path.exists():
+            new_path = unique_path(new_path)
+        print(f"rename {fp.name} -> {new_path.name}")
+        ans = input("?")
+        if ans == "y":
+            fp.rename(new_path)
+            return True
+        return False
+    else:
+        return False
+    return False
 
 
 def get_file_mime(file_path):
@@ -46,8 +84,12 @@ def check_files(directory):
     mismatched_files = []
     for root, _, files in os.walk(directory):
         for name in files:
-            file_path = os.path.join(root, name)
-            ext = os.path.splitext(name)[1].lower()
+            file_path = Path(root) / name
+            if ".git" in file_path.parts or "__pycache__" in file_path.parts:
+                continue
+            ext = file_path.suffix.lower()
+            if fix_by_shebang(file_path):
+                continue
             if ext in {
                 ".eot",
                 ".svg",
@@ -71,8 +113,13 @@ def check_files(directory):
                     new_path = None
                     new_ext = expected_exts[0]
                     new_name = os.path.splitext(name)[0] + new_ext
-                    new_path = os.path.join(root, new_name)
-                    new_path = safe_rename(file_path, new_path)
+                    new_path = Path(root) / new_name
+                    if new_name == name:
+                        continue
+                    if new_path.exists():
+                        new_path = unique_path(new_path)
+                    file_path.rename(new_path)
+                    #                    new_path = safe_rename(file_path, new_path)
                     mismatched_files.append(
                         (
                             file_path,
@@ -96,11 +143,11 @@ def main():
             new_path,
         ) in mismatches:
             if new_path:
-                print(f"\033[5;93m{file_path} {mime} \033[5;96m{new_path}]\033[0m")
+                print(f"\033[5;93m{file_path.name} {mime} \033[5;96m{new_path.name}]\033[0m")
             else:
-                print(f"{file_path} -> \033[5m;94mdetected: {mime}\033[0m")
+                print(f"{file_path.name} -> \033[5m;94mdetected: {mime}\033[0m")
     else:
-        print("All file extensions match their detected types.")
+        cprint("no mismatch")
 
 
 if __name__ == "__main__":

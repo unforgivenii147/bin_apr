@@ -8,7 +8,7 @@ from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
 
-from dhh import fsz, gsz
+from dh import fsz, gsz
 
 EXCLUDE_PREFIXES = (b"#!/",)
 parser = Parser()

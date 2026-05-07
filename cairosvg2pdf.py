@@ -5,7 +5,7 @@ from pathlib import Path
 import cairosvg
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 
 def process_file(path):

@@ -7,7 +7,7 @@ from pathlib import Path
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 
 def rm_doc(content: str) -> tuple[str, int]:

@@ -5,7 +5,7 @@ from pathlib import Path
 from fastwalk import walk_files
 from loguru import logger
 
-from dhh import fsz, gsz, mpf3, run_command
+from dh import fsz, gsz, mpf3, run_command
 
 
 def process_file(fp):

@@ -6,8 +6,6 @@ from collections import defaultdict
 from pathlib import Path
 import argparse
 import matplotlib.pyplot as plt
-import arabic_reshaper
-from bidi.algorithm import get_display
 
 
 def scan_directory(path="."):
@@ -100,7 +98,7 @@ def write_summary(filename: Path | None = None) -> None:
     # If filename is sys.stderr, it's already printed above
 
 
-def create_bar_chart(chart_type: str, output_filename: str | None = None) -> None:
+def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> None:
     """
     Creates and optionally saves a Matplotlib bar chart of file sizes by extension.
     """
@@ -117,19 +115,10 @@ def create_bar_chart(chart_type: str, output_filename: str | None = None) -> Non
 
     extensions, sizes = zip(*sorted_items)
 
-    # Prepare Persian text for labels if needed
-    if chart_type == "persian":
-        reshaped_extensions = [arabic_reshaper.reshape(get_display(ext)) for ext in extensions]
-        title = arabic_reshaper.reshape(get_display("اندازه بر اساس پسوند فایل"))
-        plt.title(title)
-        plt.xticks(rotation=45, ha="right")  # Adjust rotation for better readability
-        plt.gca().set_xticklabels(reshaped_extensions)
-    else:
-        # For English or other languages, use original extensions
-        reshaped_extensions = extensions
-        plt.title("Size by File Extension")
-        plt.xticks(rotation=45, ha="right")  # Rotate labels for better readability
-        plt.gca().set_xticklabels(reshaped_extensions)
+    reshaped_extensions = extensions
+    plt.title("Size by File Extension")
+    plt.xticks(rotation=45, ha="right")  # Rotate labels for better readability
+    plt.gca().set_xticklabels(reshaped_extensions)
 
     plt.figure(figsize=(12, 7))
     plt.bar(reshaped_extensions, sizes, color="skyblue")
@@ -137,14 +126,11 @@ def create_bar_chart(chart_type: str, output_filename: str | None = None) -> Non
     plt.ylabel("Size (bytes)")
     plt.tight_layout()
 
-    if output_filename:
-        try:
-            plt.savefig(output_filename)
-            print(f"Bar chart saved to {output_filename}")
-        except Exception as e:
-            print(f"Error saving chart to {output_filename}: {e}", file=sys.stderr)
-    else:
-        plt.show()
+    try:
+        plt.savefig(output_filename)
+        print(f"Bar chart saved to {output_filename}")
+    except Exception as e:
+        print(f"Error saving chart to {output_filename}: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -166,7 +152,6 @@ if __name__ == "__main__":
         default="english",
         help="Specify the language/type of the Matplotlib chart title and labels (default: english).",
     )
-    # Add an argument to specify the directory to scan, defaulting to current directory
     parser.add_argument(
         "path",
         metavar="PATH",

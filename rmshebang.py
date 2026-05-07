@@ -6,7 +6,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 MAX_QUEUE = 16
 

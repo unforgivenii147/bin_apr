@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 
 def process_file(file_path: Path) -> None:

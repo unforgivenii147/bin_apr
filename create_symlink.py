@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from loguru import logger
-
 BASHBIN: Path = Path.home() / "bashbin"
 BIN: Path = Path.home() / "bin"
 
@@ -12,11 +10,11 @@ def process_dir(root_dir, ext):
         symlink_path = path.with_name(path.stem)
         if not symlink_path.exists():
             symlink_path.symlink_to(path)
-            logger.info(f"Created symlink: {link_name} -> {src_file}")
+            print(f"Created symlink: {symlink_path.name} -> {path.name}")
         else:
             continue
 
 
 if __name__ == "__main__":
-    process_dir(BASHBIN, ".sh")
-    process_dir(BIN, ".py")
+    process_dir(BASHBIN, "sh")
+    process_dir(BIN, "py")

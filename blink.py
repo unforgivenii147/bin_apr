@@ -3,7 +3,6 @@ import os
 import sys
 from pathlib import Path
 
-from loguru import logger
 
 
 def get_files(directory):
@@ -26,10 +25,10 @@ if __name__ == "__main__":
             try:
                 path.unlink()
                 bcount += 1
-                logger.info(f"{path.relative_to(cwd)}")
+                print(f"{path.relative_to(cwd)}")
             except Exception as e:
-                logger.info(f"Error deleting {path}: {e}")
+                print(f"Error deleting {path}: {e}")
     if not bcount:
-        logger.info("no broken link found.")
+        print("no broken link found.")
         sys.exit(0)
-    logger.info(f"{bcount} broken link removed.")
+    print(f"{bcount} broken link removed.")

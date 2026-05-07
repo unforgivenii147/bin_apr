@@ -5,7 +5,7 @@ from pathlib import Path
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz, mpf, run_command
+from dh import fsz, get_files, gsz, mpf, run_command
 
 
 def process_file(fp):

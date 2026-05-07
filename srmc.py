@@ -5,7 +5,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz, get_files, gsz, mpf
+from dh import fsz, get_files, gsz, mpf
 
 
 def _get_comments_symbol(text: str, symbol: str) -> list[str]:

@@ -7,7 +7,7 @@ from dh import SOURCE_CODE_EXT, clean_blank_lines, get_nobinary, is_binary
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, gsz, mpf3
+from dh import fsz, gsz, mpf3
 
 
 def process_file(fp):

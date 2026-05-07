@@ -5,7 +5,7 @@ from pathlib import Path
 import trafilatura
 from loguru import logger
 
-from dhh import get_files, mpf3
+from dh import get_files, mpf3
 
 
 def process_file(html_file: Path):

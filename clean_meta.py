@@ -5,7 +5,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 blank_line = "\n"
 IMAGE_RE = re.compile(r"^\s*(\.\.\s+image::|:target:|:alt:)", re.IGNORECASE)

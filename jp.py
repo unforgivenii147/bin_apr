@@ -22,7 +22,6 @@ def main():
     args = parser.parse_args()
     expression = args.expression
     if args.ast:
-        # Only print the AST
         expression = jmespath.compile(args.expression)
         sys.stdout.write(pformat(expression.parsed))
         sys.stdout.write("\n")

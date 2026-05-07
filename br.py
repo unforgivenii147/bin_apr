@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 QUALITY = 11

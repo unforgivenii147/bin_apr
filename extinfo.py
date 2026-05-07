@@ -4,7 +4,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz
+from dh import fsz
 
 
 def main():

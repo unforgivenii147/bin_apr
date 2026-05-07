@@ -6,7 +6,7 @@ from pathlib import Path
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz, mpf3
+from dh import fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
 EXT = [

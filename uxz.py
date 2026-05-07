@@ -8,7 +8,7 @@ from pathlib import Path
 import lzma_mt
 from loguru import logger
 
-from dhh import get_files
+from dh import get_files
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:

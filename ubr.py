@@ -7,7 +7,7 @@ import brotlicffi
 from loguru import logger
 from termcolor import cprint
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 N_JOBS = -1

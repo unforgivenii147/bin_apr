@@ -1,11 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
 from pathlib import Path
-from importlib import metadata
+from importlib.metadata import distributions
 
 import requests
 from loguru import logger
+from dh import cprint
 
+logger.remove()
 logger.add("/sdcard/updatable.log")
 
 
@@ -25,10 +27,14 @@ def main():
     results = []
     upgradable = []
 
-    installed_packages = {dist.metadata["Name"]: dist.version for dist in metadata.distributions()}
+    installed_packages = {dist.metadata["Name"]: dist.version for dist in distributions()}
 
     for pkg, installed_version in installed_packages.items():
         latest_version = get_latest_version(pkg)
+        #        if installed_version==latest_version:
+        #            print(f"{pkg}: {installed_version} {latest_version}")
+        #        else:
+        #            cprint(f"{pkg}: {installed_version} {latest_version}")
         logger.info(f"{pkg}: {installed_version} {latest_version}")
         entry = {"pkgname": pkg, "installed_version": installed_version, "latest_version": latest_version}
 
@@ -36,14 +42,14 @@ def main():
 
         if latest_version and latest_version != installed_version:
             upgradable.append(f"{pkg}=={latest_version}")
-            logger.info(f"{pkg}=={installed_version} | {latest_version}")
+            cprint(f"{pkg}=={installed_version} | {latest_version}")
 
     # Save JSON summary
-    with Path("updatable.json").open("w", encoding="utf-8") as f:
-        json.dump(results, f, indent=4)
+    with Path("/sdcard/updatable.json").open("w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2)
 
     # Save only upgradeable packages as requirements
-    Path("requirements.txt").write_text("\n".join(upgradable), encoding="utf-8")
+    Path("/sdcard/requirements.txt").write_text("\n".join(upgradable), encoding="utf-8")
 
     print("Done.")
     print(f"Checked {len(installed_packages)} installed packages.")

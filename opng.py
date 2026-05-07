@@ -1,26 +1,67 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 from pathlib import Path
+from dh import gsz, get_files, fsz, mpf3, cprint, runcmd
 
-from dh import get_files, mpf3, runcmd
+
+START_DIR = Path.cwd()
+NUM_PROCESSES = 4
 
 
-def process_file(file_path):
+def process_file(path):
+    before = gsz(path)
     try:
-        runcmd(
-            ["optipng", "-o7", str(file_path)],
-            run_silently=False,
-            show_output=True,
+        cmd = [
+            "optipng",
+            "-o7",
+            str(path),
+        ]
+        ret, txt, err = runcmd(
+            cmd,
+            show_output=False,
         )
-        return True, file_path
-    except:
-        return False, file_path
+        if "skipping" in txt.lower():
+            #            if Path(temp_path).exists():
+            #                Path(temp_path).unlink()
+            print(f" Skipped: {path.name}")
+            return
+        else:
+            after = gsz(path)
+            dz = before - after
+            if not dz:
+                print(f"✅ : {path.name} : (no change)")
+                return
+            ratio = ((before - after) / before) * 100
+            print(f"✅ : {path.name}", end=" | ")
+            cprint(f"{ratio:.1f} %")
+            return
+    except FileNotFoundError:
+        print(
+            "❌ Error: 'pngquant' command not found. Please ensure the 'pngquant' binary is installed and in your system PATH."
+        )
+    except Exception as e:
+        print(f"❌ Error compressing {path}: {e}")
+
+    return
 
 
 def main():
-    cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".png", ".PNG"])
-    mpf3(process_file, files)
+    root_dir = Path.cwd()
+    args = sys.argv[1:]
+    files = []
+
+    if args:
+        for arg in args:
+            p = Path(arg)
+            if p.is_file():
+                files.append(p)
+            elif p.is_dir():
+                files.extend(get_files(p, extensions=[".png", ".PNG"]))
+    else:
+        files = get_files(root_dir, extensions=[".png", ".PNG"])
+
+    _ = mpf3(process_file, files)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -6,70 +6,18 @@ from contextlib import suppress as _suppress
 from multiprocessing import get_context
 from os import scandir as _scandir
 from pathlib import Path
-from subprocess import run as _run
+from subprocess import run as subprocess_run
+from subprocess import TimeoutExpired as subprocess_TimeoutExpired
 from tempfile import NamedTemporaryFile as _tmpfile
 from time import sleep as _sleep
 from typing import Any
 
-# from memory_profiler import profile
 from termcolor import cprint
 
 CHUNK_SIZE = 32768
-MAX_WORKERS: int = 8
-MAX_IN_FLIGHT = 8
+MAX_WORKERS: int = 4
+MAX_IN_FLIGHT = 4
 SKIP_DIRS = {".git"}
-
-
-def atomic_write(data: bytes, final_path: Path) -> bool:
-    temp_dir = final_path.parent
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    temp_path = None
-    try:
-        with _tmpfile(
-            mode="wb",
-            dir=temp_dir,
-            prefix=".tmp_",
-            suffix=final_path.suffix,
-            delete=False,
-        ) as temp_file:
-            temp_path = Path(temp_file.name)
-            temp_file.write(data)
-        temp_path.rename(final_path)
-        return True
-    except OSError as e:
-        print(f"Error during atomic write: {e}")  # Log or handle appropriately
-        if temp_path and temp_path.exists():
-            with _suppress(OSError):  # Suppress errors during cleanup
-                temp_path.unlink()
-        return False
-    except Exception as e:
-        print(f"Unexpected error during atomic write: {e}")
-        if temp_path and temp_path.exists():
-            with _suppress(OSError):
-                temp_path.unlink()
-        return False
-
-
-def safe_delete(fp: Path, max_retries: int = 3, delay: float = 0.5) -> bool:
-    for attempt in range(max_retries):
-        try:
-            fp.unlink()
-            return True
-        except FileNotFoundError:
-            return True
-        except PermissionError:
-            if attempt < max_retries - 1:
-                _sleep(delay * (attempt + 1))
-                continue
-            print(f"PermissionError: Could not delete {fp} after {max_retries} retries.")
-            return False
-        except OSError as e:
-            print(f"OSError deleting {fp}: {e}")
-            return False
-        except Exception as e:
-            print(f"Unexpected error deleting {fp}: {e}")
-            return False
-    return False
 
 
 def fsz(sz: float) -> str:
@@ -137,8 +85,8 @@ def gsz(path: str | Path) -> int:
 def mpf3(
     func: Callable[[Any], Any],
     items: Iterable[Any],
-    max_in_flight: int = 8,
-    num_processes: int = 8,
+    max_in_flight: int = 4,
+    num_processes: int = 4,
     context_method: str = "spawn",
 ) -> None:
     with get_context(context_method).Pool(num_processes) as p:
@@ -151,29 +99,62 @@ def mpf3(
             pending.popleft().get()
 
 
-def run_command(cmd, shell: bool = True) -> tuple[(int, str, str)]:
+def runcmd(
+    cmd: list[str], run_silently: bool = False, show_output: bool = True, timeout: float | None = None
+) -> tuple[int, str, str]:
+    if not cmd:
+        msg = "cmd must be a non-empty list (e.g., ['ls', '-l'])"
+        raise ValueError(msg)
     try:
-        result = _run(
+        if run_silently:
+            result = subprocess_run(cmd, stdout=_DEVNULL, stderr=_DEVNULL, timeout=timeout)
+            return result.returncode, "", ""
+        result = subprocess_run(
             cmd,
-            shell=shell,
             capture_output=True,
             text=True,
+            timeout=timeout,
         )
-        return (
-            result.returncode,
-            result.stdout,
-            result.stderr,
-        )
+        stdout, stderr = result.stdout, result.stderr
+        if show_output:
+            if stdout:
+                sys.stdout.write(stdout)
+                sys.stdout.flush()
+            if stderr:
+                sys.stderr.write(stderr)
+                sys.stderr.flush()
+        return result.returncode, stdout, stderr
+    except FileNotFoundError:
+        msg = f"Command not found: '{cmd[0]}'"
+        if show_output and not run_silently:
+            print(msg, file=sys.stderr)
+        return 127, "", msg
+    except PermissionError:
+        msg = f"Permission denied: '{cmd[0]}'"
+        if show_output and not run_silently:
+            print(msg, file=sys.stderr)
+        return 126, "", msg
+    except subprocess_TimeoutExpired:
+        msg = f"Command timed out after {timeout}s: {' '.join(cmd)}"
+        if show_output and not run_silently:
+            print(msg, file=sys.stderr)
+        return 124, "", msg
     except Exception as e:
-        return (-1, "", str(e))
+        msg = f"Unexpected error running '{cmd[0]}': {e}"
+        if show_output and not run_silently:
+            print(msg, file=sys.stderr)
+        return 1, "", msg
 
 
 def process_file(fp):
-    before = gsz(fp)
-    cmd = f"prettier -w {fp!s}"
-    code, _out, _err = run_command(cmd)
-    if code == 0:
-        diffsize = before - gsz(fp)
+    before = fp.stat().st_size
+    cmd = ["prettier", "--write", "--with-node-modules", str(fp)]
+    code, _out, _err = runcmd(cmd, show_output=False)
+    if not code:
+        after = fp.stat().st_size
+        diffsize = before - after
+        if diffsize:
+            ratio = ((before - after) / before) * 100
         if not diffsize:
             cprint("[NO CHANGE] ", "green", end="")
             cprint(f"{fp.name}", "white")
@@ -194,7 +175,7 @@ def process_file(fp):
                 end="",
             )
             cprint(
-                f" - {fsz(diffsize)}",
+                f" - {fsz(diffsize)} {ratio:.1f}%",
                 "cyan",
             )
         return True
@@ -226,16 +207,15 @@ def main() -> None:
                 ".coffee",
                 ".yaml",
                 ".yml",
+                ".scss",
+                ".markdown",
             ],
         )
     )
-    before = gsz(cwd)
     if not files:
         print("no file found.")
-        sys.exit(0)
+        sys.exit(1)
     mpf3(process_file, files)
-    diffsize = before - gsz(cwd)
-    cprint(f"space change:{fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

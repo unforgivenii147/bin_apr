@@ -5,6 +5,10 @@ import hashlib
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from dh import gsz, get_pyfiles, fsz, mpf3, cprint
+
+
+N_JOBS = -1
 
 
 @dataclass
@@ -128,17 +132,9 @@ def build_decl(node, kind, name, lines):
     )
 
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python dedup_py_decls.py <python_file.py>")
-        sys.exit(1)
+def process_file(src_path):
 
-    src_path = Path(sys.argv[1])
-    if not src_path.exists():
-        print(f"File not found: {src_path}")
-        sys.exit(1)
-
-    dup_path = src_path.parent / f"{src_path.name}_dups.py"
+    dup_path = src_path.parent / f"{src_path.stem}_dups.py"
 
     text = src_path.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=True)
@@ -233,5 +229,27 @@ def main():
     print(f"Moved {len(duplicate_ranges)} duplicate declaration block(s) to {dup_path}")
 
 
+def main():
+    root_dir = Path.cwd()
+    before = gsz(root_dir)  # Get total size before processing
+    args = sys.argv[1:]
+    files = []
+
+    if args:
+        for arg in args:
+            p = Path(arg)
+            if p.is_file():
+                files.append(p)
+            elif p.is_dir():
+                files.extend(get_pyfiles(p, recursive=True))
+    else:
+        files = get_pyfiles(root_dir)
+
+    results = mpf3(process_file, files)
+    for result in results:
+        if result:
+            pass
+
+
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

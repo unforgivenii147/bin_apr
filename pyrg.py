@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from dh import get_files, is_binary
-from loguru import logger
 
 cwd = Path.cwd()
 IGNORED_DIRS = {
@@ -23,7 +22,7 @@ IGNORED_DIRS = {
     ".mypy_cache",
 }
 BINARY_CHUNK = 32768
-DEFAULT_THREADS = 8
+DEFAULT_THREADS = 4
 ANSI_BOLD = "\033[1m"
 ANSI_RESET = "\033[0m"
 ANSI_HIGHLIGHT = "\033[31m"
@@ -194,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_argparser().parse_args(argv)
     pattern = args.pattern_e or args.pattern
     if not pattern:
-        logger.info(
+        print(
             "No pattern provided. Use positional PATTERN or -e PATTERN.",
             file=sys.stderr,
         )
@@ -209,7 +208,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             compiled = re.compile(pattern, flags)
         except re.error as ex:
-            logger.info(
+            print(
                 f"Invalid regex: {ex}",
                 file=sys.stderr,
             )
@@ -245,9 +244,9 @@ def main(argv: list[str] | None = None) -> int:
                 any_match = True
                 results_per_file[path] = matches
                 if args.files_with_matches:
-                    logger.info(path)
+                    print(path)
                 elif args.count:
-                    logger.info(f"{path}:{len(matches)}")
+                    print(f"{path}:{len(matches)}")
                 else:
                     for (
                         lineno,
@@ -268,11 +267,11 @@ def main(argv: list[str] | None = None) -> int:
                                     enable=True,
                                 )
                         if args.line_number:
-                            logger.info(f"{path}:{lineno}:{out_line}")
+                            print(f"{path}:{lineno}:{out_line}")
                         else:
-                            logger.info(f"{path}:{out_line}")
+                            print(f"{path}:{out_line}")
         except KeyboardInterrupt:
-            logger.info(
+            print(
                 "\nSearch cancelled.",
                 file=sys.stderr,
             )

@@ -9,8 +9,10 @@ from joblib import Parallel, delayed
 from loguru import logger
 
 logger.remove()
-logger.add(sys.stderr, format="{time} {level} {message}", level="INFO")
+logger.add(sys.stderr, format="{message}", level="INFO")
 CHUNK_SIZE = 32768
+QUALITY = 11
+quality = 11
 
 
 def compress_chunk(chunk_data, quality=11):
@@ -124,7 +126,6 @@ def main():
         logger.info(f"Total size reduction: {reduction_percent:.2f}%")
     else:
         logger.info("No data was successfully compressed to calculate reduction.")
-    logger.info(f"Compressed files are saved in the '{output_base_dir}' directory.")
     logger.info(f"Total time taken: {end_time - start_time:.2f} seconds")
     logger.info("=" * 50)
 

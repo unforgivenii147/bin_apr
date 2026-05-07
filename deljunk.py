@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-from dh import fsz, gsz, get_files
 
 EMPTYIT = False
 RMIT = True
@@ -13,7 +12,7 @@ def empty_it(pth) -> None:
 
 
 def remove_it(fp) -> None:
-    if not fp.is_symlink():
+    if fp.exists() and not fp.is_dir():
         fp.unlink()
 
 
@@ -24,9 +23,8 @@ def load_junk():
 
 def main():
     cwd = Path.cwd()
-    before = gsz(cwd)
     junk_files = load_junk()
-    for path in get_files(cwd):
+    for path in cwd.rglob("*"):
         if path.name in {".travis.yml", ".gitkeep", ".dirinfo", ".pyformat_cache.json", "simz.json"}:
             path.unlink()
             continue
@@ -38,8 +36,6 @@ def main():
             if EMPTYIT:
                 empty_it(path)
                 print(path.relative_to(cwd))
-    difsize = before - gsz(cwd)
-    print(f"{fsz(difsize)}")
 
 
 if __name__ == "__main__":

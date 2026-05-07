@@ -52,7 +52,7 @@ def find_duplicates(directory="."):
 
 
 def choose_keeper(files):
-    return min(files, key=lambda f: (len(f), f))
+    return min(files, key=lambda f: (len(str(f)), f))
 
 
 def create_symlinks(duplicates, dry_run=False):

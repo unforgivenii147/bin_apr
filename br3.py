@@ -5,7 +5,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-import lzma_mt
+import brotlicffi
 
 _executor = asyncio.Semaphore(4)  # limit concurrent compressions
 
@@ -40,7 +40,7 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
                 mode="wb",
                 dir=temp_dir,
                 prefix=".tmp_",
-                suffix=".xz",
+                suffix=".br",
                 delete=False,
             ) as f:
                 f.write(data)
@@ -92,7 +92,7 @@ async def safe_delete_async(path: Path, max_retries: int = 3) -> bool:
 
 
 async def compress_file_async(path: Path) -> bool:
-    compressed_path = path.with_suffix(path.suffix + ".xz")
+    compressed_path = path.with_suffix(path.suffix + ".br")
     if compressed_path.exists():
         return False
     try:
@@ -106,7 +106,7 @@ async def compress_file_async(path: Path) -> bool:
         original_size = path.stat().st_size
 
         def _compress():
-            return lzma_mt.compress(data, threads=4, preset=lzma_mt.PRESET_EXTREME)
+            return brotlicffi.compress(data, quality=11)
 
         compressed_data = await loop.run_in_executor(None, _compress)
         if not await atomic_write_async(compressed_data, compressed_path):
@@ -144,7 +144,7 @@ def should_compress(path):
             return False
         if not path.is_file():
             return False
-        compressed_extensions = (".xz", ".br", ".7z")
+        compressed_extensions = (".xz", ".br", ".7z", ".gz", ".zip", ".bz2")
         if path.suffix in compressed_extensions:
             return False
         return path.stat().st_size
@@ -175,7 +175,7 @@ async def main_async() -> None:
         total_original += orig_size
         if await compress_file_async(path):
             successful += 1
-        compressed_path = path.with_suffix(path.suffix + ".xz")
+        compressed_path = path.with_suffix(path.suffix + ".br")
         if compressed_path.exists():
             total_compressed += compressed_path.stat().st_size
     if successful > 0:

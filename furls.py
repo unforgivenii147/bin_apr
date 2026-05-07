@@ -16,7 +16,7 @@ import zstd
 from dh import is_valid_url, write_txt_file, append_text
 from loguru import logger
 
-DEFAULT_MAX_MB = 55
+DEFAULT_MAX_MB = 15
 EXCLUDE_DIRS = {
     ".git",
     "__pycache__",
@@ -26,8 +26,8 @@ URL_RE = re.compile(
     flags=re.IGNORECASE,
 )
 
-GIT_FILE = Path("gitlinks.txt")
-REPO_FILE = Path("repos.txt")
+GIT_FILE = Path("/sdcard/gitlinks.txt")
+REPO_FILE = Path("/sdcard/repos.txt")
 
 ARCHIVE_SUFFIXES = (
     ".tar.gz",

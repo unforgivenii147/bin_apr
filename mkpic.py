@@ -7,7 +7,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from dhh import fsz, get_files, gsz
+from dh import fsz, get_files, gsz
 
 MAX_QUEUE = 4
 REMOVE_ORIG = False
@@ -16,18 +16,20 @@ REMOVE_ORIG = False
 def process_file(fp):
     if not fp.exists():
         return False
-    #    if fp.name=="site-packages" or "site-packages" in fp.parts:
-    #        return None
     if ".git" in fp.parts:
         return None
+    #    if fp.is_dir() and fp.name=="site-packages":
+    #        return None
+    #    if (fp.is_file() or fp.is_dir()) and "site-packages" in fp.parts:
+    #        return None
     if fp.is_dir():
         for f in fp.rglob("*.py"):
             process_file(f)
     if fp.is_file() and not fp.is_symlink():
         pyc_file = fp.with_suffix(".pyc")
         if pyc_file.exists():
-            return False
-        compileall.compile_file(fp, legacy=True, optimize=2)
+            pyc_file.unlink()
+        compileall.compile_file(fp, optimize=0)
 
         if REMOVE_ORIG:
             fp.unlink()

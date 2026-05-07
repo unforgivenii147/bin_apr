@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from importlib.metadata import distributions
 from pathlib import Path
 
-from dh import STDLIB, get_ipkgs
+from dh import STDLIB
 
 
 def read_requirements(filename):
@@ -12,18 +11,14 @@ def read_requirements(filename):
         return [line.strip().replace("-", "_").lower() for line in f if line.strip() and not line.startswith("#")]
 
 
-def strip_installed_from_requirements(fname):
-    installed = get_ipkgs()
-    installed = [p.lower().replace("-", "_") for p in installed if p]
+def strip_stdlib(fname):
     lines = read_requirements(fname)
-    new_lines = [line for line in lines if line not in installed]
-    new_lines = [line for line in new_lines if line not in STDLIB]
+    new_lines = [line for line in lines if line not in STDLIB]
     Path(fname).write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-
     removed = len(lines) - len(new_lines)
     print(f"Removed {removed} packages")
 
 
 if __name__ == "__main__":
     fn = sys.argv[1]
-    strip_installed_from_requirements(fn)
+    strip_stdlib(fn)

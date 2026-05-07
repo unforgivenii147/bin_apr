@@ -5,7 +5,65 @@ import unicodedata
 from html.parser import HTMLParser
 from pathlib import Path
 
-from loguru import logger
+
+def finglish(text):
+    persian_map = {
+        "ا": "a",
+        "آ": "a",
+        "ب": "b",
+        "پ": "p",
+        "ت": "t",
+        "ث": "s",
+        "ج": "j",
+        "چ": "ch",
+        "ح": "h",
+        "خ": "kh",
+        "د": "d",
+        "ذ": "z",
+        "ر": "r",
+        "ز": "z",
+        "ژ": "zh",
+        "س": "s",
+        "ش": "sh",
+        "ص": "s",
+        "ض": "z",
+        "ط": "t",
+        "ظ": "z",
+        "ع": "a",
+        "غ": "gh",
+        "ف": "f",
+        "ق": "gh",
+        "ک": "k",
+        "گ": "g",
+        "ل": "l",
+        "م": "m",
+        "ن": "n",
+        "ه": "h",
+    }
+
+    words = text.split(" ")
+    processed_words = []
+    for word in words:
+        if not word:
+            processed_words.append("")
+            continue
+        processed_word = ""
+        chars = list(word)
+        for i, char in enumerate(chars):
+            if char == "و":
+                if i == 0:
+                    processed_word += "v"
+                else:
+                    processed_word += "o"
+            elif char == "ی":
+                if i == 0 or i == len(chars) - 1:
+                    processed_word += "y"
+                else:
+                    processed_word += "i"
+            else:
+                processed_word += persian_map.get(char, char)
+        processed_words.append(processed_word)
+    return " ".join(processed_words)
 
 
 class TitleParser(HTMLParser):
@@ -62,26 +120,27 @@ def unique_path(path: Path) -> Path:
     return new_path
 
 
-def rename_html_files(root: Path):
-    for dirpath, _, filenames in os.walk(root):
-        for name in filenames:
-            if not name.lower().endswith((".html", ".htm")):
-                continue
-            old_path = Path(dirpath) / name
-            title = extract_title(old_path)
-            if not title:
-                continue
-            slug = slugify(title)
-            if not slug:
-                continue
-            new_path = old_path.with_name(slug + old_path.suffix)
+def rename_html_files(cwd: Path):
+    for path in cwd.rglob("*.html"):
+        title = extract_title(path)
+        if not title:
+            continue
+        slug = slugify(title)
+        if not slug:
+            continue
+
+        print(slug)
+        name = finglish(slug)
+        print(name)
+        new_path = path.with_name(name + path.suffix)
+        if new_path.exists():
             new_path = unique_path(new_path)
-            if old_path == new_path:
-                continue
-            logger.info(f"{old_path} -> {new_path}")
-            old_path.rename(new_path)
+        if path == new_path:
+            continue
+        print(f"{path} -> {new_path}")
+        path.rename(new_path)
 
 
 if __name__ == "__main__":
-    cwd = Path().cwd()
+    cwd = Path.cwd()
     rename_html_files(cwd)

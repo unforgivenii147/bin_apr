@@ -66,8 +66,8 @@ def process_lic(fp):
 
 def main():
     missings = []
-    cwd = Path(f"/data/data/com.termux/files/usr/lib/python{py_version}/site-packages")
-    #    cwd = Path.cwd()
+    #    cwd = Path(f"/data/data/com.termux/files/usr/lib/python{py_version}/site-packages")
+    cwd = Path.cwd()
     for path in cwd.iterdir():
         if path.is_dir() and "dist-info" in path.name:
             if len(os.listdir(path)) < 2:

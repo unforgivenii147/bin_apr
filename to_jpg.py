@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
+import sys
 import argparse
 from pathlib import Path
 
-from dh import fsz, gsz, is_image, mpf, unique_path
+from dh import fsz, gsz, is_image, mpf3, unique_path
 from loguru import logger
 
 try:
@@ -84,7 +86,8 @@ def process_file(file_path: str) -> bool:
 
 def main() -> None:
     cwd = Path.cwd()
-    argv = sys.argv[1:]
+    before = gsz(cwd)
+    args = sys.argv[1:]
     if args:
         files = [Path(f) for f in args]
     else:
@@ -98,8 +101,8 @@ def main() -> None:
         return
 
     print(f"converting {len(files)} files...")
-    mpf(process_file, files)
-    diffsize = before - gsz(".")
+    mpf3(process_file, files)
+    diffsize = before - gsz(cwd)
     print(f"{fsz(diffsize)}")
 
 

@@ -5,8 +5,6 @@ from pathlib import Path
 import runpy
 from contextlib import redirect_stderr, redirect_stdout
 
-from loguru import logger
-
 
 def find_python_files(root_dir="."):
     """Recursively find all .py files."""
@@ -22,9 +20,9 @@ def find_python_files(root_dir="."):
 
 def run_script(script_path):
     """Run a Python script in isolation using runpy, capturing output."""
-    logger.info(f"\n{'=' * 60}")
-    logger.info(f"Running: {script_path}")
-    logger.info(f"{'=' * 60}")
+    print(f"\n{'=' * 60}")
+    print(f"Running: {script_path}")
+    print(f"{'=' * 60}")
     stdout_capture = io.StringIO()
     stderr_capture = io.StringIO()
     try:
@@ -32,34 +30,34 @@ def run_script(script_path):
             # Run script in its own namespace (isolated globals)
             # `run_name="__main__"` ensures `if __name__ == "__main__"` works
             runpy.run_path(script_path, run_name="__main__")
-        logger.info("[✅ SUCCESS]")
+        print("[✅ SUCCESS]")
     except SystemExit as e:
-        logger.info(f"[⚠️ Script exited with code: {e.code}]")
+        print(f"[⚠️ Script exited with code: {e.code}]")
     except Exception as e:
-        logger.info(f"[❌ ERROR: {type(e).__name__}: {e}]")
+        print(f"[❌ ERROR: {type(e).__name__}: {e}]")
     stdout_out = stdout_capture.getvalue()
     stderr_out = stderr_capture.getvalue()
     if stdout_out:
-        logger.info("\n[STDOUT]:\n" + stdout_out)
+        print("\n[STDOUT]:\n" + stdout_out)
     if stderr_out:
-        logger.info("\n[STDERR]:\n" + stderr_out)
-    logger.info()
+        print("\n[STDERR]:\n" + stderr_out)
+    print()
 
 
 def main():
     scripts = find_python_files(".")
     if not scripts:
-        logger.info("No Python scripts found (excluding this script).")
+        print("No Python scripts found (excluding this script).")
         return
-    logger.info(f"Found {len(scripts)} Python script(s). Starting execution...\n")
+    print(f"Found {len(scripts)} Python script(s). Starting execution...\n")
     for script in scripts:
         try:
             run_script(script)
         except Exception as e:
-            logger.info(f"\n[FAILED TO RUN {script}]: {e}\n")
-    logger.info("\n" + "=" * 60)
-    logger.info("All scripts processed.")
-    logger.info("=" * 60)
+            print(f"\n[FAILED TO RUN {script}]: {e}\n")
+    print("\n" + "=" * 60)
+    print("All scripts processed.")
+    print("=" * 60)
 
 
 if __name__ == "__main__":

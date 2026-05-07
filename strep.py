@@ -1,16 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from dh import runcmd, fsz
+from dh import runcmd, fsz, get_files, mpf3
 from pathlib import Path
 
 
-if __name__ == "__main__":
-    fn = Path(sys.argv[1])
-    before = fn.stat().st_size
-    ret, _, _ = runcmd(["strip", str(fn)], show_output=True)
-    after = fn.stat().st_size
+def process_file(fp):
+    before = fp.stat().st_size
+    ret, _, _ = runcmd(["strip", str(fp)], show_output=True)
+    after = fp.stat().st_size
+    if not after:
+        return
     dz = before - after
     if dz:
-        print(f"{fn.name} : before/after -> {fsz(before)}/{fsz(after)}   {((before - after) / before) * 100:.1f}%")
+        print(f"{fp.name} -> {fsz(before)}/{fsz(after)} | ratio: {((before - after) / before) * 100:.1f}%")
     else:
-        print(f"{fn.name} : no change")
+        print(f"{fp.name} : no change")
+
+
+if __name__ == "__main__":
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".so", ".SO"])
+    mpf3(process_file, files)

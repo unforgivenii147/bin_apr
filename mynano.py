@@ -3,10 +3,9 @@ from pathlib import Path
 import readline
 import rlcompleter
 import sys
-
 from textual.app import App, ComposeResult
 from textual.containers import Container
-from textual.log import TextLog  # Corrected import for TextLog
+from textual.log import TextLog
 from textual.widgets import Footer, Header, TextEditor
 
 

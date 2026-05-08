@@ -2,7 +2,6 @@
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 
 OUTPUT_DIR = Path("output")
@@ -24,7 +23,7 @@ def extract_code_snippets_with_details(markdown_content):
                     {
                         "language": language,
                         "start_line": start_line_num,
-                        "end_line": i,  # i is the line number of the closing ```
+                        "end_line": i,
                         "content": "\n".join(current_block_lines),
                     }
                 )
@@ -33,13 +32,13 @@ def extract_code_snippets_with_details(markdown_content):
                 language = ""
             else:
                 in_code_block = True
-                start_line_num = i + 1  # Markdown line numbers are typically 1-based
+                start_line_num = i + 1
                 match = re.match(r"```(\w*)", line.strip())
                 if match and match.group(1):
                     language = match.group(1).lower()
                 else:
-                    language = ""  # Default if no language specified
-                current_block_lines = []  # Reset for new block
+                    language = ""
+                current_block_lines = []
         elif in_code_block:
             current_block_lines.append(line)
     if in_code_block:
@@ -69,10 +68,10 @@ def get_extension_from_language(language):
         "yaml": ".yaml",
         "yml": ".yaml",
         "sql": ".sql",
-        "md": ".md",  # For markdown code blocks
+        "md": ".md",
         "text": ".txt",
         "plain": ".txt",
-        "": ".txt",  # Default if no language specified
+        "": ".txt",
     }
     return extensions.get(language.lower(), ".txt")
 
@@ -94,7 +93,6 @@ def process_markdown_files(directory="."):
                         line_range = f"{details['start_line']}-{details['end_line']}"
                         language = details["language"]
                         extension = get_extension_from_language(language)
-                        # Create a unique filename
                         output_filename = f"output/{base_name}_lines_{line_range}{extension}"
                         output_path = os.path.join(root, output_filename)
                         Path(output_path).write_text(details["content"].strip(), encoding="utf-8")

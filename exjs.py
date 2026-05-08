@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from dh import get_random_name
 from termcolor import cprint
-
 from dh import get_files, mpf3
 
 MAX_QUEUE = 16

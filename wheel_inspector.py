@@ -3,7 +3,6 @@ import sys
 import typing
 import zipfile
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -108,9 +107,6 @@ class WheelInspector:
                     outp = outd / wn
                     wheel_path.rename(outp)
                     continue
-
-                #                    sys.exit(1)
-
                 if count > 0:
                     logger.info(f"  {ext}: {count}")
         if info["metadata"]:
@@ -150,13 +146,10 @@ def main():
     args = parser.parse_args()
     if not args.wheel:
         args.wheel = Path("/sdcard/whl")
-
     path = Path(args.wheel)
     inspector = WheelInspector(verbose=args.verbose)
-
     if path.is_file() and path.suffix == ".whl":
         inspector.print_inspection(path)
-
     elif path.is_dir():
         for p in path.rglob("*.whl"):
             inspector.print_inspection(p)
@@ -168,28 +161,19 @@ def main():
             logger.info(f"No .whl files found in {path}")
             return
         logger.info(f"\nInspecting {len(wheels)} .whl files...\n")
-
         results = inspector.inspect_directory(path)        
-
         valid_count = sum(1 for r in results if r.get("is_valid", True))
         invalid_count = len(results) - valid_count
-
         for result in results:
             status = "✓" if result.get("is_valid", True) else "✗"
-
             size = result.get("size_mb", 0)
             files = result.get("file_count", 0)
-            
             logger.info(f"{status} {result['filename']:<50} {size:>.2f} KB ({files} files)")
-            
         logger.info(f"\nValid: {valid_count}/{len(results)}")
-        
         logger.info(f"Invalid: {invalid_count}/{len(results)}")
     else:
         logger.info(f"Invalid path: {path}")
         sys.exit(1)
-
 """
-
 if __name__ == "__main__":
     main()

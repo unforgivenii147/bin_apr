@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import fsz, runcmd
 
 
@@ -24,7 +23,6 @@ def process_file(input_path):
         "-dMonoImageDownsampleType=/Subsample",
         "-dNOPAUSE",
         "-dBATCH",
-        #        "-dQUIET",
         f"-sOutputFile={temp_gs}",
         str(input_path),
     ]

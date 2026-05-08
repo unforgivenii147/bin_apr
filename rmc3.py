@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, cprint, fsz, gsz, mpf
 from loguru import logger
 from termcolor import cprint
@@ -35,10 +34,9 @@ def process_file(fp):
 
 def main():
     root_dir = Path.cwd()
-    before = gsz(root_dir)  # Get total size before processing
+    before = gsz(root_dir)
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -48,13 +46,12 @@ def main():
                 files.extend(get_files(p, recursive=True))
     else:
         files = get_files(root_dir)
-
     results = mpf(process_file, files)
     for result in results:
         if result:
             logger.info(result)
     diffsize = before - gsz(root_dir)
-    cprint(f"space change : {fsz(diffsize)}", "cyan")  # Better to sum sizes of processed files.
+    cprint(f"space change : {fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

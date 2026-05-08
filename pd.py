@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 from pathlib import Path
-
 import requests
 from loguru import logger
 from packaging import tags

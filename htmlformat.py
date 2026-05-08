@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from loguru import logger
 
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}

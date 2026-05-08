@@ -6,20 +6,8 @@ import shutil
 import traceback
 from pathlib import Path
 
-# ----------------------------------------------------------
-# AST ANALYSIS
-# ----------------------------------------------------------
-
 
 class UsageAnalyzer(ast.NodeVisitor):
-    """
-    Tracks definitions and usages of:
-    - functions
-    - classes
-    - imports
-    - module-level variables
-    """
-
     def __init__(self):
         self.func_defs = set()
         self.class_defs = set()
@@ -27,7 +15,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.var_uses = set()
         self.func_calls = set()
         self.class_uses = set()
-        self.imports = {}  # {name: node}
+        self.imports = {}
         self.import_uses = set()
 
     def visit_FunctionDef(self, node):
@@ -39,7 +27,6 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Assign(self, node):
-        # track only MODULE-LEVEL assigns
         if isinstance(node.parent, ast.Module):
             for target in node.targets:
                 if isinstance(target, ast.Name):
@@ -69,117 +56,72 @@ def annotate_parents(tree):
             child.parent = node
 
 
-# ----------------------------------------------------------
-# FIND UNUSED SYMBOLS
-# ----------------------------------------------------------
-
-
 def find_unused_symbols(source):
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return {}, ["SyntaxError while parsing file"]
-
     annotate_parents(tree)
     analyzer = UsageAnalyzer()
     analyzer.visit(tree)
-
     unused = {}
-
     unused_funcs = analyzer.func_defs - analyzer.func_calls
     unused_classes = analyzer.class_defs - analyzer.class_uses
     unused_vars = analyzer.var_defs - analyzer.var_uses
     unused_imports = {name: node for name, node in analyzer.imports.items() if name not in analyzer.import_uses}
-
     unused["functions"] = sorted(unused_funcs)
     unused["classes"] = sorted(unused_classes)
     unused["variables"] = sorted(unused_vars)
     unused["imports"] = unused_imports
-
     return unused, []
-
-
-# ----------------------------------------------------------
-# REMOVE UNUSED
-# ----------------------------------------------------------
 
 
 def remove_unused(source, unused):
     tree = ast.parse(source)
     annotate_parents(tree)
-
     new_body = []
-
     for node in tree.body:
-        # remove functions
         if isinstance(node, ast.FunctionDef) and node.name in unused["functions"]:
             continue
-
-        # remove classes
         if isinstance(node, ast.ClassDef) and node.name in unused["classes"]:
             continue
-
-        # remove module-level unused variables
         if isinstance(node, ast.Assign) and isinstance(node.parent, ast.Module):
             targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
             if all(t in unused["variables"] for t in targets):
                 continue
-
-        # remove unused imports
         if isinstance(node, (ast.Import, ast.ImportFrom)):
-            # drop entire import statement if all names unused
             names = [alias.asname or alias.name for alias in node.names]
-
             if all(n in unused["imports"] for n in names):
                 continue
-
         new_body.append(node)
-
     tree.body = new_body
     return ast.unparse(tree)
-
-
-# ----------------------------------------------------------
-# FILE PROCESSING
-# ----------------------------------------------------------
 
 
 def process_file(filepath, dry_run=False):
     errors = []
     filepath = Path(filepath)
-
     try:
         source = filepath.read_text(encoding="utf-8")
     except Exception as e:
         return filepath, {}, [f"Error reading file: {e}"]
-
     unused, parse_errors = find_unused_symbols(source)
     errors.extend(parse_errors)
-
     nothing_to_remove = (
         not unused["functions"] and not unused["classes"] and not unused["variables"] and not unused["imports"]
     )
-
     if nothing_to_remove:
         return filepath, unused, errors
-
     try:
         new_source = remove_unused(source, unused)
     except Exception:
         errors.append("Error rewriting file:\n" + traceback.format_exc())
         return filepath, unused, errors
-
     if not dry_run:
         backup_path = filepath.with_suffix(filepath.suffix + ".bak")
         shutil.copy2(filepath, backup_path)
         filepath.write_text(new_source, encoding="utf-8")
-
     return filepath, unused, errors
-
-
-# ----------------------------------------------------------
-# DIRECTORY TRAVERSAL
-# ----------------------------------------------------------
 
 
 def gather_python_files(root: Path):
@@ -190,25 +132,16 @@ def worker(args):
     return process_file(*args)
 
 
-# ----------------------------------------------------------
-# MAIN
-# ----------------------------------------------------------
-
-
 def main():
     parser = argparse.ArgumentParser(description="Remove unused functions, classes, variables, and imports.")
     parser.add_argument("--dry-run", action="store_true", help="Show what would change without modifying files.")
     parser.add_argument("--workers", type=int, default=mp.cpu_count(), help="Number of processes")
     args = parser.parse_args()
-
     root = Path()
     py_files = gather_python_files(root)
-
     print(f"Scanning {len(py_files)} Python files...")
-
     with mp.Pool(args.workers) as pool:
         results = pool.map(worker, [(f, args.dry_run) for f in py_files])
-
     print("\n=== RESULTS ===\n")
     for filepath, unused, errors in results:
         if any(unused.values()):
@@ -216,7 +149,6 @@ def main():
                 print(f"[DRY-RUN] {filepath}")
             else:
                 print(f"Updated {filepath} (backup created)")
-
             if unused["functions"]:
                 print("  Unused functions:", unused["functions"])
             if unused["classes"]:
@@ -225,7 +157,6 @@ def main():
                 print("  Unused variables:", unused["variables"])
             if unused["imports"]:
                 print("  Unused imports:", list(unused["imports"].keys()))
-
         for err in errors:
             print(f"[ERROR] {filepath}: {err}")
 

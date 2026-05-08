@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 try:
@@ -86,7 +85,7 @@ class BashCommentRemover:
             collect_comments(root_node)
             if not comments_to_remove:
                 return content, False
-            lines = content.splitlines(True)  # Keep line endings
+            lines = content.splitlines(True)
             modified_lines = lines.copy()
             comments_to_remove.sort(
                 key=lambda n: n.start_point[0],

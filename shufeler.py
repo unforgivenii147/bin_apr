@@ -5,7 +5,6 @@ import random
 import secrets
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 MMAP_THRESHOLD_BYTES = 1 * 1024 * 1024
@@ -67,7 +66,7 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
     logger.info(f"Found {original_line_count} lines.")
     if original_line_count == 0:
         logger.info("Input file is empty. Exiting.")
-        output_path.touch()  # Create an empty output file
+        output_path.touch()
         return True
     logger.info("Shuffling line offsets...")
     crypto_shuffle_offsets(line_offsets)
@@ -86,14 +85,14 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
                 if next_offset_idx < len(line_offsets):
                     end_of_line_offset = line_offsets[next_offset_idx] - 1
                     if end_of_line_offset < offset:
-                        end_of_line_offset = file_size  # default to end of file
+                        end_of_line_offset = file_size
                 else:
                     end_of_line_offset = file_size
                 actual_end_of_line = mm.find(b"\n", offset)
-                if actual_end_of_line == -1:  # Last line, no newline
+                if actual_end_of_line == -1:
                     line_data = mm[offset:file_size]
                 else:
-                    line_data = mm[offset : actual_end_of_line + 1]  # Include newline
+                    line_data = mm[offset : actual_end_of_line + 1]
                 outfile.write(line_data)
                 if (i + 1) % 100000 == 0:
                     logger.info(f"  {i + 1}/{original_line_count} lines written...", end="\r")
@@ -185,7 +184,6 @@ def main():
     if file_size > MMAP_THRESHOLD_BYTES:
         logger.info(f"File size ({file_size / (1024 * 1024):.2f} MB) exceeds {1} MB. Using mmap strategy.")
         success = enhanced_shuffle_large_file(input_path, output_path)
-
     else:
         N = secrets.randbelow(10)
         logger.info(f"will run {N} times")

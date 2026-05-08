@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 import re
 import time
-
 import requests
 from dh import get_installed_packages
 from loguru import logger

@@ -41,8 +41,6 @@ def process_directory(cwd: Path) -> None:
             if path.name == "control" or "share" in path.parts:
                 continue
             if not is_exec(path):
-                #                ans=input(f"mkx this one?\n {path}\n")
-                #                if ans=="y":
                 make_exec(path)
                 print(f"[+] Made executable: {path.relative_to(cwd)}")
                 continue

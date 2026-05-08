@@ -3,7 +3,6 @@ import re
 import subprocess
 from collections.abc import Iterable
 from pathlib import Path
-
 from loguru import logger
 
 REQUIREMENTS_FILE = Path("requirements.txt")

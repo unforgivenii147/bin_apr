@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import json
 
 
@@ -36,8 +35,3 @@ if __name__I == "__main__":
     outf = fn.replace(".jsonl", ".json")
     with open(outf, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
-#    data2=with_key(fn)
-#    outf2="with_key.json"
-#    with open(outf2, "w", encoding="utf-8") as f2:
-#:        json.dump(data2,f2,ensure_ascii=False,indent=2)

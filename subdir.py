@@ -4,7 +4,6 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
-
 import py7zr
 
 
@@ -44,12 +43,6 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 zip_ref.extractall(target_dir)
             return True
-    #        try:
-    #            with py7zr.SevenZipFile(archive, mode="r") as sz:
-    #                sz.extractall(target_dir)
-    #            return True
-    #        except py7zr.exceptions.Bad7zFile:
-    #            return False
     except (
         tarfile.TarError,
         zipfile.BadZipFile,

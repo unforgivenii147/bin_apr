@@ -5,7 +5,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 
@@ -84,9 +83,7 @@ class GitHubRepoCreator:
                 cwd=cwd or self.current_dir,
                 capture_output=True,
                 text=True,
-                #                stdout=subprocess.PIPE,
-                #                stderr=subprocess.PIPE,
-                check=True,
+                #                #                check=True,
             )
             print(result.stdout)
             if result.returncode:

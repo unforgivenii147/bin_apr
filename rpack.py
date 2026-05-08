@@ -5,7 +5,6 @@ import re
 import shutil
 import sysconfig
 from pathlib import Path
-
 from loguru import logger
 from wheel.wheelfile import WheelFile
 

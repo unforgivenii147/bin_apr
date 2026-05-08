@@ -4,7 +4,6 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 import xmltodict
 from dh import cprint, get_files
 
@@ -13,7 +12,6 @@ REMOVE_ORIG = True
 
 
 def process_file(path):
-
     try:
         jsonpath = path.with_suffix(".json")
         cprint(f"{jsonpath} created.", "cyan")

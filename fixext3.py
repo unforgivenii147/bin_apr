@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import subprocess
 from pathlib import Path
-
 from loguru import logger
 
 FILE_TYPE_MAP = {

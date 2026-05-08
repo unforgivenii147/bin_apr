@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import get_files
 from loguru import logger
 from pbar import Pbar
@@ -13,7 +12,7 @@ def process_file(pdf_path: Path):
         logger.info(f"Error: Invalid PDF file path provided: {pdf_path}")
         return
     pdf_filename_base = pdf_path.stem
-    output_folder = pdf_path.parent / pdf_filename_base  # Create folder in the same directory as the PDF
+    output_folder = pdf_path.parent / pdf_filename_base
     try:
         output_folder.mkdir(parents=True, exist_ok=True)
         logger.info(f"Saving page text files to: {output_folder}")
@@ -30,13 +29,13 @@ def process_file(pdf_path: Path):
     for page_num in range(num_pages):
         try:
             page = reader.pages[page_num]
-            text = page.extract_text()  # Extract text from the page
+            text = page.extract_text()
             if text:
                 page_filename = f"{pdf_filename_base}_page_{page_num + 1}.txt"
                 output_filepath = output_folder / page_filename
                 with output_filepath.open("w", encoding="utf-8") as txt_file:
                     txt_file.write(text)
-                logger.info(f"Saved: {output_filepath.name}")  # Optional: uncomment for page-by-page progress
+                logger.info(f"Saved: {output_filepath.name}")
             else:
                 logger.info(f"Warning: No text extracted from page {page_num + 1}.")
         except Exception as e:

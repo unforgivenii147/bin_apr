@@ -1,13 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Modern wget clone in Python 3.13+.
-- Streaming downloads with resume support
-- Rich progress bar (tqdm)
-- Robust filename extraction
-- Windows UTF-8 console support
-- No external dependencies (uses stdlib only)
-"""
-
 import argparse
 import os
 import re
@@ -16,7 +7,6 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Dict, Optional
-
 from loguru import logger
 
 try:
@@ -60,7 +50,6 @@ except ImportError:
 
 
 def get_console_width() -> int:
-    """Get terminal width (fallback to 80)."""
     try:
         return os.get_terminal_size().columns
     except (OSError, AttributeError):
@@ -68,14 +57,12 @@ def get_console_width() -> int:
 
 
 def sanitize_filename(name: str) -> str:
-    """Clean filename: remove invalid chars, limit length."""
     name = urllib.parse.unquote(name)
     name = re.sub(r'[<>:"|?*]', "_", name)
     return name[:255].strip() or "downloaded_file"
 
 
 def extract_filename(url: str, headers: dict[str, str] | None = None) -> str:
-    """Extract filename from URL or Content-Disposition headers."""
     if headers:
         cd = headers.get("Content-Disposition", "")
         if cd:
@@ -90,7 +77,6 @@ def extract_filename(url: str, headers: dict[str, str] | None = None) -> str:
 
 
 def filename_fix_existing(filepath: Path) -> Path:
-    """Append ' (n)' to filename if it already exists."""
     if not filepath.exists():
         return filepath
     stem = filepath.stem
@@ -112,7 +98,6 @@ def download(
     resume: bool = False,
     quiet: bool = False,
 ) -> str:
-    """Download a URL to a file, with progress bar and resume support."""
     output_path = Path(output) if output else None
     if output_path and output_path.is_dir():
         output_path /= extract_filename(url)

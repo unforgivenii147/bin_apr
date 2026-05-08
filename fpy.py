@@ -4,7 +4,6 @@ import sys
 import tokenize
 from io import StringIO
 from pathlib import Path
-
 from loguru import logger
 
 python_keywords = {

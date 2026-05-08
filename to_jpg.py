@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import argparse
 from pathlib import Path
-
 from dh import fsz, gsz, is_image, mpf3, unique_path
 from loguru import logger
 
@@ -99,7 +97,6 @@ def main() -> None:
     if not files:
         print("No image files detected.")
         return
-
     print(f"converting {len(files)} files...")
     mpf3(process_file, files)
     diffsize = before - gsz(cwd)

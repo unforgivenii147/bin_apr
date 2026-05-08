@@ -5,7 +5,6 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import brotli
 import chardet
 from loguru import logger
@@ -13,11 +12,7 @@ from loguru import logger
 TARGET_EXTENSIONS = {".tar.gz", ".pdf", ".zip", ".css", ".js", ".tar.xz", ".7z", ".whl", ".html"}
 COMPRESSED_ARCHIVES = {".tar.xz", ".tar.gz", ".tar.zst", ".7z", ".br", ".zip", ".whl"}
 GITHUB_REPO_REGEX = re.compile(r"https?://(?:www\.)?github\.com/[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+")
-
-# URL_REGEX = re.compile(r'https?://[^\s\'"]+|git@[\w.-]+?\.git[:/]|git://[\w.-]+?\.git[:/]')
-
 URL_REGEX = re.compile(r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
-
 MAX_WORKERS = 4
 BINARY_CHECK_THRESHOLD = 0.7
 

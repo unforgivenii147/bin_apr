@@ -4,7 +4,6 @@ import re
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import get_nobinary, is_binary
 from loguru import logger
 

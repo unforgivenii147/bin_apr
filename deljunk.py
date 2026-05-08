@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 EMPTYIT = False
 RMIT = True
 

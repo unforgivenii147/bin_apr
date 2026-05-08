@@ -3,7 +3,6 @@ import ctypes
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import cprint, get_files
 from loguru import logger
 
@@ -54,7 +53,6 @@ class CtypesVerifier:
         }
         if not can_load:
             return can_load, symbol_info
-        # Try to extract symbols using nm
         try:
             result = subprocess.run(
                 ["nm", str(file_path)],

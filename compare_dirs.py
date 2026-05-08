@@ -43,29 +43,22 @@ def main():
     dir2 = sys.argv[2]
     first = expand_arg(dir1)
     second = expand_arg(dir2)
-
     f_files = [p.name for p in first if p.is_file()]
     f_dirs = [p.name for p in first if p.is_dir()]
-
     s_files = [p.name for p in second if p.is_file()]
     s_dirs = [p.name for p in second if p.is_dir()]
-
     common1 = [Path(dir1).resolve() / p for p in f_files if p in s_files]
     common2 = {str(Path(dir1).resolve() / p): str(Path(dir2).resolve() / p) for p in f_files if p in s_files}
-
     if common1:
         for k in common1:
             print(f"  - {k}")
     else:
         print("no common files")
         sys.exit(1)
-
     only_files_first = [p for p in f_files if p not in s_files]
     only_files_second = [p for p in s_files if p not in f_files]
-
     common_txt = cwd / "common.txt"
     common_txt.write_text("\n".join([str(p) for p in common1]))
-
     ans = input(f"delete from {dir1}  ? ")
     if ans == "y":
         for k, v in common2.items():
@@ -73,9 +66,6 @@ def main():
                 print(f"the files are identical \n{k}\n{v}")
             else:
                 print(f"similar name filed:\n{k}\n{v}\n")
-
-
-#            k.unlink()
 
 
 if __name__ == "__main__":

@@ -2,9 +2,7 @@
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
-
 from dh import fsz, get_files, gsz
 
 blank_line = "\n"
@@ -18,8 +16,7 @@ def process_file(path: Path):
     except Exception as e:
         logger.info(f"⚠️  Skipping {path}: {e}")
         return
-    lines = content.splitlines(keepends=True)  # keep original line endings
-    modified_lines = []
+    lines = content.splitlines(keepends=True)  # ke modified_lines = []
     replaced_count = 0
     for line in lines:
         stripped = line.rstrip("\r\n")

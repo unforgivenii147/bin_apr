@@ -7,29 +7,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from dh import gsz, get_pyfiles, fsz, mpf3, cprint
 
-
 N_JOBS = -1
 
 
 @dataclass
 class Decl:
-    kind: str  # "assign" | "function" | "class"
+    kind: str
     name: str
-    lineno: int  # 1-based
-    end_lineno: int  # inclusive, 1-based
+    lineno: int
+    end_lineno: int
     source: str
     content_hash: str
 
 
 class Normalizer(ast.NodeTransformer):
-    """
-    Normalize declaration contents so hashes are stable.
-    We ignore line numbers, column offsets, and docstring text differences only
-    if they are part of syntax positions, not content.
-    Function/class names and assigned target names are normalized so we can
-    detect duplicate bodies even under different names.
-    """
-
     def visit_FunctionDef(self, node):
         node = copy.deepcopy(node)
         node.name = "__NAME__"
@@ -50,7 +41,6 @@ class Normalizer(ast.NodeTransformer):
 
     def visit_Name(self, node):
         node = copy.deepcopy(node)
-        # Normalize only when the name is used as a store target.
         if isinstance(node.ctx, ast.Store):
             node.id = "__VAR__"
         return node
@@ -69,24 +59,12 @@ def get_source_segment(lines, lineno, end_lineno):
 
 
 def is_simple_top_level_assign(node):
-    """
-    Accept:
-      A = ...
-      x = ...
-      a = b = ...
-    Reject:
-      obj.x = ...
-      a[0] = ...
-      annotated/multi-structural patterns for simplicity
-    """
     if not isinstance(node, ast.Assign):
         return False
-
     for target in node.targets:
         if isinstance(target, ast.Name):
             continue
         if isinstance(target, (ast.Tuple, ast.List)):
-            # Skip destructuring assignments for safety/simplicity
             return False
         return False
     return True
@@ -101,8 +79,6 @@ def extract_assign_names(node):
 
 
 def build_decl_for_assign(node, lines):
-    # For "a = b = 1", treat each assigned name as a separate logical declaration
-    # with the same source range and same content hash.
     names = extract_assign_names(node)
     source = get_source_segment(lines, node.lineno, node.end_lineno)
     h = stable_hash(node)
@@ -133,21 +109,16 @@ def build_decl(node, kind, name, lines):
 
 
 def process_file(src_path):
-
     dup_path = src_path.parent / f"{src_path.stem}_dups.py"
-
     text = src_path.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=True)
-
     try:
         tree = ast.parse(text)
     except SyntaxError as e:
         print(f"Syntax error in {src_path}: {e}")
         sys.exit(1)
-
     decls = []
     top_level_nodes = []
-
     for node in tree.body:
         if is_simple_top_level_assign(node):
             decls.extend(build_decl_for_assign(node, lines))
@@ -158,31 +129,17 @@ def process_file(src_path):
         elif isinstance(node, ast.ClassDef):
             decls.append(build_decl(node, "class", node.name, lines))
             top_level_nodes.append(node)
-
-    # Keep-first policy
-    # Duplicate if:
-    #   - same kind + same name seen before
-    #   - OR same kind + same content hash seen before
-    #
-    # For assignments sharing the same physical statement (a = b = 1),
-    # we remove the whole statement only if that statement is marked duplicate.
     seen_name = set()
     seen_hash = set()
-
     duplicate_ranges = []
     duplicate_reasons = []
-
-    # To avoid marking the same physical block multiple times
     already_marked_ranges = set()
-
     for decl in decls:
         key_name = (decl.kind, decl.name)
         key_hash = (decl.kind, decl.content_hash)
         rng = (decl.lineno, decl.end_lineno)
-
         is_dup = False
         reason = None
-
         if key_name in seen_name:
             is_dup = True
             reason = f"duplicate {decl.kind} name: {decl.name}"
@@ -192,24 +149,17 @@ def process_file(src_path):
         else:
             seen_name.add(key_name)
             seen_hash.add(key_hash)
-
         if is_dup and rng not in already_marked_ranges:
             duplicate_ranges.append(rng)
             duplicate_reasons.append((decl, reason))
             already_marked_ranges.add(rng)
-
     if not duplicate_ranges:
         print("No duplicate top-level assignments/functions/classes found.")
         return
-
-    # Build set of line numbers to remove from source
     remove_lines = set()
     for start, end in duplicate_ranges:
         remove_lines.update(range(start, end + 1))
-
     kept_lines = [line for i, line in enumerate(lines, start=1) if i not in remove_lines]
-
-    # Prepare duplicate output
     out = []
     out.append(f"\n# Duplicates moved from {src_path.name}\n")
     for decl, reason in duplicate_reasons:
@@ -217,24 +167,18 @@ def process_file(src_path):
         out.append(decl.source)
         if not decl.source.endswith("\n"):
             out.append("\n")
-
-    # Write updated source in place
     src_path.write_text("".join(kept_lines), encoding="utf-8")
-
-    # Append duplicates to dups.py
     with dup_path.open("a", encoding="utf-8") as f:
         f.write("".join(out))
-
     print(f"Updated {src_path} in place")
     print(f"Moved {len(duplicate_ranges)} duplicate declaration block(s) to {dup_path}")
 
 
 def main():
     root_dir = Path.cwd()
-    before = gsz(root_dir)  # Get total size before processing
+    before = gsz(root_dir)
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -244,7 +188,6 @@ def main():
                 files.extend(get_pyfiles(p, recursive=True))
     else:
         files = get_pyfiles(root_dir)
-
     results = mpf3(process_file, files)
     for result in results:
         if result:

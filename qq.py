@@ -3,15 +3,13 @@ import os
 import sys
 import matplotlib.pyplot as plt
 
-# --- Configuration ---
 MAX_DIRS = 25
 MIN_SIZE_KB = 100
 OUTPUT_FILENAME = "dirinfo.png"
-CHART_TYPE = "bar"  # Change this to "pie" or "bar" as needed
+CHART_TYPE = "bar"
 
 
 def format_size(size_bytes):
-    """Convert bytes to human-readable format."""
     if size_bytes < 1024:
         return f"{size_bytes} B"
     size_kb = size_bytes / 1024
@@ -25,7 +23,6 @@ def format_size(size_bytes):
 
 
 def get_dir_size(start_path):
-    """Calculate total size of directory in bytes."""
     total_size = 0
     try:
         for dirpath, dirnames, filenames in os.walk(start_path):
@@ -42,14 +39,10 @@ def get_dir_size(start_path):
 
 
 def create_chart(target_dir="."):
-    """Analyze directory and generate specified chart."""
     target_dir = os.path.abspath(target_dir)
     print(f"Analyzing directory: {target_dir}")
-
     subdir_sizes = {}
     total_size = 0
-
-    # Gather subdirectory sizes
     try:
         for entry in os.scandir(target_dir):
             if entry.is_dir() and not entry.name.startswith(".") and not os.path.islink(entry.path):
@@ -60,27 +53,19 @@ def create_chart(target_dir="."):
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return
-
     if not subdir_sizes:
         print("No subdirectories meeting criteria.")
         return
-
-    # Sort and limit
     sorted_subdirs = sorted(subdir_sizes.items(), key=lambda item: item[1], reverse=True)
     top_subdirs = dict(sorted_subdirs[:MAX_DIRS])
     remaining_size = sum(size for name, size in subdir_sizes.items() if name not in top_subdirs)
-
-    # Percentages
     percentages = {name: (size / total_size) * 100 for name, size in top_subdirs.items()}
     if remaining_size > 0:
         percentages["Other"] = (remaining_size / total_size) * 100
-
     labels = list(top_subdirs.keys())
     if remaining_size > 0:
         labels.append("Other")
     sizes = list(percentages.values())
-
-    # Plot
     fig, ax = plt.subplots(figsize=(10, 6))
     if CHART_TYPE == "bar":
         ax.bar(labels, sizes, color="skyblue")
@@ -90,13 +75,11 @@ def create_chart(target_dir="."):
         ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140)
         ax.set_title("Directory Size Distribution")
     elif CHART_TYPE == "circle":
-        # Optional: a filled circle plot (similar to pie, but with circle)
         ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140, wedgeprops=dict(width=0.4))
         ax.set_title("Directory Size Distribution")
     else:
         print(f"Chart type '{CHART_TYPE}' is not supported.")
         return
-
     plt.tight_layout()
     try:
         plt.savefig(OUTPUT_FILENAME, dpi=300)

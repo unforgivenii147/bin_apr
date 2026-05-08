@@ -8,10 +8,8 @@ import sys
 import tarfile
 import zipfile
 import zlib
-
 from loguru import logger
 
-# Attempting to import third-party libraries, but will handle ImportError gracefully
 try:
     import brotli
 except ImportError:
@@ -29,26 +27,18 @@ except ImportError:
 
 
 def try_decompress(filename):
-    """
-    Tries to decompress a file using various built-in and third-party libraries.
-    Reports success or failure for each method.
-    """
     logger.info(f"Attempting to decompress: {filename}\n")
-    # Built-in libraries
     compression_methods = {
         "zlib": zlib.decompress,
         "bz2": bz2.decompress,
         "gzip": gzip.decompress,
         "lzma": lzma.decompress,
-        "pickle": pickle.loads,  # Pickle is for deserialization, not just decompression
+        "pickle": pickle.loads,
     }
-    # Third-party libraries (conditionally available)
     if brotli:
         compression_methods["brotli"] = brotli.decompress
     if zstd_available:
-        # zstandard library typically uses a ZstdDecompressor object for streaming
-        # For simplicity, we will try to decompress the whole data at once if possible
-        # This might not work for very large files or specific zstd stream formats
+
         def zstd_decompress_all(data):
             try:
                 dctx = zstandard.ZstdDecompressor()
@@ -59,7 +49,6 @@ def try_decompress(filename):
 
         compression_methods["zstandard"] = zstd_decompress_all
     if py7zr:
-        # py7zr is for archives, not direct data decompression, needs special handling
         pass
     try:
         file_data = Path(filename).read_bytes()
@@ -70,28 +59,19 @@ def try_decompress(filename):
         logger.info(f"Error reading file {filename}: {e}\n")
         return
     success = False
-    # Test built-in decompression methods
     for name, func in compression_methods.items():
         try:
             logger.info(f"Trying {name}...")
             decompressed_data = func(file_data)
-            # Check if decompression resulted in some data and if it seems valid (e.g., not excessively large/small)
-            # This is a heuristic, a more robust check might involve trying to parse the decompressed data
-            if decompressed_data and len(decompressed_data) < len(file_data) * 10:  # Basic sanity check
+            if decompressed_data and len(decompressed_data) < len(file_data) * 10:
                 logger.info(f"  SUCCESS: Decompressed using {name}. Size: {len(decompressed_data)} bytes.\n")
-                # Optionally save the decompressed data
-                # with open(f"{filename}.decompressed_by_{name}.bin", "wb") as outfile:
-                #     outfile.write(decompressed_data)
                 success = True
-                # break # Stop after first success if desired, or continue to test others
             else:
                 logger.info(
                     f"  FAILED: {name} did not yield valid decompressed data (size: {len(decompressed_data)}).\n"
                 )
         except Exception as e:
             logger.info(f"  FAILED: {name} raised an exception: {type(e).__name__}: {e}\n")
-    # Test archive formats (requires special handling)
-    # Tarfile
     if tarfile.is_tarfile(filename):
         try:
             logger.info("Trying tarfile...")
@@ -101,18 +81,11 @@ def try_decompress(filename):
                     logger.info(
                         f"  SUCCESS: Opened as tar archive with {len(members)} members. First member: {members[0].name}\n"
                     )
-                    # Optionally extract first file
-                    # if members[0].isfile():
-                    #     extracted_file = tar.extractfile(members[0])
-                    #     if extracted_file:
-                    #         decompressed_data = extracted_file.read()
-                    #         logger.info(f"  Extracted first member ({members[0].name}) successfully. Size: {len(decompressed_data)} bytes.\n")
                     success = True
                 else:
                     logger.info("  FAILED: tarfile is empty.\n")
         except Exception as e:
             logger.info(f"  FAILED: tarfile opened with exception: {type(e).__name__}: {e}\n")
-    # Zipfile
     if zipfile.is_zipfile(filename):
         try:
             logger.info("Trying zipfile...")
@@ -122,17 +95,11 @@ def try_decompress(filename):
                     logger.info(
                         f"  SUCCESS: Opened as zip archive with {len(file_list)} files. First file: {file_list[0]}\n"
                     )
-                    # Optionally extract first file
-                    # first_file_info = zip_ref.getinfo(file_list[0])
-                    # with zip_ref.open(file_list[0]) as extracted_file:
-                    #     decompressed_data = extracted_file.read()
-                    #     logger.info(f"  Extracted first file ({file_list[0]}) successfully. Size: {len(decompressed_data)} bytes.\n")
                     success = True
                 else:
                     logger.info("  FAILED: zipfile is empty.\n")
         except Exception as e:
             logger.info(f"  FAILED: zipfile opened with exception: {type(e).__name__}: {e}\n")
-    # py7zr (7z archive)
     if py7zr:
         try:
             logger.info("Trying py7zr (7z archive)...")
@@ -142,11 +109,6 @@ def try_decompress(filename):
                     logger.info(
                         f"  SUCCESS: Opened as 7z archive with {len(file_list)} files. First file: {file_list[0]}\n"
                     )
-                    # Optionally extract first file
-                    # first_file_info = z.getinfo(file_list[0])
-                    # with z.open(file_list[0]) as extracted_file:
-                    #     decompressed_data = extracted_file.read()
-                    #     logger.info(f"  Extracted first file ({file_list[0]}) successfully. Size: {len(decompressed_data)} bytes.\n")
                     success = True
                 else:
                     logger.info("  FAILED: py7zr archive is empty.\n")

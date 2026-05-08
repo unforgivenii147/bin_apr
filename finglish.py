@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import unicodedata
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -39,7 +38,6 @@ def custom_persian_to_finglish(text):
         "ن": "n",
         "ه": "h",
     }
-
     words = text.split(" ")
     processed_words = []
     for word in words:
@@ -68,20 +66,19 @@ def custom_persian_to_finglish(text):
 def convert_filenames_with_pathlib(directory="."):
     start_path = Path(directory)
     for filepath in start_path.rglob("*"):  # rglob finds files recursively
-        if filepath.is_file():
-            original_filename_stem = filepath.stem
-            original_extension = filepath.suffix
-            normalized_stem = unicodedata.normalize("NFKD", original_filename_stem)
-            finglish_stem = custom_persian_to_finglish(normalized_stem)
-            finglish_stem_cleaned = "_".join(filter(None, finglish_stem.split("_")))
-            new_filename = finglish_stem_cleaned + original_extension
-            if new_filename != filepath.name:
-                new_filepath = filepath.with_name(new_filename)
-                try:
-                    filepath.rename(new_filepath)
-                    logger.info(f"Renamed: {filepath} -> {new_filepath}")
-                except OSError as e:
-                    logger.info(f"Error renaming {filepath}: {e}")
+        original_filename_stem = filepath.stem
+        original_extension = filepath.suffix
+        normalized_stem = unicodedata.normalize("NFKD", original_filename_stem)
+        finglish_stem = custom_persian_to_finglish(normalized_stem)
+        finglish_stem_cleaned = "_".join(filter(None, finglish_stem.split("_")))
+        new_filename = finglish_stem_cleaned + original_extension
+        if new_filename != filepath.name:
+            new_filepath = filepath.with_name(new_filename)
+            try:
+                filepath.rename(new_filepath)
+                logger.info(f"Renamed: {filepath} -> {new_filepath}")
+            except OSError as e:
+                logger.info(f"Error renaming {filepath}: {e}")
 
 
 if __name__ == "__main__":

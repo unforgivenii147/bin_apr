@@ -68,7 +68,6 @@ def main():
     for name, count in counter.most_common(100):
         if count > 2:
             print(f"{name}: {count}")
-
     print("\n=== Similar Filename Groups ===")
     groups = group_similar(list(counter.keys()), threshold=0.8)
     if not groups:

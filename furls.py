@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import contextlib
 import io
@@ -11,7 +10,6 @@ import tempfile
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-
 import zstd
 from dh import is_valid_url, write_txt_file, append_text
 from loguru import logger
@@ -25,10 +23,8 @@ URL_RE = re.compile(
     r'(https?://[^\s\'"<>\\)\\(]+)',
     flags=re.IGNORECASE,
 )
-
 GIT_FILE = Path("/sdcard/gitlinks.txt")
 REPO_FILE = Path("/sdcard/repos.txt")
-
 ARCHIVE_SUFFIXES = (
     ".tar.gz",
     ".tgz",
@@ -429,12 +425,6 @@ def process_path(
         return
 
 
-# _____________________________
-#                             |
-#      save git urls          |
-# _____________________________|
-
-
 def is_github_url(url):
     try:
         result = urlparse(url)
@@ -446,7 +436,6 @@ def is_github_url(url):
 def extract_git_repos(urls):
     repo_urls = []
     github_regex = re.compile(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$|\.git|\?|#)")
-
     for url in urls:
         matchz = github_regex.search(url)
         if matchz:
@@ -467,20 +456,11 @@ def extract_and_save_gitlinks(urllist) -> None:
     if repoz:
         repos = "\n".join(repoz)
         append_text(REPO_FILE, repos)
-
         git_links = "\n".join(glinks)
-
         append_text(GIT_FILE, git_links)
-
         logger.info(f"{len(glinks)} links found.")
     else:
         logger.info("no git link")
-
-
-# __________________________
-#
-#      main function
-# __________________________
 
 
 def main():
@@ -516,7 +496,6 @@ def main():
     max_bytes = int(args.max_mb * 1024 * 1024)
     exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()} if args.extensions else None
     found = set()
-
     for root, dirs, files in os.walk(".", topdown=True, followlinks=False):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
         if should_skip_dir(root):
@@ -534,10 +513,8 @@ def main():
     if not found:
         logger.info("no url found")
         sys.exit(0)
-
     sorted_urls = sorted(found)
     extract_and_save_gitlinks(sorted_urls)
-
     try:
         if Path(args.output).exists():
             logger.info("urls.txt exists. appending new urls")

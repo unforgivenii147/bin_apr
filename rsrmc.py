@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 import tree_sitter_rust
 from dh import clean_blank_lines
 from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser
-
 from dh import fsz, gsz
 
 EXCLUDE_PREFIXES = (b"#!/",)

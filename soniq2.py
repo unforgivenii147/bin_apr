@@ -5,7 +5,6 @@ import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 from loguru import logger
 
 MB_5 = 5 * 1024 * 1024
@@ -32,9 +31,7 @@ def sort_and_uniq(file_path):
             lines = file_path.read_text(encoding="utf-8").splitlines()
         with ThreadPoolExecutor() as executor:
             processed_lines = list(executor.map(lambda x: x.strip(), lines))
-
         unique_sorted_lines = sorted(set(processed_lines))
-
         fd, temp_path = tempfile.mkstemp(dir=Path(file_path).parent)
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as tmp:

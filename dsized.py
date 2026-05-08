@@ -3,7 +3,6 @@ import argparse
 import urllib.error
 import urllib.request
 from pathlib import Path
-
 from loguru import logger
 
 MAX_DOWNLOAD_SIZE = 1 * 1024 * 1024

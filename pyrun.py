@@ -7,7 +7,6 @@ from contextlib import redirect_stderr, redirect_stdout
 
 
 def find_python_files(root_dir="."):
-    """Recursively find all .py files."""
     py_files = []
     for dirpath, _, filenames in os.walk(root_dir):
         py_files.extend(
@@ -19,7 +18,6 @@ def find_python_files(root_dir="."):
 
 
 def run_script(script_path):
-    """Run a Python script in isolation using runpy, capturing output."""
     print(f"\n{'=' * 60}")
     print(f"Running: {script_path}")
     print(f"{'=' * 60}")
@@ -27,8 +25,6 @@ def run_script(script_path):
     stderr_capture = io.StringIO()
     try:
         with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
-            # Run script in its own namespace (isolated globals)
-            # `run_name="__main__"` ensures `if __name__ == "__main__"` works
             runpy.run_path(script_path, run_name="__main__")
         print("[✅ SUCCESS]")
     except SystemExit as e:

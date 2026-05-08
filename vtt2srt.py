@@ -24,7 +24,7 @@ def convert_vtt_to_srt(vtt_content):
             while i < len(lines) and lines[i].strip():
                 srt_lines.append(lines[i])
                 i += 1
-            srt_lines.append("")  # Add empty line between segments
+            srt_lines.append("")
         else:
             i += 1
     return "\n".join(srt_lines)

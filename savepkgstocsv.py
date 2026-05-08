@@ -3,7 +3,6 @@ import csv
 import subprocess
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 OUTPUT_DIR = Path("/sdcard/backups")

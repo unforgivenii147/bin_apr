@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from dh import gsz, get_files, fsz, mpf3, cprint, runcmd
 
-
 START_DIR = Path.cwd()
 NUM_PROCESSES = 4
 
@@ -21,8 +20,6 @@ def process_file(path):
             show_output=False,
         )
         if "skipping" in txt.lower():
-            #            if Path(temp_path).exists():
-            #                Path(temp_path).unlink()
             print(f" Skipped: {path.name}")
             return
         else:
@@ -41,7 +38,6 @@ def process_file(path):
         )
     except Exception as e:
         print(f"❌ Error compressing {path}: {e}")
-
     return
 
 
@@ -49,7 +45,6 @@ def main():
     root_dir = Path.cwd()
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -59,7 +54,6 @@ def main():
                 files.extend(get_files(p, extensions=[".png", ".PNG"]))
     else:
         files = get_files(root_dir, extensions=[".png", ".PNG"])
-
     _ = mpf3(process_file, files)
 
 

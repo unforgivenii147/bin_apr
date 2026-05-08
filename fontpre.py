@@ -2,12 +2,9 @@
 import html
 import os
 from pathlib import Path
-
 from loguru import logger
 
-# Supported font extensions
 FONT_EXTENSIONS = (".ttf", ".otf", ".woff", ".woff2", ".eot")
-# Sample preview text
 SAMPLE_TEXT = "Lorem ipsum dolor sit amet\nهنر برتر از گوهر آمد پدید"
 OUTPUT_FILE = "fontpreview.html"
 HTML_START = """<!doctype html>

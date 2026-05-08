@@ -37,7 +37,7 @@ def main():
     n_dirs = max(2, (total_files + target_per_dir - 1) // target_per_dir)
     n_dirs = max(2, min(100, n_dirs))
     base_chunk = total_files // n_dirs
-    remainder = total_files % n_dirs  # first `remainder` dirs get +1 file
+    remainder = total_files % n_dirs
     logger.info(f"Creating {n_dirs} directories (~{base_chunk} files each)")
     created_dirs = []
     existing_dir_names = {p.name for p in root.iterdir() if p.is_dir()}

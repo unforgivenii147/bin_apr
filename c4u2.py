@@ -5,7 +5,6 @@ import operator
 import re
 import sys
 from pathlib import Path
-
 import aiohttp
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -16,7 +15,6 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 def extract_version(filename: str) -> str:
-    """Extract version like 0.15.3 from 'dh-0.15.3-py3-none-any.whl' or 'pkg-1.0.tar.gz'"""
     match = re.match(r"^[a-zA-Z0-9_.-]+-([0-9][a-zA-Z0-9._-]*)", filename)
     return match.group(1) if match else "unknown"
 

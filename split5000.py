@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from loguru import logger
 from nltk.tokenize import sent_tokenize

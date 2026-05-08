@@ -5,24 +5,12 @@ from pathlib import Path
 import re
 import sys
 from urllib.parse import urljoin
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
 
 
 def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
-    """
-    Fetches the latest version, URL, and HTML content for a given package from a PyPI mirror.
-
-    Args:
-        pkg_name: The name of the package.
-        mirror_url: The base URL of the PyPI mirror.
-
-    Returns:
-        A dictionary containing package name, latest version, URL of the latest version,
-        and the HTML content, or None if an error occurs.
-    """
     package_url = f"{mirror_url}/{pkg_name}"
     output_data = {
         "pkg_name": pkg_name,
@@ -33,7 +21,7 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
     }
     try:
         response = requests.get(package_url)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
         output_data["html_content"] = response.text
         output_dir = "output"
         if not Path(output_dir).exists():
@@ -44,18 +32,13 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         if not links:
             output_data["error"] = "No links found for the package."
             return output_data
-        # The last 'a' tag is assumed to contain the latest version link
         latest_link_tag = links[-1]
         latest_url = latest_link_tag.get("href")
         if not latest_url:
             output_data["error"] = "Could not extract URL from the last link tag."
             return output_data
-        # Construct the full URL if it's relative
         full_latest_url = urljoin(mirror_url, latest_url)
-        # Extract version from the URL or the link text
-        # Prefer .tar.gz over .whl and .zip
         preferred_url = None
-        # Sort links to prioritize .tar.gz, then .zip, then .whl
         sorted_links = sorted(
             links,
             key=lambda x: (
@@ -67,7 +50,6 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         for link_tag in sorted_links:
             href = link_tag.get("href")
             if href:
-                # Check for preferred file types
                 if href.endswith(".tar.gz"):
                     preferred_url = urljoin(mirror_url, href)
                     break
@@ -76,12 +58,10 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         if not preferred_url:
             output_data["error"] = "Could not find a preferred file type (.tar.gz, .zip, or .whl)."
             return output_data
-        # Extract version from the preferred URL
         version_match = re.search(r"([\w.-]+?)-(\d+\.\d+(\.\d+)?(-\w+)?).*\.(tar\.gz|zip|whl)", preferred_url)
         if version_match:
             output_data["latest_version"] = version_match.group(2)
         else:
-            # Fallback: try to extract from the href attribute of the last link tag if regex fails
             version_match_fallback = re.search(r"-(\d+\.\d+(\.\d+)?(-\w+)?)\.", latest_url)
             if version_match_fallback:
                 output_data["latest_version"] = version_match_fallback.group(1)
@@ -114,7 +94,6 @@ def main():
         logger.info(f"Processing: {pkg_name}...")
         result = get_latest_version_info(pkg_name, mirror_url)
         all_results.append(result)
-        # Save results simultaneously to JSON
         try:
             with Path(output_json_file).open("w", encoding="utf-8") as f:
                 json.dump(all_results, f, indent=4, ensure_ascii=False)

@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 
-
 dest = Path.home() / "isaac" / "apr" / "scripts"
 
 
@@ -15,7 +14,7 @@ def unique_path(path: Path | str) -> Path:
     if suffixes:
         first_suffix_index = path.name.find(suffixes[0])
         stem = path.name[:first_suffix_index]
-        full_suffix = "".join(suffixes)  # Reconstruct .tar.gz or .min.js
+        full_suffix = "".join(suffixes)
     else:
         stem = path.name
         full_suffix = ""

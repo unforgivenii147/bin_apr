@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-
 from loguru import logger
 
 

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from loguru import logger
 from tree_sitter import Language, Parser
@@ -24,7 +23,7 @@ def extract_python_code_elements(filepath):
     imports = []
     nodes_to_visit = [tree.root_node]
     while nodes_to_visit:
-        node = nodes_to_visit.pop(0)  # Use pop(0) for BFS, pop() for DFS
+        node = nodes_to_visit.pop(0)
         for child in node.children:
             if child.type == "function_definition":
                 func_name_node = child.child_by_field_name("name")
@@ -39,10 +38,8 @@ def extract_python_code_elements(filepath):
                 "import_from_statement",
             }:
                 target = child.child_by_field_name("name")
-                if (
-                    target and target.text.decode("utf-8").isupper() and len(target.text.decode("utf-8")) > 1
-                ):  # Avoid single uppercase letters like 'A'
-                    if child.named_child_count == 2:  # Should have a name and a value
+                if target and target.text.decode("utf-8").isupper() and len(target.text.decode("utf-8")) > 1:
+                    if child.named_child_count == 2:
                         constants.append(target.text.decode("utf-8"))
             elif child.type == "import_statement":
                 imports.extend(

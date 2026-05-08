@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from loguru import logger
 

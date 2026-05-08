@@ -2,7 +2,6 @@
 import ast
 import sys
 from pathlib import Path
-
 from dh import get_pyfiles
 from pbar import Pbar
 
@@ -12,7 +11,6 @@ err_dir.mkdir(exist_ok=True)
 
 
 def process_file(fp) -> None:
-    #    logger.info(f"processing ... {fp.name}")
     content = fp.read_text(encoding="utf-8")
     try:
         ast.parse(content)
@@ -24,7 +22,6 @@ def process_file(fp) -> None:
             newpath.write_text(content, encoding="utf-8")
 
 
-#            fp.unlink()
 def main():
     args = sys.argv[1:]
     files = [Path(f) for f in args] if args else get_pyfiles(cwd)
@@ -33,6 +30,5 @@ def main():
             process_file(f)
 
 
-#    mpf3(process_file,files)
 if __name__ == "__main__":
     sys.exit(main())

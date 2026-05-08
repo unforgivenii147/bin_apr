@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 import trafilatura
 from loguru import logger
-
 from dh import get_files, mpf3
 
 

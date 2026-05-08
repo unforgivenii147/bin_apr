@@ -16,11 +16,6 @@ def install(packages: list[str]):
     return pip_main(args)
 
 
-# def install_pkg(pkgs: list[str]):
-#    sys.argv = ["pip", "install", "--no-deps", pkgs]
-#    return run_module("pip", run_command="__main__")
-
-
 def pkg_name(txt):
     indx = txt.index("-")
     slash = txt.rfind("/")
@@ -28,28 +23,21 @@ def pkg_name(txt):
 
 
 def install_whl_by_wildcard(pkg):
-
-    #    search_pattern = cwd / f"{pkg}*.whl")
-    #    wheel_files = glob.glob(search_pattern)
     whl = {pkg_name(str(p)): str(p) for p in cwd.glob("*.whl")}
     wheel_files = []
-
     for k, v in whl.items():
         pr = fuzz.partial_ratio(pkg, k)
         if pkg in k and pr > 95:
             wheel_files.append(v)
-
     if not wheel_files:
         print(f"No .whl files found matching '{pkg}*'")
         return
-
     try:
         res = install(wheel_files)
         if not res:
             for f in wheel_files:
                 print(f"  - {Path(f).name}")
                 Path(f).unlink()
-
     except:
         return
 
@@ -58,6 +46,5 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python pip_install.py <pkg_wildcard>")
         sys.exit(1)
-
     wildcard = sys.argv[1]
     install_whl_by_wildcard(wildcard)

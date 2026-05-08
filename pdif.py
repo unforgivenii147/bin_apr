@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-
 from loguru import logger
 
 
@@ -23,7 +22,7 @@ def compare_files(file1, file2):
     common_count = 0
     for i, line in enumerate(lines1):
         if line not in lines2:
-            diff_lines_1.append(i + 1)  # 1-based index
+            diff_lines_1.append(i + 1)
     for i, line in enumerate(lines2):
         if line not in lines1:
             diff_lines_2.append(i + 1)

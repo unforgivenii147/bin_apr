@@ -40,8 +40,8 @@ LANG_EXT = {
     "html": ".html",
     "htm": ".html",
     "css": ".css",
-    "dockerfile": "",  # Dockerfile has no extension usually
-    "make": "",  # Makefile has no extension usually
+    "dockerfile": "",
+    "make": "",
     "makefile": "",
     "text": ".txt",
     "plain": ".txt",

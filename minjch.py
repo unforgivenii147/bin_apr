@@ -4,7 +4,6 @@ import multiprocessing
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 from rcssmin import cssmin
 

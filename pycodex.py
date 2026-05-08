@@ -6,7 +6,6 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger

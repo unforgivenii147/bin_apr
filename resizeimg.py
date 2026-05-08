@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import glob
-
 from loguru import logger
 from PIL import Image
 

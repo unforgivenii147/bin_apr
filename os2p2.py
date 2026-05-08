@@ -6,7 +6,6 @@ USAGE:
 --dry        Show diffs only (default)
   --in-place   Apply changes directly
   files...     Files/dirs to process (default: current dir, .py only)
-
 Examples:
   python refactor_os_to_pathlib.py --dry
   python refactor_os_to_pathlib.py --in-place src/ tests/
@@ -19,7 +18,6 @@ import os
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 # -----------------------------

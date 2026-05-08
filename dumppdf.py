@@ -1,6 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/env python
-"""Extract pdf structure in XML format"""
-
 import logging
 import os.path
 from pathlib import Path
@@ -9,7 +7,6 @@ import sys
 from argparse import ArgumentParser
 from collections.abc import Container, Iterable
 from typing import Any, TextIO, cast
-
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
 from pdfminer.pdfexceptions import PDFIOError, PDFObjectNotFound, PDFTypeError, PDFValueError
@@ -21,7 +18,6 @@ from pdfminer.utils import isnumber
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
@@ -34,7 +30,6 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
     if obj is None:
         out.write("<null />")
         return
-
     if isinstance(obj, dict):
         out.write(f'<dict size="{len(obj)}">\n')
         for k, v in obj.items():
@@ -44,7 +39,6 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
             out.write("</value>\n")
         out.write("</dict>")
         return
-
     if isinstance(obj, list):
         out.write(f'<list size="{len(obj)}">\n')
         for v in obj:
@@ -52,17 +46,13 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
             out.write("\n")
         out.write("</list>")
         return
-
     if isinstance(obj, (str, bytes)):
         out.write(f'<string size="{len(obj)}">{escape(obj)}</string>')
         return
-
     if isinstance(obj, PDFStream):
         if codec == "raw":
-            # Bug: writing bytes to text I/O. This will raise TypeError.
             out.write(obj.get_rawdata())  # type: ignore [arg-type]
         elif codec == "binary":
-            # Bug: writing bytes to text I/O. This will raise TypeError.
             out.write(obj.get_data())  # type: ignore [arg-type]
         else:
             out.write("<stream>\n<props>\n")
@@ -73,25 +63,18 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
                 out.write(f'<data size="{len(data)}">{escape(data)}</data>\n')
             out.write("</stream>")
         return
-
     if isinstance(obj, PDFObjRef):
         out.write(f'<ref id="{obj.objid}" />')
         return
-
     if isinstance(obj, PSKeyword):
-        # Likely bug: obj.name is bytes, not str
         out.write(f"<keyword>{obj.name}</keyword>")  # type: ignore [str-bytes-safe]
         return
-
     if isinstance(obj, PSLiteral):
-        # Likely bug: obj.name may be bytes, not str
         out.write(f"<literal>{obj.name}</literal>")  # type: ignore [str-bytes-safe]
         return
-
     if isnumber(obj):
         out.write(f"<number>{obj}</number>")
         return
-
     raise PDFTypeError(obj)
 
 
@@ -202,7 +185,6 @@ LITERAL_EMBEDDEDFILE = LIT("EmbeddedFile")
 
 
 def extractembedded(fname: str, password: str, extractdir: str) -> None:
-
     def extract1(objid: int, obj: dict[str, Any]) -> None:
         filename = Path(obj.get("UF") or cast("bytes", obj.get("F")).decode()).name
         fileref = obj["EF"].get("UF") or obj["EF"].get("F")
@@ -279,7 +261,6 @@ def create_parser() -> ArgumentParser:
         nargs="+",
         help="One or more paths to PDF files.",
     )
-
     parser.add_argument(
         "--version",
         "-v",
@@ -307,7 +288,6 @@ def create_parser() -> ArgumentParser:
         type=str,
         help="Extract embedded files",
     )
-
     parse_params = parser.add_argument_group(
         "Parser",
         description="Used during PDF parsing",
@@ -354,7 +334,6 @@ def create_parser() -> ArgumentParser:
         default="",
         help="The password to use for decrypting PDF file.",
     )
-
     output_params = parser.add_argument_group(
         "Output",
         description="Used during output generation.",
@@ -388,28 +367,22 @@ def create_parser() -> ArgumentParser:
         action="store_true",
         help="Write stream objects as plain text",
     )
-
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     parser = create_parser()
     args = parser.parse_args(args=argv)
-
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
-
     objids = [int(x) for x in args.objects.split(",")] if args.objects else []
-
     if args.page_numbers:
         pagenos = {x - 1 for x in args.page_numbers}
     elif args.pagenos:
         pagenos = {int(x) - 1 for x in args.pagenos.split(",")}
     else:
         pagenos = set()
-
     password = args.password
-
     if args.raw_stream:
         codec: str | None = "raw"
     elif args.binary_stream:
@@ -418,8 +391,6 @@ def main(argv: list[str] | None = None) -> None:
         codec = "text"
     else:
         codec = None
-
-    # Use context manager for file output, ensuring proper cleanup
     with sys.stdout if args.outfile == "-" else Path(args.outfile).open("w", encoding="utf-8") as outfp:
         for fname in args.files:
             if args.extract_toc:

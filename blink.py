@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 
-
 def get_files(directory):
     for root, _, files in os.walk(directory):
         for file in files:

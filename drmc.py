@@ -4,12 +4,10 @@ import os
 import re
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 from loguru import logger
 
 N_JOBS = -1
-
 LANGS = [
     ("Auto-detect by extension", "auto"),
     ("C", "c"),
@@ -245,7 +243,6 @@ def rm_doc(content: str) -> str:
 
 
 def rmsl(data):
-
     lines = data.splitlines(keepends=False)
     nl = []
     removed = 0
@@ -255,7 +252,6 @@ def rmsl(data):
             removed += 1
             continue
         nl.append(line)
-
     if removed:
         try:
             code = "\n".join(nl)

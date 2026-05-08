@@ -4,10 +4,7 @@ import os
 from pathlib import Path
 
 env_vars = set()
-# Regex to find lines that look like environment variable assignments
-# It captures the variable name (uppercase letters, numbers, and underscores)
 env_var_pattern = re.compile(r"^([A-Z_0-9]+)=")
-
 for filepath in Path(".").rglob("*"):
     if filepath.is_file():
         try:
@@ -18,11 +15,8 @@ for filepath in Path(".").rglob("*"):
                         env_vars.add(match.group(1))
         except Exception as e:
             print(f"Could not process file {filepath}: {e}")
-
-# Save the unique environment variable names to a file
 output_filename = "env_vars.txt"
 with open(output_filename, "w", encoding="utf-8") as f:
     for var in sorted(list(env_vars)):
         f.write(var + "\n")
-
 print(f"Found {len(env_vars)} unique environment variable names. Saved to {output_filename}")

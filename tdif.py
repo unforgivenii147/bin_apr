@@ -4,7 +4,6 @@ import difflib
 import sys
 from pathlib import Path
 from typing import ClassVar
-
 from loguru import logger
 from textual.app import App, ComposeResult
 from textual.color import Color
@@ -243,7 +242,6 @@ class DiffViewerApp(App):
                 panels.first().focus()
 
     def action_search(self) -> None:
-
         def on_input(submitted_text: str) -> None:
             if submitted_text:
                 self.search_term = submitted_text

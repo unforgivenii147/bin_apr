@@ -13,7 +13,6 @@ from contextlib import suppress
 from importlib.metadata import PackageNotFoundError,version
 with suppress(PackageNotFoundError):
     __version__ = version(__name__)
-
 """
     if not init_file.exists():
         init_file.write_text(init_content, encoding="utf-8")

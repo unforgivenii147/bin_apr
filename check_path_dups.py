@@ -40,7 +40,6 @@ def main():
                 logger.warning(f"Permission denied: {f}")
             except Exception as e:
                 logger.error(f"Error processing {f}: {e}")
-
     duplicates = {k: v for k, v in executables.items() if len(v) > 1}
     if not duplicates:
         logger.info("No duplicates found.")

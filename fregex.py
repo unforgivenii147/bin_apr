@@ -3,7 +3,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 from tqdm import tqdm
 

@@ -4,15 +4,14 @@ from collections import deque
 from collections.abc import Callable, Iterable
 from contextlib import suppress as _suppress
 from multiprocessing import get_context
-from os import scandir as _scandir
+from os import scandir as os_scandir
 from pathlib import Path
 from subprocess import run as subprocess_run
+from subprocess import DEVNULL as subprocess_DEVNULL
 from subprocess import TimeoutExpired as subprocess_TimeoutExpired
 from tempfile import NamedTemporaryFile as _tmpfile
 from time import sleep as _sleep
 from typing import Any
-
-from termcolor import cprint
 
 CHUNK_SIZE = 32768
 MAX_WORKERS: int = 4
@@ -43,7 +42,7 @@ def get_files(
         while stack:
             current = stack.pop()
             try:
-                with _scandir(current) as it:
+                with os_scandir(current) as it:
                     for entry in it:
                         name = entry.name
                         if entry.is_symlink():
@@ -71,7 +70,7 @@ def gsz(path: str | Path) -> int:
         except OSError:
             return 0
     elif path.is_dir():
-        for entry in _scandir(path):
+        for entry in os_scandir(path):
             try:
                 if entry.is_file():
                     total_size += entry.stat().st_size
@@ -107,7 +106,7 @@ def runcmd(
         raise ValueError(msg)
     try:
         if run_silently:
-            result = subprocess_run(cmd, stdout=_DEVNULL, stderr=_DEVNULL, timeout=timeout)
+            result = subprocess_run(cmd, stdout=subprocess_DEVNULL, stderr=subprocess_DEVNULL, timeout=timeout)
             return result.returncode, "", ""
         result = subprocess_run(
             cmd,

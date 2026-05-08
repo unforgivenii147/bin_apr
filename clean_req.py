@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 _VERSION_OP_RE = re.compile(r"\s*(?:===|==|!=|>=|<=|~=|>|<)\s*")

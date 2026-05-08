@@ -3,7 +3,6 @@ import ast
 import multiprocessing as mp
 import os
 from pathlib import Path
-
 from loguru import logger
 
 OUTPUT_DIR = "output"

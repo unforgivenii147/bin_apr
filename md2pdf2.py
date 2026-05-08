@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 import sys
-
 from markdown2 import markdown_path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter

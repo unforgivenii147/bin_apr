@@ -3,7 +3,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 
 TAB_PATTERN = re.compile(r"\t")

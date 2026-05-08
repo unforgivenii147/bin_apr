@@ -3,7 +3,6 @@ import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-
 import requests
 from dh import runcmd
 from loguru import logger
@@ -14,12 +13,6 @@ GITHUB_TOKEN = None
 
 
 def parse_repo_url(url_or_path):
-    """
-    Parses a GitHub repo URL or 'user/repo' path into (user, repo).
-
-    Returns:
-        tuple: (username, repository_name) or (None, None) if invalid.
-    """
     if "/" in url_or_path and not url_or_path.startswith("http"):
         parts = url_or_path.strip().split("/")
         if len(parts) == 2 and parts[0] and parts[1]:
@@ -37,12 +30,6 @@ def parse_repo_url(url_or_path):
 
 
 def get_repo_size_mb(user, repo):
-    """
-    Fetches repository size in MB using the GitHub API.
-
-    Returns:
-        float: Size in MB, or None if an error occurs.
-    """
     api_endpoint = f"{GITHUB_API_URL}/{user}/{repo}"
     headers = {"Accept": "application/vnd.github.v3+json"}
     if GITHUB_TOKEN:
@@ -75,12 +62,6 @@ def get_repo_size_mb(user, repo):
 
 
 def clone_repo_shallow(user, repo):
-    """
-    Clones the repository shallowly (depth 1) into the current directory.
-
-    Returns:
-        bool: True if cloning was successful, False otherwise.
-    """
     repo_name = f"{user}/{repo}"
     repo_url = f"https://github.com/{repo_name}.git"
     clone_path = os.path.join(Path.cwd(), repo)
@@ -112,7 +93,6 @@ def process_repo(url):
         sys.exit(1)
     logger.info(f"🔍 Analyzing repository: {user}/{repo}")
     repo_size = get_repo_size_mb(user, repo)
-
     if repo_size is not None and repo_size <= 100:
         logger.info(f"ℹ️ size: {repo_size} MB")
         if clone_repo_shallow(user, repo):

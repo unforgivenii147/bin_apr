@@ -5,7 +5,6 @@ import re
 import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-
 from loguru import logger
 
 COMMENT_AND_DOCSTRING_REGEX = re.compile(

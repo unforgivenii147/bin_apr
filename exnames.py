@@ -2,33 +2,24 @@
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 def load_names(names_filepath):
-    """Loads names from a specified text file."""
     names = set()
     try:
         with Path(names_filepath).open("r", encoding="utf-8") as f:
             for line in f:
                 name = line.strip()
                 if name:
-                    # Create regex pattern: First initial uppercase, space, First letter of last name uppercase
                     parts = name.split()
                     if len(parts) >= 2:
                         first_initial_pattern = re.escape(parts[0][0].upper())
                         last_initial_pattern = re.escape(parts[-1][0].upper())
-                        # Construct a flexible pattern that allows for middle names/initials
-                        # It looks for the first initial, then any characters (non-greedy),
-                        # then potentially more names (non-greedy), then ensures the pattern
-                        # includes the last name starting with the uppercase initial.
-                        # This is a simplified pattern; real-world name matching is complex.
                         pattern_str = rf"{first_initial_pattern}[\w\s\-']+\s+{last_initial_pattern}[\w\s\-']+"
                         names.add((name, re.compile(pattern_str, re.IGNORECASE)))
-                    else:  # Handle single names if necessary, though example implies first/last
+                    else:
                         names.add((name, re.compile(re.escape(name[0].upper()) + r"[\w\s\-']+", re.IGNORECASE)))
-
     except FileNotFoundError:
         logger.info(f"Error: Names file not found at {names_filepath}")
         sys.exit(1)
@@ -39,17 +30,11 @@ def load_names(names_filepath):
 
 
 def find_names_in_files(names_db_path="names.txt"):
-    """
-    Recursively finds names in text files within the current directory
-    using a provided names database.
-    """
     names_to_find = load_names(names_db_path)
     if not names_to_find:
         return
-
     found_names = {}
     current_dir = Path.cwd()
-
     for filepath in current_dir.rglob("*"):
         if filepath.is_file() and filepath.suffix in {
             ".txt",
@@ -63,18 +48,14 @@ def find_names_in_files(names_db_path="names.txt"):
             ".xml",
             ".yml",
             ".yaml",
-        }:  # Add or remove extensions as needed
+        }:
             try:
                 with Path(filepath).open("r", encoding="utf-8", errors="ignore") as f:
                     content = f.read()
                     for original_name, pattern in names_to_find:
-                        # Use finditer to find all occurrences
                         for match in pattern.finditer(content):
                             matched_span = match.span()
                             matched_text = match.group(0)
-
-                            # Basic check: does the matched text roughly correspond to the original name's initials?
-                            # This is a heuristic to reduce false positives.
                             match_parts = matched_text.strip().split()
                             if len(match_parts) >= 2 and (
                                 match_parts[0][0].upper() == original_name.split()[0][0].upper()
@@ -82,18 +63,14 @@ def find_names_in_files(names_db_path="names.txt"):
                             ):
                                 if original_name not in found_names:
                                     found_names[original_name] = []
-                                # Store filename and match details if not already recorded for this name
                                 entry = {"file": str(filepath.relative_to(current_dir)), "match": matched_text}
                                 if entry not in found_names[original_name]:
                                     found_names[original_name].append(entry)
-
             except Exception as e:
                 logger.info(f"Could not read file {filepath}: {e}")
-
     if not found_names:
         logger.info("No target names found in the specified files.")
         return
-
     logger.info(f"Found names (from {names_db_path}):")
     for name, occurrences in found_names.items():
         logger.info(f"\n- {name}:")
@@ -102,10 +79,7 @@ def find_names_in_files(names_db_path="names.txt"):
 
 
 if __name__ == "__main__":
-    # Default to names.txt in the current directory.
-    # You can modify this or pass a path via command line argument if needed.
     names_database_path = "/sdcard/names.txt"
     if len(sys.argv) > 1:
         names_database_path = sys.argv[1]
-
     find_names_in_files(names_database_path)

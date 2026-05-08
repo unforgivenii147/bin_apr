@@ -2,7 +2,6 @@
 import argparse
 from os import scandir as _scandir
 from pathlib import Path
-
 from autoflake import fix_code as fix_with_autoflake
 from autopep8 import fix_code as fix_with_autopep
 from black import Mode as _Mode
@@ -23,7 +22,7 @@ def is_binary(path: Path | str) -> bool:
         with path.open("rb") as f:
             chunk = f.read(CHUNK_SIZE)
         if not chunk:
-            return False  # empty file is text
+            return False
         if b"\x00" in chunk:
             return True
         text_chars = bytearray(range(32, 127)) + b"\n\r\t\b"

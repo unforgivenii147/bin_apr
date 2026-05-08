@@ -4,9 +4,7 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from termcolor import cprint
-
 from dh import fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
@@ -17,7 +15,6 @@ def process_file(fp) -> None:
     src = fp.read_text(encoding="utf-8")
     pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
-
     if out != src:
         code = out.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
         fp.write_text(code, encoding="utf-8")

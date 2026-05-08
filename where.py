@@ -1,36 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-watch_copy.py
-Watches a folder for file create/modify/delete events and prints changes.
-Optionally copies changed/created files to a destination folder.
-
-Requirements:
-  pip install watchdog
-
-Notes:
-- Only creation/modification are copied (deletes are only printed).
-- Exclude / extensions filtering is applied to the event file path.
-- Copy preserves relative paths under the watched folder.
-"""
-
 from __future__ import annotations
-
 import sys
 import time
 import argparse
 import shutil
 import traceback
 from pathlib import Path
-
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
-# ---------- helpers ----------
-
-
 def parse_csv_exts(s: str | None) -> set[str] | None:
-    """Parse comma-separated extensions like: 'svg,png,txt' -> {'.svg','.png','.txt'}."""
     if not s:
         return None
     parts = [p.strip().lower() for p in s.split(",") if p.strip()]
@@ -69,10 +49,6 @@ def human_size(nbytes: int) -> str:
 
 
 def safe_copy_file(src: Path, dst_root: Path, rel_path: Path, errors: list[str]) -> None:
-    """
-    Copy src -> dst_root/rel_path, creating parent dirs.
-    Logs any errors into `errors`.
-    """
     try:
         dst_path = dst_root / rel_path
         dst_path.parent.mkdir(parents=True, exist_ok=True)
@@ -80,9 +56,6 @@ def safe_copy_file(src: Path, dst_root: Path, rel_path: Path, errors: list[str])
     except Exception as e:
         msg = f"[copy-error] {src} -> {dst_root / rel_path}\n{e}\n{traceback.format_exc()}"
         errors.append(msg)
-
-
-# ---------- watcher ----------
 
 
 class ChangeHandler(FileSystemEventHandler):
@@ -103,31 +76,23 @@ class ChangeHandler(FileSystemEventHandler):
         self.allowed_exts = allowed_exts
         self.excluded_exts = excluded_exts
         self.interval_sec = interval_sec
-
         self._errors: list[str] = []
-
-        # Debounce: collect recent paths and flush every interval
-        self._pending: dict[Path, str] = {}  # src_path -> reason
+        self._pending: dict[Path, str] = {}
         self._last_flush = time.time()
 
     def _rel(self, p: Path) -> Path:
         try:
             return p.relative_to(self.root_dir)
         except ValueError:
-            # Shouldn't happen; fallback:
             return Path(p.name)
 
     def _queue(self, src_path: Path, reason: str) -> None:
-        # Only queue regular files
         if src_path.exists() and not src_path.is_file():
             return
-
-        # Filter by extensions (creation/change only)
         if self.allowed_exts is not None and not file_matches_extensions(src_path, self.allowed_exts):
             return
         if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
             return
-
         self._pending[src_path] = reason
         self._maybe_flush()
 
@@ -140,12 +105,8 @@ class ChangeHandler(FileSystemEventHandler):
         if not self._pending:
             self._last_flush = time.time()
             return
-
-        # Print + copy in a batch
         for src_path, reason in list(self._pending.items()):
             rel_path = self._rel(src_path)
-
-            # For deletes, size is unknown; but we only copy on create/modify.
             if src_path.exists() and src_path.is_file():
                 try:
                     sz = src_path.stat().st_size
@@ -154,9 +115,7 @@ class ChangeHandler(FileSystemEventHandler):
                     size_str = "unknown-size"
             else:
                 size_str = "deleted"
-
             print(f"-  /{rel_path.as_posix()} | {reason} | {size_str}")
-
             if self.copy_enabled and src_path.exists() and src_path.is_file():
                 safe_copy_file(
                     src=src_path,
@@ -164,11 +123,8 @@ class ChangeHandler(FileSystemEventHandler):
                     rel_path=rel_path,
                     errors=self._errors,
                 )
-
         self._pending.clear()
         self._last_flush = time.time()
-
-        # Print copy errors (if any)
         if self._errors:
             print("\n[errors] copy operation errors:")
             for msg in self._errors:
@@ -176,7 +132,6 @@ class ChangeHandler(FileSystemEventHandler):
             print("-" * 80)
             self._errors.clear()
 
-    # watchdog events
     def on_created(self, event):
         if event.is_directory:
             return
@@ -191,16 +146,10 @@ class ChangeHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         src_path = Path(event.src_path)
-        # Still print delete events, but don't copy them.
-        # Use flush-style by queuing only for printing.
-        # (We bypass extension filters for delete printing? safer to respect filters.)
-        # Respect filters for consistency:
         if self.allowed_exts is not None and not file_matches_extensions(src_path, self.allowed_exts):
             return
         if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
             return
-
-        # queue it; copy logic will skip because file doesn't exist
         self._queue(src_path, "delete")
 
 
@@ -250,23 +199,16 @@ def build_parser() -> argparse.ArgumentParser:
 def main():
     parser = build_parser()
     args = parser.parse_args()
-
     root_dir = Path(args.folder).expanduser().resolve()
     dest_dir = Path(args.dest).expanduser().resolve()
-
     if not root_dir.is_dir():
         print(f"Error: folder does not exist or is not a directory: {root_dir}")
         sys.exit(2)
-
     allowed_exts = parse_csv_exts(args.extensions)
     excluded_exts = parse_csv_exts(args.exclude)
-
-    # Interval sanity
     interval_sec = max(0.1, float(args.interval))
-
     if args.copy:
         dest_dir.mkdir(parents=True, exist_ok=True)
-
     handler = ChangeHandler(
         root_dir=root_dir,
         copy_enabled=bool(args.copy),
@@ -275,23 +217,19 @@ def main():
         excluded_exts=excluded_exts,
         interval_sec=interval_sec,
     )
-
     observer = Observer()
     observer.schedule(handler, str(root_dir), recursive=True)
     observer.start()
-
     print(f"Watching: {root_dir}")
     if args.copy:
         print(f"Copy enabled: destination = {dest_dir}")
     else:
         print("Copy disabled (printing only).")
-
     if allowed_exts is not None:
         print(f"Allowed extensions: {sorted(allowed_exts)}")
     if excluded_exts is not None:
         print(f"Excluded extensions: {sorted(excluded_exts)}")
     print(f"Interval: {interval_sec} sec (batch flush)\n")
-
     try:
         while True:
             time.sleep(interval_sec)
@@ -299,7 +237,6 @@ def main():
     except KeyboardInterrupt:
         print("\nStopping...")
     finally:
-        # flush pending events before shutdown
         try:
             handler.flush()
         except Exception:

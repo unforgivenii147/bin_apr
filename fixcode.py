@@ -2,7 +2,6 @@
 import ast
 import re
 from pathlib import Path
-
 from loguru import logger
 
 INDENT = " " * 4

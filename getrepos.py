@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-
 import requests
 
 
@@ -26,12 +25,9 @@ def get_repos(username: str) -> None:
 def main() -> None:
     user = sys.argv[1]
     repos = get_repos(user)
-
     print(f"Repositories of '{username}':")
-
     for repo in repos:
         print(f"- {repo['name']}")
-
     with Path(f"{username}.txt").open("w", encoding="utf-8") as f:
         for repo in repos:
             f.write(f"- {repo['name']}")

@@ -2,11 +2,9 @@
 import mmap
 import sys
 from pathlib import Path
-
 import brotlicffi
 from loguru import logger
 from termcolor import cprint
-
 from dh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768

@@ -6,11 +6,7 @@ from pathlib import Path
 from dh import is_binary
 
 env_vars = set()
-# Regex to find lines that look like environment variable assignments
-# It captures the variable name (uppercase letters, numbers, and underscores)
 env_var_pattern = re.compile(r"^([A-Z_0-9]+)=")
-
-# Use builtins.open to ensure we're using the standard open function
 for filepath in Path(".").rglob("*"):
     if ".git" in path.parts:
         continue
@@ -23,8 +19,6 @@ for filepath in Path(".").rglob("*"):
                         env_vars.add(match.group(1))
         except Exception as e:
             print(f"Could not process file {filepath}: {e}")
-
-# Save the unique environment variable names to a file
 output_filename = "env_vars.txt"
 try:
     with builtins.open(output_filename, "w", encoding="utf-8") as f:

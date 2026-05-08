@@ -5,7 +5,6 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import unquote, urlparse
-
 import requests
 from loguru import logger
 from tqdm import tqdm
@@ -55,7 +54,6 @@ def sanitize_filename(name):
 def extract_filename(url):
     """
     Extract filename from URL, handling query params and paths.
-
     Examples:
         - 'font.woff2?v=1.2' → 'font.woff2'
         - 'style.min.css?ver=3.2' → 'style.min.css'

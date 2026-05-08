@@ -2,7 +2,6 @@
 import subprocess
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"

@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
-
 from loguru import logger
 
 if __name__ == "__main__":

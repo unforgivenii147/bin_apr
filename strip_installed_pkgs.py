@@ -2,7 +2,6 @@
 import sys
 from importlib.metadata import distributions
 from pathlib import Path
-
 from dh import STDLIB, get_ipkgs
 
 
@@ -19,7 +18,6 @@ def strip_installed_from_requirements(fname):
     new_lines = [line for line in lines if line not in installed]
     new_lines = [line for line in new_lines if line not in STDLIB]
     Path(fname).write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-
     removed = len(lines) - len(new_lines)
     print(f"Removed {removed} packages")
 

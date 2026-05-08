@@ -3,7 +3,6 @@ import base64
 import mimetypes
 import re
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -12,8 +11,8 @@ cwd = Path.cwd()
 INPUT_DIR = cwd
 OUTPUT_DIR = cwd / "output"
 ASSETS_DIR = cwd / "output" / "assets"
-DOWNLOAD_REMOTE = False  # set False to skip external URLs (CDN, https://...)
-TIMEOUT = 10  # request timeout for external asset download
+DOWNLOAD_REMOTE = False
+TIMEOUT = 10
 ASSETS_DIR.mkdir(parents=True, exist_ok=True)
 
 

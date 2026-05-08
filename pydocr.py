@@ -8,7 +8,6 @@ from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 from textwrap import dedent
-
 from dh import get_files, unique_path
 from loguru import logger
 
@@ -139,7 +138,6 @@ def main():
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
     logger.info(f"processing {len(files)} files")
-
     with get_context("spawn").Pool(4) as pool:
         pending = deque()
         for f in files:

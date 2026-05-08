@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
-
 from loguru import logger
 from pdf2image import convert_from_path
 
@@ -15,10 +14,10 @@ def convert_pdf_to_jpg(pdf_path: Path, output_folder: Path):
         pdf_output_dir.mkdir(parents=True, exist_ok=True)
         images = convert_from_path(
             pdf_path=pdf_path,
-            dpi=300,  # You can adjust DPI for quality (higher DPI = better quality, larger files)
+            dpi=300,
             output_folder=pdf_output_dir,
             fmt="jpeg",
-            thread_count=4,  # Use multiple threads for faster conversion
+            thread_count=4,
             poppler_path=POPPLER_PATH,
         )
         converted_files = []

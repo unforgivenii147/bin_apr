@@ -40,7 +40,6 @@ def finglish(text):
         "ن": "n",
         "ه": "h",
     }
-
     words = text.split(" ")
     processed_words = []
     for word in words:
@@ -128,7 +127,6 @@ def rename_html_files(cwd: Path):
         slug = slugify(title)
         if not slug:
             continue
-
         print(slug)
         name = finglish(slug)
         print(name)

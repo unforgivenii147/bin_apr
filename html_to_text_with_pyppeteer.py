@@ -2,7 +2,6 @@
 import asyncio
 import sys
 from pathlib import Path
-
 from loguru import logger
 from pyppeteer import launch
 

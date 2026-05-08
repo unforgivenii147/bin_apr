@@ -9,15 +9,11 @@ import matplotlib.pyplot as plt
 
 
 def scan_directory(path="."):
-    """
-    Scans the given directory to gather information about files and subdirectories.
-    """
     total_size = 0
     file_count = 0
     folder_count = 0
     extensions = set()
     size_by_ext = defaultdict(int)
-
     for root, dirs, files in os.walk(path):
         folder_count += len(dirs)
         for filename in files:
@@ -42,7 +38,6 @@ def scan_directory(path="."):
 
 
 def format_size(size_in_bytes):
-    """Formats size in bytes to a more human-readable format."""
     if size_in_bytes < 1024:
         return f"{size_in_bytes} bytes"
     elif size_in_bytes < 1024**2:
@@ -54,9 +49,6 @@ def format_size(size_in_bytes):
 
 
 def write_summary(filename: Path | None = None) -> None:
-    """
-    Writes a summary of directory information to a file or to stderr.
-    """
     (
         total_size,
         file_count,
@@ -64,8 +56,6 @@ def write_summary(filename: Path | None = None) -> None:
         extensions,
         size_by_ext,
     ) = scan_directory()
-
-    # Prepare the summary string
     summary_lines = []
     summary_lines.append(f"Total size: {format_size(total_size)}\n")
     summary_lines.append("File extensions:\n")
@@ -75,16 +65,12 @@ def write_summary(filename: Path | None = None) -> None:
     summary_lines.append(f"Number of files: {file_count}\n")
     summary_lines.append(f"Number of folders: {folder_count}\n")
     summary_lines.append("Size by extension:\n")
-
     sorted_size_by_ext = sorted(size_by_ext.items(), key=operator.itemgetter(1), reverse=True)
     for ext, size in sorted_size_by_ext:
         summary_lines.append(f"  {ext}: {format_size(size)}\n")
-        # Also print to stderr if not saving to file
         if filename is None or filename == sys.stderr:
             print(f"  {ext}: {format_size(size)}\n", file=sys.stderr)
-
     summary_string = "".join(summary_lines)
-
     if filename and filename != sys.stderr:
         try:
             with filename.open("w", encoding="utf-8") as f:
@@ -93,39 +79,27 @@ def write_summary(filename: Path | None = None) -> None:
         except IOError as e:
             print(f"Error saving summary to {filename}: {e}", file=sys.stderr)
     elif filename is None:
-        # If no filename provided and not defaulting to stderr, just print to stdout
         print(summary_string)
-    # If filename is sys.stderr, it's already printed above
 
 
 def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> None:
-    """
-    Creates and optionally saves a Matplotlib bar chart of file sizes by extension.
-    """
     (_, _, _, _, size_by_ext) = scan_directory()
-
-    # Filter out entries with zero size and sort by size in descending order
     sorted_items = sorted(
         [(ext, size) for ext, size in size_by_ext.items() if size > 0], key=operator.itemgetter(1), reverse=True
     )
-
     if not sorted_items:
         print("No data to plot.", file=sys.stderr)
         return
-
     extensions, sizes = zip(*sorted_items)
-
     reshaped_extensions = extensions
     plt.title("Size by File Extension")
-    plt.xticks(rotation=45, ha="right")  # Rotate labels for better readability
+    plt.xticks(rotation=45, ha="right")
     plt.gca().set_xticklabels(reshaped_extensions)
-
     plt.figure(figsize=(12, 7))
     plt.bar(reshaped_extensions, sizes, color="skyblue")
     plt.xlabel("File Extension")
     plt.ylabel("Size (bytes)")
     plt.tight_layout()
-
     try:
         plt.savefig(output_filename)
         print(f"Bar chart saved to {output_filename}")
@@ -160,15 +134,10 @@ if __name__ == "__main__":
         default=".",
         help="The directory to scan (default: current directory).",
     )
-
     args = parser.parse_args()
-
     if args.save:
-        # If -s is used, save to .dirinfo file
         write_summary(Path(".dirinfo"))
     elif args.image:
-        # If -i is used, create and save the chart
         create_bar_chart(args.type, args.image)
     else:
-        # Default behavior: print summary to stdout
-        write_summary()  # Writes to stdout when filename is None
+        write_summary()

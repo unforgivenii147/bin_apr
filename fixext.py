@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import MIME2EXT, cprint, unique_path
 
 
@@ -119,7 +118,6 @@ def check_files(directory):
                     if new_path.exists():
                         new_path = unique_path(new_path)
                     file_path.rename(new_path)
-                    #                    new_path = safe_rename(file_path, new_path)
                     mismatched_files.append(
                         (
                             file_path,

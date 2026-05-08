@@ -9,23 +9,15 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python check_dups.py <const_file.py>")
         sys.exit(1)
-
     src_path = Path(sys.argv[1])
     if not src_path.exists():
         print(f"File not found: {src_path}")
         sys.exit(1)
-
     dup_path = src_path.parent / "dup_const.py"
-
-    # Support lowercase, uppercase, underscores and digits
     assign_re = re.compile(r"^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=")
-
     lines = src_path.read_text().splitlines(keepends=True)
-
-    first_seen = {}  # {name: line_index}
-    duplicates = []  # list of tuples (line_index, line_text)
-
-    # Scan declarations
+    first_seen = {}
+    duplicates = []
     for i, line in enumerate(lines):
         match = assign_re.match(line)
         if match:
@@ -34,23 +26,15 @@ def main():
                 first_seen[name] = i
             else:
                 duplicates.append((i, line))
-
     if not duplicates:
         print("No duplicates found.")
         return
-
-    # Remove duplicate lines from original file
     modified_lines = [line for idx, line in enumerate(lines) if idx not in {d[0] for d in duplicates}]
-
-    # Write updated const file
     src_path.write_text("".join(modified_lines))
-
-    # Write duplicates to dups.py
     with dup_path.open("a") as f:
         f.write(f"\n# Duplicate declarations from {src_path.name}\n")
         for _, dup_line in duplicates:
             f.write(dup_line)
-
     print(f"Kept the first declaration of each constant.")
     print(f"Moved {len(duplicates)} duplicate declarations to {dup_path}")
     print(f"Updated {src_path} in place.")

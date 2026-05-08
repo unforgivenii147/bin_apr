@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 import sys
-
 import cv2
 from loguru import logger
 
@@ -48,7 +47,6 @@ def cut_video(input_file, start_time_str, duration_str):
     frames_written = 0
     total = end_frame - start_frame
     logger.info(f"start_frame:{start_frame}/end_frame: {end_frame} -> {total} frames to process")
-
     for _i in range(start_frame, end_frame):
         ret, frame = cap.read()
         if not ret:

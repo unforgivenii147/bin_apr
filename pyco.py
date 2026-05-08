@@ -25,7 +25,6 @@ def clean_pycache(start_dir: Path = Path.cwd()):
             sz += gsz(path)
             removed += 1
             shutil.rmtree(str(path))
-
     if removed:
         print(f"   • Total size freed: {fsz(sz)}")
         print(f"   • dirs removed: {removed}")

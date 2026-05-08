@@ -4,7 +4,6 @@ import importlib.metadata
 import importlib.util
 import sys
 from pathlib import Path
-
 from dh import is_python_file
 from loguru import logger
 

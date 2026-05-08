@@ -1,24 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/env python
-"""A command line tool for extracting text and images from PDF and
-output it to plain text, html, xml or tags.
-"""
-
 import argparse
 import logging
 from pathlib import Path
 import sys
 from collections.abc import Container, Iterable
 from typing import TYPE_CHECKING, Any
-
 import pdfminer.high_level
 from pdfminer.layout import LAParams
 from pdfminer.pdfexceptions import PDFValueError
 
 if TYPE_CHECKING:
     from pdfminer.utils import AnyIO
-
 logging.basicConfig()
-
 OUTPUT_TYPES = ((".htm", "html"), (".html", "html"), (".xml", "xml"), (".tag", "tag"))
 
 
@@ -53,12 +46,10 @@ def extract_text(
     if not files:
         msg = "Must provide files to work upon!"
         raise PDFValueError(msg)
-
     if output_type == "text" and outfile != "-":
         for override, alttype in OUTPUT_TYPES:
             if outfile.endswith(override):
                 output_type = alttype
-
     if outfile == "-":
         outfp: AnyIO = sys.stdout
         if sys.stdout.encoding is not None:
@@ -67,7 +58,6 @@ def extract_text(
             with Path(fname).open("rb") as fp:
                 pdfminer.high_level.extract_text_to_fp(fp, **locals())
     else:
-        # Use context manager for file output, ensuring proper cleanup
         with Path(outfile).open("wb") as outfp:
             for fname in files:
                 with Path(fname).open("rb") as fp:
@@ -83,7 +73,6 @@ def create_parser() -> argparse.ArgumentParser:
         nargs="+",
         help="One or more paths to PDF files.",
     )
-
     parser.add_argument(
         "--version",
         "-v",
@@ -104,7 +93,6 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="If caching or resources, such as fonts, should be disabled.",
     )
-
     parse_params = parser.add_argument_group(
         "Parser",
         description="Used during PDF parsing",
@@ -145,8 +133,7 @@ def create_parser() -> argparse.ArgumentParser:
         type=int,
         help="The number of degrees to rotate the PDF before other types of processing.",
     )
-
-    la_params = LAParams()  # will be used for defaults
+    la_params = LAParams()
     la_param_group = parser.add_argument_group(
         "Layout analysis",
         description="Used during layout analysis.",
@@ -221,7 +208,6 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="If layout analysis should be performed on text in figures.",
     )
-
     output_params = parser.add_argument_group(
         "Output",
         description="Used during output generation.",
@@ -280,14 +266,11 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Remove control statement from text. Only used when output_type is xml.",
     )
-
     return parser
 
 
 def parse_args(args: list[str] | None) -> argparse.Namespace:
     parsed_args = create_parser().parse_args(args=args)
-
-    # Propagate parsed layout parameters to LAParams object
     if parsed_args.no_laparams:
         parsed_args.laparams = None
     else:
@@ -300,18 +283,14 @@ def parse_args(args: list[str] | None) -> argparse.Namespace:
             detect_vertical=parsed_args.detect_vertical,
             all_texts=parsed_args.all_texts,
         )
-
     if parsed_args.page_numbers:
         parsed_args.page_numbers = {x - 1 for x in parsed_args.page_numbers}
-
     if parsed_args.pagenos:
         parsed_args.page_numbers = {int(x) - 1 for x in parsed_args.pagenos.split(",")}
-
     if parsed_args.output_type == "text" and parsed_args.outfile != "-":
         for override, alttype in OUTPUT_TYPES:
             if parsed_args.outfile.endswith(override):
                 parsed_args.output_type = alttype
-
     return parsed_args
 
 

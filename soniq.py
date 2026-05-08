@@ -12,7 +12,6 @@ def is_binary(path: Path, blocksize=4096):
         sample = f.read(blocksize)
     if b"\x00" in sample:
         return True
-    # measure textualness a bit
     text_chars = bytes(range(32, 127)) + b"\n\r\t\b"
     nontext = sum(c not in text_chars for c in sample)
     return nontext / max(len(sample), 1) > 0.30
@@ -36,12 +35,10 @@ def read_lines(path: Path):
 
 
 def sort_uniq(path: Path, show_diff: bool = False):
-    """Deduplicate and sort lines; optionally show removed duplicates."""
     lines = read_lines(path)
     original_count = len(lines)
     if not original_count:
         return 0
-
     if original_count > 1000:
         num_workers = max(1, cpu_count() - 1)
         chunk_size = len(lines) // num_workers + 1
@@ -51,13 +48,10 @@ def sort_uniq(path: Path, show_diff: bool = False):
         all_lines = [line for group in processed for line in group]
     else:
         all_lines = [p.strip() for p in lines if p.strip()]
-
     unique_sorted = sorted(set(all_lines))
     diff_lines = set(all_lines) - set(unique_sorted)
     lines_removed = original_count - len(unique_sorted)
-
     path.write_text("\n".join(unique_sorted), encoding="utf-8")
-
     if show_diff and diff_lines:
         print("\nDuplicate lines removed:")
         for line in list(sorted(diff_lines))[:50]:
@@ -71,22 +65,18 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python sort_uniq_mp.py <filename> [--diff]")
         sys.exit(1)
-
     show_diff = True
     filename_arg = next((a for a in sys.argv[1:] if not a.startswith("--")), None)
     if not filename_arg:
         print("Error: missing filename argument.")
         sys.exit(1)
-
     path = Path(filename_arg)
     if not path.exists():
         print(f"File not found: {path}")
         sys.exit(1)
-
     if is_binary(path):
         print(f"{path.name} is binary. Skipped.")
         sys.exit(0)
-
     removed = sort_uniq(path, show_diff)
     if removed > 0:
         print(f"\nRemoved {removed} duplicate lines.")

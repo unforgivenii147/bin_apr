@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 major, minor, _, _, _ = sys.version_info
 py_version = f"{major}{minor}"
-
 OLD = {
     "#!/data/data/com.termux/files/usr/bin/env python",
     "#!/data/data/com.termux/files/usr/bin/env python3",

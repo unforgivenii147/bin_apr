@@ -1,31 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-remove_tag.py
-Removes a specific HTML tag (provided via command line) from all .html files
-in the current directory and subdirectories.
-Usage:
-    python remove_tag.py tagname
-Example:
-    python remove_tag.py script
-"""
-
 import os
 from pathlib import Path
 import sys
-
 from bs4 import BeautifulSoup
 from loguru import logger
 
 
 def remove_tag_from_html_file(file_path, tag_name):
-    """Remove all occurrences of tag_name from a given HTML file."""
     try:
         html = Path(file_path).read_text(encoding="utf-8")
         soup = BeautifulSoup(html, "html.parser")
-        # Find and decompose all instances of tag_name
         for tag in soup.find_all(tag_name):
             tag.decompose()
-        # Write back cleaned HTML
         Path(file_path).write_text(str(soup), encoding="utf-8")
         logger.info(f"✅ Removed <{tag_name}> from {file_path}")
     except Exception as e:
@@ -33,7 +19,6 @@ def remove_tag_from_html_file(file_path, tag_name):
 
 
 def process_directory(root_dir, tag_name):
-    """Recursively process all .html files in root_dir."""
     for dirpath, _, filenames in os.walk(root_dir):
         for filename in filenames:
             if filename.lower().endswith(".html"):

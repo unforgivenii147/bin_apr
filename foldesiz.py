@@ -3,7 +3,6 @@ import operator
 import os
 import shutil
 from pathlib import Path
-
 from dh import unique_path, get_files
 from loguru import logger
 
@@ -98,7 +97,6 @@ def main():
     if not files:
         logger.info("No files found.")
         return
-    #    num_folders = calculate_optimal_folders(files)
     num_folders = 4
     folders = create_range_folders(cwd, files, num_folders)
     distribute_files(files, folders, cwd)

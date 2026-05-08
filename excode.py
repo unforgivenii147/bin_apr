@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from loguru import logger
 
 LANG_TO_EXT = {
@@ -35,12 +34,12 @@ LANG_TO_EXT = {
     "powershell": ".ps1",
     "ps1": ".ps1",
     "yaml": ".yaml",
-    "yml": ".yaml",  # .yml is often used, but .yaml is more standard
+    "yml": ".yaml",
     "json": ".json",
     "html": ".html",
     "htm": ".html",
     "css": ".css",
-    "make": "Makefile",  # special case: no extension
+    "make": "Makefile",
     "makefile": "Makefile",
     "dockerfile": "Dockerfile",
     "text": ".txt",

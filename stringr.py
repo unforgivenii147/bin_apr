@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import is_binary
 from pbar import Pbar
-
 from dh import get_files, run_command
 
 cwd = Path.cwd()

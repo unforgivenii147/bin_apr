@@ -1,8 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from time import time
-
+import shutil
+from dh import unique_path
 
 if __name__ == "__main__":
-    rdir = Path(sys.argv[1])
-    print(time.now())
+    src = Path(sys.argv[1]).resolve()
+    cwd = Path.home() / "repos"
+    dst = cwd / src.name
+    if dst.exists():
+        dst = unique_path(dst)
+    shutil.move(str(src), str(dst))
+    print(f"{src.name} --> {dst.name}")

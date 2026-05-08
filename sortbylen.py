@@ -1,16 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-"""
-Sort lines of a file by line length (shortest first).
-Supports large files via mmap (>5 MB).
-Includes benchmarking for multiple approaches.
-"""
-
 import mmap
 import os
 import sys
 from pathlib import Path
 from typing import List
-
 from loguru import logger
 
 MMAP_THRESHOLD = 50 * 1024 * 1024

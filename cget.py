@@ -3,7 +3,6 @@ import contextlib
 import os
 from pathlib import Path
 from io import BytesIO
-
 import pycurl
 from loguru import logger
 

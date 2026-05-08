@@ -5,7 +5,6 @@ from pathlib import Path
 
 
 def send_to_process(txt):
-
     try:
         process = subprocess.Popen(
             ["termux-clipboard-set"],
@@ -63,15 +62,12 @@ def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: 
     else:
         start_index = start_line - 1
         end_index = total_lines if end_line is None else end_line
-
         if not (0 <= start_index <= total_lines):
             start_index = 0
         if not (0 <= end_index <= total_lines):
             end_index = total_lines
-
         if start_index >= end_index:
             start_index, end_index = end_index, start_index
-
         selected_lines = lines[start_index:end_index]
         content = "".join(selected_lines)
     if not content:
@@ -81,7 +77,6 @@ def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: 
 
 
 def main():
-
     if len(sys.argv) < 2 or len(sys.argv) > 5:
         print(f"Usage: {sys.argv[0]} <path> [start_line] [end_line]", file=sys.stderr)
         print("  <path>: Path to the input file.", file=sys.stderr)
@@ -110,7 +105,6 @@ def main():
         except ValueError:
             print("Error: <end_line> must be an integer.", file=sys.stderr)
             sys.exit(1)
-
     if start_line is not None and end_line is None and len(sys.argv) == 3:
         if not path.is_file():
             print(f"Error: File not found at '{path}'", file=sys.stderr)
@@ -127,7 +121,6 @@ def main():
         except OSError as e:
             print(f"Error reading file '{path}' for validation: {e}", file=sys.stderr)
             sys.exit(1)
-
     if not selective:
         copy_lines_to_clipboard(path, start_line, end_line)
     else:

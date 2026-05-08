@@ -19,18 +19,14 @@ def git_pull(repo_path: Path):
 
 def main():
     root = Path.cwd()
-
     for dirpath, dirnames, _filenames in os.walk(root):
         current = Path(dirpath)
-
         # If `.git` folder exists here → repo root found
         if is_git_repo(current):
             git_pull(current)
-
             # Avoid descending into this repo's subdirectories again
             # (prevents duplicate pulls, speeds up traversal)
             dirnames[:] = [d for d in dirnames if d != ".git"]
-
     print("\nDone.")
 
 

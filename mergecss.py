@@ -118,9 +118,9 @@ def main():
     merged = "\n\n".join(chunks)
     merged = deduplicate_rules(merged)
     Path(args.output).write_text(merged, encoding="utf-8")
-    logger.info("Bundle complete.")
-    logger.info("CSS:", args.output)
-    logger.info("Assets:", assets_dir)
+    print("Bundle complete.")
+    print("CSS:", args.output)
+    print("Assets:", assets_dir)
 
 
 if __name__ == "__main__":

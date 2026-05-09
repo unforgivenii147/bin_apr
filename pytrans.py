@@ -82,27 +82,27 @@ def translate_chunk(text, source_lang="auto"):
             translated = translator.translate(text)
             return translated, source_lang
         except Exception as e:
-            logger.info(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
+            print(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
             time.sleep(1 + attempt)
     msg = "Failed to translate chunk after 3 attempts"
     raise Exception(msg)
 
 
 def translate_file(input_file, source_lang="auto"):
-    logger.info(f"[INFO] Reading file: {input_file}")
+    print(f"[INFO] Reading file: {input_file}")
     content = load_file(input_file)
     content_length = len(content)
-    logger.info(f"[INFO] File size: {content_length} characters")
+    print(f"[INFO] File size: {content_length} characters")
     if content_length <= MAX_CHARS:
-        logger.info(f"[INFO] Content fits in single request ({content_length} chars)")
-        logger.info("[INFO] Translating...")
+        print(f"[INFO] Content fits in single request ({content_length} chars)")
+        print("[INFO] Translating...")
         translated, detected_lang = translate_chunk(content, source_lang)
-        logger.info(f"[INFO] Detected language: {detected_lang}")
+        print(f"[INFO] Detected language: {detected_lang}")
         return translated
     chunks = chunk_text(content, MAX_CHARS)
     total_chunks = len(chunks)
-    logger.info(f"[INFO] Content split into {total_chunks} chunks")
-    logger.info(f"[INFO] Chunk sizes: {[len(c) for c in chunks]}")
+    print(f"[INFO] Content split into {total_chunks} chunks")
+    print(f"[INFO] Chunk sizes: {[len(c) for c in chunks]}")
     translated_chunks = []
     detected_lang = None
     pbar = tqdm(
@@ -112,7 +112,7 @@ def translate_file(input_file, source_lang="auto"):
     )
     try:
         for i, chunk in enumerate(chunks):
-            logger.info(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
+            print(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
             try:
                 (
                     translated_chunk,
@@ -121,48 +121,48 @@ def translate_file(input_file, source_lang="auto"):
                 translated_chunks.append(translated_chunk)
                 pbar.update(1)
             except Exception as e:
-                logger.info(f"[ERROR] Failed to translate chunk {i + 1}: {e}")
+                print(f"[ERROR] Failed to translate chunk {i + 1}: {e}")
                 pbar.update(1)
                 translated_chunks.append(chunk)
     finally:
         pbar.close()
     result = "".join(translated_chunks)
-    logger.info(f"\n[INFO] Detected language: {detected_lang}")
+    print(f"\n[INFO] Detected language: {detected_lang}")
     return result
 
 
 def main():
     if len(sys.argv) < 2:
-        logger.info("Usage:  python translate_file.py <input_file> [source_language]")
-        logger.info("\nExamples:")
-        logger.info("  python translate_file.py document.txt")
-        logger.info("  python translate_file.py document. fa")
-        logger.info("  python translate_file.py document.txt fa")
-        logger.info("\nSupported languages:  auto, en, fa, fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")
+        print("Usage:  python translate_file.py <input_file> [source_language]")
+        print("\nExamples:")
+        print("  python translate_file.py document.txt")
+        print("  python translate_file.py document. fa")
+        print("  python translate_file.py document.txt fa")
+        print("\nSupported languages:  auto, en, fa, fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")
         sys.exit(1)
     input_file = sys.argv[1]
     source_lang = sys.argv[2] if len(sys.argv) > 2 else "auto"
     if not Path(input_file).exists():
-        logger.info(f"[ERROR] File not found: {input_file}")
+        print(f"[ERROR] File not found: {input_file}")
         sys.exit(1)
     output_file = get_output_filename(input_file)
     if Path(output_file).exists():
-        logger.info(f"[INFO] Output file already exists: {output_file}")
-        logger.info(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
+        print(f"[INFO] Output file already exists: {output_file}")
+        print(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
         sys.exit(0)
-    logger.info(f"[INFO] Input:   {input_file}")
-    logger.info(f"[INFO] Output: {output_file}")
-    logger.info(f"[INFO] Source language: {source_lang}")
-    logger.info()
+    print(f"[INFO] Input:   {input_file}")
+    print(f"[INFO] Output: {output_file}")
+    print(f"[INFO] Source language: {source_lang}")
+    print()
     try:
         translated_content = translate_file(input_file, source_lang)
-        logger.info(f"\n[INFO] Saving result to: {output_file}")
+        print(f"\n[INFO] Saving result to: {output_file}")
         save_file(output_file, translated_content)
-        logger.info("\n[SUCCESS] Translation complete!")
-        logger.info(f"[INFO] Output file: {output_file}")
-        logger.info(f"[INFO] Output size: {len(translated_content)} characters")
+        print("\n[SUCCESS] Translation complete!")
+        print(f"[INFO] Output file: {output_file}")
+        print(f"[INFO] Output size: {len(translated_content)} characters")
     except Exception as e:
-        logger.info(f"\n[ERROR] Translation failed: {e}")
+        print(f"\n[ERROR] Translation failed: {e}")
         sys.exit(1)
 
 

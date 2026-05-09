@@ -19,10 +19,10 @@ def enhanced_shuffle(
         methods = ["basic", "crypto", "shuffle3"]
     input_file_path = Path(input_file)
     file_size = input_file_path.stat().st_size
-    logger.info(f"Read {file_size} bytes from {input_file}")
+    print(f"Read {file_size} bytes from {input_file}")
     lines = []
     if file_size > 5 * 1024 * 1024:
-        logger.info("File size > 5MB, attempting to use mmap.")
+        print("File size > 5MB, attempting to use mmap.")
         try:
             with Path(input_file).open("r+b") as f:
                 mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
@@ -30,16 +30,16 @@ def enhanced_shuffle(
                 lines = decoded_content.splitlines(keepends=True)
                 mm.close()
         except Exception as e:
-            logger.info(f"Error using mmap: {e}. Falling back to standard file reading.")
+            print(f"Error using mmap: {e}. Falling back to standard file reading.")
             with Path(input_file).open(encoding="utf-8") as f:
                 lines = f.readlines()
     else:
         with Path(input_file).open(encoding="utf-8") as f:
             lines = f.readlines()
     original_count = len(lines)
-    logger.info(f"Read {original_count} lines from {input_file}")
+    print(f"Read {original_count} lines from {input_file}")
     for method in methods:
-        logger.info(f"\n--- Shuffling with method: {method} ---")
+        print(f"\n--- Shuffling with method: {method} ---")
         shuffled_lines = lines.copy()
         for _ in range(repeats):
             if method == "basic":
@@ -56,8 +56,8 @@ def enhanced_shuffle(
             output_path = f"{base}_{method}{ext}"
         with Path(output_path).open("w", encoding="utf-8") as f:
             f.writelines(shuffled_lines)
-        logger.info(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
-        logger.info(f"Output written to: {output_path}")
+        print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
+        print(f"Output written to: {output_path}")
 
 
 def crypto_shuffle(lst):
@@ -75,16 +75,16 @@ def shuffle3(lst):
 
 def test_randomness(input_file):
     method_to_test = "crypto"
-    logger.info(f"Testing randomness with method: {method_to_test}")
+    print(f"Testing randomness with method: {method_to_test}")
     lines_to_test = []
     try:
         with Path(input_file).open(encoding="utf-8") as f:
             lines_to_test = [line.strip() for line in f.readlines()[:100]]
     except Exception as e:
-        logger.info(f"Error reading file for testing: {e}")
+        print(f"Error reading file for testing: {e}")
         return
     if not lines_to_test:
-        logger.info("No lines found to test.")
+        print("No lines found to test.")
         return
     original_order = lines_to_test.copy()
     for i in range(5):
@@ -104,7 +104,7 @@ def test_randomness(input_file):
             )
             if a != b
         )
-        logger.info(f"Shuffle {i + 1}: {changes} out of {len(current_lines)} positions changed")
+        print(f"Shuffle {i + 1}: {changes} out of {len(current_lines)} positions changed")
 
 
 def main():

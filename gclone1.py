@@ -43,22 +43,22 @@ def get_repo_size_mb(user, repo):
         if size_bytes is not None:
             size_mb = size_bytes / 1024.0
             return round(size_mb, 2)
-        logger.info(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
+        print(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
         return None
     except requests.exceptions.HTTPError as e:
-        logger.info(f"❌ API Error: {e.response.status_code} for {user}/{repo}")
+        print(f"❌ API Error: {e.response.status_code} for {user}/{repo}")
         if e.response.status_code == 404:
-            logger.info("   Repository not found or access denied.")
+            print("   Repository not found or access denied.")
         elif e.response.status_code == 403:
-            logger.info("   Rate limit exceeded or insufficient permissions.")
+            print("   Rate limit exceeded or insufficient permissions.")
         else:
-            logger.info(f"   Response: {e.response.text}")
+            print(f"   Response: {e.response.text}")
         return None
     except requests.exceptions.RequestException as e:
-        logger.info(f"❌ Network Error: Could not connect to GitHub API: {e}")
+        print(f"❌ Network Error: Could not connect to GitHub API: {e}")
         return None
     except Exception as e:
-        logger.info(f"❌ An unexpected error occurred while fetching size: {e}")
+        print(f"❌ An unexpected error occurred while fetching size: {e}")
         return None
 
 
@@ -68,21 +68,21 @@ def clone_repo_shallow(user, repo):
     clone_path = os.path.join(Path.cwd(), repo)
     if Path(clone_path).exists():
         return False
-    logger.info(f"\n🚀 Cloning {repo_name} (shallow clone)...")
+    print(f"\n🚀 Cloning {repo_name} (shallow clone)...")
     command = ["git", "clone", repo_url, clone_path]
     try:
         process = runcmd(
             command,
             show_output=True,
         )
-        logger.info("✅ Successfully cloned repository.")
-        logger.info(f"   Cloned into: {clone_path}")
+        print("✅ Successfully cloned repository.")
+        print(f"   Cloned into: {clone_path}")
         return True
     except FileNotFoundError:
-        logger.info("❌ Error: 'git' command not found. Please ensure Git is installed and in your PATH.")
+        print("❌ Error: 'git' command not found. Please ensure Git is installed and in your PATH.")
         return False
     except Exception as e:
-        logger.info(f"❌ An unexpected error occurred during cloning: {e}")
+        print(f"❌ An unexpected error occurred during cloning: {e}")
         return False
 
 
@@ -90,35 +90,35 @@ def process_repo(url):
     global remained
     user, repo = parse_repo_url(url)
     if not user or not repo:
-        logger.info(f"❌ Invalid GitHub repository format: '{repo_input}'")
+        print(f"❌ Invalid GitHub repository format: '{repo_input}'")
         sys.exit(1)
-    logger.info(f"🔍 Analyzing repository: {user}/{repo}")
+    print(f"🔍 Analyzing repository: {user}/{repo}")
     repo_size = get_repo_size_mb(user, repo)
     if repo_size is not None and repo_size <= 100:
-        logger.info(f"ℹ️ size: {repo_size} MB")
+        print(f"ℹ️ size: {repo_size} MB")
         if clone_repo_shallow(user, repo):
-            logger.info("\n🎉 Done!")
+            print("\n🎉 Done!")
             return
-        logger.info("\nScript finished with errors during cloning.")
+        print("\nScript finished with errors during cloning.")
         return
     remained.append(url)
 
 
 """
     if repo_size is not None and repo_size > 2.0:
-        clogger.info(f"ℹ️ size: {repo_size} MB", "cyan")
+        cprint(f"ℹ️ size: {repo_size} MB", "cyan")
         confirm = input(f"clone '{user}/{repo}'? (y/N): ").strip().lower()
         if confirm == "y" or confirm == "yes":
             if clone_repo_shallow(user, repo):
-                logger.info("\n🎉 Done!")
+                print("\n🎉 Done!")
                 return
             else:
-                logger.info("\nScript finished with errors during cloning.")
+                print("\nScript finished with errors during cloning.")
                 return
         else:
-            logger.info("Aborted cloning.")
+            print("Aborted cloning.")
     else:
-        logger.info("\nCould not proceed with cloning due to previous errors.")
+        print("\nCould not proceed with cloning due to previous errors.")
         return
     return
 """
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     i = 0
     ll = len(lines)
     for line in lines:
-        logger.info(f"{i}/{ll}")
+        print(f"{i}/{ll}")
         i += 1
         process_repo(line)
     Path("remained").write_text("\n".join(remained), encoding="utf-8")

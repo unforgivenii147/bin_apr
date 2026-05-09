@@ -44,8 +44,8 @@ def main() -> None:
     for file in cwd.rglob("*.py"):
         if fix_file(file):
             fixed += 1
-            logger.info(f"Updated: {file}")
-    logger.info(f"\nDone. Updated {fixed} files.")
+            print(f"Updated: {file}")
+    print(f"\nDone. Updated {fixed} files.")
 
 
 if __name__ == "__main__":

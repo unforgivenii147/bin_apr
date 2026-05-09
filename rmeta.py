@@ -17,11 +17,11 @@ def remove_meta_tags(filepath: Path):
             new_html_content = meta_tag_pattern.sub("", html_content)
         if new_html_content != html_content:
             filepath.write_text(new_html_content, encoding="utf-8")
-            logger.info(f"Removed meta tags from: {filepath}")
+            print(f"Removed meta tags from: {filepath}")
         else:
-            logger.info(f"No meta tags found or removed in: {filepath}")
+            print(f"No meta tags found or removed in: {filepath}")
     except Exception as e:
-        logger.info(f"Error processing {filepath}: {e}")
+        print(f"Error processing {filepath}: {e}")
 
 
 def process_directory(directory: Path):
@@ -32,8 +32,6 @@ def process_directory(directory: Path):
 
 if __name__ == "__main__":
     current_dir = Path()
-    logger.info(
-        f"Starting to remove meta tags from HTML files in '{current_dir.resolve()}' and its subdirectories...\n"
-    )
+    print(f"Starting to remove meta tags from HTML files in '{current_dir.resolve()}' and its subdirectories...\n")
     process_directory(current_dir)
-    logger.info("\nFinished processing. Meta tags have been removed from applicable HTML files.")
+    print("\nFinished processing. Meta tags have been removed from applicable HTML files.")

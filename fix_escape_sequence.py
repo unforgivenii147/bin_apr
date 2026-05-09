@@ -10,10 +10,10 @@ def show_diff(text1, text2):
     diff = difflib.unified_diff(text1.splitlines(keepends=True), text2.splitlines(keepends=True), lineterm="")
     changed_lines = [line for line in diff if line.startswith(("+", "-"))]
     if changed_lines:
-        logger.info("--- Differences ---")
+        print("--- Differences ---")
         for line in changed_lines:
-            logger.info(line, end="")
-        logger.info("-----------------")
+            print(line, end="")
+        print("-----------------")
 
 
 def fix_escape_sequences(directory: Path):
@@ -44,9 +44,9 @@ def fix_escape_sequences(directory: Path):
                     backup_path = path.with_name(path.name + ".bak")
                     backup_path.write_text(content, encoding="utf-8")
                     path.write_text(new_content, encoding="utf-8")
-                    logger.info(f"Fixed {path.relative_to(directory)}")
+                    print(f"Fixed {path.relative_to(directory)}")
             except Exception as e:
-                logger.info(f"Error processing {path}: {e}")
+                print(f"Error processing {path}: {e}")
 
 
 if __name__ == "__main__":

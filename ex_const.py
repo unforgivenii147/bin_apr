@@ -84,9 +84,9 @@ def main():
     current_dir = Path()
     python_files = list(current_dir.glob(PYTHON_FILES_TO_PROCESS))
     if not python_files:
-        logger.info("No Python files found in the current directory.")
+        print("No Python files found in the current directory.")
         return
-    logger.info(f"Found {len(python_files)} Python files. Processing...")
+    print(f"Found {len(python_files)} Python files. Processing...")
     # Use joblib for parallel processing
     # n_jobs=-1 uses all available CPU cores
     results = Parallel(n_jobs=-1)(delayed(process_file)(f) for f in python_files)
@@ -130,9 +130,9 @@ def main():
                 f.write(f"# Type: {ctype}\n")
                 f.write(f"{constant_line}\n\n")
                 written_consts.add(constant_line)
-    logger.info(f"Successfully extracted {len(written_consts)} unique constants to {OUTPUT_FILE}")
+    print(f"Successfully extracted {len(written_consts)} unique constants to {OUTPUT_FILE}")
     if LOG_FILE.exists():
-        logger.info(f"Errors logged to {LOG_FILE}")
+        print(f"Errors logged to {LOG_FILE}")
 
 
 if __name__ == "__main__":

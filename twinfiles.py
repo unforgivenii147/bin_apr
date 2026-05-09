@@ -21,10 +21,10 @@ def main() -> None:
             twin = path.with_suffix(ext2)
             if twin.exists():
                 if todel == ext1:
-                    logger.info(f"[✖] {path}  (keeping {twin})")
+                    print(f"[✖] {path}  (keeping {twin})")
                     path.unlink()
                 else:
-                    logger.info(f"[✖] {twin}  (keeping {path})")
+                    print(f"[✖] {twin}  (keeping {path})")
                     twin.unlink()
 
 

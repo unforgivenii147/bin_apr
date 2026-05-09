@@ -25,7 +25,7 @@ def minify_assets_in_directory(cwd=".") -> None:
             else:
                 continue
             try:
-                logger.info(f"processing ...{Path(file_path).name}")
+                print(f"processing ...{Path(file_path).name}")
                 original_content = Path(file_path).read_text(encoding="utf-8")
                 minified_content = minifier_func(original_content)
                 Path(file_path).write_text(minified_content, encoding="utf-8")

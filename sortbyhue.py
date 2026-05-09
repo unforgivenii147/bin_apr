@@ -31,6 +31,6 @@ def main(path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: sort_colors.py colors.txt")
+        print("Usage: sort_colors.py colors.txt")
         sys.exit(1)
     main(sys.argv[1])

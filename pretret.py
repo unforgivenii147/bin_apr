@@ -51,7 +51,7 @@ def main():
     for future in as_completed(futures):
         s = future.result()
         if not s[0]:
-            logger.info(s[1])
+            print(s[1])
 
 
 if __name__ == "__main__":

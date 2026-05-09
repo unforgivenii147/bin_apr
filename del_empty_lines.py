@@ -28,12 +28,12 @@ def process_file(path):
     final_len = len(newlines)
     removed = orig_len - final_len
     if removed:
-        logger.info(f"{path.name}", end=" | ")
+        print(f"{path.name}", end=" | ")
         cprint(f"{removed}", "blue")
         newcontent = "\n".join(newlines)
         path.write_text(newcontent, encoding="utf-8")
     else:
-        logger.info(f"{path.name}", end=" | ")
+        print(f"{path.name}", end=" | ")
         cprint("NO CHANGE", "grey")
 
 

@@ -8,7 +8,7 @@ def count_lines_of_code(file_path, lang):
     if ".git" in str(file_path):
         return 0, 0, 0
     if is_binary(file_path):
-        logger.info(f"{file_path} is binary")
+        print(f"{file_path} is binary")
         return 0, 0, 0
     with Path(file_path).open(encoding="utf-8") as file:
         code_lines = 0

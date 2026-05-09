@@ -77,7 +77,7 @@ def main():
     files = get_files(cwd, extensions=EXT)
     if not files:
         return
-    logger.info(f"{len(files)} files found")
+    print(f"{len(files)} files found")
     success_count = 0
     error_count = 0
     with ThreadPoolExecutor(max_workers=8) as executor:
@@ -85,12 +85,12 @@ def main():
         for future in as_completed(futures):
             success, path, error_msg = future.result()
             if success:
-                logger.info(f"✅ Formatted: {path.name}")
+                print(f"✅ Formatted: {path.name}")
                 success_count += 1
             else:
-                logger.info(f"❌ Error: {path.name} | Reason: {error_msg}")
+                print(f"❌ Error: {path.name} | Reason: {error_msg}")
                 error_count += 1
-    logger.info(f"\nSummary: {success_count} success, {error_count} errors.")
+    print(f"\nSummary: {success_count} success, {error_count} errors.")
 
 
 if __name__ == "__main__":

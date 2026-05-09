@@ -11,7 +11,7 @@ def alias_name(line: str) -> str:
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <file>")
+        print(f"Usage: {sys.argv[0]} <file>")
         sys.exit(1)
     fname = sys.argv[1]
     with Path(fname).open(encoding="utf-8") as f:

@@ -37,9 +37,9 @@ def get_installed_packages_dependencies():
 if __name__ == "__main__":
     all_dependencies = get_installed_packages_dependencies()
     if isinstance(all_dependencies, str):
-        logger.info(all_dependencies)
+        print(all_dependencies)
     else:
         output_file = "package_dependencies.json"
         with Path(output_file).open("w", encoding="utf-8") as f:
             json.dump(all_dependencies, f, indent=4, ensure_ascii=False)
-        logger.info(f"Package dependencies saved to {output_file}")
+        print(f"Package dependencies saved to {output_file}")

@@ -23,7 +23,7 @@ def process_file(
         if pattern.search(content):
             if dry_run:
                 matches = list(pattern.finditer(content))
-                logger.info(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
+                print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
                 for i, match in enumerate(matches[:3]):
                     start = max(0, match.start() - 20)
                     end = min(
@@ -32,13 +32,13 @@ def process_file(
                     )
                     context = content[start:end]
                     context = context.replace("\n", " ").strip()
-                    logger.info(f"  Match {i + 1}: ...{context}...")
+                    print(f"  Match {i + 1}: ...{context}...")
                 if len(matches) > 3:
-                    logger.info(f"  ... and {len(matches) - 3} more matches")
+                    print(f"  ... and {len(matches) - 3} more matches")
             else:
                 new_content = pattern.sub(replacement, content)
                 Path(file_path).write_text(new_content, encoding="utf-8")
-                logger.info(f"Updated: {file_path}")
+                print(f"Updated: {file_path}")
             return True
         return False
     except (
@@ -48,7 +48,7 @@ def process_file(
     ):
         return False
     except Exception as e:
-        logger.info(
+        print(
             f"Error processing {file_path}: {e}",
             file=sys.stderr,
         )
@@ -72,7 +72,7 @@ def replace_in_files(
     files_changed = 0
     if target_file:
         if Path(target_file).is_file() and not Path(target_file).is_symlink():
-            logger.info(f"Processing file: {target_file}")
+            print(f"Processing file: {target_file}")
             if process_file(
                 target_file,
                 search_text,
@@ -82,7 +82,7 @@ def replace_in_files(
                 files_changed += 1
             files_processed += 1
         else:
-            logger.info(
+            print(
                 f"Error: {target_file} is not a valid file",
                 file=sys.stderr,
             )
@@ -102,7 +102,7 @@ def replace_in_files(
             ):
                 files_changed += 1
             if files_processed % 100 == 0:
-                logger.info(
+                print(
                     f"Processed {files_processed} files...",
                     end="\r",
                 )
@@ -139,12 +139,12 @@ if __name__ == "__main__":
     if search_text.startswith(("'", '"')) and search_text.endswith(("'", '"')):
         search_text = search_text[1:-1]
     if args.dry_run:
-        logger.info("--- RUNNING IN DRY RUN MODE (No files will be modified) ---")
-    logger.info(f"--- {action} ---")
+        print("--- RUNNING IN DRY RUN MODE (No files will be modified) ---")
+    print(f"--- {action} ---")
     files_processed, files_changed = replace_in_files(
         search_text,
         replace_text,
         target_file=args.file,
         dry_run=args.dry_run,
     )
-    logger.info(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")
+    print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")

@@ -6,7 +6,7 @@ from loguru import logger
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: python decode_unicode_escapes.py <json_file>")
+        print("Usage: python decode_unicode_escapes.py <json_file>")
         sys.exit(1)
     path = Path(sys.argv[1])
     text = path.read_text(encoding="utf-8")
@@ -14,4 +14,4 @@ if __name__ == "__main__":
         text = text.replace(r"\x", r"\u")
     decoded = text.encode("utf-8").decode("unicode_escape")
     path.write_text(decoded, encoding="utf-8")
-    logger.info(f"{path} updated")
+    print(f"{path} updated")

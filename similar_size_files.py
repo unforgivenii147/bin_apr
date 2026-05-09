@@ -22,7 +22,7 @@ def main() -> None:
         if len(v) > 1:
             cprint(f"{k}:", "cyan")
             for i in v:
-                logger.info(f"    - {i}")
+                print(f"    - {i}")
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ def group_key(name: str):
 
 def main() -> None:
     if len(sys.argv) != 2:
-        logger.info(
+        print(
             f"Usage: {sys.argv[0]} requirements.txt",
             file=sys.stderr,
         )
@@ -43,7 +43,7 @@ def main() -> None:
         with Path(fname).open(encoding="utf-8") as f:
             lines = f.readlines()
     except FileNotFoundError:
-        logger.info(
+        print(
             f"Error: File '{fname}' not found.",
             file=sys.stderr,
         )
@@ -58,9 +58,9 @@ def main() -> None:
     cleaned = sorted(cleaned, key=group_key)
     with Path(fname).open("w", encoding="utf-8") as f:
         f.writelines(item + "\n" for item in cleaned)
-    logger.info("\n=== Cleaned Requirements ===")
+    print("\n=== Cleaned Requirements ===")
     for item in cleaned:
-        logger.info(item)
+        print(item)
 
 
 if __name__ == "__main__":

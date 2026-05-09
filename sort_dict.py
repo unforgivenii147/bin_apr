@@ -8,11 +8,11 @@ from loguru import logger
 def dict_val(line: str) -> str:
     if ":" in line:
         out = line.split(":", 1)[1].strip()
-        logger.info(out)
+        print(out)
         return out
     if "=" in line:
         out = line.split("=", 1)[1].strip()
-        logger.info(out)
+        print(out)
         return out
     return line
 

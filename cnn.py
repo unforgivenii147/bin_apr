@@ -22,12 +22,12 @@ def remove_path(path) -> None:
     try:
         if p.is_file():
             p.unlink()
-            logger.info(f"Removed file: {p.name}")
+            print(f"Removed file: {p.name}")
         elif p.is_dir():
             shutil.rmtree(p)
-            logger.info(f"Removed directory: {os.path.relpath(p)}")
+            print(f"Removed directory: {os.path.relpath(p)}")
     except Exception as e:
-        logger.info(f"Failed to remove {p}: {e}")
+        print(f"Failed to remove {p}: {e}")
 
 
 def scan_and_remove(base_path):
@@ -38,7 +38,7 @@ def scan_and_remove(base_path):
         dirs_to_remove = [d for d in dirs if d in DIR_NAMES]
         for d in dirs_to_remove:
             if str(Path(d).parent) == "site-packages":
-                logger.info("not allowed")
+                print("not allowed")
                 continue
             yield os.path.join(root, d)
             dirs.remove(d)

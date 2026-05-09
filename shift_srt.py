@@ -34,7 +34,7 @@ def process_file(path: Path, shift_ms: int):
     data = path.read_text(encoding="utf-8")
     shifted = shift_content(data, shift_ms)
     path.write_text(shifted, encoding="utf-8")
-    logger.info(f"✔ {path}")
+    print(f"✔ {path}")
 
 
 def main():
@@ -70,7 +70,7 @@ def main():
     glob = "**/*.srt" if args.recursive else "*.srt"
     files = sorted(path.glob(glob))
     if not files:
-        logger.info("No .srt files found")
+        print("No .srt files found")
         return
     for f in files:
         process_file(f, shift_ms)

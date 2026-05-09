@@ -63,7 +63,7 @@ def process_file(filepath: str) -> tuple[str, bool]:
         Path(filepath).write_bytes(new_source)
         return filepath, True
     except Exception as e:
-        logger.info(
+        print(
             f"Error processing {filepath}: {e}",
             file=sys.stderr,
         )
@@ -76,28 +76,26 @@ def main():
         dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
         py_files.extend(os.path.join(root, file) for file in files if file.endswith(".py"))
     if not py_files:
-        logger.info("No Python files found.")
+        print("No Python files found.")
         return
-    logger.info(f"Found {len(py_files)} Python files. Processing...")
+    print(f"Found {len(py_files)} Python files. Processing...")
     pool = mp.Pool(initializer=init_worker)
     results = pool.map(process_file, py_files)
     pool.close()
     pool.join()
     successes = [f for f, ok in results if ok]
     failures = [f for f, ok in results if not ok]
-    logger.info(f"Processed {len(successes)} files successfully.")
+    print(f"Processed {len(successes)} files successfully.")
     if failures:
-        logger.info(f"Failed to process {len(failures)} files:")
+        print(f"Failed to process {len(failures)} files:")
         for f in failures:
-            logger.info(f"  {f}")
+            print(f"  {f}")
 
 
 if __name__ == "__main__":
     try:
         import tree_sitter_python
     except ImportError:
-        logger.info(
-            "Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0"
-        )
+        print("Error: Missing required package. Please install tree-sitter==0.25.2 and tree-sitter-python==0.25.0")
         sys.exit(1)
     main()

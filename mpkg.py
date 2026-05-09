@@ -29,10 +29,10 @@ def copy_package_files(pkg_name: str, site_packages: Path):
     dist_info_dir = find_dist_info_dir(site_packages, pkg_name)
     record_path = dist_info_dir / "RECORD"
     if not record_path.is_file():
-        logger.info(f"RECORD file not found: {record_path}")
+        print(f"RECORD file not found: {record_path}")
     dest_root = Path.home() / "tmp" / "1" / pkg_name
     dest_root.mkdir(parents=True, exist_ok=True)
-    logger.info("Destination root: {}", dest_root)
+    print("Destination root: {}", dest_root)
     missing_count = copied_count = error_count = 0
     with record_path.open("r", encoding="utf-8", newline="") as f:
         reader = csv.reader(f)
@@ -60,8 +60,8 @@ def copy_package_files(pkg_name: str, site_packages: Path):
             except Exception as e:
                 logger.exception("Error while processing RECORD entry {}: {}", row, e)
                 error_count += 1
-    logger.info("Missing files (warned): {}", missing_count)
-    logger.info("Copied: {} | Errors: {}", copied_count, error_count)
+    print("Missing files (warned): {}", missing_count)
+    print("Copied: {} | Errors: {}", copied_count, error_count)
 
 
 def main():
@@ -82,7 +82,7 @@ def main():
                 sys.exit(1)
             for dist_dir in dist_infos:
                 pkg_name = dist_dir.stem.split("-")[0]
-                logger.info("Processing package: {}", pkg_name)
+                print("Processing package: {}", pkg_name)
                 try:
                     copy_package_files(pkg_name, site_packages)
                 except Exception:

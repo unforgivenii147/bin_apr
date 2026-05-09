@@ -126,7 +126,7 @@ def main() -> None:
             result = future.result()
             if result:
                 path, line = result
-                logger.info(f"{path}\n  {line}")
+                print(f"{path}\n  {line}")
 
 
 if __name__ == "__main__":

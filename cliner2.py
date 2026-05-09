@@ -35,21 +35,21 @@ def clean_file(file_path: Path) -> None:
         cleaned_lines = [clean_line(line) for line in lines]
         with Path(file_path).open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)
-        logger.info(f"✓ Cleaned: {file_path}")
+        print(f"✓ Cleaned: {file_path}")
     except Exception as e:
-        logger.info(f"✗ Error processing {file_path}: {e}")
+        print(f"✗ Error processing {file_path}: {e}")
 
 
 def main():
     cwd = Path.cwd()
     log_files = list(cwd.rglob(f"*{LOG_EXT}"))
     if not log_files:
-        logger.info(f"No {LOG_EXT} files found.")
+        print(f"No {LOG_EXT} files found.")
         return
-    logger.info(f"Found {len(log_files)} log file(s). Cleaning...\n")
+    print(f"Found {len(log_files)} log file(s). Cleaning...\n")
     for log_file in log_files:
         clean_file(log_file)
-    logger.info(f"\nDone. Processed {len(log_files)} file(s).")
+    print(f"\nDone. Processed {len(log_files)} file(s).")
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from loguru import logger
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <filename>")
+        print(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     content = Path(fname).read_text(encoding="utf-8")

@@ -52,7 +52,7 @@ def process_file(fp):
         data = fp.read_bytes()
         decompressed_data = brotlicffi.decompress(data)
         outfile.write_bytes(decompressed_data)
-        logger.info("it worked")
+        print("it worked")
         fp.unlink()
         return
     except:
@@ -78,7 +78,7 @@ def main():
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)
-    logger.info(f"{fsz(diff_size)}")
+    print(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

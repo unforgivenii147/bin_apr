@@ -32,13 +32,13 @@ def main():
         logger.warning("No files found to process.")
         return
     total_files = len(files)
-    logger.info(f"Found {total_files:,} files")
+    print(f"Found {total_files:,} files")
     target_per_dir = max(1000, total_files // 10)
     n_dirs = max(2, (total_files + target_per_dir - 1) // target_per_dir)
     n_dirs = max(2, min(100, n_dirs))
     base_chunk = total_files // n_dirs
     remainder = total_files % n_dirs
-    logger.info(f"Creating {n_dirs} directories (~{base_chunk} files each)")
+    print(f"Creating {n_dirs} directories (~{base_chunk} files each)")
     created_dirs = []
     existing_dir_names = {p.name for p in root.iterdir() if p.is_dir()}
     for i in range(n_dirs):
@@ -54,7 +54,7 @@ def main():
         dir_path.mkdir(exist_ok=True)
         created_dirs.append((dir_name, end - start))
         existing_dir_names.add(dir_name)
-    logger.info(f"Created dir '{dir_name}' for files [{start}, {end})")
+    print(f"Created dir '{dir_name}' for files [{start}, {end})")
     file_idx = 0
     for dir_name, count in created_dirs:
         dir_path = root / dir_name
@@ -65,16 +65,16 @@ def main():
             dest = safe_rename(f, dir_path)
             shutil.move(str(f), str(dest))
             file_idx += 1
-    logger.info("=" * 50)
-    logger.info("✅ Folderization complete:")
-    logger.info(f"   Files processed: {total_files:,}")
-    logger.info(f"   Directories created: {len(created_dirs)}")
-    logger.info("=" * 50)
-    logger.info(f"\n{'Dir Name':<20} {'Files':>8}")
-    logger.info("-" * 30)
+    print("=" * 50)
+    print("✅ Folderization complete:")
+    print(f"   Files processed: {total_files:,}")
+    print(f"   Directories created: {len(created_dirs)}")
+    print("=" * 50)
+    print(f"\n{'Dir Name':<20} {'Files':>8}")
+    print("-" * 30)
     for name, cnt in created_dirs:
-        logger.info(f"{name:<20} {cnt:>8}")
-    logger.info(f"\nTotal directories: {len(created_dirs)}")
+        print(f"{name:<20} {cnt:>8}")
+    print(f"\nTotal directories: {len(created_dirs)}")
 
 
 if __name__ == "__main__":

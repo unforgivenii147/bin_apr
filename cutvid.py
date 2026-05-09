@@ -13,11 +13,11 @@ def format_time(time_str):
 
 def cut_video(input_file, start_time_str, duration_str):
     if not Path(input_file).exists():
-        logger.info(f"Error: Input file '{input_file}' not found.")
+        print(f"Error: Input file '{input_file}' not found.")
         return
     cap = cv2.VideoCapture(input_file)
     if not cap.isOpened():
-        logger.info(f"Error: Could not open video file '{input_file}'.")
+        print(f"Error: Could not open video file '{input_file}'.")
         return
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -28,7 +28,7 @@ def cut_video(input_file, start_time_str, duration_str):
     end_frame = start_frame + duration_frames
     if end_frame > total_frames:
         end_frame = total_frames
-        logger.info("Warning: Duration exceeds video length. Cutting until the end of the video.")
+        print("Warning: Duration exceeds video length. Cutting until the end of the video.")
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     output_filename = f"cut_{Path(input_file).name}"
     out = cv2.VideoWriter(
@@ -41,22 +41,22 @@ def cut_video(input_file, start_time_str, duration_str):
         ),
     )
     if not out.isOpened():
-        logger.info(f"Error: Could not create video writer for '{output_filename}'.")
+        print(f"Error: Could not create video writer for '{output_filename}'.")
         cap.release()
         return
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     frames_written = 0
     total = end_frame - start_frame
-    logger.info(f"start_frame:{start_frame}/end_frame: {end_frame} -> {total} frames to process")
+    print(f"start_frame:{start_frame}/end_frame: {end_frame} -> {total} frames to process")
     for _i in range(start_frame, end_frame):
         ret, frame = cap.read()
         if not ret:
             break
         out.write(frame)
         frames_written += 1
-        logger.info(f"{frames_written}/{total}")
-    logger.info(f"Video segment saved to '{output_filename}'")
-    logger.info(f"Frames processed: {frames_written}")
+        print(f"{frames_written}/{total}")
+    print(f"Video segment saved to '{output_filename}'")
+    print(f"Frames processed: {frames_written}")
     cap.release()
     out.release()
     cv2.destroyAllWindows()
@@ -64,7 +64,7 @@ def cut_video(input_file, start_time_str, duration_str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        logger.info("Usage: python cut_video.py <filename.mkv> <start_time_hh:mm:ss> <duration_hh:mm:ss>")
+        print("Usage: python cut_video.py <filename.mkv> <start_time_hh:mm:ss> <duration_hh:mm:ss>")
         sys.exit(1)
     input_filename = sys.argv[1]
     start_time_str = sys.argv[2]

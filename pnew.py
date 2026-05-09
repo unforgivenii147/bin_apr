@@ -32,7 +32,7 @@ if __name__ == "__main__":
     sys.exit(main())
 """
     path.write_text(template, encoding="utf-8")
-    logger.info(f"{path.name} created.")
+    print(f"{path.name} created.")
 
 
 if __name__ == "__main__":

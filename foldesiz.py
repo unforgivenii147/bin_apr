@@ -86,22 +86,22 @@ def distribute_files(files, folders, cwd):
                     moved_count += 1
                     break
                 except Exception as e:
-                    logger.info(f"Failed to move {filepath}: {e}")
+                    print(f"Failed to move {filepath}: {e}")
                 break
         else:
-            logger.info(f"No folder match for {Path(filepath).name} ({size:,} bytes)")
+            print(f"No folder match for {Path(filepath).name} ({size:,} bytes)")
 
 
 def main():
     cwd = Path.cwd()
     files = get_all_files(cwd)
     if not files:
-        logger.info("No files found.")
+        print("No files found.")
         return
     num_folders = 4
     folders = create_range_folders(cwd, files, num_folders)
     distribute_files(files, folders, cwd)
-    logger.info("Folderization complete!")
+    print("Folderization complete!")
 
 
 if __name__ == "__main__":

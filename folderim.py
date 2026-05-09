@@ -27,7 +27,7 @@ def compute_hash(path: Path):
         with Image.open(path) as img:
             return HASH_FUNC(img)
     except Exception as e:
-        logger.info(f"[SKIP] {path.name}: {e}")
+        print(f"[SKIP] {path.name}: {e}")
         return None
 
 
@@ -35,7 +35,7 @@ def main():
     cwd = Path.cwd()
     images = [p for p in cwd.iterdir() if is_image(p)]
     if not images:
-        logger.info("No images found.")
+        print("No images found.")
         return
     hashes = {}
     for img in images:
@@ -59,7 +59,7 @@ def main():
             folder.mkdir(exist_ok=True)
             for img, _ in group:
                 shutil.move(str(img), folder / img.name)
-    logger.info(f"Done. Created {len([g for g in groups if len(g) > 1])} groups with multiple images.")
+    print(f"Done. Created {len([g for g in groups if len(g) > 1])} groups with multiple images.")
 
 
 if __name__ == "__main__":

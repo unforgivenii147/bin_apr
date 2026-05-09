@@ -105,10 +105,10 @@ if __name__ == "__main__":
         args.all = True
     root = Path.cwd()
     scan_and_fix(root, force=args.force, apply_all=args.all)
-    logger.info("\n=== SUMMARY ===")
-    logger.info(f"Files changed: {len(changed_files)}")
+    print("\n=== SUMMARY ===")
+    print(f"Files changed: {len(changed_files)}")
     for f in changed_files:
-        logger.info("  -", f)
-    logger.info(f"\nFiles with errors: {len(error_files)}")
+        print("  -", f)
+    print(f"\nFiles with errors: {len(error_files)}")
     for f, e in error_files:
-        logger.info(f"  - {f}: {e}")
+        print(f"  - {f}: {e}")

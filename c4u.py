@@ -59,7 +59,7 @@ def extract_latest_version_link(html_text):
     target_line = ""
     for k in rev_html:
         if "<a href" in k:
-            logger.info(k)
+            print(k)
             target_line = k
             break
     for href, text in extract_links(html_text):
@@ -75,7 +75,7 @@ def extract_latest_version_link(html_text):
         pr = ext_priority(fname)
         entries.append((ver_obj, pr, href, fname))
     if not entries:
-        logger.info("no versioned links found", file=sys.stderr)
+        print("no versioned links found", file=sys.stderr)
         sys.exit(1)
     best = max(entries, key=lambda e: (e[0], -e[1]))
     return best[2]

@@ -45,7 +45,7 @@ def remove_comments_cpp(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        logger.info(f"[OK] {path.name}")
+        print(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

@@ -68,7 +68,7 @@ def main():
     for f in files:
         process_file(f)
     diff_size = before - gsz(cwd)
-    logger.info(f"{fsz(diff_size)}")
+    print(f"{fsz(diff_size)}")
 
 
 if __name__ == "__main__":

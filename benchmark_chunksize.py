@@ -28,8 +28,8 @@ def benchmark_chunk_sizes(filepath):
         results[chunk_size] = end_time - start_time
     best_chunk_size = min(results, key=results.get)
     best_time = results[best_chunk_size]
-    logger.info(f"File: {filepath.name} : ", end=" ")
-    logger.info(f"{best_chunk_size}, Time: {best_time}")
+    print(f"File: {filepath.name} : ", end=" ")
+    print(f"{best_chunk_size}, Time: {best_time}")
     return best_chunk_size
 
 
@@ -48,4 +48,4 @@ if __name__ == "__main__":
             else:
                 results[cs] += 1
     sr = dict(sorted(results.items(), key=operator.itemgetter(1), reverse=True))
-    logger.info(sr)
+    print(sr)

@@ -96,11 +96,11 @@ def generate_preview(fonts):
 def main():
     fonts = find_fonts(".")
     if not fonts:
-        logger.info("No font files found.")
+        print("No font files found.")
         return
     html_content = generate_preview(fonts)
     Path(OUTPUT_FILE).write_text(html_content, encoding="utf-8")
-    logger.info(f"Generated {OUTPUT_FILE} with {len(fonts)} font previews.")
+    print(f"Generated {OUTPUT_FILE} with {len(fonts)} font previews.")
 
 
 if __name__ == "__main__":

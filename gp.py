@@ -11,7 +11,7 @@ def run(cmd) -> None:
     try:
         subprocess.check_call(cmd, shell=True)
     except subprocess.CalledProcessError:
-        logger.info(
+        print(
             f"Command failed: {cmd}",
             file=sys.stderr,
         )
@@ -26,7 +26,7 @@ def ensure_git_repo() -> None:
             stderr=subprocess.STDOUT,
         )
     except subprocess.CalledProcessError:
-        logger.info(
+        print(
             "Not inside a Git repository.",
             file=sys.stderr,
         )
@@ -37,15 +37,15 @@ def symlink_global_gitignore() -> None:
     home_gitignore = Path.home() / ".gitignore"
     local_gitignore = Path(".gitignore")
     if not home_gitignore.exists():
-        logger.info("~/.gitignore does not exist. Create it first if needed.")
+        print("~/.gitignore does not exist. Create it first if needed.")
         return
     if local_gitignore.exists():
         return
     try:
         local_gitignore.symlink_to(home_gitignore)
-        logger.info(f"Symlinked {home_gitignore} → {local_gitignore}")
+        print(f"Symlinked {home_gitignore} → {local_gitignore}")
     except Exception as e:
-        logger.info(
+        print(
             f"Failed to create symlink: {e}",
             file=sys.stderr,
         )
@@ -69,7 +69,7 @@ def main() -> None:
     )
     branch = get_current_branch()
     run(f"git push origin {branch}")
-    logger.info(f"Pushed to origin/{branch} with message: {commit_msg}")
+    print(f"Pushed to origin/{branch} with message: {commit_msg}")
 
 
 if __name__ == "__main__":

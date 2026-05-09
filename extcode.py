@@ -51,7 +51,7 @@ def process_directory():
         out_file = OUTPUT_DIR / relative_path
         out_file.parent.mkdir(parents=True, exist_ok=True)
         out_file.write_text(extracted)
-        logger.info(f"Saved: {out_file}")
+        print(f"Saved: {out_file}")
 
 
 if __name__ == "__main__":

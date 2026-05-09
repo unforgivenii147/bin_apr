@@ -59,7 +59,7 @@ def main():
     args = parser.parse_args()
     if args.encrypt:
         key = random_key()
-        logger.info(f"Encryption key: {key}")
+        print(f"Encryption key: {key}")
         action = encrypt_file
         with Path("key").open("a", encoding="utf-8") as f:
             f.write("\n")

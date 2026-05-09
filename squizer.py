@@ -68,16 +68,16 @@ def compress_python_files_in_directory(directory="."):
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             filepath = os.path.join(directory, filename)
-            logger.info(f"Compressing {filepath} (removing comments, docstrings, whitespace)...")
+            print(f"Compressing {filepath} (removing comments, docstrings, whitespace)...")
             compress_python_file_aggressively(filepath)
-    logger.info("Compression complete.")
+    print("Compression complete.")
 
 
 if __name__ == "__main__":
-    logger.info("WARNING: This script will modify your Python files by removing comments,")
-    logger.info("docstrings, and whitespace. It DOES NOT perform aggressive variable renaming")
-    logger.info("due to the high risk of breaking code and reducing AI understandability.")
-    logger.info("Please ensure you have backups before proceeding.")
-    logger.info(
+    print("WARNING: This script will modify your Python files by removing comments,")
+    print("docstrings, and whitespace. It DOES NOT perform aggressive variable renaming")
+    print("due to the high risk of breaking code and reducing AI understandability.")
+    print("Please ensure you have backups before proceeding.")
+    print(
         "\nScript finished. No files were modified by default. Uncomment 'compress_python_files_in_directory('.')' to run."
     )

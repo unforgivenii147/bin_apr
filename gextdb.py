@@ -205,7 +205,7 @@ def extract_entities_from_content(content: str, path: Path) -> list[dict[str, An
     except SyntaxError:
         return []
     except Exception as e:
-        logger.info(f"Error parsing AST for {path}: {e}")
+        print(f"Error parsing AST for {path}: {e}")
         return []
 
 
@@ -230,7 +230,7 @@ def process_single_file(path: Path) -> list[dict[str, Any]]:
             return extract_entities_from_content(content, path)
         return []
     except Exception as e:
-        logger.info(f"Error reading file {path}: {e}")
+        print(f"Error reading file {path}: {e}")
         return []
 
 
@@ -243,7 +243,7 @@ def main():
         help="Save extracted entities to the database",
     )
     args = parser.parse_args()
-    logger.info(f"Starting analysis in {Path.cwd()}...")
+    print(f"Starting analysis in {Path.cwd()}...")
     create_database()
     files_to_process = []
     current_dir = Path()
@@ -255,19 +255,19 @@ def main():
             if path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path):
                 files_to_process.append(path)
     if not files_to_process:
-        logger.info("No Python files found to process.")
+        print("No Python files found to process.")
         return
     all_entities = []
     for path in files_to_process:
         entities = process_single_file(path)
         all_entities.extend(entities)
-    logger.info(f"Processing complete. Extracted {len(all_entities)} entities.")
+    print(f"Processing complete. Extracted {len(all_entities)} entities.")
     if args.database:
-        logger.info(f"Saving entities to database at {DB_PATH}...")
+        print(f"Saving entities to database at {DB_PATH}...")
         for entity in all_entities:
             save_entity_to_db(entity)
-        logger.info("All entities saved to database.")
-    logger.info("All tasks finished successfully!")
+        print("All entities saved to database.")
+    print("All tasks finished successfully!")
 
 
 if __name__ == "__main__":

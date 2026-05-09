@@ -61,7 +61,7 @@ class TSCppRemover:
         new_source = bytes(new_source)
         tree = self.parser.parse(new_source)
         if tree.root_node.has_error:
-            logger.info("Warning: Resulted code has syntax errors, returning original")
+            print("Warning: Resulted code has syntax errors, returning original")
             return source, 0
         cleaned = new_source.decode("utf-8")
         cleaned = clean_blank_lines(cleaned)
@@ -79,17 +79,17 @@ def process_file(path):
         code = path.read_text(encoding="utf-8")
         result, comments = ts_remover.remove_comments(code)
     except Exception as e:
-        logger.info(f"[ERROR] {path.name} processing: {e}")
+        print(f"[ERROR] {path.name} processing: {e}")
         return ("error", path, 0)
     if comments:
         path.write_text(result, encoding="utf-8")
-        logger.info(f"[OK] {path.name}: {comments} comments removed")
+        print(f"[OK] {path.name}: {comments} comments removed")
         return (
             "changed",
             path,
             comments,
         )
-    logger.info(f"[NO CHANGE] {path.name}")
+    print(f"[NO CHANGE] {path.name}")
     return ("nochange", path, 0)
 
 
@@ -108,9 +108,9 @@ if __name__ == "__main__":
     changed = sum(1 for r in results if r[0] == "changed")
     errors = [r for r in results if r[0] == "error"]
     nochg = sum(1 for r in results if r[0] == "nochange")
-    logger.info(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
+    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     if errors:
-        logger.info("\nErrors in:")
+        print("\nErrors in:")
         for _, fn, *_ in errors:
-            logger.info(f"  - {fn}")
-    logger.info(f"Size reduced: {fsz(diffsize)}")
+            print(f"  - {fn}")
+    print(f"Size reduced: {fsz(diffsize)}")

@@ -25,9 +25,9 @@ def falpha(cwd="."):
         final_dest = get_unique_filename(dest_path)
         try:
             shutil.move(str(file_path), str(final_dest))
-            logger.info(f"Moved: {file_path.name} -> {final_dest}")
+            print(f"Moved: {file_path.name} -> {final_dest}")
         except Exception as e:
-            logger.info(f"Error moving {file_path.name}: {e}")
+            print(f"Error moving {file_path.name}: {e}")
 
 
 def is_in_alphabetical_folder(file_path, root_path):
@@ -60,4 +60,4 @@ def get_unique_filename(dest_path):
 if __name__ == "__main__":
     falpha(".")
     for k in os.listdir("."):
-        logger.info(k)
+        print(k)

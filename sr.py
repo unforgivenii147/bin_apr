@@ -141,7 +141,7 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
     base = distinfo_path.parent
     rec_list = read_record_list(distinfo_path)
     if not rec_list:
-        logger.info(f"[-] Error: Could not find RECORD for {distinfo_path.name}. Skipping.")
+        print(f"[-] Error: Could not find RECORD for {distinfo_path.name}. Skipping.")
         return
     md = parse_metadata_from_distinfo(distinfo_path)
     dist_name = (md.get("Name") or distinfo_path.name.split("-", 1)[0]).replace("-", "_")
@@ -172,10 +172,10 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
     if "console_scripts" in md:
         collected_files.extend((sp, f"bin/{sp.name}") for sp in find_script_paths(prefix, md["console_scripts"]))
     if missing_files:
-        logger.info(f"[!] Error: Missing files for {dist_name}:")
+        print(f"[!] Error: Missing files for {dist_name}:")
         for m in missing_files:
-            logger.info(f"    - {m}")
-        logger.info(f"[*] Aborting wheel build for {dist_name}.")
+            print(f"    - {m}")
+        print(f"[*] Aborting wheel build for {dist_name}.")
         return
     py_tag, abi_tag, plat_tag = detect_wheel_tags()
     native_exts = {
@@ -208,7 +208,7 @@ def collect_and_build(distinfo_path, prefix, wheel_out_path):
             f"{distinfo_path.name}/RECORD",
             "\n".join(record_lines) + "\n",
         )
-    logger.info(f"[+] Successfully built: {wheel_out_path.name}")
+    print(f"[+] Successfully built: {wheel_out_path.name}")
 
 
 def main():
@@ -240,7 +240,7 @@ def main():
             if key in dists:
                 to_do.append(dists[key])
     wheel_dir = Path.home() / "tmp" / "wheels"
-    logger.info(f"[*] Saving wheels to: {wheel_dir}")
+    print(f"[*] Saving wheels to: {wheel_dir}")
     for distinfo in to_do:
         try:
             md = parse_metadata_from_distinfo(distinfo)
@@ -254,7 +254,7 @@ def main():
                 wheel_dir / out_name,
             )
         except Exception as e:
-            logger.info(f"[!] Critical error repacking {distinfo.name}: {e}")
+            print(f"[!] Critical error repacking {distinfo.name}: {e}")
 
 
 if __name__ == "__main__":

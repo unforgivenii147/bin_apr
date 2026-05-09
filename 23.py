@@ -43,7 +43,7 @@ def run_command(cmd):
 
 
 def process_file(file_path) -> None:
-    logger.info(f"[OK] {file_path.name}")
+    print(f"[OK] {file_path.name}")
     check_cmd = [
         "ruff",
         "check",
@@ -76,7 +76,7 @@ def process_file(file_path) -> None:
             output.append(err_fmt.strip())
     if output:
         with print_lock:
-            logger.info("\n".join(output))
+            print("\n".join(output))
             sys.stdout.flush()
 
 
@@ -100,13 +100,13 @@ def main() -> None:
         FileNotFoundError,
         subprocess.CalledProcessError,
     ):
-        logger.info("Error: 'ruff' is not installed or not in PATH.")
-        logger.info("Please run: pip install ruff")
+        print("Error: 'ruff' is not installed or not in PATH.")
+        print("Please run: pip install ruff")
         sys.exit(1)
     cwd = Path.cwd()
     files = get_all_files(cwd)
     if not files:
-        logger.info("no file found.")
+        print("no file found.")
         return
     pool = Pool(8)
     for f in files:

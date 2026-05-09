@@ -81,17 +81,17 @@ def strip_file(file_path):
         except SyntaxError:
             pass
     except Exception as e:
-        logger.info(f"Error in {file_path}: {e}")
+        print(f"Error in {file_path}: {e}")
 
 
 def main():
     files = [os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs if f.endswith(".py")]
     if not files:
         return
-    logger.info(f"Applying anchored query processing to {len(files)} files...")
+    print(f"Applying anchored query processing to {len(files)} files...")
     with multiprocessing.get_context("spawn").Pool() as pool:
         pool.map(strip_file, files)
-    logger.info("Done.")
+    print("Done.")
 
 
 if __name__ == "__main__":

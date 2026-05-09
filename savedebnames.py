@@ -20,13 +20,13 @@ def save_installed_packages(output_file="installed.txt"):
         )
         installed_packages = result.stdout.splitlines()
         Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
-        logger.info(f"Installed package names saved to '{output_file}'")
+        print(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
-        logger.info("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
+        print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
     except subprocess.CalledProcessError as e:
-        logger.info(f"Error: Failed to retrieve installed packages. {e}")
+        print(f"Error: Failed to retrieve installed packages. {e}")
     except Exception as e:
-        logger.info(f"An unexpected error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

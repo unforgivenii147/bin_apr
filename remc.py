@@ -111,7 +111,7 @@ def process_file(file_path: Path) -> None:
             modified, removed = rm_doc(original)
         modified = clean_blank_lines(modified)
         if removed:
-            logger.info(f"✓ {file_path.name} : ", end="")
+            print(f"✓ {file_path.name} : ", end="")
             cprint(f"{removed}", "cyan")
             try:
                 tree = ast.parse(modified)
@@ -125,7 +125,7 @@ def process_file(file_path: Path) -> None:
                 )
                 return
     except Exception as exc:
-        logger.info(f"✗ Error processing {file_path}: {exc}")
+        print(f"✗ Error processing {file_path}: {exc}")
         return
 
 
@@ -143,7 +143,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

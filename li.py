@@ -71,11 +71,11 @@ def list_dir(path="."):
         items.append((size, entry, color))
     size_col_width = max(len(human_readable_size(s)) for s, _, _ in items)
     name_col_width = max(len(n) for _, n, _ in items)
-    logger.info(f"{'size'.ljust(size_col_width)}  {'name'}")
-    logger.info("-" * (size_col_width + name_col_width + 2))
+    print(f"{'size'.ljust(size_col_width)}  {'name'}")
+    print("-" * (size_col_width + name_col_width + 2))
     for size, name, color in sorted(items, key=operator.itemgetter(0)):
         size_str = human_readable_size(size).ljust(size_col_width)
-        logger.info(f"{size_str}  {color}{name}{RESET}")
+        print(f"{size_str}  {color}{name}{RESET}")
 
 
 if __name__ == "__main__":

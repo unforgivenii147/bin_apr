@@ -21,12 +21,12 @@ def compute_hashes(dataset_path, hashSize=8):
     for imagePath in imagePaths:
         image = cv2.imread(imagePath)
         if image is None:
-            logger.info(f"[WARN] unable to read image: {imagePath}")
+            print(f"[WARN] unable to read image: {imagePath}")
             continue
         try:
             h = dhash(image, hashSize=hashSize)
         except Exception as e:
-            logger.info(f"[WARN] failed to hash {imagePath}: {e}")
+            print(f"[WARN] failed to hash {imagePath}: {e}")
             continue
         hashes.setdefault(h, []).append(imagePath)
     return hashes
@@ -57,12 +57,12 @@ Examples:
         msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
         raise SystemExit(msg)
     is_remove_mode = args["remove"]
-    logger.info("[INFO] computing image hashes...")
+    print("[INFO] computing image hashes...")
     hashes = compute_hashes(dataset_path)
     if not hashes:
-        logger.info("[INFO] no images found in directory")
+        print("[INFO] no images found in directory")
         return
-    logger.info(f"[INFO] found {len(hashes)} unique image(s)")
+    print(f"[INFO] found {len(hashes)} unique image(s)")
     for h, hashedPaths in hashes.items():
         if len(hashedPaths) > 1:
             if not is_remove_mode:
@@ -70,13 +70,13 @@ Examples:
                 for p in hashedPaths:
                     image = cv2.imread(p)
                     if image is None:
-                        logger.info(f"[WARN] unable to read image for montage: {p}")
+                        print(f"[WARN] unable to read image for montage: {p}")
                         continue
                     image = cv2.resize(image, (900, 900))
                     montage = image if montage is None else np.hstack([montage, image])
-                logger.info(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
+                print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
             else:
-                logger.info(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
+                print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
                 for p in hashedPaths[1:]:
                     Path(p).unlink()
 

@@ -39,9 +39,9 @@ def xml_to_json(xml_file_path):
         json_data = etree_to_dict(root)
         with json_file_path.open("w", encoding="utf-8") as json_file:
             json.dump(json_data, json_file, indent=2, ensure_ascii=False)
-        logger.info(f"Successfully converted '{xml_file_path}' to '{json_file_path}'")
+        print(f"Successfully converted '{xml_file_path}' to '{json_file_path}'")
     except:
-        logger.info("Error parsing XML file")
+        print("Error parsing XML file")
 
 
 if __name__ == "__main__":

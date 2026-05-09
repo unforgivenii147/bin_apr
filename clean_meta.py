@@ -11,11 +11,11 @@ IMAGE_RE = re.compile(r"^\s*(\.\.\s+image::|:target:|:alt:)", re.IGNORECASE)
 
 
 def process_file(path: Path):
-    logger.info(f"Processing {path.name}")
+    print(f"Processing {path.name}")
     try:
         content = path.read_text(encoding="utf-8")
     except Exception as e:
-        logger.info(f"⚠️  Skipping {path}: {e}")
+        print(f"⚠️  Skipping {path}: {e}")
         return
     lines = content.splitlines(keepends=True)  # ke modified_lines = []
     replaced_count = 0
@@ -55,9 +55,9 @@ def process_file(path: Path):
     new_content = "".join(modified_lines)
     try:
         path.write_text(new_content, encoding="utf-8")
-        logger.info(f"✅ Replaced {replaced_count} line(s) in {path.name}")
+        print(f"✅ Replaced {replaced_count} line(s) in {path.name}")
     except Exception as e:
-        logger.info(f"❌ Failed to write {path}: {e}")
+        print(f"❌ Failed to write {path}: {e}")
 
 
 def main():
@@ -76,11 +76,11 @@ def main():
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
-    logger.info(f"{len(files)} files found.")
+    print(f"{len(files)} files found.")
     for f in files:
         process_file(f)
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

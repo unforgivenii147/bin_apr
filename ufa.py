@@ -15,8 +15,8 @@ def process_file(path: Path) -> None:
     for line in lines:
         nl = "\\u" + str(line.strip())
         decoded = unicode_unescape(nl)
-        logger.info(nl)
-        logger.info(decoded)
+        print(nl)
+        print(decoded)
 
 
 def main() -> None:

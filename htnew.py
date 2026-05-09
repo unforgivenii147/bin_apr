@@ -20,9 +20,9 @@ def create_html_template(filename="index.html"):
 """
     try:
         Path(filename).write_text(html_template, encoding="utf-8")
-        logger.info(f"Successfully created {filename} in {Path.cwd()}")
+        print(f"Successfully created {filename} in {Path.cwd()}")
     except Exception as e:
-        logger.info(f"Error: {e}")
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

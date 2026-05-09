@@ -37,7 +37,7 @@ def save_packages(packages: list[str], path: Path) -> None:
 def main() -> None:
     packages = get_installed_debian_packages()
     save_packages(packages, OUTPUT_FILE)
-    logger.info(f"Saved {len(packages)} packages to {OUTPUT_FILE.resolve()}")
+    print(f"Saved {len(packages)} packages to {OUTPUT_FILE.resolve()}")
 
 
 if __name__ == "__main__":

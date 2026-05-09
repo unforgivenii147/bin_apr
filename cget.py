@@ -14,11 +14,11 @@ def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):
         with Path(filepath).open("r", encoding="utf-8") as f:
             urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
     except FileNotFoundError:
-        logger.info(f"❌ Error: {filepath} not found.")
+        print(f"❌ Error: {filepath} not found.")
         return
-    logger.info(f"📦 Downloading {len(urls)} URLs using pycurl...\n")
+    print(f"📦 Downloading {len(urls)} URLs using pycurl...\n")
     for i, url in enumerate(urls, 1):
-        logger.info(f"🌐 [{i}/{len(urls)}] Downloading: {url}")
+        print(f"🌐 [{i}/{len(urls)}] Downloading: {url}")
         buffer = BytesIO()
         c = pycurl.Curl()
         try:
@@ -38,11 +38,11 @@ def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):
                     safe_filename = f"file_{i}.html"
                 filepath_out = os.path.join(output_dir, safe_filename)
                 Path(filepath_out).write_bytes(buffer.getvalue())
-                logger.info(f"✅ Saved to: {filepath_out}\n")
+                print(f"✅ Saved to: {filepath_out}\n")
             else:
-                logger.info(f"⚠️  Failed (HTTP {status_code})\n")
+                print(f"⚠️  Failed (HTTP {status_code})\n")
         except pycurl.error as e:
-            logger.info(f"❌ pycurl error: {e}\n")
+            print(f"❌ pycurl error: {e}\n")
         finally:
             c.close()
 

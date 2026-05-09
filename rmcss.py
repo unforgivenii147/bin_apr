@@ -20,7 +20,7 @@ def process_file(fp) -> None:
     if out != src:
         fp.write_text(out, encoding="utf-8")
     after = gsz(fp)
-    logger.info(f"[OK] {fp.name} ", end="")
+    print(f"[OK] {fp.name} ", end="")
     diffsize = before - after
     cprint(f"{fsz(diffsize)}", "cyan")
 
@@ -47,7 +47,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

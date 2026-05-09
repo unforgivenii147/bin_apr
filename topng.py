@@ -20,7 +20,7 @@ SUPPORTED_FORMATS = {
 def convert_to_png(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in SUPPORTED_FORMATS:
-        logger.info(f"Skipping: {path.name} (Unsupported format or not a file)")
+        print(f"Skipping: {path.name} (Unsupported format or not a file)")
         return False
     if path.suffix.lower() in {".png", ".jpeg"}:
         return True
@@ -32,7 +32,7 @@ def convert_to_png(file_path: str) -> bool:
     try:
         img = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
         if img is None:
-            logger.info(f"Error: Could not decode {path.name}")
+            print(f"Error: Could not decode {path.name}")
             return False
         if img.shape[2] == 4:
             b, g, r, a = cv2.split(img)
@@ -47,18 +47,18 @@ def convert_to_png(file_path: str) -> bool:
         success = cv2.imwrite(str(output_path), final_img)
         if success:
             path.unlink()
-            logger.info(f"Successfully converted '{path.name}' to png.")
+            print(f"Successfully converted '{path.name}' to png.")
             return True
-        logger.info(f"Failed to write '{output_path.name}'")
+        print(f"Failed to write '{output_path.name}'")
         return False
     except Exception as e:
-        logger.info(f"Error converting '{path.name}': {e}")
+        print(f"Error converting '{path.name}': {e}")
         return False
 
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <image_file>")
+        print(f"Usage: {sys.argv[0]} <image_file>")
         sys.exit(1)
     if convert_to_png(sys.argv[1]):
         sys.exit(0)

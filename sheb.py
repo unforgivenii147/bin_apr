@@ -56,7 +56,7 @@ def process_file(filepath):
         f.seek(0)
         f.writelines(lines)
         f.truncate()
-        logger.info(f"{os.path.relpath(filepath)} updated.")
+        print(f"{os.path.relpath(filepath)} updated.")
     if "bin" in filepath.split(os.sep):
         Path(filepath).chmod(0o755)
 

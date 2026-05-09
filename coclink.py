@@ -84,16 +84,16 @@ def create_html(channel_name, base_data):
         html_content += "</ul></div>"
     html_content += "</body></html>"
     Path(file_path).write_text(html_content, encoding="utf-8")
-    logger.info(f"Generated: {file_path}")
+    print(f"Generated: {file_path}")
 
 
 def main():
     if not API_KEY:
-        logger.info("Error: API_KEY not found in .env file.")
+        print("Error: API_KEY not found in .env file.")
         return
     youtube = build("youtube", "v3", developerKey=API_KEY)
     for name, cid in CHANNELS.items():
-        logger.info(f"Processing {name}...")
+        print(f"Processing {name}...")
         vids = get_videos(youtube, cid)
         results = []
         for v in vids:
@@ -109,7 +109,7 @@ def main():
         if results:
             create_html(name, results)
         else:
-            logger.info(f"No TH18 links found for {name}.")
+            print(f"No TH18 links found for {name}.")
 
 
 if __name__ == "__main__":

@@ -25,16 +25,14 @@ def optimize_pngs_recursively():
         )
         optimized_size = png_file.stat().st_size
         size_change = original_size - optimized_size
-        logger.info(f"Processed: {png_file}")
-        logger.info(
-            f"  Original: {original_size} bytes, Optimized: {optimized_size} bytes, Change: {size_change} bytes"
-        )
+        print(f"Processed: {png_file}")
+        print(f"  Original: {original_size} bytes, Optimized: {optimized_size} bytes, Change: {size_change} bytes")
         total_optimized_size += optimized_size
     total_reduction = total_original_size - total_optimized_size
-    logger.info("\n--- Summary ---")
-    logger.info(f"Total original size: {total_original_size} bytes")
-    logger.info(f"Total optimized size: {total_optimized_size} bytes")
-    logger.info(f"Total reduction: {total_reduction} bytes")
+    print("\n--- Summary ---")
+    print(f"Total original size: {total_original_size} bytes")
+    print(f"Total optimized size: {total_optimized_size} bytes")
+    print(f"Total reduction: {total_reduction} bytes")
 
 
 if __name__ == "__main__":

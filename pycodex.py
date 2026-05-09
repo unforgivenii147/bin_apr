@@ -238,7 +238,7 @@ class FileProcessor:
             code_blocks = self.extractor.extract_from_html(html_content, str(file_path))
             if code_blocks:
                 self._save_code_blocks(code_blocks, file_path)
-                logger.info(f"Extracted {len(code_blocks)} code blocks from {file_path}")
+                print(f"Extracted {len(code_blocks)} code blocks from {file_path}")
             return len(code_blocks)
         except Exception as e:
             logger.exception("Error processing %s: %s", file_path, e)
@@ -252,7 +252,7 @@ class FileProcessor:
             code_blocks = self.extractor.extract_from_html(html_content, url)
             if code_blocks:
                 self._save_code_blocks(code_blocks, url)
-                logger.info(f"Extracted {len(code_blocks)} code blocks from {url}")
+                print(f"Extracted {len(code_blocks)} code blocks from {url}")
             return len(code_blocks)
         except Exception as e:
             logger.exception("Error processing URL %s: %s", url, e)
@@ -340,16 +340,16 @@ Examples:
     total_blocks = 0
     try:
         if args.url:
-            logger.info(f"Processing URL: {args.url}")
+            print(f"Processing URL: {args.url}")
             total_blocks += processor.process_url(args.url)
         elif args.file:
-            logger.info(f"Processing file: {args.file}")
+            print(f"Processing file: {args.file}")
             total_blocks += processor.process_file(args.file)
         elif args.path:
-            logger.info(f"Processing directory: {args.path}")
+            print(f"Processing directory: {args.path}")
             html_files = find_html_files(args.path)
             if html_files:
-                logger.info(f"Found {len(html_files)} HTML files")
+                print(f"Found {len(html_files)} HTML files")
                 with ThreadPoolExecutor(max_workers=args.jobs) as executor:
                     futures = {
                         executor.submit(
@@ -363,10 +363,10 @@ Examples:
             else:
                 logger.warning(f"No HTML files found in {args.path}")
         else:
-            logger.info("Processing HTML files in current directory recursively")
+            print("Processing HTML files in current directory recursively")
             html_files = find_html_files(".")
             if html_files:
-                logger.info(f"Found {len(html_files)} HTML files")
+                print(f"Found {len(html_files)} HTML files")
                 with ThreadPoolExecutor(max_workers=args.jobs) as executor:
                     futures = {
                         executor.submit(
@@ -379,8 +379,8 @@ Examples:
                         total_blocks += future.result()
             else:
                 logger.warning("No HTML files found in current directory")
-        logger.info("Total code blocks extracted: %s", total_blocks)
-        logger.info(f"Results saved to: {processor.output_dir}")
+        print("Total code blocks extracted: %s", total_blocks)
+        print(f"Results saved to: {processor.output_dir}")
     finally:
         processor.close()
 

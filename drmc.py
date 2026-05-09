@@ -362,7 +362,7 @@ def strip_comments_python(code: str) -> Result:
         _ = ast.parse(final_code)
         return Result(final_code, comments, removed_chars)
     except:
-        logger.info("ast parse error on final code.")
+        print("ast parse error on final code.")
         return Result(src, 0, 0)
 
 
@@ -473,4 +473,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        logger.info("\nInterrupted.")
+        print("\nInterrupted.")

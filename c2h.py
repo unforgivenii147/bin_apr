@@ -19,7 +19,7 @@ def main():
         html_content += f'<div style="background-color: {color}; color: white; padding: 10px; margin: 5px; border-radius: 5px;">{color}</div>\n'
     html_content += "</body>\n</html>"
     Path("/sdcard/colors.html").write_text(html_content, encoding="utf-8")
-    logger.info("/sdcard/colors.html created")
+    print("/sdcard/colors.html created")
 
 
 if __name__ == "__main__":

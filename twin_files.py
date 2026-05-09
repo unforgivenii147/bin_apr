@@ -12,19 +12,19 @@ def remove_ipynb_if_md_exists(root: Path, dry_run: bool = True):
         checked += 1
         md_path = ipynb_path.with_suffix(".md")
         if md_path.exists():
-            logger.info(f"[MATCH] {ipynb_path}  ->  {md_path}")
+            print(f"[MATCH] {ipynb_path}  ->  {md_path}")
             if not dry_run:
                 try:
                     ipynb_path.unlink()
-                    logger.info(f"[REMOVED] {ipynb_path}")
+                    print(f"[REMOVED] {ipynb_path}")
                     removed += 1
                 except Exception as e:
-                    logger.info(f"[ERROR] Could not remove {ipynb_path}: {e}")
+                    print(f"[ERROR] Could not remove {ipynb_path}: {e}")
             else:
-                logger.info(f"[DRY RUN] Would remove {ipynb_path}")
-    logger.info("\n--- Summary ---")
-    logger.info(f"Checked: {checked}")
-    logger.info(f"Removed: {removed}" if not dry_run else "Dry run only. No files removed.")
+                print(f"[DRY RUN] Would remove {ipynb_path}")
+    print("\n--- Summary ---")
+    print(f"Checked: {checked}")
+    print(f"Removed: {removed}" if not dry_run else "Dry run only. No files removed.")
 
 
 if __name__ == "__main__":

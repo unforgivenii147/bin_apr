@@ -11,7 +11,7 @@ def detect_version(file_path) -> None:
     try:
         source = file_path.read_text(encoding="utf-8")
     except Exception as e:
-        logger.info(f"Error reading file: {e}")
+        print(f"Error reading file: {e}")
         return
     py2_score = 0
     py3_score = 0
@@ -21,7 +21,7 @@ def detect_version(file_path) -> None:
         py3_score += 1
         reasons.append("Parsed successfully with Python 3 syntax.")
     except SyntaxError:
-        logger.info(f"{file_path.name}\nConfidence: High\nReason: Syntax error when parsed with Python 3.")
+        print(f"{file_path.name}\nConfidence: High\nReason: Syntax error when parsed with Python 3.")
         return
     if "print " in source and "print(" not in source:
         py2_score += 2
@@ -52,7 +52,7 @@ def detect_version(file_path) -> None:
         confidence = "Low"
         reasons.append("No strong indicators found; defaulting to Python 3.")
     if version == "2":
-        logger.info(f"{file_path.name} : {version}\nConfidence: {confidence}\nReason(s):")
+        print(f"{file_path.name} : {version}\nConfidence: {confidence}\nReason(s):")
 
 
 if __name__ == "__main__":

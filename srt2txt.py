@@ -27,13 +27,13 @@ def srt_to_text(srt_path: Path) -> str:
 
 def main():
     if len(sys.argv) < 2:
-        logger.info("Usage: srt2txt.py file.srt [out.txt]")
+        print("Usage: srt2txt.py file.srt [out.txt]")
         sys.exit(1)
     src = Path(sys.argv[1])
     dst = Path(sys.argv[2]) if len(sys.argv) > 2 else src.with_suffix(".txt")
     text = srt_to_text(src)
     dst.write_text(text, encoding="utf-8")
-    logger.info(f"✔ Converted: {src} → {dst}")
+    print(f"✔ Converted: {src} → {dst}")
 
 
 if __name__ == "__main__":

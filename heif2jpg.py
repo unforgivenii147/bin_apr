@@ -10,7 +10,7 @@ from loguru import logger
 def process_file(fp):
     if not fp.exists():
         return False
-    logger.info(f"[OK] {fp.name}")
+    print(f"[OK] {fp.name}")
     img = ph.open_heif(fp)
     outfile = fp.with_suffix(".jpg")
     img.save(outfile)
@@ -33,7 +33,7 @@ def main():
     pool.close()
     pool.join()
     after = gsz(cwd)
-    logger.info(f"{fornat_size(after - start_size)}")
+    print(f"{fornat_size(after - start_size)}")
 
 
 if __name__ == "__main__":

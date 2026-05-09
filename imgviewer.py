@@ -32,8 +32,8 @@ def show_image(img_path):
     for x in range(h):
         for y in range(w):
             pix = img_arr[x][y]
-            logger.info(get_color(pix[0], pix[1], pix[2]), end="")
-        logger.info()
+            print(get_color(pix[0], pix[1], pix[2]), end="")
+        print()
 
 
 if __name__ == "__main__":

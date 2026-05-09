@@ -12,7 +12,7 @@ def clean_record_file(record_path: Path):
     cleaned = [line for line in cleaned if "license.md" not in line.lower()]
     cleaned = [line for line in cleaned if "license.txt" not in line.lower()]
     record_path.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
-    logger.info(f"{record_path.name} in {record_path.parent.name} cleaned")
+    print(f"{record_path.name} in {record_path.parent.name} cleaned")
 
 
 def remove_pyc_entries():
@@ -25,4 +25,4 @@ def remove_pyc_entries():
 
 if __name__ == "__main__":
     remove_pyc_entries()
-    logger.info("Removed .pyc references from all RECORD files.")
+    print("Removed .pyc references from all RECORD files.")

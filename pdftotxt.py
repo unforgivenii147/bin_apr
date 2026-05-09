@@ -21,7 +21,7 @@ def process_file(fp):
             else:
                 txtfile = f"{outdir}/{Path(fp).stem}{i!s}.txt"
             Path(txtfile).write_text(text, encoding="utf-8")
-            logger.info(f"{txtfile} created")
+            print(f"{txtfile} created")
             i += 1
 
 

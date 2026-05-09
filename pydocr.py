@@ -107,7 +107,7 @@ def save_markdown(folder: str, path: str, content: str):
 
 
 def process_importable_task(name: str):
-    logger.info(f"processing module {name}")
+    print(f"processing module {name}")
     result = extract_from_importable(name)
     if not result:
         return
@@ -120,7 +120,7 @@ def process_importable_task(name: str):
 def process_file_task(py_file):
     filepath = Path(py_file)
     root = str(filepath.parent)
-    logger.info(f"processing file {filepath.name} from {filepath.parent.name}")
+    print(f"processing file {filepath.name} from {filepath.parent.name}")
     result = extract_from_file(str(py_file))
     if not result:
         return
@@ -138,7 +138,7 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
-    logger.info(f"processing {len(files)} files")
+    print(f"processing {len(files)} files")
     with get_context("spawn").Pool(4) as pool:
         pending = deque()
         for f in files:
@@ -150,7 +150,7 @@ def main():
 
 
 """
-    logger.info(f"processing {len(importable)} importable")
+    print(f"processing {len(importable)} importable")
     with get_context('spawn').Pool(8) as pool:
         pending=deque()
         for x in importables:

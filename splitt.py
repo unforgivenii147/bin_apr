@@ -21,14 +21,14 @@ def split_file_by_delimiter(fname, delim) -> None:
             fo.write(part)
             fo.write(endl)
             i += 1
-        logger.info(f"{outfile} created")
+        print(f"{outfile} created")
 
 
 def main() -> None:
     fn = sys.argv[1]
     delim = sys.argv[2]
     split_file_by_delimiter(fn, delim)
-    logger.info("metadata updated.")
+    print("metadata updated.")
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ def process_file(fn: Path, backup=True) -> bool:
                 tree = ast.parse(content)
                 new_content = ast.unparse(tree)
                 fn.write_text(new_content, encoding="utf-8")
-                logger.info(f"{fn.name} rewrited.")
+                print(f"{fn.name} rewrited.")
                 return True
             except:
                 cprint(f"{fn.name} ast parse error", "cyan")

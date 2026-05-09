@@ -13,7 +13,7 @@ for root, _dirs, files in os.walk(current_dir):
             with Path(file_path).open(encoding="utf-8") as f:
                 content = f.read()
                 if search_string in content:
-                    logger.info(f"Found in file: {file_path}")
+                    print(f"Found in file: {file_path}")
         except (
             UnicodeDecodeError,
             PermissionError,

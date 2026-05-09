@@ -476,9 +476,9 @@ def main() -> None:
         try:
             if cache_path.exists():
                 cache_path.unlink()
-            logger.info("Cache cleared.")
+            print("Cache cleared.")
         except Exception as e:
-            logger.info("Failed clearing cache:", e)
+            print("Failed clearing cache:", e)
         return
     tasks = []
     cached_results = []
@@ -577,15 +577,15 @@ def main() -> None:
             for pkg in sorted(pkgs, key=lambda s: s.lower()):
                 f.write(pkg + "\n")
     except Exception as e:
-        logger.info("Failed writing requirements file:", e)
+        print("Failed writing requirements file:", e)
         sys.exit(2)
-    logger.info("\nGenerated", out_file.name)
-    logger.info("────────────────────────────")
+    print("\nGenerated", out_file.name)
+    print("────────────────────────────")
     if pkgs:
         for pkg in sorted(pkgs, key=lambda s: s.lower()):
-            logger.info(pkg)
+            print(pkg)
     else:
-        logger.info("(empty)")
+        print("(empty)")
 
 
 if __name__ == "__main__":

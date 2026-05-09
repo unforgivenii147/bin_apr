@@ -54,7 +54,7 @@ def main() -> None:
                 recent.append(result)
     recent.sort(key=operator.itemgetter(0))
     for _, path in recent:
-        logger.info(path.relative_to(root))
+        print(path.relative_to(root))
 
 
 if __name__ == "__main__":

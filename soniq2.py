@@ -13,7 +13,7 @@ MB_5 = 5 * 1024 * 1024
 
 def sort_and_uniq(file_path):
     if not Path(file_path).exists():
-        logger.info(f"Error: File '{file_path}' not found.")
+        print(f"Error: File '{file_path}' not found.")
         return
     try:
         get_size = Path(file_path).stat().st_size
@@ -39,16 +39,16 @@ def sort_and_uniq(file_path):
                 for line in unique_sorted_lines:
                     tmp.write(line + "\n")
             Path(temp_path).replace(file_path)
-            logger.info(f"Successfully updated '{file_path}'.")
+            print(f"Successfully updated '{file_path}'.")
         except Exception:
             Path(temp_path).unlink()
             raise
     except Exception as e:
-        logger.info(f"Failed to process file: {e}")
+        print(f"Failed to process file: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: python script.py <filename>")
+        print("Usage: python script.py <filename>")
     else:
         sort_and_uniq(sys.argv[1])

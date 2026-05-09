@@ -42,7 +42,7 @@ def main():
                     all_imports.append(k)
     all_imports = sorted(set(all_imports))
     outfile.write_text("\n".join(all_imports), encoding="utf-8")
-    logger.info("done.")
+    print("done.")
 
 
 if __name__ == "__main__":

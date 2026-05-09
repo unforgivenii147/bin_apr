@@ -11,7 +11,7 @@ from loguru import logger
 try:
     from termcolor import colored
 except ImportError:
-    logger.info("Install termcolor: pip install termcolor")
+    print("Install termcolor: pip install termcolor")
     sys.exit(1)
 REGEX_RULES = [
     r"\bOutcast\b",
@@ -62,12 +62,12 @@ def main():
     args = ap.parse_args()
     files = collect_files(Path(), args.recursive)
     if not files:
-        logger.info("No matching files found")
+        print("No matching files found")
         return
     names = [f.name for f in files]
     prefix = common_prefix(names)
     suffix = common_suffix(names)
-    logger.info(colored("\nPreview:", "cyan", attrs=["bold"]))
+    print(colored("\nPreview:", "cyan", attrs=["bold"]))
     for f in files:
         name = f.name
         core = name[len(prefix) : len(name) - len(suffix)]
@@ -76,7 +76,7 @@ def main():
         new_name = re.sub(r"\.+", ".", new_name)
         if name == new_name:
             continue
-        logger.info(
+        print(
             colored("OLD:", "red"),
             name,
             colored("-> NEW:", "green"),
@@ -85,7 +85,7 @@ def main():
         if args.write:
             target = f.with_name(new_name)
             if target.exists():
-                logger.info(
+                print(
                     colored(
                         "SKIPPED (exists)",
                         "yellow",
@@ -95,7 +95,7 @@ def main():
             else:
                 f.rename(target)
     if not args.write:
-        logger.info(
+        print(
             colored(
                 "\nDry-run only. Use -w to apply changes.",
                 "yellow",

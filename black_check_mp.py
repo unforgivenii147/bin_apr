@@ -30,7 +30,7 @@ def unique_destination(dest: Path) -> Path:
 
 
 def black_check(file_path: Path) -> tuple[Path, bool]:
-    logger.info(f"[OK] {file_path}")
+    print(f"[OK] {file_path}")
     """
     result = subprocess.run(
         ["black", "--check", "--quiet", str(file_path)],
@@ -63,9 +63,9 @@ def main():
     ensure_dirs()
     files = collect_python_files()
     if not files:
-        logger.info("No python files found.")
+        print("No python files found.")
         return
-    logger.info(f"Found {len(files)} python files.")
+    print(f"Found {len(files)} python files.")
     results = []
     with ProcessPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(black_check, f) for f in files]
@@ -75,7 +75,7 @@ def main():
         dest = unique_destination(target_dir / file_path.name)
         shutil.move(str(file_path), str(dest))
         status = "OK" if passed else "ERROR"
-        logger.info(f"{status:6} → {file_path} → {dest}")
+        print(f"{status:6} → {file_path} → {dest}")
 
 
 if __name__ == "__main__":

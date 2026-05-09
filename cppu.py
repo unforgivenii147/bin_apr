@@ -25,7 +25,7 @@ EXT = [
 
 def process_file(path):
     before = gsz(path)
-    logger.info(f"{path.name} ", end=" ")
+    print(f"{path.name} ", end=" ")
     try:
         res = subprocess.run(
             [
@@ -73,7 +73,7 @@ def main() -> None:
     mpf3(process_file, cfiles)
     after = gsz(cwd)
     diffsize = before - gsz(cwd)
-    logger.info(f"space change: {fsz(diffsize)}")
+    print(f"space change: {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

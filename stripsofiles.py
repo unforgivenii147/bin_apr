@@ -14,7 +14,7 @@ class BatchStripper:
         verbose: bool = False,
         verify: bool = True,
     ) -> dict:
-        logger.info(f"\nStripping .so files larger than {min_size_mb} MB...")
+        print(f"\nStripping .so files larger than {min_size_mb} MB...")
         so_files = list(Path(directory).rglob("*.so*"))
         min_bytes = min_size_mb * 1024 * 1024
         large_files = [f for f in so_files if f.stat().st_size >= min_bytes]
@@ -32,7 +32,7 @@ class BatchStripper:
     ) -> dict:
         if extensions is None:
             extensions = [".so", ".so.1", ".so.6"]
-        logger.info(f"\nStripping .so files with extensions: {extensions}")
+        print(f"\nStripping .so files with extensions: {extensions}")
         so_files = []
         for ext in extensions:
             so_files.extend(Path(directory).rglob(f"*{ext}"))
@@ -55,7 +55,7 @@ class BatchStripper:
                 "debug",
                 "profile",
             ]
-        logger.info(f"\nStripping .so files (excluding: {exclude_patterns})...")
+        print(f"\nStripping .so files (excluding: {exclude_patterns})...")
         so_files = [
             f for f in Path(directory).rglob("*.so*") if not any(pattern in f.name for pattern in exclude_patterns)
         ]
@@ -71,7 +71,7 @@ class BatchStripper:
         verbose: bool = False,
         verify: bool = True,
     ) -> dict:
-        logger.info(f"\nStripping with retry logic (max {max_retries} attempts)...")
+        print(f"\nStripping with retry logic (max {max_retries} attempts)...")
         so_files = list(Path(directory).rglob("*.so*"))
         stripper = SoFileStripper(verbose=verbose, verify_ctypes=verify)
         for so_file in so_files:
@@ -81,7 +81,7 @@ class BatchStripper:
                     break
                 if attempt < max_retries - 1:
                     if verbose:
-                        logger.info(f"  Retry {attempt + 1}/{max_retries - 1}...")
+                        print(f"  Retry {attempt + 1}/{max_retries - 1}...")
                     time.sleep(1)
         return stripper.stats
 

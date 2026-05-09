@@ -27,7 +27,7 @@ def process_file(file_path: Path) -> None:
         clean_html = str(soup)
         file_path.write_text(clean_html, encoding="utf-8")
         after = gsz(file_path)
-        logger.info(f"{file_path.name}", end=" ")
+        print(f"{file_path.name}", end=" ")
         diffsize = before - after
         if diffsize == 0:
             cprint("NO CHANGE", "yellow")
@@ -66,7 +66,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ py_version = f"{major}.{minor}"
 
 
 def process_dir(dr):
-    logger.info(dr.name)
+    print(dr.name)
     if "dist-info" in str(dr.name):
         for k in os.listdir(dr):
             if k in {

@@ -45,10 +45,10 @@ def update_record_file(record_path):
         with record_path.open("w", encoding="utf-8", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(filtered_lines)
-        logger.info(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
+        print(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
         return True
     except Exception as e:
-        logger.info(
+        print(
             f"  Error processing {record_path}: {e}",
             file=sys.stderr,
         )
@@ -60,9 +60,9 @@ def scan_and_update(site_packages_dirs):
     total_files = 0
     for site_dir in site_packages_dirs:
         if not Path(site_dir).exists():
-            logger.info(f"Directory does not exist: {site_dir}")
+            print(f"Directory does not exist: {site_dir}")
             continue
-        logger.info(f"\nScanning: {site_dir}")
+        print(f"\nScanning: {site_dir}")
         for path in Path(site_dir).rglob("*"):
             if path.name == "RECORD" and update_record_file(path):
                 total_updated += 1
@@ -88,18 +88,18 @@ def main():
     args = parser.parse_args()
     site_dirs = args.site_dir or find_site_packages()
     if not site_dirs:
-        logger.info(
+        print(
             "Error: Could not find site-packages directory",
             file=sys.stderr,
         )
         sys.exit(1)
-    logger.info(f"Python version: {sys.version}")
-    logger.info(f"Site packages directories: {', '.join(site_dirs)}")
+    print(f"Python version: {sys.version}")
+    print(f"Site packages directories: {', '.join(site_dirs)}")
     total_files, total_updated = scan_and_update(site_dirs)
-    logger.info(f"\n{'=' * 50}")
-    logger.info("Summary:")
-    logger.info(f"  Total RECORD files found: {total_files}")
-    logger.info(f"  Files that would be/are updated: {total_updated}")
+    print(f"\n{'=' * 50}")
+    print("Summary:")
+    print(f"  Total RECORD files found: {total_files}")
+    print(f"  Files that would be/are updated: {total_updated}")
 
 
 if __name__ == "__main__":

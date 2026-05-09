@@ -52,7 +52,7 @@ def is_python_like(line) -> bool:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: python fpy.py <filename>")
+        print("Usage: python fpy.py <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     try:
@@ -61,12 +61,12 @@ if __name__ == "__main__":
         filtered = [
             line for line in lines if is_python_like(line) or looks_like_python(line) or is_probably_python(line)
         ]
-        logger.info(filtered)
+        print(filtered)
         with Path("out.py").open("w", encoding="utf-8") as f:
             for l in filtered:
                 f.write(l)
                 f.write("\n")
     except FileNotFoundError:
-        logger.info(f"Error: File '{fname}' not found.")
+        print(f"Error: File '{fname}' not found.")
     except Exception as e:
-        logger.info("An error occurred:", e)
+        print("An error occurred:", e)

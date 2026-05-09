@@ -24,7 +24,7 @@ def process_file(file_path, text_extensions):
 
 def collect_top_lines(directory, text_extensions, top_n=500):
     for ext in text_extensions:
-        logger.info(f"\nProcessing {ext} files...")
+        print(f"\nProcessing {ext} files...")
         lines_counter = Counter()
         file_paths = [
             Path(root) / file
@@ -33,9 +33,9 @@ def collect_top_lines(directory, text_extensions, top_n=500):
             if is_text_file(Path(root) / file, {ext})
         ]
         if not file_paths:
-            logger.info(f"No {ext} files found. Skipping...")
+            print(f"No {ext} files found. Skipping...")
             continue
-        logger.info(f"Found {len(file_paths)} {ext} files. Processing in parallel...")
+        print(f"Found {len(file_paths)} {ext} files. Processing in parallel...")
         start_time = time.time()
         with get_context("spawn").Pool(8) as pool:
             results = pool.starmap(
@@ -55,7 +55,7 @@ def collect_top_lines(directory, text_extensions, top_n=500):
                 ) in lines_counter.most_common(top_n)
             )
         elapsed = time.time() - start_time
-        logger.info(f"Saved top {top_n} lines for {ext} files to {output_file} (took {elapsed:.2f} seconds)")
+        print(f"Saved top {top_n} lines for {ext} files to {output_file} (took {elapsed:.2f} seconds)")
 
 
 def main():

@@ -33,15 +33,15 @@ except ImportError:
                 bar_len = 30
                 filled = int(bar_len * self.n / self.total)
                 bar = "█" * filled + "-" * (bar_len - filled)
-                logger.info(f"\r{self.desc}: |{bar}| {percent:3.0f}% {self.n}/{self.total} {self.unit}", end="")
+                print(f"\r{self.desc}: |{bar}| {percent:3.0f}% {self.n}/{self.total} {self.unit}", end="")
             else:
-                logger.info(f"\r{self.desc}: {self.n} {self.unit}", end="")
+                print(f"\r{self.desc}: {self.n} {self.unit}", end="")
 
         def close(self):
             if self.leave:
-                logger.info()
+                print()
             else:
-                logger.info()
+                print()
 
         def __enter__(self):
             return self
@@ -116,7 +116,7 @@ def download(
         offset = output_path.stat().st_size
         if remote_size and offset >= remote_size:
             if not quiet:
-                logger.info(f"✅ Already complete: {output_path} ({offset} bytes)")
+                print(f"✅ Already complete: {output_path} ({offset} bytes)")
             return str(output_path)
     headers = {}
     if offset > 0:
@@ -142,7 +142,7 @@ def download(
                         f.write(chunk)
                         pbar.update(len(chunk))
             if not quiet:
-                logger.info(f"\n✅ Saved to: {output_path}")
+                print(f"\n✅ Saved to: {output_path}")
             return str(output_path)
         except urllib.error.HTTPError as e:
             msg = f"HTTP error {e.code}: {e.reason}"
@@ -183,7 +183,7 @@ Examples:
             quiet=args.quiet,
         )
     except RuntimeError as e:
-        logger.info(f"❌ {e}", file=sys.stderr)
+        print(f"❌ {e}", file=sys.stderr)
         sys.exit(1)
 
 

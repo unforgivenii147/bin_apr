@@ -26,4 +26,4 @@ def get_top_10_largest_files_optimized(directory="."):
 if __name__ == "__main__":
     top_10 = get_top_10_largest_files_optimized()
     for size, file_path in top_10:
-        logger.info(f"{size} bytes - {file_path}")
+        print(f"{size} bytes - {file_path}")

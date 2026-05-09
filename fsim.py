@@ -25,7 +25,7 @@ def compute_hashes(files):
                 data = fh.read()
                 hashes[f] = ssdeep.hash(data)
         except Exception as e:
-            logger.info(f"Skipping {f}: {e}")
+            print(f"Skipping {f}: {e}")
     return hashes
 
 
@@ -59,29 +59,29 @@ def copy_groups(groups, output_dir="output"):
             try:
                 shutil.move(f, group_dir)
             except Exception as e:
-                logger.info(f"Failed to copy {f}: {e}")
+                print(f"Failed to copy {f}: {e}")
 
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <threshold>")
+        print(f"Usage: {sys.argv[0]} <threshold>")
         sys.exit(1)
     try:
         threshold = int(sys.argv[1])
     except ValueError:
-        logger.info("Threshold must be an integer (0–100).")
+        print("Threshold must be an integer (0–100).")
         sys.exit(1)
     files = get_all_files(".")
-    logger.info(f"Found {len(files)} files. Computing hashes...")
+    print(f"Found {len(files)} files. Computing hashes...")
     hashes = compute_hashes(files)
-    logger.info("Comparing files...")
+    print("Comparing files...")
     groups = group_similar_files(hashes, threshold)
     if not groups:
-        logger.info("No similar files found.")
+        print("No similar files found.")
     else:
-        logger.info(f"Found {len(groups)} groups of similar files.")
+        print(f"Found {len(groups)} groups of similar files.")
         copy_groups(groups)
-        logger.info("Copied groups to 'output' directory.")
+        print("Copied groups to 'output' directory.")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ def main():
     files = get_files(cwd, extensions=[".html", ".htm"])
     for f in files:
         if f.stat().st_size > 1024 * 1024:
-            logger.info(f.relative_to(cwd))
+            print(f.relative_to(cwd))
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ def process_file(path: Path, shift_ms: int):
         ),
         encoding="utf-8",
     )
-    logger.info(f"✔ {path}")
+    print(f"✔ {path}")
 
 
 def main():

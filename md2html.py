@@ -105,4 +105,4 @@ def convert_markdown(md_path: str) -> str:
 if __name__ == "__main__":
     md_path = sys.argv[1]
     output_path = convert_markdown(md_path)
-    logger.info(f"Output saved in {output_path}")
+    print(f"Output saved in {output_path}")

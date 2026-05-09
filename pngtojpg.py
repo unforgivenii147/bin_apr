@@ -14,6 +14,6 @@ for root, _dirs, files in os.walk("."):
                 img = Image.open(png_path).convert("RGB")
                 img.save(jpg_path, "JPEG")
                 Path(png_path).unlink()
-                logger.info(f"Converted and deleted: {png_path} -> {jpg_path}")
+                print(f"Converted and deleted: {png_path} -> {jpg_path}")
             except Exception as e:
-                logger.info(f"Failed to convert {png_path}: {e}")
+                print(f"Failed to convert {png_path}: {e}")

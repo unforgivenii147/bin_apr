@@ -14,4 +14,4 @@ if __name__ == "__main__":
     nl = [line for line in lines if line.strip() and ("mkv" in line or "mp4" in line) and lowest in line]
     if nl:
         fn.write_text("\n".join(nl), encoding="utf-8")
-    logger.info(f"{len(nl)} links found.")
+    print(f"{len(nl)} links found.")

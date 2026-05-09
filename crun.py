@@ -15,7 +15,7 @@ def process_file(fp):
     if fp.suffix == ".cpp":
         cmd = f"clang++ {fp!s} -o {fp.with_suffix('')!s}"
     ret, txt, _err = run_command(cmd)
-    logger.info(txt)
+    print(txt)
     return ret
     return True
 
@@ -32,7 +32,7 @@ def main():
         }:
             files.append(path)
     mpf3(process_file, files)
-    logger.info(f"{fsz(start_size - gsz(cwd))}")
+    print(f"{fsz(start_size - gsz(cwd))}")
 
 
 if __name__ == "__main__":

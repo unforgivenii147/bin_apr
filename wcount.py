@@ -19,8 +19,8 @@ def stem(word):
 
 def process_file(fp):
     if fp.is_symlink():
-        logger.info(f"skipping symlink {fp.name}")
-    logger.info(f"{fp.name}")
+        print(f"skipping symlink {fp.name}")
+    print(f"{fp.name}")
     word_count = compose(frequencies, _map(stem), str.split)
     content = fp.read_text(encoding="utf-8")
     return word_count(content)

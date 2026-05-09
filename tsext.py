@@ -16,7 +16,7 @@ def extract_python_code_elements(filepath):
         with Path(filepath).open("rb") as f:
             tree = parser.parse(f.read())
     except Exception as e:
-        logger.info(f"Error parsing file {filepath}: {e}")
+        print(f"Error parsing file {filepath}: {e}")
         return [], [], []
     functions = []
     classes = []
@@ -73,7 +73,7 @@ def process_directory(start_dir, output_dir):
     all_imports = set()
     if not Path(output_dir).exists():
         Path(output_dir).mkdir(parents=True)
-        logger.info(f"Created output directory: {output_dir}")
+        print(f"Created output directory: {output_dir}")
     imports_output_path = os.path.join(output_dir, "imports.py")
     for path in get_pyfiles(start_dir):
         functions, classes, constants, imports = extract_python_code_elements(path)
@@ -105,8 +105,8 @@ def process_directory(start_dir, output_dir):
             f.writelines(f"import {imp}\n" for imp in sorted(all_imports))
         else:
             f.write("# No imports found.\n")
-    logger.info(f"\nExtraction complete. Results saved to '{output_dir}'.")
-    logger.info(f"Imports saved to '{imports_output_path}'.")
+    print(f"\nExtraction complete. Results saved to '{output_dir}'.")
+    print(f"Imports saved to '{imports_output_path}'.")
 
 
 if __name__ == "__main__":
@@ -114,5 +114,5 @@ if __name__ == "__main__":
     output_directory = "output"
     if not Path(output_directory).exists():
         Path(output_directory).mkdir(parents=True)
-    logger.info("Starting code element extraction...")
+    print("Starting code element extraction...")
     process_directory(current_directory, output_directory)

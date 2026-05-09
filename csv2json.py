@@ -10,7 +10,7 @@ from loguru import logger
 def csv_to_json_map(csv_file):
     csv_path = Path(csv_file)
     if not csv_path.exists():
-        logger.info(f"Error: file not found: {csv_path}")
+        print(f"Error: file not found: {csv_path}")
         sys.exit(1)
     json_path = csv_path.with_suffix(".json")
     result = {}
@@ -18,7 +18,7 @@ def csv_to_json_map(csv_file):
         reader = csv.reader(f)
         header = next(reader, None)
         if not header or len(header) < 2:
-            logger.info("Error: CSV must have at least two columns")
+            print("Error: CSV must have at least two columns")
             sys.exit(1)
         for row in reader:
             if len(row) < 2:
@@ -35,12 +35,12 @@ def csv_to_json_map(csv_file):
             ensure_ascii=False,
             sort_keys=True,
         )
-    logger.info(f"Converted (mapping JSON): {csv_path} → {json_path}")
+    print(f"Converted (mapping JSON): {csv_path} → {json_path}")
 
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <file.csv>")
+        print(f"Usage: {sys.argv[0]} <file.csv>")
         sys.exit(1)
     csv_to_json_map(sys.argv[1])
 

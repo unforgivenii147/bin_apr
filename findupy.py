@@ -54,7 +54,7 @@ def find_duplicate_files(directory: str):
         raise ValueError(msg)
     all_files = collect_all_files(directory)
     duplicates = defaultdict(list)
-    logger.info(f"📁 Scanning {len(all_files)} files...\n")
+    print(f"📁 Scanning {len(all_files)} files...\n")
     for file_path in tqdm(
         all_files,
         desc="Overall Progress",
@@ -68,28 +68,28 @@ def find_duplicate_files(directory: str):
 
 def print_duplicates(dups: dict) -> None:
     if not dups:
-        logger.info("🎉 No duplicates found!")
+        print("🎉 No duplicates found!")
         return
-    logger.info("\n🔍 Duplicate Files Found:\n")
+    print("\n🔍 Duplicate Files Found:\n")
     for i, (h, paths) in enumerate(dups.items(), start=1):
-        logger.info(f"Group {i} (hash={h[:12]}...):")
+        print(f"Group {i} (hash={h[:12]}...):")
         for p in paths:
-            logger.info(f"   • {p}")
-        logger.info("-" * 40)
+            print(f"   • {p}")
+        print("-" * 40)
 
 
 def export_to_json(dups: dict, output_path="duplicates.json") -> None:
     with Path(output_path).open("w", encoding="utf-8") as f:
         json.dump(dups, f, indent=2)
-    logger.info(f"📦 Results exported to {output_path}")
+    print(f"📦 Results exported to {output_path}")
 
 
 def print_skipped_paths() -> None:
     if not SKIPPED_PATHS:
         return
-    logger.info("\n⚠️  Skipped (permission denied):")
+    print("\n⚠️  Skipped (permission denied):")
     for p in SKIPPED_PATHS:
-        logger.info(f"   • {p}")
+        print(f"   • {p}")
 
 
 if __name__ == "__main__":

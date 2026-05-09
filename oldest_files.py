@@ -31,10 +31,10 @@ def main():
             if p.is_file():
                 files.append(p)
     files.sort(key=lambda f: f.stat().st_ctime, reverse=True)
-    logger.info(f"\nTop {N} oldest files (excluding .git & __pycache__):\n")
+    print(f"\nTop {N} oldest files (excluding .git & __pycache__):\n")
     for f in files[:N]:
         mtime = f.stat().st_ctime
-        logger.info(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
+        print(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
 
 
 if __name__ == "__main__":

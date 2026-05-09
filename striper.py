@@ -13,11 +13,11 @@ def remove_spaces_from_file(fname) -> None:
         with Path(fname).open("w", encoding="utf-8") as file:
             for k in cleaned_lines:
                 file.writelines(k + "\n")
-        logger.info(f"{fname} cleaned.")
+        print(f"{fname} cleaned.")
     except FileNotFoundError:
-        logger.info(f"Error: File '{fname}' not found.")
+        print(f"Error: File '{fname}' not found.")
     except Exception as e:
-        logger.info(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

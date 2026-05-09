@@ -9,7 +9,7 @@ def process_file(path, text):
     content = path.read_text()
     target = "Requires-Dist: " + text
     if target in content:
-        logger.info(path.parent.name)
+        print(path.parent.name)
 
 
 if __name__ == "__main__":

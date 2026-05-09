@@ -163,7 +163,7 @@ class WheelBuilder:
             return None
         pkg_name = parts[0]
         version = parts[1] if len(parts) > 1 else "0.0.0"
-        logger.info("Building wheel for %s %s", pkg_name, version)
+        print("Building wheel for %s %s", pkg_name, version)
         records = self._read_record(dist_info_dir)
         if not records:
             logger.warning("No RECORD file for %s", pkg_name)
@@ -185,9 +185,9 @@ class WheelBuilder:
         scripts = self._find_scripts_for_package(records=records)
         data_files = self._find_data_for_package(pkg_name)
         if scripts:
-            logger.info(f"  Found {len(scripts)} script(s)")
+            print(f"  Found {len(scripts)} script(s)")
         if data_files:
-            logger.info(f"  Found {len(data_files)} data file(s)")
+            print(f"  Found {len(data_files)} data file(s)")
         wheel_name = f"{pkg_name.replace('-', '_')}-{version}-{python_tag}-{abi_tag}-{platform_tag}.whl"
         wheel_path = self.output_dir / wheel_name
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -294,7 +294,7 @@ class WheelBuilder:
                     if file.is_file():
                         arcname = file.relative_to(tmp_path)
                         whl.write(file, arcname)
-        logger.info(f"  Created: {wheel_path.name}")
+        print(f"  Created: {wheel_path.name}")
         return wheel_path
 
     def build_all(self) -> int:
@@ -302,9 +302,9 @@ class WheelBuilder:
         if not dist_infos:
             logger.error(f"No packages found in {self.site_packages}")
             return 0
-        logger.info(f"Found {len(dist_infos)} package(s) in {self.site_packages}")
+        print(f"Found {len(dist_infos)} package(s) in {self.site_packages}")
         if self.venv_root:
-            logger.info(f"Virtual environment: {self.venv_root}")
+            print(f"Virtual environment: {self.venv_root}")
         built = 0
         for dist_info in dist_infos:
             try:
@@ -312,7 +312,7 @@ class WheelBuilder:
                     built += 1
             except Exception as e:
                 logger.debug(f"Failed to build {dist_info.name}: {e}")
-        logger.info(f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
+        print(f"\nBuilt {built}/{len(dist_infos)} wheels in {self.output_dir}")
         return built
 
 
@@ -378,9 +378,9 @@ Examples:
     args = parser.parse_args()
     if args.list:
         sites = find_site_packages()
-        logger.info(f"Found {len(sites)} site-packages:")
+        print(f"Found {len(sites)} site-packages:")
         for i, sp in enumerate(sites, 1):
-            logger.info(f"  {i}. {sp}")
+            print(f"  {i}. {sp}")
         return 0
     if args.site_packages:
         site_packages = args.site_packages.resolve()
@@ -395,16 +395,16 @@ Examples:
         if len(sites) == 1:
             site_packages = sites[0]
         else:
-            logger.info("Multiple site-packages found:")
+            print("Multiple site-packages found:")
             for i, sp in enumerate(sites, 1):
-                logger.info(f"  {i}. {sp}")
+                print(f"  {i}. {sp}")
             try:
                 choice = int(input("\nSelect site-packages [1]: ") or "1")
                 site_packages = sites[choice - 1]
             except (ValueError, IndexError):
                 logger.exception("Invalid selection")
                 return 1
-    logger.info("Using site-packages: %s", site_packages)
+    print("Using site-packages: %s", site_packages)
     builder = WheelBuilder(site_packages, args.output)
     if args.package:
         dist_info = site_packages / f"{args.package}-*.dist-info"
@@ -416,7 +416,7 @@ Examples:
             logger.warning(f"Multiple matches for '{args.package}':")
             for m in matches:
                 logger.warning(f"  - {m.name}")
-            logger.info("Building all matches...")
+            print("Building all matches...")
         built = 0
         for dist_info in matches:
             if builder.build_wheel(dist_info):

@@ -22,7 +22,7 @@ def find_dups(cwd):
                 file_hash = hash_from_file(str(path))
                 files_by_hash[file_hash].append(path)
             except Exception as e:
-                logger.info(f"Error processing file {path}: {e}")
+                print(f"Error processing file {path}: {e}")
                 continue
     for (
         file_hash,
@@ -35,14 +35,14 @@ def find_dups(cwd):
                 reverse=True,
             )
             for dup_found in paths:
-                logger.info(os.path.relpath(dup_found))
+                print(os.path.relpath(dup_found))
             for filetodel in paths[1:]:
                 try:
                     get_size = filetodel.stat().st_size
                     deleted_count += 1
                     total_deleted_size += get_size
                 except Exception as e:
-                    logger.info(f"Error deleting file {filetodel}: {e}")
+                    print(f"Error deleting file {filetodel}: {e}")
         else:
             continue
     return (

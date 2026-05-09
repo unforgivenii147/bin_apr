@@ -79,7 +79,7 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
 
 def main():
     if len(sys.argv) != 2:
-        logger.info("Usage: python script_name.py <path_to_package_list_file>")
+        print("Usage: python script_name.py <path_to_package_list_file>")
         sys.exit(1)
     package_list_file = sys.argv[1]
     mirror_url = "https://mirror-pypi.runflare.com"
@@ -89,18 +89,18 @@ def main():
         with Path(package_list_file).open("r", encoding="utf-8") as f:
             package_names = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
-        logger.info(f"Error: File not found at {package_list_file}")
+        print(f"Error: File not found at {package_list_file}")
         sys.exit(1)
     for pkg_name in package_names:
-        logger.info(f"Processing: {pkg_name}...")
+        print(f"Processing: {pkg_name}...")
         result = get_latest_version_info(pkg_name, mirror_url)
         all_results.append(result)
         try:
             with Path(output_json_file).open("w", encoding="utf-8") as f:
                 json.dump(all_results, f, indent=4, ensure_ascii=False)
         except OSError as e:
-            logger.info(f"Error writing to JSON file {output_json_file}: {e}")
-    logger.info(f"\nProcessing complete. Results saved to {output_json_file}")
+            print(f"Error writing to JSON file {output_json_file}: {e}")
+    print(f"\nProcessing complete. Results saved to {output_json_file}")
 
 
 if __name__ == "__main__":

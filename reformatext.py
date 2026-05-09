@@ -8,21 +8,21 @@ from loguru import logger
 
 def restructure_text_file(filepath: Path):
     if not filepath.is_file():
-        logger.info(f"Error: File not found at {filepath}")
+        print(f"Error: File not found at {filepath}")
         return
     try:
         with filepath.open("r", encoding="utf-8") as f:
             content = f.read()
     except Exception as e:
-        logger.info(f"Error reading file {filepath}: {e}")
+        print(f"Error reading file {filepath}: {e}")
         return
     bak_filepath = filepath.with_suffix(filepath.suffix + ".bak")
     try:
         with filepath.open("r", encoding="utf-8") as src, bak_filepath.open("w", encoding="utf-8") as dst:
             dst.write(src.read())
-        logger.info(f"Backup created at: {bak_filepath}")
+        print(f"Backup created at: {bak_filepath}")
     except Exception as e:
-        logger.info(f"Error creating backup file {bak_filepath}: {e}")
+        print(f"Error creating backup file {bak_filepath}: {e}")
         return
     restructured_lines = []
     paragraphs = content.split("\n\n")
@@ -62,14 +62,14 @@ def restructure_text_file(filepath: Path):
     try:
         with filepath.open("w", encoding="utf-8") as f:
             f.write("\n".join(restructured_lines))
-        logger.info(f"File successfully restructured: {filepath}")
+        print(f"File successfully restructured: {filepath}")
     except Exception as e:
-        logger.info(f"Error writing to file {filepath}: {e}")
+        print(f"Error writing to file {filepath}: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: python script_name.py <filename>")
+        print("Usage: python script_name.py <filename>")
         sys.exit(1)
     filename = sys.argv[1]
     file_path = Path(filename)

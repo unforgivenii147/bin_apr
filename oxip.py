@@ -43,7 +43,7 @@ def main():
     current_dir = Path.cwd()
     png_files = find_png_files(current_dir)
     if not png_files:
-        logger.info("No PNG files found in the current directory or subdirectories.")
+        print("No PNG files found in the current directory or subdirectories.")
         return
     with Progress() as progress:
         task = progress.add_task(
@@ -55,7 +55,7 @@ def main():
             for _ in pool.imap_unordered(optimize_png, png_files):
                 progress.update(task, advance=1)
     total_space_freed = sum(optimize_png(fp) for fp in png_files) / (1024 * 1024)
-    logger.info(f"\n[bold green]Total space freed: {total_space_freed:.2f} MB[/bold green]")
+    print(f"\n[bold green]Total space freed: {total_space_freed:.2f} MB[/bold green]")
 
 
 if __name__ == "__main__":

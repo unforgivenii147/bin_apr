@@ -14,11 +14,11 @@ def is_repeated_char_line(line: str) -> bool:
 
 def main() -> None:
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <filename>")
+        print(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     if not Path(fname).is_file():
-        logger.info(f"Error: File '{fname}' not found.")
+        print(f"Error: File '{fname}' not found.")
         sys.exit(1)
     with Path(fname).open(encoding="utf-8") as f:
         lines = f.readlines()

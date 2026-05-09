@@ -27,7 +27,7 @@ IGNORED_DIRS = {
 def convert_file(file_path: str) -> bool:
     path = Path(file_path)
     if not path.is_file() or path.suffix.lower() not in IMG_EXT:
-        logger.info(f"Skipping: {path.name} (Unsupported format or not a file)")
+        print(f"Skipping: {path.name} (Unsupported format or not a file)")
         return False
     if path.suffix.lower() == ".png":
         return True
@@ -40,7 +40,7 @@ def convert_file(file_path: str) -> bool:
         if USE_CV2:
             img = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
             if img is None:
-                logger.info(f"Error: Could not decode {path.name}")
+                print(f"Error: Could not decode {path.name}")
                 return False
             if img.shape[2] == 4:
                 b, g, r, a = cv2.split(img)
@@ -80,12 +80,12 @@ def convert_file(file_path: str) -> bool:
             success = True
         if success:
             path.unlink()
-            logger.info(f"Successfully converted '{path.name}' to png.")
+            print(f"Successfully converted '{path.name}' to png.")
             return True
-        logger.info(f"Failed to write '{output_path.name}'")
+        print(f"Failed to write '{output_path.name}'")
         return False
     except Exception as e:
-        logger.info(f"Error converting '{path.name}': {e}")
+        print(f"Error converting '{path.name}': {e}")
         return False
 
 
@@ -97,18 +97,18 @@ def main() -> None:
         if f.is_file() and not any(part in IGNORED_DIRS for part in f.parts) and is_image(f)
     ]
     if not files:
-        logger.info("No image files detected.")
+        print("No image files detected.")
         return
-    logger.info(f"converting {len(files)} files...")
+    print(f"converting {len(files)} files...")
     with ThreadPoolExecutor(max_workers=8) as executor:
         results = list(executor.map(convert_file, files))
     changed_count = sum(1 for r in results if r)
-    logger.info(f"Done. {changed_count} files modified.")
+    print(f"Done. {changed_count} files modified.")
     result = gsz(".") - start_size
     if result < 0:
-        logger.info(f"size reduced: - {fsz(result)} ")
+        print(f"size reduced: - {fsz(result)} ")
     else:
-        logger.info(f"size increased: + {fsz(result)} ")
+        print(f"size increased: + {fsz(result)} ")
 
 
 if __name__ == "__main__":

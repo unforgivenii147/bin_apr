@@ -51,8 +51,8 @@ def main() -> None:
     matches = find_files(Path.cwd())
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         f.writelines(path + "\n" for path in matches)
-    logger.info(f"Found {len(matches)} files with late imports.")
-    logger.info(f"Results saved to {OUTPUT_FILE}")
+    print(f"Found {len(matches)} files with late imports.")
+    print(f"Results saved to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

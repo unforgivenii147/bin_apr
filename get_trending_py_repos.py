@@ -83,7 +83,7 @@ def main() -> None:
             repos,
             OUTPUT_DIR / f"python_trending_{timeframe}.json",
         )
-    logger.info(f"Saved {len(all_repos)} repos to {OUTPUT_DIR.resolve()}")
+    print(f"Saved {len(all_repos)} repos to {OUTPUT_DIR.resolve()}")
 
 
 if __name__ == "__main__":

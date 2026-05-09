@@ -45,8 +45,8 @@ def main() -> None:
         for snippet in unique_collected:
             out.write(snippet)
             out.write("\n\n\n")
-    logger.info(f"Unique snippets saved → {output_path}")
-    logger.info(f"Total unique blocks: {len(unique_collected)}")
+    print(f"Unique snippets saved → {output_path}")
+    print(f"Total unique blocks: {len(unique_collected)}")
 
 
 if __name__ == "__main__":

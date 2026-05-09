@@ -52,7 +52,7 @@ def format_file(path: Path):
         "\n".join(formatted) + "\n",
         encoding="utf-8",
     )
-    logger.info(f"[+] Processed: {path.relative_to(cwd)}")
+    print(f"[+] Processed: {path.relative_to(cwd)}")
 
 
 def main():

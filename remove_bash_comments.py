@@ -10,7 +10,7 @@ from loguru import logger
 try:
     from tree_sitter import Language, Parser
 except ImportError:
-    logger.info("Error: tree-sitter not installed. Install with: pip install tree-sitter")
+    print("Error: tree-sitter not installed. Install with: pip install tree-sitter")
     sys.exit(1)
 
 
@@ -18,7 +18,7 @@ class BashCommentRemover:
     def __init__(self) -> None:
         self.parser = self._setup_parser()
         if not self.parser:
-            logger.info("Error: Failed to setup tree-sitter bash grammar")
+            print("Error: Failed to setup tree-sitter bash grammar")
             sys.exit(1)
 
     def _setup_parser(self) -> Parser | None:
@@ -28,7 +28,7 @@ class BashCommentRemover:
 
                 bash_language = Language(language())
             except ImportError:
-                logger.info("Tree-sitter bash grammar not found. Attempting to install...")
+                print("Tree-sitter bash grammar not found. Attempting to install...")
                 import subprocess
                 import tempfile
 
@@ -56,19 +56,19 @@ class BashCommentRemover:
                         text=True,
                     )
                     if build_result.returncode != 0:
-                        logger.info(f"Failed to build bash grammar: {build_result.stderr}")
+                        print(f"Failed to build bash grammar: {build_result.stderr}")
                         return None
                     so_file = Path(tmpdir) / "tree-sitter-bash.so"
                     if so_file.exists():
                         bash_language = Language(str(so_file), "bash")
                     else:
-                        logger.info("Could not find built grammar file")
+                        print("Could not find built grammar file")
                         return None
             parser = Parser()
             parser.set_language(bash_language)
             return parser
         except Exception as e:
-            logger.info(f"Error setting up parser: {e}")
+            print(f"Error setting up parser: {e}")
             return None
 
     def remove_comments(self, content: str) -> tuple[str, bool]:
@@ -113,7 +113,7 @@ class BashCommentRemover:
             )
             return modified_content, True
         except Exception as e:
-            logger.info(f"Error processing content: {e}")
+            print(f"Error processing content: {e}")
             return content, False
 
     def validate_syntax(self, content: str) -> bool:
@@ -178,7 +178,7 @@ class BashCommentRemover:
                     original_size,
                 )
             if not self.validate_syntax(modified_content):
-                logger.info(f"  ⚠️  Syntax error detected in {filepath}, skipping")
+                print(f"  ⚠️  Syntax error detected in {filepath}, skipping")
                 return (
                     False,
                     original_size,
@@ -187,12 +187,12 @@ class BashCommentRemover:
             new_size = len(modified_content.encode("utf-8"))
             if not dry_run:
                 Path(filepath).write_text(modified_content, encoding="utf-8")
-                logger.info(f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)")
+                print(f"  ✓ Processed: {filepath} ({original_size} -> {new_size} bytes)")
             else:
-                logger.info(f"  ✓ Would process: {filepath} ({original_size} -> {new_size} bytes)")
+                print(f"  ✓ Would process: {filepath} ({original_size} -> {new_size} bytes)")
             return True, original_size, new_size
         except Exception as e:
-            logger.info(f"  ✗ Error processing {filepath}: {e}")
+            print(f"  ✗ Error processing {filepath}: {e}")
             return False, 0, 0
 
     def process_path(
@@ -235,7 +235,7 @@ class BashCommentRemover:
                     total_original += orig
                     total_new += new
         elif path.is_dir() and not recursive:
-            logger.info(f"Error: {path} is a directory. Use --recursive to process directories.")
+            print(f"Error: {path} is a directory. Use --recursive to process directories.")
         return (
             success_count,
             total_original,
@@ -273,7 +273,7 @@ def main():
         for file_arg in args.files:
             path = Path(file_arg)
             if not path.exists():
-                logger.info(f"Warning: {path} does not exist, skipping")
+                print(f"Warning: {path} does not exist, skipping")
                 continue
             paths_to_process.append(path)
     else:
@@ -284,7 +284,7 @@ def main():
     total_new = 0
     for path in paths_to_process:
         if path.is_file() or (path.is_dir() and args.recursive):
-            logger.info(f"\nProcessing: {path}")
+            print(f"\nProcessing: {path}")
             success, orig, new = remover.process_path(
                 path,
                 args.recursive,
@@ -294,17 +294,15 @@ def main():
             total_original += orig
             total_new += new
     if total_success > 0:
-        logger.info(f"\n{'=' * 50}")
-        logger.info("Summary:")
-        logger.info(f"  Files processed successfully: {total_success}")
-        logger.info(f"  Original total size: {total_original} bytes ({total_original / 1024:.2f} KB)")
-        logger.info(f"  New total size: {total_new} bytes ({total_new / 1024:.2f} KB)")
-        logger.info(
-            f"  Size reduction: {total_original - total_new} bytes ({(total_original - total_new) / 1024:.2f} KB)"
-        )
-        logger.info(f"  Reduction percentage: {((total_original - total_new) / total_original * 100):.1f}%")
+        print(f"\n{'=' * 50}")
+        print("Summary:")
+        print(f"  Files processed successfully: {total_success}")
+        print(f"  Original total size: {total_original} bytes ({total_original / 1024:.2f} KB)")
+        print(f"  New total size: {total_new} bytes ({total_new / 1024:.2f} KB)")
+        print(f"  Size reduction: {total_original - total_new} bytes ({(total_original - total_new) / 1024:.2f} KB)")
+        print(f"  Reduction percentage: {((total_original - total_new) / total_original * 100):.1f}%")
     else:
-        logger.info("\nNo files were processed successfully.")
+        print("\nNo files were processed successfully.")
 
 
 if __name__ == "__main__":

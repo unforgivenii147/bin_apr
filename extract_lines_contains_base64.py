@@ -23,7 +23,7 @@ def process_file(fp):
                 cleaned = cleaned[:end_indx]
             nl.append(cleaned)
     if found:
-        logger.info(f"{fp.name} : {found}")
+        print(f"{fp.name} : {found}")
         with Path("b64").open("a", encoding="utf-8") as f:
             f.write("\n")
             f.writelines(f"{k}\n" for k in nl)

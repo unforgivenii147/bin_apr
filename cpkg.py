@@ -33,7 +33,7 @@ def copy_package_files(pkg_name: str):
         raise FileNotFoundError(msg)
     dest_root = Path.home() / "tmp" / "1" / pkg_name
     dest_root.mkdir(parents=True, exist_ok=True)
-    logger.info("Destination root: {}", dest_root)
+    print("Destination root: {}", dest_root)
     missing_count = 0
     copied_count = 0
     error_count = 0
@@ -64,8 +64,8 @@ def copy_package_files(pkg_name: str):
             except Exception as e:
                 logger.exception("Error while processing RECORD entry {}: {}", row, e)
                 error_count += 1
-    logger.info("\nMissing files (ignored, warned): {}", missing_count)
-    logger.info("\nErrors: {}", error_count)
+    print("\nMissing files (ignored, warned): {}", missing_count)
+    print("\nErrors: {}", error_count)
 
 
 def main():

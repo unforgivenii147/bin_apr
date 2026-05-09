@@ -18,7 +18,7 @@ def process_file(filepath):
     content = filepath.read_text(encoding="utf-8")
     content.splitlines()
     if MAINBLOCK not in content:
-        logger.info(f"{filepath.name} dont have main block")
+        print(f"{filepath.name} dont have main block")
 
 
 """
@@ -32,7 +32,7 @@ def process_file(filepath):
         with open(filepath, "a", encoding="utf-8") as f:
             f.writelines(lines_to_write)
     else:
-        logger.info(f"__main__ block already present in: {filepath.name}")
+        print(f"__main__ block already present in: {filepath.name}")
 """
 
 

@@ -83,15 +83,15 @@ def main() -> None:
     start_dir = Path.cwd()
     files_to_decompress = get_files(start_dir, extensions=[".xz", ".tar.xz"])
     if not files_to_decompress:
-        logger.info("No files to decompress")
+        print("No files to decompress")
         return
     for i, path in enumerate(files_to_decompress, 1):
-        logger.info(f"\n[{i}/{len(files_to_decompress)}] Processing...")
+        print(f"\n[{i}/{len(files_to_decompress)}] Processing...")
         if decompress_file(path):
             successful += 1
         else:
             errors += 1
-    logger.info(f"successfull: {successful}\nerrors: {errors}")
+    print(f"successfull: {successful}\nerrors: {errors}")
 
 
 if __name__ == "__main__":

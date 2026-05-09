@@ -365,15 +365,15 @@ def process_file(path: Path, dry_run: bool = True) -> bool:
         with path.open("r", encoding="utf-8") as f:
             original = f.read()
     except UnicodeDecodeError:
-        logger.info(f"⚠️  Skipping non-UTF-8 file: {path}")
+        print(f"⚠️  Skipping non-UTF-8 file: {path}")
         return False
     except Exception as e:
-        logger.info(f"❌ Error reading {path}: {e}")
+        print(f"❌ Error reading {path}: {e}")
         return False
     try:
         tree = ast.parse(original)
     except SyntaxError as e:
-        logger.info(f"⚠️  Skipping unparseable file: {path} ({e})")
+        print(f"⚠️  Skipping unparseable file: {path} ({e})")
         return False
     finder = OsUsageFinder()
     finder.visit(tree)
@@ -392,18 +392,18 @@ def process_file(path: Path, dry_run: bool = True) -> bool:
                 lineterm="",
             )
         )
-        logger.info(f"\n✅ {path} — would change (diff preview):")
-        logger.info("".join(diff[:20]))  # Show first 20 lines
+        print(f"\n✅ {path} — would change (diff preview):")
+        print("".join(diff[:20]))  # Show first 20 lines
         if len(diff) > 20:
-            logger.info(f"… ({len(diff) - 20} more lines)")
+            print(f"… ({len(diff) - 20} more lines)")
         return True
     try:
         with path.open("w", encoding="utf-8") as f:
             f.write(new_source)
-        logger.info(f"✅ {path} — refactored")
+        print(f"✅ {path} — refactored")
         return True
     except Exception as e:
-        logger.info(f"❌ Error writing {path}: {e}")
+        print(f"❌ Error writing {path}: {e}")
         return False
 
 
@@ -424,7 +424,7 @@ def collect_files(targets: list[str]) -> list[Path]:
     for target in targets:
         p = Path(target)
         if not p.exists():
-            logger.info(f"⚠️  Path not found: {target}")
+            print(f"⚠️  Path not found: {target}")
             continue
         if p.is_file() and p.suffix == ".py":
             py_files.append(p.resolve())
@@ -439,37 +439,37 @@ def collect_files(targets: list[str]) -> list[Path]:
 def main():
     args = sys.argv[1:]
     if not args or {"-h", "--help"} & set(args):
-        logger.info(__doc__)
+        print(__doc__)
         sys.exit(0)
     dry_run = "--dry" in args
     in_place = "--in-place" in args
     if dry_run and in_place:
-        logger.info("❌ Cannot use both --dry and --in-place")
+        print("❌ Cannot use both --dry and --in-place")
         sys.exit(1)
     if in_place:
-        logger.info("⚠️  🔥 IN-PLACE MODE: changes will be written to files.")
+        print("⚠️  🔥 IN-PLACE MODE: changes will be written to files.")
         confirm = input("Continue? [y/N] ").strip().lower()
         if confirm != "y":
-            logger.info("Aborted.")
+            print("Aborted.")
             sys.exit(0)
     files_to_process = args
     if not files_to_process:
         files_to_process = ["."]
     files = collect_files(files_to_process)
     if not files:
-        logger.info("No Python files found to process.")
+        print("No Python files found to process.")
         sys.exit(0)
-    logger.info(f"🔍 Found {len(files)} Python file(s).")
+    print(f"🔍 Found {len(files)} Python file(s).")
     changed_count = 0
     for file_path in files:
         if process_file(file_path, dry_run=not in_place):
             changed_count += 1
-    logger.info("\n" + "=" * 60)
+    print("\n" + "=" * 60)
     if in_place:
-        logger.info(f"✅ Refactoring complete: {changed_count} file(s) modified.")
+        print(f"✅ Refactoring complete: {changed_count} file(s) modified.")
     else:
-        logger.info(f"✅ Dry run complete: {changed_count} file(s) would change.")
-    logger.info("💡 Always review changes manually before committing!")
+        print(f"✅ Dry run complete: {changed_count} file(s) would change.")
+    print("💡 Always review changes manually before committing!")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ class TSRemover:
             new_source = new_source[:start] + new_source[end:]
         tree = self.parser.parse(new_source)
         if tree.root_node.has_error:
-            logger.info("resulted code is not valid")
+            print("resulted code is not valid")
             return source_bytes, 0, 0
         cleaned = new_source.decode("utf-8")
         cleaned = clean_blank_lines(cleaned)
@@ -160,9 +160,9 @@ if __name__ == "__main__":
     changed = sum(1 for r in results if r and r[0] == "changed")
     errors = [r for r in results if r and r[0] == "error"]
     nochg = sum(1 for r in results if r and r[0] == "nochange")
-    logger.info(f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors")
+    print(f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors")
     if errors:
-        logger.info("Files with errors:")
+        print("Files with errors:")
         for _, fn, *_ in errors:
-            logger.info(f"  {fn}")
-    logger.info(f"dir size reduced: {fsz(size_diff)}")
+            print(f"  {fn}")
+    print(f"dir size reduced: {fsz(size_diff)}")

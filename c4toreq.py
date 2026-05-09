@@ -37,15 +37,15 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
                         if installed_ver < latest_ver:
                             upgradable_packages.append((package_name, latest_version_str))
                     except Exception as e:
-                        logger.info(
+                        print(
                             f"Warning: Could not parse versions for {package_name} (installed: '{installed_version_str}', latest: '{latest_version_str}'). Error: {e}"
                         )
                 else:
-                    logger.info(f"Warning: Line format not recognized: {line}")
+                    print(f"Warning: Line format not recognized: {line}")
     except FileNotFoundError:
-        logger.info(f"Error: Results file '{results_file_path}' not found.")
+        print(f"Error: Results file '{results_file_path}' not found.")
     except Exception as e:
-        logger.info(f"An unexpected error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
     return upgradable_packages
 
 
@@ -54,22 +54,22 @@ def save_to_requirements_file(packages: list[tuple[str, str]], output_file_path:
         with Path(output_file_path).open("w", encoding="utf-8") as f:
             for pkg_name, latest_version in packages:
                 f.write(f"{pkg_name}=={latest_version}\n")
-        logger.info(f"\nSuccessfully saved upgradable packages to '{output_file_path}'.")
-        logger.info("You can upgrade these packages using:")
-        logger.info(f"pip install -r {output_file_path}")
+        print(f"\nSuccessfully saved upgradable packages to '{output_file_path}'.")
+        print("You can upgrade these packages using:")
+        print(f"pip install -r {output_file_path}")
     except Exception as e:
-        logger.info(f"Error saving to requirements file: {e}")
+        print(f"Error saving to requirements file: {e}")
 
 
 if __name__ == "__main__":
     results_file = "/sdcard/cfor.txt"
     output_requirements_file = "requ.txt"
-    logger.info(f"Reading results from '{results_file}'...")
+    print(f"Reading results from '{results_file}'...")
     upgradable_pkgs = extract_upgradable_packages(results_file)
     if upgradable_pkgs:
-        logger.info("\n--- Upgradable Packages Found ---")
+        print("\n--- Upgradable Packages Found ---")
         for pkg_name, latest_version in upgradable_pkgs:
-            logger.info(f"{pkg_name} (latest: {latest_version})")
+            print(f"{pkg_name} (latest: {latest_version})")
         save_to_requirements_file(upgradable_pkgs, output_requirements_file)
     else:
-        logger.info("\nNo upgradable packages found or issues reading the results file.")
+        print("\nNo upgradable packages found or issues reading the results file.")

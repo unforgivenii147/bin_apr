@@ -88,7 +88,7 @@ for py in Path().rglob("*.py"):
             processed_files_count += 1
             total_definitions += len(definitions)
     except Exception as e:
-        logger.info(f"⚠️  Error processing {py}: {e}")
+        print(f"⚠️  Error processing {py}: {e}")
 for (
     folder,
     files_dict,
@@ -149,15 +149,15 @@ for (
 """
     out_file.write_text(header + content)
     total_defs_in_folder = sum(len(f["definitions"]) for f in files_dict.values())
-    logger.info(f"✅ saved: {out_file}")
-    logger.info(f"   📊 {len(files_dict)} files, {total_defs_in_folder} definitions")
-    logger.info(f"   📁 {folder}")
+    print(f"✅ saved: {out_file}")
+    print(f"   📊 {len(files_dict)} files, {total_defs_in_folder} definitions")
+    print(f"   📁 {folder}")
 print(
     f"\n✨ Done! Processed {processed_files_count} files with {total_definitions} total definitions in {len(folder_definitions)} folder(s)"
 )
 if folders_found:
-    logger.info("📁 Folders:")
+    print("📁 Folders:")
     for folder in sorted(folders_found):
         def_count = sum(len(f["definitions"]) for f in folder_definitions[Path(folder)].values())
         file_count = len(folder_definitions[Path(folder)])
-        logger.info(f"   • {folder}: {file_count} files, {def_count} definitions")
+        print(f"   • {folder}: {file_count} files, {def_count} definitions")

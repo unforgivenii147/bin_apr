@@ -44,7 +44,7 @@ def main() -> None:
     pool.join()
     esz = gsz(root)
     diffsize = isz - esz
-    logger.info(f"space freed : {fsz(diffsize)}")
+    print(f"space freed : {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

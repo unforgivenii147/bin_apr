@@ -16,17 +16,17 @@ def compress_and_cleanup(root=Path()):
     root = root.resolve()
     archive_name = f"{root.name}.tar.gz"
     archive_path = root.parent / archive_name
-    logger.info(f"Creating archive: {archive_path}")
+    print(f"Creating archive: {archive_path}")
     with tarfile.open(archive_path, "w:gz") as tar:
         tar.add(root, arcname=root.name)
-    logger.info("Archive created. Removing original files...")
+    print("Archive created. Removing original files...")
     items = []
     for item in root.iterdir():
         if item.resolve() == archive_path:
             continue
         items.append(item)
     remove_items_fast(items)
-    logger.info("Cleanup complete.")
+    print("Cleanup complete.")
 
 
 if __name__ == "__main__":

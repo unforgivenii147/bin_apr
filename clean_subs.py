@@ -9,7 +9,7 @@ from loguru import logger
 try:
     from termcolor import colored
 except ImportError:
-    logger.info("pip install termcolor")
+    print("pip install termcolor")
     sys.exit(1)
 VIDEO_EXTS = {".srt"}
 LEADING_JUNK = re.compile(
@@ -55,17 +55,17 @@ def main():
     args = ap.parse_args()
     files = collect_files(Path(), args.recursive)
     if not files:
-        logger.info("No subtitle files found")
+        print("No subtitle files found")
         return
-    logger.info(colored("\nPreview:", "cyan", attrs=["bold"]))
+    print(colored("\nPreview:", "cyan", attrs=["bold"]))
     for f in files:
         new_core = clean_name(f.name)
         if not new_core:
-            logger.info(colored("SKIP:", "yellow"), f.name)
+            print(colored("SKIP:", "yellow"), f.name)
             continue
         new_name = new_core + f.suffix
         target = f.with_name(new_name)
-        logger.info(
+        print(
             colored("OLD:", "red"),
             f.name,
             colored("-> NEW:", "green"),
@@ -73,7 +73,7 @@ def main():
         )
         if args.write:
             if target.exists():
-                logger.info(
+                print(
                     colored(
                         "  EXISTS, skipped",
                         "yellow",
@@ -82,7 +82,7 @@ def main():
             else:
                 f.rename(target)
     if not args.write:
-        logger.info(
+        print(
             colored(
                 "\nDry-run only. Use -w to apply.",
                 "yellow",

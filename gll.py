@@ -7,7 +7,7 @@ from loguru import logger
 
 def main() -> int:
     if len(sys.argv) < 3:
-        logger.info(
+        print(
             f"get from line X to Y of a file:\nUsage: {sys.argv[0]} <filename> <start_line> [end_line]",
             file=sys.stderr,
         )
@@ -17,20 +17,20 @@ def main() -> int:
         start = int(sys.argv[2])
         end = int(sys.argv[3]) if len(sys.argv) >= 4 else -1
     except ValueError:
-        logger.info(
+        print(
             "Error: start_line and end_line must be integers.",
             file=sys.stderr,
         )
         return 1
     if start < 1 or (end != -1 and end < start):
-        logger.info(
+        print(
             "Invalid range: start must be >=1 and end >= start.",
             file=sys.stderr,
         )
         return 1
     path = Path(filename)
     if not path.is_file():
-        logger.info(
+        print(
             "Error: Cannot open input file.",
             file=sys.stderr,
         )
@@ -53,12 +53,12 @@ def main() -> int:
                     break
                 outfile.write(line)
     except OSError:
-        logger.info(
+        print(
             "Error: Cannot create output file.",
             file=sys.stderr,
         )
         return 1
-    logger.info(f"Saved to {outname}")
+    print(f"Saved to {outname}")
     return 0
 
 

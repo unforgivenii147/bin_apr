@@ -11,7 +11,7 @@ shebang = "#!/data/data/com.termux/files/usr/bin/python\n"
 def process_file(fp, module_name):
     if not fp.exists() or fp.is_symlink():
         return
-    logger.info(f"processing {fp}")
+    print(f"processing {fp}")
     data = []
     newdata = []
     with Path(fp).open(encoding="utf-8") as fin:

@@ -49,9 +49,9 @@ def main() -> None:
         ok = unzip_file(moved_file, target_dir)
         if ok:
             moved_file.unlink()
-            logger.info(f"[OK] Unzipped and removed: {item.name}")
+            print(f"[OK] Unzipped and removed: {item.name}")
         else:
-            logger.info(f"[SKIP] Not a zip or unzip failed: {item.name}")
+            print(f"[SKIP] Not a zip or unzip failed: {item.name}")
 
 
 if __name__ == "__main__":

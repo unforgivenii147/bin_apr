@@ -85,7 +85,7 @@ def main():
     filterd = []
     for rq in impoz:
         if rq.strip() not in stdlib_plus_installed:
-            logger.info(rq.strip())
+            print(rq.strip())
             filterd.append(rq)
     outfile.write_text("\n".join(filterd), encoding="utf-8")
 

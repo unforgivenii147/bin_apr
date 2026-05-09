@@ -21,7 +21,7 @@ def translate_filename(filename):
         translated = GoogleTranslator(source="auto", target="en").translate(name)
         return translated + ext
     except Exception as e:
-        logger.info(f"Translation error for {filename}: {e}")
+        print(f"Translation error for {filename}: {e}")
         return filename
 
 
@@ -40,7 +40,7 @@ def rename_files(directory):
                 new_path = path.with_name(f"{name}_{counter}{ext}")
                 counter += 1
             Path(original_path).rename(new_path)
-            logger.info(f"Renamed file: {original_path.name} -> {new_path.name}")
+            print(f"Renamed file: {original_path.name} -> {new_path.name}")
         elif path.is_dir():
             original_path = path
             new_name = translate_filename(path.name)
@@ -50,7 +50,7 @@ def rename_files(directory):
                 new_path = Path(f"{original_path}_{counter}")
                 counter += 1
             Path(original_path).rename(new_path)
-            logger.info(f"Renamed directory: {original_path.name} -> {new_path.name}")
+            print(f"Renamed directory: {original_path.name} -> {new_path.name}")
 
 
 if __name__ == "__main__":

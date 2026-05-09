@@ -50,7 +50,7 @@ def main():
     results = mpf(process_file, files)
     for result in results:
         if result:
-            logger.info(result)
+            print(result)
     diffsize = before - gsz(root_dir)
     cprint(f"space change : {fsz(diffsize)}", "cyan")
 

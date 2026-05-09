@@ -15,7 +15,7 @@ def freeze_to_json(input_file="pip.freeze", output_file="packages.json"):
                 packages[pkg] = ver
     with Path(output_file).open("w", encoding="utf-8") as f:
         json.dump(packages, f, indent=4)
-    logger.info(f"Saved {len(packages)} packages to {output_file}")
+    print(f"Saved {len(packages)} packages to {output_file}")
 
 
 if __name__ == "__main__":

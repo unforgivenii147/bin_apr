@@ -23,7 +23,7 @@ async def main():
             deviceScaleFactor: window.devicePixelRatio,
         }
     }""")
-    logger.info(dimensions)
+    print(dimensions)
     await browser.close()
 
 

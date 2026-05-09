@@ -52,7 +52,7 @@ def main() -> None:
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        logger.info(
+        print(
             f"Error: File not found: {in_path}",
             file=sys.stderr,
         )
@@ -60,12 +60,12 @@ def main() -> None:
     try:
         original_text = read_text_file(in_path)
     except Exception as exc:
-        logger.info(f"Read error: {exc}", file=sys.stderr)
+        print(f"Read error: {exc}", file=sys.stderr)
         sys.exit(1)
     try:
         translated = translate_text(original_text)
     except Exception as exc:
-        logger.info(
+        print(
             f"Translation error: {exc}",
             file=sys.stderr,
         )
@@ -74,9 +74,9 @@ def main() -> None:
     try:
         write_text_file(out_path, translated)
     except Exception as exc:
-        logger.info(f"Write error: {exc}", file=sys.stderr)
+        print(f"Write error: {exc}", file=sys.stderr)
         sys.exit(1)
-    logger.info(f"Saved translated file → {out_path}")
+    print(f"Saved translated file → {out_path}")
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ def main():
         sys.exit(0)
     mpf3(process_file, files)
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

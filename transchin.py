@@ -21,7 +21,7 @@ def translate_chunk(chunk: str) -> str:
     try:
         return GoogleTranslator(source="auto", target="en").translate(chunk)
     except Exception as e:
-        logger.info(f"Chunk translation error: {e}")
+        print(f"Chunk translation error: {e}")
         return chunk
 
 
@@ -29,7 +29,7 @@ def translate_file(path: Path):
     try:
         content = Path(path).read_text(encoding="utf-8")
     except:
-        logger.info(f"Skipping unreadable file: {path}")
+        print(f"Skipping unreadable file: {path}")
         return
     if not non_english_pattern.search(content):
         return
@@ -41,9 +41,9 @@ def translate_file(path: Path):
     new_path = path.parent / new_name
     try:
         Path(new_path).write_text(translated_text, encoding="utf-8")
-        logger.info(f"Translated → {new_path.name}")
+        print(f"Translated → {new_path.name}")
     except Exception as e:
-        logger.info(f"Error writing {new_path}: {e}")
+        print(f"Error writing {new_path}: {e}")
 
 
 def process_directory(directory: str):

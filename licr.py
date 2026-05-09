@@ -17,9 +17,9 @@ def find_license_files() -> None:
             fn = str(dh.get_fname(file))
             ext = str(dh.get_ext(file))
             if fn.lower().startswith("license") and (ext.lower() in EXT or not ext):
-                logger.info(fn, ext)
+                print(fn, ext)
                 lf.append(file)
-    logger.info(f"Found {len(lf)} license files")
+    print(f"Found {len(lf)} license files")
     for file_path in lf:
         Path(file_path).write_text("", encoding="utf-8")
 

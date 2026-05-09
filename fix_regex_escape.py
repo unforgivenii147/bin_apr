@@ -42,7 +42,7 @@ def fix_file(path: Path):
     try:
         tree = ast.parse(source)
     except SyntaxError:
-        logger.info(f"[SKIP] {path} (syntax error)")
+        print(f"[SKIP] {path} (syntax error)")
         return False
     fixer = RegexFixer()
     new_tree = fixer.visit(tree)
@@ -50,7 +50,7 @@ def fix_file(path: Path):
     new_source = ast.unparse(new_tree)
     if new_source != source:
         path.write_text(new_source, encoding="utf-8")
-        logger.info(f"[FIXED] {path}")
+        print(f"[FIXED] {path}")
         return True
     return False
 
@@ -62,7 +62,7 @@ def main():
     for f in files:
         if fix_file(f):
             changed += 1
-    logger.info(f"\nDone. Modified {changed} files.")
+    print(f"\nDone. Modified {changed} files.")
 
 
 if __name__ == "__main__":

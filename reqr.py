@@ -19,9 +19,9 @@ def extract_requirements(metadata_path):
             if match:
                 requirements.append(match.group(1))
     if not requirements:
-        logger.info("No dependencies found in METADATA.")
+        print("No dependencies found in METADATA.")
         return
-    logger.info(f"{len(requirements)} reqs found")
+    print(f"{len(requirements)} reqs found")
     with Path("/sdcard/requirements.txt").open("a", encoding="utf-8") as f:
         f.write("\n".join(requirements))
 

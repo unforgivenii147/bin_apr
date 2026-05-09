@@ -20,6 +20,6 @@ if __name__ == "__main__":
                 tree = ast.parse(new_code)
                 path.write_text(new_code, encoding="utf-8")
             except:
-                logger.info("error")
+                print("error")
         else:
             path.write_text(new_code, encoding="utf-8")

@@ -15,7 +15,7 @@ def beautify_html(file_path) -> bool:
         beautified_content = soup.prettify()
         Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
-        logger.info(f"Error beautifying HTML file {file_path}: {e}")
+        print(f"Error beautifying HTML file {file_path}: {e}")
         return False
     return True
 
@@ -26,7 +26,7 @@ def beautify_css(file_path) -> bool:
         beautified_content = cssbeautifier.beautify(content)
         Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
-        logger.info(f"Error beautifying CSS file {file_path}: {e}")
+        print(f"Error beautifying CSS file {file_path}: {e}")
         return False
     return True
 
@@ -37,7 +37,7 @@ def beautify_js(file_path) -> bool:
         beautified_content, _ = yapf.yapf_api.FormatCode(content)
         Path(file_path).write_text(beautified_content, encoding="utf-8")
     except Exception as e:
-        logger.info(f"Error beautifying JS file {file_path}: {e}")
+        print(f"Error beautifying JS file {file_path}: {e}")
         return False
     return True
 
@@ -49,22 +49,22 @@ def beautify_directory(directory) -> None:
             file_path = os.path.join(root, file)
             success = False
             if file.endswith(".html"):
-                logger.info(f"Beautifying HTML: {file_path}")
+                print(f"Beautifying HTML: {file_path}")
                 success = beautify_html(file_path)
             elif file.endswith(".css"):
-                logger.info(f"Beautifying CSS: {file_path}")
+                print(f"Beautifying CSS: {file_path}")
                 success = beautify_css(file_path)
             elif file.endswith(".js"):
-                logger.info(f"Beautifying JS: {file_path}")
+                print(f"Beautifying JS: {file_path}")
                 success = beautify_js(file_path)
             if not success:
                 failed_files.append(file_path)
     if failed_files:
-        logger.info("\nThe following files failed to be beautified:")
+        print("\nThe following files failed to be beautified:")
         for failed_file in failed_files:
-            logger.info(failed_file)
+            print(failed_file)
     else:
-        logger.info("\nAll files beautified successfully.")
+        print("\nAll files beautified successfully.")
 
 
 if __name__ == "__main__":

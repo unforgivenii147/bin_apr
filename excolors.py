@@ -15,7 +15,7 @@ def pf(path):
     found = COLOR_RE.findall(content)
     found = list(set(found))
     if found:
-        logger.info(f"{path.name}", end=" : ")
+        print(f"{path.name}", end=" : ")
         cprint(f"{len(found)}", "cyan")
         return found
     return []

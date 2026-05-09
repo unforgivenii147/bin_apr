@@ -26,9 +26,9 @@ def analyze_image(path, dark_threshold=50, ratio_threshold=0.6):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: script.py <image>")
+        print("Usage: script.py <image>")
         sys.exit(1)
     img_path = Path(sys.argv[1])
     result, ratio = analyze_image(img_path)
-    logger.info(f"{img_path.name}: {result}")
-    logger.info(f"Dark pixel ratio: {ratio:.2%}")
+    print(f"{img_path.name}: {result}")
+    print(f"Dark pixel ratio: {ratio:.2%}")

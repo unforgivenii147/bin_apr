@@ -21,15 +21,15 @@ def process_file(file_path: Path) -> None:
             ast.parse(orig)
             file_path.write_text(orig, encoding="utf-8")
             after = gsz(file_path)
-            logger.info(f"{file_path.name} ", end=" ")
-            logger.info(fsz(before - after))
+            print(f"{file_path.name} ", end=" ")
+            print(fsz(before - after))
         except:
             return
     else:
         file_path.write_text(orig, encoding="utf-8")
         after = gsz(file_path)
-        logger.info(f"{file_path.name} ", end=" ")
-        logger.info(fsz(before - after))
+        print(f"{file_path.name} ", end=" ")
+        print(fsz(before - after))
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
     p.close()
     p.join()
     diff_size = before - gsz(cwd)
-    logger.info(f"space change: {fsz(diff_size)}")
+    print(f"space change: {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

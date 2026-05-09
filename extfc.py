@@ -87,7 +87,7 @@ for py in cwd.rglob("*.py"):
     if OUT_DIR in py.parents:
         continue
     try:
-        logger.info(f"processing ... {py}")
+        print(f"processing ... {py}")
         src = py.read_bytes()
         tree = parser.parse(src)
         definitions = extract_functions_and_classes(src, tree)
@@ -106,7 +106,7 @@ for py in cwd.rglob("*.py"):
             processed_files_count += 1
             total_definitions += len(definitions)
     except Exception as e:
-        logger.info(f"⚠️  Error processing {py}: {e}")
+        print(f"⚠️  Error processing {py}: {e}")
 # Write collected definitions to folder-specific files
 for (
     folder,
@@ -130,7 +130,7 @@ for (
     out_file.write_text(header + content)
     # Count definitions in this folder
     folder_def_count = len([d for d in defs_list if d.strip() and not d.startswith("#") and not d.startswith("\n#")])
-    logger.info(
+    print(
         f"✅ saved: {out_file} ({folder_def_count} definitions from {len([f for f in defs_list if 'File:' in f])} files)"
     )
 print(

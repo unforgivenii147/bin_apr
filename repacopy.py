@@ -49,18 +49,18 @@ class PackageRepacker:
                                     if site_pkg.exists() and site_pkg.is_dir():
                                         if site_pkg not in site_packages_dirs:
                                             site_packages_dirs.append(site_pkg)
-                                            logger.info(
+                                            print(
                                                 "Found virtualenv site-packages: %s",
                                                 site_pkg,
                                             )
                 for site_pkg in search_path.rglob("site-packages"):
                     if site_pkg.is_dir() and site_pkg not in site_packages_dirs:
                         site_packages_dirs.append(site_pkg)
-                        logger.info("Found site-packages: %s", site_pkg)
+                        print("Found site-packages: %s", site_pkg)
                 for dist_pkg in search_path.rglob("dist-packages"):
                     if dist_pkg.is_dir() and dist_pkg not in site_packages_dirs:
                         site_packages_dirs.append(dist_pkg)
-                        logger.info("Found dist-packages: %s", dist_pkg)
+                        print("Found dist-packages: %s", dist_pkg)
             except (
                 PermissionError,
                 OSError,
@@ -115,7 +115,7 @@ class PackageRepacker:
             platform_tag = "any"
             root_is_purelib = "true"
         else:
-            logger.info(
+            print(
                 "Detected C extensions for %s; generating platform-specific tags.",
                 package_name,
             )
@@ -229,7 +229,7 @@ class PackageRepacker:
                 is_pure_python,
             )
             if package_structure_path:
-                logger.info("Copied package files to: %s", package_structure_path)
+                print("Copied package files to: %s", package_structure_path)
                 return True
             return False
         except Exception as e:
@@ -239,7 +239,7 @@ class PackageRepacker:
     def copy_all_packages(self):
         total_copied = 0
         for site_packages_dir in self.found_site_packages:
-            logger.info("Processing site-packages: %s", site_packages_dir)
+            print("Processing site-packages: %s", site_packages_dir)
             env_name = "local_env"
             try:
                 if (
@@ -262,9 +262,9 @@ class PackageRepacker:
                 ):
                     package_count += 1
                     total_copied += 1
-            logger.info("Copied %s packages from %s", package_count, site_packages_dir)
-        logger.info("Total packages copied: %s", total_copied)
-        logger.info(f"Package files saved to: {self.output_base}")
+            print("Copied %s packages from %s", package_count, site_packages_dir)
+        print("Total packages copied: %s", total_copied)
+        print(f"Package files saved to: {self.output_base}")
 
 
 def main():
@@ -299,11 +299,11 @@ def main():
             if user_site:
                 current_site_packages.append(user_site)
             repacker.found_site_packages = [Path(p) for p in current_site_packages if Path(p).exists()]
-            logger.info(f"Using current active environment site-packages: {repacker.found_site_packages}")
+            print(f"Using current active environment site-packages: {repacker.found_site_packages}")
         else:
-            logger.info("Scanning current directory for site-packages directories...")
+            print("Scanning current directory for site-packages directories...")
             site_packages_dirs = repacker.find_site_packages_dirs()
-            logger.info(f"Found {len(site_packages_dirs)} site-packages directories")
+            print(f"Found {len(site_packages_dirs)} site-packages directories")
         if not repacker.found_site_packages:
             logger.error("No site-packages directories found!")
             return 1

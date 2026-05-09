@@ -15,7 +15,7 @@ def parse_minutes() -> float:
     try:
         return float(sys.argv[1])
     except ValueError:
-        logger.info("Invalid argument. Usage: script.py [minutes]")
+        print("Invalid argument. Usage: script.py [minutes]")
         sys.exit(1)
 
 
@@ -40,7 +40,7 @@ def main() -> None:
         newct[pth] = ctime
         path_str = str(pth.relative_to(cwd))
         max_path_len = max(len(path_str), 20)
-        logger.info(f"{path_str:<{max_path_len}}", end=" ")
+        print(f"{path_str:<{max_path_len}}", end=" ")
         cprint(f"{ctime}", "yellow")
 
 

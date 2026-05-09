@@ -43,14 +43,14 @@ def main():
                 logger.error(f"Error processing {f}: {e}")
     duplicates = {k: v for k, v in executables.items() if len(v) > 1}
     if not duplicates:
-        logger.info("No duplicates found.")
+        print("No duplicates found.")
         return
     for name, items in sorted(duplicates.items()):
         cprint(f"Duplicate: {name}")
         for path, hash_ in sorted(items, key=lambda x: str(x[0])):
             path = Path(path)
             print(f"  {path.name} in {path.parent.parent.name}/{path.parent.name}")
-            logger.info(f"  {path.name}  {hash_}")
+            print(f"  {path.name}  {hash_}")
 
 
 if __name__ == "__main__":

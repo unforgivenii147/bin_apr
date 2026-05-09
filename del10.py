@@ -6,7 +6,7 @@ from loguru import logger
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: python script.py <filename>")
+        print("Usage: python script.py <filename>")
         sys.exit(1)
     fname = sys.argv[1]
     llen = int(str(sys.argv[2]).strip()) if len(sys.argv) == 3 else 10
@@ -18,6 +18,6 @@ if __name__ == "__main__":
         with Path(fname).open("w", encoding="utf-8") as f:
             f.writelines(filtered)
     except FileNotFoundError:
-        logger.info(f"Error: File '{fname}' not found.")
+        print(f"Error: File '{fname}' not found.")
     except Exception as e:
-        logger.info("An error occurred:", e)
+        print("An error occurred:", e)

@@ -96,7 +96,7 @@ def main() -> None:
             seen_hashes.add(digest)
             save_asset(mime, data)
             extracted_count += 1
-    logger.info(f"{extracted_count} elements extracted.")
+    print(f"{extracted_count} elements extracted.")
 
 
 if __name__ == "__main__":

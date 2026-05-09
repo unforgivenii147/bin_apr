@@ -30,9 +30,9 @@ def main():
     current_dir = Path.cwd()
     png_files = find_png_files(current_dir)
     if not png_files:
-        logger.info("No PNG files found in the current directory.")
+        print("No PNG files found in the current directory.")
         return
-    logger.info(f"Found {len(png_files)} PNG files to optimize.")
+    print(f"Found {len(png_files)} PNG files to optimize.")
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {executor.submit(optimize_png, file): file for file in png_files}
         results = []
@@ -45,7 +45,7 @@ def main():
                 results.append(future.result())
                 pbar.update(1)
     success = sum(1 for r in results if r[0])
-    logger.info(f"\nOptimization complete. Success: {success}/{len(png_files)} files.")
+    print(f"\nOptimization complete. Success: {success}/{len(png_files)} files.")
 
 
 if __name__ == "__main__":

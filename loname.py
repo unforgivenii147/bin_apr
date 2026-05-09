@@ -35,7 +35,7 @@ def process_file(path):
     if new_path.exists():
         new_path = unique_path(new_path)
     path.rename(new_path)
-    logger.info(f"{path.name} -> {new_path.name}")
+    print(f"{path.name} -> {new_path.name}")
 
 
 if __name__ == "__main__":

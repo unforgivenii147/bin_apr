@@ -13,7 +13,7 @@ def translate_word(word):
     try:
         return GoogleTranslator(source="auto", target="en").translate(word)
     except Exception as e:
-        logger.info(f"Error translating '{word}': {e}")
+        print(f"Error translating '{word}': {e}")
         return None
 
 
@@ -21,12 +21,12 @@ def main():
     translations = {}
     with Path(INPUT_FILE).open(encoding="utf-8") as f:
         words = [line.strip() for line in f if line.strip()]
-    logger.info(f"Loaded {len(words)} Persian words")
+    print(f"Loaded {len(words)} Persian words")
     for w in words:
         eng = translate_word(w)
         if eng:
             translations[w] = eng
-            logger.info(f"{w} → {eng}")
+            print(f"{w} → {eng}")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         json.dump(
             translations,
@@ -34,7 +34,7 @@ def main():
             ensure_ascii=False,
             indent=2,
         )
-    logger.info(f"\nSaved JSON dictionary to {OUTPUT_FILE}")
+    print(f"\nSaved JSON dictionary to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

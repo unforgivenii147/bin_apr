@@ -20,9 +20,9 @@ def compress_python_files_in_directory(directory="."):
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             filepath = os.path.join(directory, filename)
-            logger.info(f"Compressing {filepath}...")
+            print(f"Compressing {filepath}...")
             compress_python_file(filepath)
-    logger.info("Compression complete.")
+    print("Compression complete.")
 
 
 if __name__ == "__main__":

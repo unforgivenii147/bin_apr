@@ -15,7 +15,7 @@ def get_github_repos(username, output_file=None) -> None:
         response.raise_for_status()
         repos = response.json()
         if not repos:
-            logger.info(f"No repositories found for user: {username}")
+            print(f"No repositories found for user: {username}")
             return
         with Path(output_file).open("w", encoding="utf-8") as f:
             f.write(f"GitHub repositories for user: {username}\n")
@@ -32,13 +32,13 @@ def get_github_repos(username, output_file=None) -> None:
                 f.write(f"URL: {url}\n")
                 f.write(f"Stars: {stars} | Forks: {forks} | Language: {language}\n")
                 f.write("-" * 50 + "\n")
-        logger.info(f"Successfully saved {len(repos)} repositories to {output_file}")
+        print(f"Successfully saved {len(repos)} repositories to {output_file}")
     except requests.exceptions.RequestException as e:
-        logger.info(f"Error fetching data: {e}")
+        print(f"Error fetching data: {e}")
     except json.JSONDecodeError as e:
-        logger.info(f"Error parsing JSON response: {e}")
+        print(f"Error parsing JSON response: {e}")
     except Exception as e:
-        logger.info(f"An unexpected error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

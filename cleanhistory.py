@@ -10,4 +10,4 @@ if __name__ == "__main__":
         nl.extend(line for line in f if 'cd "`printf' not in line)
     with Path(fn).open("w", encoding="utf-8") as fo:
         fo.writelines(nl)
-    logger.info("done.")
+    print("done.")

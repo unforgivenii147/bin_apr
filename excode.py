@@ -70,7 +70,7 @@ def extract_code_blocks(md_file: Path, out_dir: Path):
     try:
         content = md_file.read_text(encoding="utf-8", errors="replace")
     except Exception as e:
-        logger.info(f"Warning: Could not read {md_file}: {e}")
+        print(f"Warning: Could not read {md_file}: {e}")
         return []
     matches = list(CODE_BLOCK_RE.finditer(content))
     if not matches:
@@ -86,7 +86,7 @@ def extract_code_blocks(md_file: Path, out_dir: Path):
         try:
             out_path.write_text(code.rstrip("\n") + "\n", encoding="utf-8")
         except Exception as e:
-            logger.info(f"Warning: Could not write {out_path}: {e}")
+            print(f"Warning: Could not write {out_path}: {e}")
             continue
         extracted.append(out_path)
     return extracted

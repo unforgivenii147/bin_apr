@@ -69,35 +69,35 @@ def write_chunks(chunks, input_path: Path, out_dir: Path, encoding: str):
         out_name = f"{stem}_{i}{ext}"
         out_path = out_dir / out_name
         out_path.write_text(chunk, encoding=encoding)
-        logger.info(f"Wrote {out_path} ({len(chunk)} chars)")
+        print(f"Wrote {out_path} ({len(chunk)} chars)")
 
 
 def main():
     inp = Path(sys.argv[1])
     if not inp.exists() or not inp.is_file() or is_binary(inp):
-        logger.info(f"Input file not found or is binary: {inp.name}", file=sys.stderr)
+        print(f"Input file not found or is binary: {inp.name}", file=sys.stderr)
         sys.exit(2)
     try:
         text = inp.read_text(encoding="utf-8")
     except Exception as exc:
-        logger.info(
+        print(
             f"Failed to read input file with encoding {args.encoding}: {exc}",
             file=sys.stderr,
         )
         sys.exit(2)
     if len(text) < DEFAULT_MAX:
-        logger.info(
+        print(
             f"File has fewer than {DEFAULT_MAX} characters ({len(text)}). Skipping.",
             file=sys.stderr,
         )
         sys.exit(0)
     chunks = chunk_text_with_nltk(text, DEFAULT_MAX)
     if not chunks:
-        logger.info("No chunks produced. Exiting.", file=sys.stderr)
+        print("No chunks produced. Exiting.", file=sys.stderr)
         sys.exit(0)
     out_dir = inp.parent
     write_chunks(chunks, inp, out_dir, "utf-8")
-    logger.info(f"Finished: {len(chunks)} files created")
+    print(f"Finished: {len(chunks)} files created")
 
 
 if __name__ == "__main__":

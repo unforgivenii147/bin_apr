@@ -14,7 +14,7 @@ parser.language = Language(tree_sitter_rust.language())
 
 
 def process_file(path: Path) -> None:
-    logger.info(f"processing {path.name}")
+    print(f"processing {path.name}")
     try:
         source = path.read_bytes()
         tree = parser.parse(source)
@@ -45,7 +45,7 @@ def process_file(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        logger.info(f"[OK] {path.name}")
+        print(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

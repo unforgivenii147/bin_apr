@@ -34,7 +34,7 @@ def main():
         while pending:
             pending.popleft().get()
     diff_size = before - gsz(cwd)
-    logger.info(f"space changed : {fsz(diff_size)}")
+    print(f"space changed : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

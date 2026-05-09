@@ -19,14 +19,14 @@ def extract_text(image_path):
 
 
 def process_file(path):
-    logger.info(f"Processing {path.name}")
+    print(f"Processing {path.name}")
     text = extract_text(path)
     if text and len(text) > 1:
         txtfile = path.with_suffix(".txt")
         txtfile.write_text(text, encoding="utf-8")
-        logger.info(f"{txtfile} created.")
+        print(f"{txtfile} created.")
     else:
-        logger.info("No text found.")
+        print("No text found.")
 
 
 def main() -> None:

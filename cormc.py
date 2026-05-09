@@ -11,11 +11,11 @@ from loguru import logger
 try:
     from tree_sitter_languages import get_language, get_parser
 except ImportError:
-    logger.info(
+    print(
         "Error: tree-sitter dependencies not installed.",
         file=sys.stderr,
     )
-    logger.info(
+    print(
         "Install with: pip install tree-sitter tree-sitter-languages",
         file=sys.stderr,
     )
@@ -163,7 +163,7 @@ class CommentRemover:
             source_code, tree = parsed
             cleaned_code = self.remove_comments_and_docstrings(source_code, tree)
             Path(filepath).write_text(cleaned_code, encoding="utf-8")
-            logger.info("Processed: %s", filepath)
+            print("Processed: %s", filepath)
             return True
         except Exception as e:
             logger.exception("Error processing %s: %s", filepath, e)
@@ -197,7 +197,7 @@ def process_files_mp(
 ) -> tuple[int, int]:
     if num_workers is None:
         num_workers = max(1, cpu_count() - 1)
-    logger.info(f"Processing {len(files)} files with {num_workers} workers")
+    print(f"Processing {len(files)} files with {num_workers} workers")
     remover = CommentRemover()
     with Pool(num_workers) as pool:
         results = pool.map(remover.process_file, files)
@@ -241,9 +241,9 @@ def main():
     if not python_files:
         logger.warning(f"No Python files found in {args.directory}")
         sys.exit(0)
-    logger.info(f"Found {len(python_files)} Python files")
+    print(f"Found {len(python_files)} Python files")
     successful, failed = process_files_mp(python_files, args.workers)
-    logger.info("Completed: %s successful, %s failed", successful, failed)
+    print("Completed: %s successful, %s failed", successful, failed)
     if failed > 0:
         sys.exit(1)
 

@@ -82,24 +82,24 @@ def save_to_requirements(packages: Iterable[str]) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
     REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
-    logger.info(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
+    print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
 
 
 def main() -> None:
-    logger.info("🔍 Running pip check...")
+    print("🔍 Running pip check...")
     output = run_pip_check()
     if not output:
-        logger.info("🎉 No issues found by pip check.")
+        print("🎉 No issues found by pip check.")
         return
-    logger.info("🔎 Parsing missing packages...")
+    print("🔎 Parsing missing packages...")
     missing_packages = parse_missing_packages(output)
     if not missing_packages:
-        logger.info("🎉 No missing libraries detected.")
+        print("🎉 No missing libraries detected.")
         return
-    logger.info("⚠️ Missing packages detected: ")
+    print("⚠️ Missing packages detected: ")
     results = [pkg for pkg in missing_packages if pkg not in BLACKLIST]
     for pkg in results:
-        logger.info(f"    - {pkg}")
+        print(f"    - {pkg}")
     save_to_requirements(results)
 
 

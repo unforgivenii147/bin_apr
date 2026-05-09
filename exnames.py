@@ -22,10 +22,10 @@ def load_names(names_filepath):
                     else:
                         names.add((name, re.compile(re.escape(name[0].upper()) + r"[\w\s\-']+", re.IGNORECASE)))
     except FileNotFoundError:
-        logger.info(f"Error: Names file not found at {names_filepath}")
+        print(f"Error: Names file not found at {names_filepath}")
         sys.exit(1)
     except Exception as e:
-        logger.info(f"Error loading names file: {e}")
+        print(f"Error loading names file: {e}")
         sys.exit(1)
     return names
 
@@ -68,15 +68,15 @@ def find_names_in_files(names_db_path="names.txt"):
                                 if entry not in found_names[original_name]:
                                     found_names[original_name].append(entry)
             except Exception as e:
-                logger.info(f"Could not read file {filepath}: {e}")
+                print(f"Could not read file {filepath}: {e}")
     if not found_names:
-        logger.info("No target names found in the specified files.")
+        print("No target names found in the specified files.")
         return
-    logger.info(f"Found names (from {names_db_path}):")
+    print(f"Found names (from {names_db_path}):")
     for name, occurrences in found_names.items():
-        logger.info(f"\n- {name}:")
+        print(f"\n- {name}:")
         for occ in occurrences:
-            logger.info(f"  - File: {occ['file']}, Match: '{occ['match']}'")
+            print(f"  - File: {occ['file']}, Match: '{occ['match']}'")
 
 
 if __name__ == "__main__":

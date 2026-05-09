@@ -23,10 +23,10 @@ def whl_to_tar_xz(whl_path: Path):
                 with zf.open(member) as source:
                     tarinfo = tarfile.TarInfo(name=member.filename)
                     tf.addfile(tarinfo, source)
-        logger.info(f"[OK] Created {target.name}")
+        print(f"[OK] Created {target.name}")
         whl_path.unlink()
     except Exception as e:
-        logger.info(f"[ERROR] {whl_path.name}: {e}")
+        print(f"[ERROR] {whl_path.name}: {e}")
 
 
 def main():

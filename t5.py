@@ -75,14 +75,14 @@ def process_file(fp):
     ts_rmc.remove_comments(code)
     result, comments, docstrings = ts_rmc.remove_comments(code)
     if comments == 0 and docstrings == 0:
-        logger.info(f"[NO CHANGE] : {file_path.name}")
+        print(f"[NO CHANGE] : {file_path.name}")
         return
     try:
         ast.parse(result)
-        logger.info(f"{file_path.name}: comments: {comments}   docstrings: {docstrings}")
+        print(f"{file_path.name}: comments: {comments}   docstrings: {docstrings}")
         fp.write_text(result, encoding="utf-8")
     except:
-        logger.info(f"{file_path.name} : invalid code")
+        print(f"{file_path.name} : invalid code")
 
 
 def main():
@@ -90,11 +90,11 @@ def main():
     before = gsz(".")
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_pyfiles(cwd)
-    logger.info(f"Processing {len(files)} files using QueryCursor...")
+    print(f"Processing {len(files)} files using QueryCursor...")
     mpf(process_file, files)
     diff_size = before - gsz(".")
     if diff_size != 0:
-        logger.info(fsz(diff_size))
+        print(fsz(diff_size))
 
 
 if __name__ == "__main__":

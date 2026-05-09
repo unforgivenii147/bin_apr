@@ -190,9 +190,9 @@ if __name__ == "__main__":
     current_directory = "."
     all_extracted_urls = []
     all_github_urls = []
-    logger.info(f"Starting URL extraction in directory: {Path(current_directory).resolve()}")
+    print(f"Starting URL extraction in directory: {Path(current_directory).resolve()}")
     files_to_process = list(find_files_recursively(current_directory))
-    logger.info(f"Found {len(files_to_process)} files to process.")
+    print(f"Found {len(files_to_process)} files to process.")
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(process_file, file_path): file_path for file_path in files_to_process}
         for future in futures:
@@ -205,22 +205,22 @@ if __name__ == "__main__":
                 logger.error(f"Error processing result for {file_path}: {e}")
     unique_urls = sorted(set(all_extracted_urls))
     unique_github_urls = sorted(set(all_github_urls))
-    logger.info("\n--- Extracted URLs ---")
+    print("\n--- Extracted URLs ---")
     if unique_urls:
         with Path("urls").open("a", encoding="utf-8") as fo:
             for url in unique_urls:
-                logger.info(url)
+                print(url)
                 fo.write(f"{url}\n")
     else:
-        logger.info("No URLs found.")
-    logger.info("\n--- Extracted GitHub URLs ---")
+        print("No URLs found.")
+    print("\n--- Extracted GitHub URLs ---")
     if unique_github_urls:
         with Path("giturls").open("a", encoding="utf-8") as fg:
             for url in unique_github_urls:
                 fg.write(f"{url}\n")
-                logger.info(url)
+                print(url)
     else:
-        logger.info("No GitHub URLs found.")
-    logger.info(
+        print("No GitHub URLs found.")
+    print(
         f"Extraction complete. Found {len(unique_urls)} unique URLs and {len(unique_github_urls)} unique GitHub URLs."
     )

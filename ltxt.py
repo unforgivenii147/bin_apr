@@ -20,7 +20,7 @@ def process_file(filepath):
                 if line:
                     counter[line] += 1
     except Exception as e:
-        logger.info(f"Error reading {filepath}: {e}")
+        print(f"Error reading {filepath}: {e}")
     return counter
 
 
@@ -60,13 +60,13 @@ def collect_lines_for_extension(ext, files):
         ) in global_counter.most_common():
             if count >= 2:
                 fo.write(line + "\n")
-    logger.info(f"Saved results to {output_file}")
+    print(f"Saved results to {output_file}")
 
 
 def main():
     ext_map = collect_files_by_extension()
     if not ext_map:
-        logger.info("No eligible files found.")
+        print("No eligible files found.")
         return
     for ext, files in ext_map.items():
         collect_lines_for_extension(ext, files)

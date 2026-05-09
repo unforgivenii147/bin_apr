@@ -29,12 +29,12 @@ def rename_package_dirs(root: Path, dry_run: bool = False) -> None:
         if pkg_dir.name == new_name:
             continue
         if new_dir.exists():
-            logger.info(f"[SKIP] {new_dir} already exists")
+            print(f"[SKIP] {new_dir} already exists")
             continue
         if dry_run:
-            logger.info(f"[DRY] {pkg_dir} -> {new_dir}")
+            print(f"[DRY] {pkg_dir} -> {new_dir}")
         else:
-            logger.info(f"[RENAME] {pkg_dir} -> {new_dir}")
+            print(f"[RENAME] {pkg_dir} -> {new_dir}")
             pkg_dir.rename(new_dir)
 
 

@@ -77,9 +77,9 @@ def convert_filenames_with_pathlib(directory="."):
             new_filepath = filepath.with_name(new_filename)
             try:
                 filepath.rename(new_filepath)
-                logger.info(f"Renamed: {filepath} -> {new_filepath}")
+                print(f"Renamed: {filepath} -> {new_filepath}")
             except OSError as e:
-                logger.info(f"Error renaming {filepath}: {e}")
+                print(f"Error renaming {filepath}: {e}")
 
 
 if __name__ == "__main__":

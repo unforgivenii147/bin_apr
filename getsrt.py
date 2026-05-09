@@ -23,9 +23,9 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     ]
     try:
         subprocess.run(cmd, check=True)
-        logger.info(f"Subtitles extracted to: {output_file}")
+        print(f"Subtitles extracted to: {output_file}")
     except subprocess.CalledProcessError as e:
-        logger.info(f"Error extracting subtitles: {e}")
+        print(f"Error extracting subtitles: {e}")
 
 
 extract_subtitles("your_movie.mkv")

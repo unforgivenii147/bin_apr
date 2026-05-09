@@ -22,7 +22,7 @@ def compute_hashes(path: Path):
                 "ahash": dh.average_hash(img),
             }
     except Exception as e:
-        logger.info(f"[SKIP] {path.name}: {e}")
+        print(f"[SKIP] {path.name}: {e}")
         return None
 
 
@@ -38,7 +38,7 @@ def main():
     cwd = Path.cwd()
     images = [p for p in cwd.iterdir() if dh.is_image(p)]
     if not images:
-        logger.info("No images found.")
+        print("No images found.")
         return
     hashes = {}
     for img in images:
@@ -63,7 +63,7 @@ def main():
             folder.mkdir(exist_ok=True)
             for img, _ in group:
                 shutil.move(str(img), folder / img.name)
-    logger.info(f"Done. Created {len(groups)} groups.")
+    print(f"Done. Created {len(groups)} groups.")
 
 
 if __name__ == "__main__":

@@ -13,9 +13,9 @@ def tar_xz_to_whl(tar_path: Path):
     tt = str(target).replace(".tar", "")
     target = Path(tt)
     if target.exists():
-        logger.info(f"[SKIP] {target.name} already exists")
+        print(f"[SKIP] {target.name} already exists")
         target = unique_path(target)
-    logger.info(f"[TAR.XZ → WHL] {tar_path.name}")
+    print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
         with (
             tarfile.open(tar_path, "r:xz") as tf,
@@ -32,9 +32,9 @@ def tar_xz_to_whl(tar_path: Path):
                 if extracted is None:
                     continue
                 zf.writestr(member.name, extracted.read())
-        logger.info(f"[OK] {target.name}")
+        print(f"[OK] {target.name}")
     except Exception as e:
-        logger.info(f"[ERROR] {tar_path.name}: {e}")
+        print(f"[ERROR] {tar_path.name}: {e}")
 
 
 def main():

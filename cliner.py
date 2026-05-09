@@ -87,20 +87,20 @@ def main():
     if not log_files:
         print(f"No {LOG_EXT} files found.")
         return
-    logger.info(f"Found {len(log_files)} log file(s).")
+    print(f"Found {len(log_files)} log file(s).")
     results = mpf3(clean_file_worker, log_files)
     success_count = 0
     error_count = 0
     for path, success, message in results:
         if success:
-            logger.info(f"✓ Cleaned: {path} ({message})")
+            print(f"✓ Cleaned: {path} ({message})")
             success_count += 1
         else:
-            logger.info(f"✗ Error: {path} - {message}")
+            print(f"✗ Error: {path} - {message}")
             error_count += 1
-    logger.info(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
+    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
     if error_count > 0:
-        logger.info(f"Failed: {error_count} file(s).")
+        print(f"Failed: {error_count} file(s).")
 
 
 if __name__ == "__main__":

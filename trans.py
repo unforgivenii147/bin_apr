@@ -59,7 +59,7 @@ def main() -> None:
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        logger.info(
+        print(
             f"File not found: {in_path}",
             file=sys.stderr,
         )
@@ -67,7 +67,7 @@ def main() -> None:
     try:
         text = read_text_file(in_path)
     except Exception as exc:
-        logger.info(f"Read error: {exc}", file=sys.stderr)
+        print(f"Read error: {exc}", file=sys.stderr)
         sys.exit(1)
     chunks = chunk_text(text)
     src_lang = args.lang
@@ -75,7 +75,7 @@ def main() -> None:
         try:
             src_lang = detect_lang(text)
         except Exception as exc:
-            logger.info(
+            print(
                 f"Language detection error: {exc}",
                 file=sys.stderr,
             )
@@ -83,7 +83,7 @@ def main() -> None:
     try:
         translated = translate_chunks(chunks, src_lang)
     except Exception as exc:
-        logger.info(
+        print(
             f"Translation error: {exc}",
             file=sys.stderr,
         )
@@ -92,9 +92,9 @@ def main() -> None:
     try:
         write_text_file(out_path, translated)
     except Exception as exc:
-        logger.info(f"Write error: {exc}", file=sys.stderr)
+        print(f"Write error: {exc}", file=sys.stderr)
         sys.exit(1)
-    logger.info(f"Translated ({src_lang} → en) → {out_path}")
+    print(f"Translated ({src_lang} → en) → {out_path}")
 
 
 if __name__ == "__main__":

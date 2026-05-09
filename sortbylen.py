@@ -48,18 +48,18 @@ def fsz(size: int) -> str:
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
         sys.exit(1)
     path = Path(sys.argv[1])
     if not path.exists():
-        logger.info(f"Error: File '{path}' not found.", file=sys.stderr)
+        print(f"Error: File '{path}' not found.", file=sys.stderr)
         sys.exit(1)
     size = path.stat().st_size
     use_mmap = size > MMAP_THRESHOLD
     lines = read_lines_mmap(path) if use_mmap else read_lines_standard(path)
     sorted_lines = sort_by_length(lines)
     write_lines(path, sorted_lines)
-    logger.info(f"\n✅ Sorted {len(sorted_lines)} lines by length → saved to '{path}'")
+    print(f"\n✅ Sorted {len(sorted_lines)} lines by length → saved to '{path}'")
 
 
 if __name__ == "__main__":

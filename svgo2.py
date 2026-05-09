@@ -30,12 +30,12 @@ def process_file(in_file):
             capture_output=True,
         )
         move_file(tmp_file_path, in_file, overwrite=True)
-        logger.info(f"{in_file.name} updated")
+        print(f"{in_file.name} updated")
     except subprocess.CalledProcessError as e:
-        logger.info(f"Error running svgcleaner: {e.stderr.decode('utf-8')}")
+        print(f"Error running svgcleaner: {e.stderr.decode('utf-8')}")
         sys.exit(1)
     except Exception as e:
-        logger.info(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
         sys.exit(1)
     finally:
         if Path(tmp_file_path).exists():
@@ -48,7 +48,7 @@ def main() -> None:
     args = sys.argv[1:]
     files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".svg"])
     if not files:
-        logger.info("no files found")
+        print("no files found")
         return
     if len(files) == 1:
         process_file(files[0])

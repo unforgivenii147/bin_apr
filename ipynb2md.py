@@ -19,4 +19,4 @@ if __name__ == "__main__":
                 out.write("```python\n")
                 out.write(cell.source + "\n")
                 out.write("```\n\n")
-    logger.info(f"Exported → {fo}")
+    print(f"Exported → {fo}")

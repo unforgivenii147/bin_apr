@@ -13,7 +13,7 @@ def format_python_file(filepath):
     if not filepath.exists():
         print(f"Error: File not found at {filepath}", file=sys.stderr)
         return
-    content=""
+    content = ""
     backup_filepath = filepath.with_name(filepath.name + ".bak")
     try:
         with (

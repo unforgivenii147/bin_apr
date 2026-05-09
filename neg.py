@@ -17,7 +17,7 @@ def process_file(fp):
         return
     img = 255 - img
     cv.imwrite(str(fp), img)
-    logger.info(f"{fp.relative_to(cwd)} updated.")
+    print(f"{fp.relative_to(cwd)} updated.")
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
                 pending.popleft().get()
         while pending:
             pending.popleft().get()
-    logger.info("done.")
+    print("done.")
 
 
 if __name__ == "__main__":

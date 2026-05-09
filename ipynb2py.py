@@ -19,4 +19,4 @@ if __name__ == "__main__":
                     out.write("\n")
             elif cell.cell_type == "code":
                 out.write(cell.source + "\n\n")
-    logger.info(f"Exported → {fo}")
+    print(f"Exported → {fo}")

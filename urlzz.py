@@ -24,7 +24,7 @@ def extract_urls_from_file(filepath):
         content = filepath.read_text(encoding="utf-8", errors="ignore")
         urls.update(extract_urls_from_text(content))
     except Exception as e:
-        logger.info(f"Failed to read {filepath}: {e}")
+        print(f"Failed to read {filepath}: {e}")
     return urls
 
 
@@ -40,7 +40,7 @@ def extract_urls_from_tar(filepath):
                         content = f.read().decode("utf-8", errors="ignore")
                         urls.update(extract_urls_from_text(content))
     except Exception as e:
-        logger.info(f"Failed to read tar {filepath}: {e}")
+        print(f"Failed to read tar {filepath}: {e}")
     return urls
 
 
@@ -59,7 +59,7 @@ def extract_urls_from_zip(filepath):
                 except:
                     pass
     except Exception as e:
-        logger.info(f"Failed to read zip {filepath}: {e}")
+        print(f"Failed to read zip {filepath}: {e}")
     return urls
 
 
@@ -75,7 +75,7 @@ def extract_urls_from_7z(filepath):
                 except:
                     pass
     except Exception as e:
-        logger.info(f"Failed to read 7z {filepath}: {e}")
+        print(f"Failed to read 7z {filepath}: {e}")
     return urls
 
 
@@ -107,4 +107,4 @@ if __name__ == "__main__":
             all_urls.update(future.result())
     with Path("urls.txt").open("w", encoding="utf-8") as f:
         f.writelines(url + "\n" for url in sorted(all_urls))
-    logger.info(f"Extracted {len(all_urls)} unique URLs to urls.txt")
+    print(f"Extracted {len(all_urls)} unique URLs to urls.txt")

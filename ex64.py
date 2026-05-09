@@ -36,7 +36,7 @@ def scan_and_extract(base_dir: Path, output_dir: Path) -> None:
     output_dir.mkdir(exist_ok=True)
     target_exts = {".ipynb", ".js", ".html"}
     total_found = 0
-    logger.info(f"\n🔍 Scanning: {base_dir.resolve()}\n")
+    print(f"\n🔍 Scanning: {base_dir.resolve()}\n")
     for root, _, files in os.walk(base_dir):
         for fname in files:
             ext = Path(fname).suffix.lower()
@@ -46,8 +46,8 @@ def scan_and_extract(base_dir: Path, output_dir: Path) -> None:
             found = extract_images_from_file(fpath, output_dir)
             total_found += found
             if found:
-                logger.info(f"📸 Extracted {found} images from {fpath}")
-    logger.info(f"\n✅ Extraction complete. Total images saved: {total_found}")
+                print(f"📸 Extracted {found} images from {fpath}")
+    print(f"\n✅ Extraction complete. Total images saved: {total_found}")
 
 
 if __name__ == "__main__":

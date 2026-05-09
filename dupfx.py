@@ -129,9 +129,9 @@ def main() -> None:
             continue
     candidates_by_size = {s: lst for s, lst in size_groups.items() if len(lst) > 1}
     if not candidates_by_size:
-        logger.info("No potential duplicates found (no groups with equal size).")
+        print("No potential duplicates found (no groups with equal size).")
         return
-    logger.info(
+    print(
         f"Found {sum(len(v) for v in candidates_by_size.values())} files in {len(candidates_by_size)} size-groups to examine.",
     )
     quick_groups = defaultdict(list)
@@ -147,10 +147,10 @@ def main() -> None:
                 key = (fpath.stat().st_size, h)
                 quick_groups[key].append(fpath)
             except Exception as e:
-                logger.info(f"Skipping {fpath}: {e}")
+                print(f"Skipping {fpath}: {e}")
     need_full = [group for group in quick_groups.values() if len(group) > 1]
     if not need_full:
-        logger.info("No dups")
+        print("No dups")
         return
     full_groups = defaultdict(list)
     with ThreadPoolExecutor(max_workers=16) as ex:
@@ -165,7 +165,7 @@ def main() -> None:
                 h = fut.result()
                 full_groups[h].append((fpath, st_key))
             except Exception as e:
-                logger.info(f"Skipping {fpath}: {e}")
+                print(f"Skipping {fpath}: {e}")
     to_delete = []
     for h, entries in full_groups.items():
         inode_map = {}
@@ -180,26 +180,26 @@ def main() -> None:
                 continue
             to_delete.append(ps)
     if not to_delete:
-        logger.info("No dups")
+        print("No dups")
         return
-    logger.info(f"Planned deletions: {len(to_delete)} files.")
+    print(f"Planned deletions: {len(to_delete)} files.")
     for p in to_delete:
-        logger.info("  " + str(p))
+        print("  " + str(p))
     if args.dry_run:
-        logger.info("Dry-run enabled; no files were deleted.")
+        print("Dry-run enabled; no files were deleted.")
         return
     removed = 0
     failed = 0
     for p in to_delete:
         try:
             p.unlink()
-            logger.info(f"Deleted: {p.relative_to(cwd)}")
+            print(f"Deleted: {p.relative_to(cwd)}")
             removed += 1
         except Exception as e:
-            logger.info(f"Failed to delete {p.relative_to(cwd)}: {e}")
+            print(f"Failed to delete {p.relative_to(cwd)}: {e}")
             failed += 1
     if failed:
-        logger.info(f"Removed: {removed}. Failed: {failed}.")
+        print(f"Removed: {removed}. Failed: {failed}.")
     else:
         logger.debug(f"Removed: {removed}")
 

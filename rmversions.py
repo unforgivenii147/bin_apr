@@ -17,7 +17,7 @@ def clean_requirements(fname):
         if pkg:
             packages.add(pkg)
     Path(fname).write_text("\n".join(sorted(packages)), encoding="utf-8")
-    logger.info(f"Updated  {fname} with {len(packages)} unique packages.")
+    print(f"Updated  {fname} with {len(packages)} unique packages.")
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ def remove_tag_from_html_file(file_path, tag_name):
 def process_directory(root_dir, tag_name):
     for dirpath, _, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.lower().endswith((".html",".txt")):
+            if filename.lower().endswith((".html", ".txt")):
                 full_path = os.path.join(dirpath, filename)
                 remove_tag_from_html_file(full_path, tag_name)
 

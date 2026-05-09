@@ -18,7 +18,7 @@ def process_file(fp):
         return None
     ext = fp.suffix[1:]
     if ext and is_all_upper(ext):
-        logger.info(fp)
+        print(fp)
         return True
     return False
 

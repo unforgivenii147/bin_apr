@@ -6,7 +6,7 @@ from pathlib import Path
 from loguru import logger
 
 if len(sys.argv) != 2:
-    logger.info("Usage: python extract_subtitles.py <input_file>")
+    print("Usage: python extract_subtitles.py <input_file>")
     sys.exit(1)
 input_file = sys.argv[1]
 output_dir = "subtitles"

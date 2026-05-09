@@ -15,7 +15,7 @@ def process_file(path):
             show_output=False,
         )
         diff_size = before - gsz(path)
-        logger.info(f"{path.name}", end=" | ")
+        print(f"{path.name}", end=" | ")
         if not diff_size:
             cprint(" NO CHANGE", "green")
         if diff_size < 0:

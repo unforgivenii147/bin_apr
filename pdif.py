@@ -14,7 +14,7 @@ def compare_files(file1, file2):
             lines1 = f1.readlines()
             lines2 = f2.readlines()
     except FileNotFoundError as e:
-        logger.info(f"Error: {e}")
+        print(f"Error: {e}")
         return
     lines1 = [line.rstrip("\n") for line in lines1]
     lines2 = [line.rstrip("\n") for line in lines2]
@@ -30,19 +30,19 @@ def compare_files(file1, file2):
     for line in lines1:
         if line in lines2:
             common_count += 1
-    logger.info(f"{file1} : {len(lines1)}")
-    logger.info(f"{file2} : {len(lines2)}")
-    logger.info(f"common: {common_count}")
-    logger.info(f"Number of different lines in File 1: {len(diff_lines_1)}")
+    print(f"{file1} : {len(lines1)}")
+    print(f"{file2} : {len(lines2)}")
+    print(f"common: {common_count}")
+    print(f"Number of different lines in File 1: {len(diff_lines_1)}")
     if diff_lines_1:
-        logger.info(f"Line numbers: {diff_lines_1}")
-    logger.info(f"Number of different lines in File 2: {len(diff_lines_2)}")
+        print(f"Line numbers: {diff_lines_1}")
+    print(f"Number of different lines in File 2: {len(diff_lines_2)}")
     if diff_lines_2:
-        logger.info(f"Line numbers: {diff_lines_2}")
+        print(f"Line numbers: {diff_lines_2}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        logger.info("Usage: python script.py <file1> <file2>")
+        print("Usage: python script.py <file1> <file2>")
         sys.exit(1)
     compare_files(sys.argv[1], sys.argv[2])

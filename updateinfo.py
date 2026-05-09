@@ -33,12 +33,12 @@ def update_setup_py(file_path: Path) -> bool:
         )
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"✅ Updated {file_path}")
+            print(f"✅ Updated {file_path}")
             return True
-        logger.info(f"No changes needed in {file_path}")
+        print(f"No changes needed in {file_path}")
         return False
     except Exception as e:
-        logger.info(f"❌ Error updating {file_path}: {e}")
+        print(f"❌ Error updating {file_path}: {e}")
         return False
 
 
@@ -77,12 +77,12 @@ def update_pyproject_toml(file_path: Path) -> bool:
         )
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"✅ Updated {file_path}")
+            print(f"✅ Updated {file_path}")
             return True
-        logger.info(f"ℹ️  No changes needed in {file_path}")
+        print(f"ℹ️  No changes needed in {file_path}")
         return False
     except Exception as e:
-        logger.info(f"❌ Error updating {file_path}: {e}")
+        print(f"❌ Error updating {file_path}: {e}")
         return False
 
 
@@ -110,22 +110,22 @@ def update_setup_cfg(file_path: Path) -> bool:
         )
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"✅ Updated {file_path}")
+            print(f"✅ Updated {file_path}")
             return True
-        logger.info(f"ℹ️  No changes needed in {file_path}")
+        print(f"ℹ️  No changes needed in {file_path}")
         return False
     except Exception as e:
-        logger.info(f"❌ Error updating {file_path}: {e}")
+        print(f"❌ Error updating {file_path}: {e}")
         return False
 
 
 def main():
-    logger.info("🔍 Scanning for configuration files...")
-    logger.info("📝 New information:")
-    logger.info(f"   Name: {NEW_INFO['name']}")
-    logger.info(f"   Email: {NEW_INFO['email']}")
-    logger.info(f"   GitHub Username: {NEW_INFO['github_username']}")
-    logger.info("-" * 50)
+    print("🔍 Scanning for configuration files...")
+    print("📝 New information:")
+    print(f"   Name: {NEW_INFO['name']}")
+    print(f"   Email: {NEW_INFO['email']}")
+    print(f"   GitHub Username: {NEW_INFO['github_username']}")
+    print("-" * 50)
     files_to_update = [
         (Path("setup.py"), update_setup_py),
         (
@@ -140,12 +140,12 @@ def main():
             if update_func(file_path):
                 updated_count += 1
         else:
-            logger.info(f"ℹ️  {file_path} not found, skipping...")
-    logger.info("-" * 50)
+            print(f"ℹ️  {file_path} not found, skipping...")
+    print("-" * 50)
     if updated_count > 0:
-        logger.info(f"✅ Successfully updated {updated_count} file(s)")
+        print(f"✅ Successfully updated {updated_count} file(s)")
     else:
-        logger.info("ℹ️  No files were updated")
+        print("ℹ️  No files were updated")
     return 0
 
 

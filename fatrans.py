@@ -13,7 +13,7 @@ DICT_FILE = "/sdcard/isaac/dic.json"
 
 def load_dictionary(path: Path):
     if not path.exists():
-        logger.info(
+        print(
             f"Error: {path} not found",
             file=sys.stderr,
         )
@@ -56,18 +56,18 @@ def fuzzy_search(word, all_words, limit=5, cutoff=0.6):
 def interactive_mode(fa_en, en_fa):
     all_words = set(fa_en) | set(en_fa)
     setup_readline(all_words)
-    logger.info("Offline Persian ↔ English Translator")
-    logger.info("TAB for suggestions, Ctrl+C to exit\n")
+    print("Offline Persian ↔ English Translator")
+    print("TAB for suggestions, Ctrl+C to exit\n")
     while True:
         try:
             word = input("> ").strip()
         except (KeyboardInterrupt, EOFError):
-            logger.info("\nBye.")
+            print("\nBye.")
             break
         if not word:
             continue
         result = translate(word, fa_en, en_fa)
-        logger.info(result or "Not found")
+        print(result or "Not found")
 
 
 def main():
@@ -91,24 +91,24 @@ def main():
     if args.prefix:
         matches = prefix_search(args.prefix, all_words)
         if matches:
-            logger.info("\n".join(matches))
+            print("\n".join(matches))
             sys.exit(0)
-        logger.info("No matches", file=sys.stderr)
+        print("No matches", file=sys.stderr)
         sys.exit(1)
     if args.fuzzy:
         matches = fuzzy_search(args.fuzzy, all_words)
         if matches:
-            logger.info("\n".join(matches))
+            print("\n".join(matches))
             sys.exit(0)
-        logger.info("No close matches", file=sys.stderr)
+        print("No close matches", file=sys.stderr)
         sys.exit(1)
     if args.word:
         word = " ".join(args.word).strip()
         result = translate(word, fa_en, en_fa)
         if result:
-            logger.info(result)
+            print(result)
             sys.exit(0)
-        logger.info("Not found", file=sys.stderr)
+        print("Not found", file=sys.stderr)
         sys.exit(1)
     interactive_mode(fa_en, en_fa)
 

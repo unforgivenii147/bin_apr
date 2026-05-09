@@ -13,7 +13,7 @@ def process_file(path, text):
         nl = [line for line in lines if target not in line]
         newcontent = "\n".join(nl)
         path.write_text(newcontent, encoding="utf-8")
-        logger.info(f"{path.parent.name} updated.")
+        print(f"{path.parent.name} updated.")
 
 
 if __name__ == "__main__":

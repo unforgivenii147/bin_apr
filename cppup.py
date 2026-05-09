@@ -29,7 +29,7 @@ FILE_EXTENSIONS = {
 
 def format_file(file_path):
     pth = Path(file_path)
-    logger.info(f"formating {pth.stem}")
+    print(f"formating {pth.stem}")
     try:
         subprocess.run(
             ["clang-format", "-i", file_path],
@@ -56,13 +56,13 @@ def main() -> None:
     start = perf_counter()
     files_to_format = find_files()
     if not files_to_format:
-        logger.info("No files found.")
+        print("No files found.")
         return
-    logger.info(f"Formatting {len(files_to_format)} files...")
+    print(f"Formatting {len(files_to_format)} files...")
     with ProcessPoolExecutor(max_workers=12) as executor:
         results = executor.map(format_file, files_to_format)
         sum(1 for success in results if success)
-    logger.info(f"{perf_counter() - start} sec")
+    print(f"{perf_counter() - start} sec")
 
 
 if __name__ == "__main__":

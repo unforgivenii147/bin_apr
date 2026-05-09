@@ -59,7 +59,7 @@ def main():
     args = parser.parse_args()
     if args.encrypt:
         key = random_key()
-        logger.info(f"Encryption key: {key}")
+        print(f"Encryption key: {key}")
         action = encrypt_file
     elif args.decrypt:
         if not args.key:
@@ -72,7 +72,7 @@ def main():
         raise SystemExit(msg)
     for file_path in glob.glob("*"):
         if Path(file_path).is_file():
-            logger.info(f"Processing {file_path}...")
+            print(f"Processing {file_path}...")
             action(file_path, key)
 
 

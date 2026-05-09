@@ -77,7 +77,7 @@ def process_file(path: Path):
         modified = remove_remote_md_images(modified)
     if modified != original:
         path.write_text(modified, encoding="utf-8")
-        logger.info(f"Modified: {path}")
+        print(f"Modified: {path}")
 
 
 def main():

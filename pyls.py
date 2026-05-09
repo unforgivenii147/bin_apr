@@ -91,7 +91,7 @@ def scan_dir(path, args):
         with os.scandir(path) as it:
             entries = [Path(e.path) for e in it]
     except PermissionError:
-        logger.info(
+        print(
             f"ls: cannot open directory '{path}'",
             file=sys.stderr,
         )
@@ -135,11 +135,11 @@ def print_columns(items, width, by_row):
         for c in range(cols):
             idx = r * cols + c if by_row else c * rows + r
             if idx < len(items):
-                logger.info(
+                print(
                     items[idx].ljust(max_len),
                     end="",
                 )
-        logger.info()
+        print()
 
 
 def main():
@@ -186,21 +186,21 @@ def main():
     for path in args.paths:
         path = Path(path)
         if args.d or not path.is_dir():
-            logger.info(format_entry(path, args, color_enabled))
+            print(format_entry(path, args, color_enabled))
             continue
         entries = scan_dir(path, args)
         formatted = [format_entry(e, args, color_enabled) for e in entries]
         if args.l or args._get_kwargs():
             for f in formatted:
-                logger.info(f)
+                print(f)
         elif args._1:
-            logger.info("\n".join(formatted))
+            print("\n".join(formatted))
         else:
             print_columns(formatted, args.w, args.x)
         if args.R:
             for e in entries:
                 if e.is_dir() and not e.is_symlink():
-                    logger.info(f"\n{e}:")
+                    print(f"\n{e}:")
                     main()
 
 

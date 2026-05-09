@@ -37,7 +37,7 @@ def fsz(size_bytes: int) -> str:
 def process_url(url: str) -> str:
     try:
         size = fetch_content_length(url)
-        logger.info(f"{url[:25]}:{size / (1024 * 1024)} mb")
+        print(f"{url[:25]}:{size / (1024 * 1024)} mb")
         if size is None:
             return f"{url}\tUnknown"
         return f"{url}\t{fsz(size)}"
@@ -60,9 +60,9 @@ def main() -> None:
             "\n".join(updated_lines),
             encoding="utf-8",
         )
-        logger.info(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
+        print(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
     else:
-        logger.info(process_url(args.input))
+        print(process_url(args.input))
 
 
 if __name__ == "__main__":

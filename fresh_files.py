@@ -30,10 +30,10 @@ def main():
             if p.is_file():
                 files.append(p)
     files.sort(key=lambda f: f.stat().st_mtime, reverse=False)
-    logger.info(f"\nTop {N} fresh files:\n")
+    print(f"\nTop {N} fresh files:\n")
     for f in files[:N]:
         mtime = f.stat().st_ctime
-        logger.info(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
+        print(f"{format_time(mtime)}  -  {f.relative_to(cwd)}")
 
 
 if __name__ == "__main__":

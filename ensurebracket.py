@@ -23,7 +23,7 @@ def process_file(fn):
         elif char in {"(", "[", "{"}:
             stack.append(char)
     if not stack:
-        logger.info(fn.name)
+        print(fn.name)
     return not stack
 
 

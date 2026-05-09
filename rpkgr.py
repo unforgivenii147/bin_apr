@@ -97,7 +97,7 @@ def repack(
     pkg_lower = pkg.lower()
     installed = list_installed_packages(site)
     if pkg_lower not in installed:
-        logger.info(f"Package '{pkg}' not found.")
+        print(f"Package '{pkg}' not found.")
         return
     real_pkg, version = installed[pkg_lower]
     target_dir = out_repack / real_pkg
@@ -114,7 +114,7 @@ def repack(
         target_dir,
         out_whl,
     )
-    logger.info(f"Repacked: {real_pkg} → {wheel}")
+    print(f"Repacked: {real_pkg} → {wheel}")
 
 
 def main() -> None:
@@ -142,7 +142,7 @@ def main() -> None:
     else:
         pkg_list = args.packages
     if not pkg_list:
-        logger.info("No packages specified.")
+        print("No packages specified.")
         return
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = {
@@ -160,7 +160,7 @@ def main() -> None:
             try:
                 future.result()
             except Exception as e:
-                logger.info(f"Error repacking {pkg}: {e}")
+                print(f"Error repacking {pkg}: {e}")
 
 
 if __name__ == "__main__":

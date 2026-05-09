@@ -39,7 +39,7 @@ def extract_subtitles(video_path, output_dir):
     output_dir.mkdir(parents=True, exist_ok=True)
     subs = probe_subtitles(video_path)
     if not subs:
-        logger.info("No embedded subtitle streams found.")
+        print("No embedded subtitle streams found.")
         return
     base = video_path.stem
     for s in subs:
@@ -63,9 +63,9 @@ def extract_subtitles(video_path, output_dir):
         ]
         try:
             run(cmd)
-            logger.info(f"Extracted: {out_file}")
+            print(f"Extracted: {out_file}")
         except RuntimeError as e:
-            logger.info(f"Failed to extract subtitle stream {idx}: {e}")
+            print(f"Failed to extract subtitle stream {idx}: {e}")
 
 
 def main():

@@ -16,7 +16,7 @@ def main():
             if path.is_symlink():
                 continue
             if path.is_file() and not path.stat().st_size:
-                logger.info(path.relative_to(cwd))
+                print(path.relative_to(cwd))
 
 
 if __name__ == "__main__":

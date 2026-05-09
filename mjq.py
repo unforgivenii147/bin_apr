@@ -74,10 +74,10 @@ def main():
     root = Path.cwd()
     files = list(collect_json_files(root))
     if not files:
-        logger.info("No JSON files found.")
+        print("No JSON files found.")
         return
     workers = min(cpu_count(), len(files))
-    logger.info(f"Processing {len(files)} files using {workers} workers...\n")
+    print(f"Processing {len(files)} files using {workers} workers...\n")
     modified = 0
     errors = 0
     total_before = 0
@@ -91,23 +91,23 @@ def main():
             err,
         ) in pool.imap_unordered(minify_with_jq, files):
             if err:
-                logger.info(f"[ERROR] {filepath} -> {err}")
+                print(f"[ERROR] {filepath} -> {err}")
                 errors += 1
                 continue
             total_before += before
             total_after += after
             if changed:
-                logger.info(f"[OK] {filepath}")
+                print(f"[OK] {filepath}")
                 modified += 1
     reduced = total_before - total_after
     percent = (reduced / total_before * 100) if total_before else 0
-    logger.info("\n--- Summary ---")
-    logger.info(f"Total files     : {len(files)}")
-    logger.info(f"Modified        : {modified}")
-    logger.info(f"Errors          : {errors}")
-    logger.info(f"Original size   : {human_readable(total_before)}")
-    logger.info(f"New size        : {human_readable(total_after)}")
-    logger.info(f"Total reduced   : {human_readable(reduced)} ({percent:.2f}%)")
+    print("\n--- Summary ---")
+    print(f"Total files     : {len(files)}")
+    print(f"Modified        : {modified}")
+    print(f"Errors          : {errors}")
+    print(f"Original size   : {human_readable(total_before)}")
+    print(f"New size        : {human_readable(total_after)}")
+    print(f"Total reduced   : {human_readable(reduced)} ({percent:.2f}%)")
 
 
 if __name__ == "__main__":

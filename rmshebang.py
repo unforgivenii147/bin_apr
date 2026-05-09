@@ -19,7 +19,7 @@ def process_file(path) -> None:
             new_lines = lines[1:]
             content = "\n".join(new_lines)
             path.write_text(content, encoding="utf-8")
-            logger.info(f"{path.name} updated.")
+            print(f"{path.name} updated.")
             return
         return
     except Exception:
@@ -40,7 +40,7 @@ def main() -> None:
         while pending:
             pending.popleft().get()
     diffsize = before - gsz(cwd)
-    logger.info(f"space saved: {fsz(diffsize)}")
+    print(f"space saved: {fsz(diffsize)}")
 
 
 if __name__ == "__main__":

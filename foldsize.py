@@ -43,14 +43,14 @@ def main():
         return
     total_size = sum(f.stat().st_size for f in files)
     num_files = len(files)
-    logger.info(f"Found {num_files:,} files ({total_size:,} bytes)")
+    print(f"Found {num_files:,} files ({total_size:,} bytes)")
     avg_file_size = total_size / num_files if num_files else 1
     target_files_per_dir = max(1000, int(num_files / 10))
     target_size_per_dir = max(1_000_000, total_size // 10)
     n_dirs_by_count = (num_files + target_files_per_dir - 1) // target_files_per_dir
     n_dirs_by_size = (total_size + target_size_per_dir - 1) // target_size_per_dir
     n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))  # clamp 2–100
-    logger.info(f"Targeting ~{n_dirs} directories")
+    print(f"Targeting ~{n_dirs} directories")
     files_sorted = sorted(files, key=lambda p: p.stat().st_size, reverse=True)
     dirs_info = [{"files": [], "size": 0} for _ in range(n_dirs)]
     for f in files_sorted:
@@ -75,20 +75,20 @@ def main():
         dir_path.mkdir(exist_ok=True)
         created_dirs.append((dir_name, len(d["files"]), d["size"]))
         existing_dir_names.add(dir_name)  # mark as used
-        logger.info(f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes")
+        print(f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes")
         for f in d["files"]:
             dest = safe_rename(f, dir_path)
             shutil.move(str(f), str(dest))
-    logger.info("=" * 50)
-    logger.info("✅ Folderization complete:")
-    logger.info(f"   Files processed: {num_files:,}")
-    logger.info(f"   Directories created: {len(created_dirs)}")
-    logger.info("=" * 50)
-    logger.info(f"\n{'Dir Name':<20} {'Files':>8} {'Size (bytes)':>14}")
-    logger.info("-" * 44)
+    print("=" * 50)
+    print("✅ Folderization complete:")
+    print(f"   Files processed: {num_files:,}")
+    print(f"   Directories created: {len(created_dirs)}")
+    print("=" * 50)
+    print(f"\n{'Dir Name':<20} {'Files':>8} {'Size (bytes)':>14}")
+    print("-" * 44)
     for name, cnt, sz in sorted(created_dirs, key=operator.itemgetter(2)):
-        logger.info(f"{name:<20} {cnt:>8} {sz:>14,}")
-    logger.info(f"\nTotal directories: {len(created_dirs)}")
+        print(f"{name:<20} {cnt:>8} {sz:>14,}")
+    print(f"\nTotal directories: {len(created_dirs)}")
 
 
 if __name__ == "__main__":

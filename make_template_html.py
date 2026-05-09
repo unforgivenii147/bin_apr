@@ -29,7 +29,7 @@ def extract_common_structure(html_files: list[Path]) -> dict:
                 if soup.body and soup.body.get("class"):
                     body_classes.extend(soup.body.get("class"))
         except Exception as e:
-            logger.info(f"⚠️  Error processing {file_path}: {e}")
+            print(f"⚠️  Error processing {file_path}: {e}")
     common_meta = list(set(meta_tags))
     common_links = list(set(link_tags))
     common_scripts = list(set(script_tags))
@@ -57,7 +57,7 @@ def merge_html_content(html_files: list[Path]) -> str:
 """
                 merged_sections.append(section_html)
         except Exception as e:
-            logger.info(f"⚠️  Error merging {file_path}: {e}")
+            print(f"⚠️  Error merging {file_path}: {e}")
     return "\n".join(merged_sections)
 
 
@@ -67,9 +67,9 @@ def create_template_html(
     title: str = "Merged HTML Template",
 ) -> bool:
     if not html_files:
-        logger.info("⚠️  No HTML files found")
+        print("⚠️  No HTML files found")
         return False
-    logger.info(f"📄 Processing {len(html_files)} HTML files...")
+    print(f"📄 Processing {len(html_files)} HTML files...")
     structure = extract_common_structure(html_files)
     merged_content = merge_html_content(html_files)
     template = f"""<!DOCTYPE html>
@@ -179,42 +179,42 @@ def create_template_html(
 """
     try:
         Path(output_file).write_text(template, encoding="utf-8")
-        logger.info(f"✅ Template created successfully: {output_file}")
-        logger.info(f"📊 Merged {len(html_files)} HTML files")
+        print(f"✅ Template created successfully: {output_file}")
+        print(f"📊 Merged {len(html_files)} HTML files")
         return True
     except Exception as e:
-        logger.info(f"❌ Error writing template: {e}")
+        print(f"❌ Error writing template: {e}")
         return False
 
 
 def main():
-    logger.info("🔍 Searching for HTML files in current directory...")
+    print("🔍 Searching for HTML files in current directory...")
     html_files = find_html_files()
     if not html_files:
-        logger.info("❌ No HTML files found in current directory")
+        print("❌ No HTML files found in current directory")
         return
-    logger.info(f"📁 Found {len(html_files)} HTML files:")
+    print(f"📁 Found {len(html_files)} HTML files:")
     for file_path in html_files[:10]:
-        logger.info(f"   - {file_path.relative_to(Path.cwd())}")
+        print(f"   - {file_path.relative_to(Path.cwd())}")
     if len(html_files) > 10:
-        logger.info(f"   ... and {len(html_files) - 10} more")
+        print(f"   ... and {len(html_files) - 10} more")
     success = create_template_html(
         html_files,
         output_file="template.html",
         title="Merged HTML Template",
     )
     if success:
-        logger.info("\n" + "=" * 60)
-        logger.info("✨ Template generation complete!")
-        logger.info("📄 Output file: template.html")
-        logger.info("=" * 60)
+        print("\n" + "=" * 60)
+        print("✨ Template generation complete!")
+        print("📄 Output file: template.html")
+        print("=" * 60)
 
 
 if __name__ == "__main__":
     try:
         from bs4 import BeautifulSoup
     except ImportError:
-        logger.info("📦 Installing BeautifulSoup4...")
+        print("📦 Installing BeautifulSoup4...")
         import subprocess
         import sys
 

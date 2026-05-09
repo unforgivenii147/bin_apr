@@ -27,7 +27,7 @@ def compress_small_site_packages(max_size_mb=15):
             if Path(item_path).is_dir():
                 get_size_mb = gsz(item_path) / (1024 * 1024)
                 if get_size_mb <= max_size_mb:
-                    logger.info(f"Including folder {item} ({get_size_mb:.2f} MB)")
+                    print(f"Including folder {item} ({get_size_mb:.2f} MB)")
                     for (
                         root,
                         _dirs,
@@ -47,13 +47,13 @@ def compress_small_site_packages(max_size_mb=15):
             elif Path(item_path).is_file():
                 get_size_mb = Path(item_path).stat().st_size / (1024 * 1024)
                 if get_size_mb <= max_size_mb and not item.endswith(".pyc"):
-                    logger.info(f"Including file {item} ({get_size_mb:.2f} MB)")
+                    print(f"Including file {item} ({get_size_mb:.2f} MB)")
                     arcname = os.path.relpath(
                         item_path,
                         site_packages_dir,
                     )
                     tar.add(item_path, arcname=arcname)
-    logger.info(f"Archive created: {output_file}")
+    print(f"Archive created: {output_file}")
     files.download(output_file)
 
 

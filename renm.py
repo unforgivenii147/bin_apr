@@ -62,9 +62,9 @@ def rename_files(directory):
         new_fp = unique_path(new_fp)
         try:
             Path(fp).rename(new_fp)
-            logger.info(f"Renamed: {fp.name} -> {new_fp.name}")
+            print(f"Renamed: {fp.name} -> {new_fp.name}")
         except OSError as e:
-            logger.info(f"Error renaming {fp.name}: {e}")
+            print(f"Error renaming {fp.name}: {e}")
 
 
 if __name__ == "__main__":

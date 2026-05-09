@@ -85,7 +85,7 @@ def process_markdown_files(directory="."):
                 try:
                     content = Path(filepath).read_text(encoding="utf-8")
                 except Exception as e:
-                    logger.info(f"Error reading {filepath}: {e}")
+                    print(f"Error reading {filepath}: {e}")
                     continue
                 code_details = extract_code_snippets_with_details(content)
                 if code_details:
@@ -97,7 +97,7 @@ def process_markdown_files(directory="."):
                         output_filename = f"output/{base_name}_lines_{line_range}{extension}"
                         output_path = os.path.join(root, output_filename)
                         Path(output_path).write_text(details["content"].strip(), encoding="utf-8")
-                        logger.info(
+                        print(
                             f"Saved snippet from {filepath} (Lines {line_range}, Lang: '{language}') to {output_path}"
                         )
 

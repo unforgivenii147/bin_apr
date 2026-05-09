@@ -35,14 +35,14 @@ def get_latest_version(pkg_name: str) -> str | None:
         re.IGNORECASE,
     )
     versions = []
-    logger.info(html[:-100])
+    print(html[:-100])
     for match in wheel_pattern.finditer(html):
         version_str = match.group(1)
         with contextlib.suppress(BaseException):
             versions.append(Version(version_str))
     max_ver = str(max(versions)) if versions else None
     if max_ver is not None:
-        logger.info(f"{pkg_name}:{max_ver}")
+        print(f"{pkg_name}:{max_ver}")
     return max_ver
 
 

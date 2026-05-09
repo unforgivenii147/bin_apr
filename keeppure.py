@@ -51,12 +51,12 @@ def get_binary_packages_parallel():
 
 def clean_requirements_txt(requirements_file="requirements.txt"):
     if not Path(requirements_file).exists():
-        logger.info(f"Error: {requirements_file} not found")
+        print(f"Error: {requirements_file} not found")
         return
     binary_packages = get_binary_packages_parallel()
     with Path("/sdcard/data/binary").open("w", encoding="utf-8") as fbin:
         fbin.write("\n".join(binary_packages))
-        logger.info("binary_pkgs created.")
+        print("binary_pkgs created.")
     with Path(requirements_file).open(encoding="utf-8") as f:
         lines = [line.rstrip() for line in f]
     comments = [line for line in lines if line.startswith("#")]
@@ -73,11 +73,11 @@ def clean_requirements_txt(requirements_file="requirements.txt"):
         f.writelines(f"{comment}\n" for comment in comments)
         f.writelines(f"{pkg}\n" for pkg in sorted(pure_python))
     if removed:
-        logger.info(f"\n🗑️  Removed binary packages ({len(removed)}):")
+        print(f"\n🗑️  Removed binary packages ({len(removed)}):")
         for pkg in sorted(removed):
-            logger.info(f"   - {pkg}")
+            print(f"   - {pkg}")
     else:
-        logger.info("✅ No binary packages found in requirements.txt")
+        print("✅ No binary packages found in requirements.txt")
 
 
 if __name__ == "__main__":

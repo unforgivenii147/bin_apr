@@ -24,7 +24,7 @@ def beautify_directory(directory) -> None:
         for file in files:
             file_path = os.path.join(root, file)
             if file.endswith((".js", ".css", ".html")):
-                logger.info(f"Beautifying: {file_path}")
+                print(f"Beautifying: {file_path}")
                 beautify_file(file_path)
 
 

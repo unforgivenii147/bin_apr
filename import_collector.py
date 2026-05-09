@@ -79,9 +79,9 @@ def main():
             "\n".join(sorted(third_party)),
             encoding="utf-8",
         )
-        logger.info(f"✅ Found {len(third_party)} 3rd-party dependencies.")
+        print(f"✅ Found {len(third_party)} 3rd-party dependencies.")
         if already_installed:
-            logger.info(f"📦 Already installed: {', '.join(already_installed)}")
+            print(f"📦 Already installed: {', '.join(already_installed)}")
         if missing_for_pip:
             install_cmd = f"pip install {' '.join(missing_for_pip)}"
             pip_script.write_text(
@@ -89,14 +89,14 @@ def main():
                 encoding="utf-8",
             )
             pip_script.chmod(pip_script.stat().st_mode | 0o111)
-            logger.info(f"⚠️  Missing: {', '.join(missing_for_pip)}")
-            logger.info(f"🚀 Run this to install missing: ./{pip_script.name}")
+            print(f"⚠️  Missing: {', '.join(missing_for_pip)}")
+            print(f"🚀 Run this to install missing: ./{pip_script.name}")
         else:
             if pip_script.exists():
                 pip_script.unlink()
-            logger.info("✨ Environment is fully satisfied!")
+            print("✨ Environment is fully satisfied!")
     else:
-        logger.info("ℹ️ No 3rd-party imports found.")
+        print("ℹ️ No 3rd-party imports found.")
 
 
 if __name__ == "__main__":

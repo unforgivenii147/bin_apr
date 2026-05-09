@@ -39,10 +39,10 @@ def find_multiple_versions() -> None:
                     pkg_versions[name].add(version)
     for pkg, versions in sorted(pkg_versions.items()):
         if len(versions) > 1:
-            logger.info(f"\nPackage: {pkg}")
+            print(f"\nPackage: {pkg}")
             for v in sorted(versions):
-                logger.info(f"  - Version: {v}")
-    logger.info("\nDone.")
+                print(f"  - Version: {v}")
+    print("\nDone.")
 
 
 if __name__ == "__main__":

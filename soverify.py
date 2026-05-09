@@ -36,7 +36,7 @@ class CtypesVerifier:
         except OSError as e:
             error_msg = f"OSError: {e!s}"
             self.log(f"Failed to load: {error_msg}")
-            logger.info(f"Failed to load: {error_msg}")
+            print(f"Failed to load: {error_msg}")
             cprint(f"Failed to load: {error_msg}", "yellow")
             return False, error_msg
         except Exception as e:
@@ -75,7 +75,7 @@ def process_file(fp):
     try:
         verifier = CtypesVerifier()
         res = verifier.verify_so_file(fp)[0]
-        logger.info(f"file:{fp} | {res}")
+        print(f"file:{fp} | {res}")
         if res:
             return True
     except:
@@ -100,7 +100,7 @@ def main():
             if not process_file(f):
                 logger.debug(f"{f.name}: error")
         except:
-            logger.info(f"{f.name}: error")
+            print(f"{f.name}: error")
             logger.debug(f"{f.name}: error")
 
 

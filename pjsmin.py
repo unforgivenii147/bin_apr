@@ -10,7 +10,7 @@ from termcolor import cprint
 
 def process_file(path) -> str:
     before = gsz(path)
-    logger.info(f"{path.name}", end=" | ")
+    print(f"{path.name}", end=" | ")
     after = before
     try:
         ext = gext(path)
@@ -43,7 +43,7 @@ def main() -> None:
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
-    logger.info(f"Found {len(files)} files. Starting multiprocessing...")
+    print(f"Found {len(files)} files. Starting multiprocessing...")
     mpf(process_file, files)
 
 

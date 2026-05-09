@@ -8,7 +8,7 @@ from loguru import logger
 def process_file(fp: Path):
     if not fp.exists():
         return False
-    logger.info(f"processing  ... {fp.name}")
+    print(f"processing  ... {fp.name}")
     last_tag_pos = -1
     tags = (
         "</svg>",

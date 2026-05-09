@@ -54,7 +54,7 @@ def process_lic(fp):
     lic_dir = Path(f"{fp}/licenses")
     if lic_dir.exists() and "dist-info" in str(lic_dir.parent):
         shutil.rmtree(lic_dir)
-        logger.info(f"{lic_dir} removed.")
+        print(f"{lic_dir} removed.")
     rett = []
     for f in ALLOWED:
         nf = Path(f"{fp}/{f}")

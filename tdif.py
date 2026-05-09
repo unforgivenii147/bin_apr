@@ -284,10 +284,10 @@ Examples:
     file1 = Path(args.file1)
     file2 = Path(args.file2)
     if not file1.exists():
-        logger.info(f"Error: File '{file1}' does not exist")
+        print(f"Error: File '{file1}' does not exist")
         return 1
     if not file2.exists():
-        logger.info(f"Error: File '{file2}' does not exist")
+        print(f"Error: File '{file2}' does not exist")
         return 1
     app = DiffViewerApp(str(file1), str(file2))
     app.run()

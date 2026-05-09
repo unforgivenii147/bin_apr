@@ -76,17 +76,17 @@ def create_tree_from_entries(entries):
 def main():
     tree_file = sys.argv[1]
     if not Path(tree_file).exists():
-        logger.info(f"❌ Error: '{tree_file}' not found in current directory.")
+        print(f"❌ Error: '{tree_file}' not found in current directory.")
         return
-    logger.info(f"📖 Parsing '{tree_file}'...")
+    print(f"📖 Parsing '{tree_file}'...")
     entries = parse_tree_file(tree_file)
     if not entries:
-        logger.info("⚠️  No valid entries found in tree file.")
+        print("⚠️  No valid entries found in tree file.")
         return
-    logger.info(f"✅ Parsed {len(entries)} entries.")
-    logger.info("📁 Creating folder structure...")
+    print(f"✅ Parsed {len(entries)} entries.")
+    print("📁 Creating folder structure...")
     create_tree_from_entries(entries)
-    logger.info("✨ Done! Folder structure created successfully.")
+    print("✨ Done! Folder structure created successfully.")
 
 
 if __name__ == "__main__":

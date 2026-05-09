@@ -48,7 +48,7 @@ for py in Path().rglob("*.py"):
             folder_imports[relative_folder].append(file_header + "\n".join(imports))
             processed_files_count += 1
     except Exception as e:
-        logger.info(f"⚠️  Error processing {py}: {e}")
+        print(f"⚠️  Error processing {py}: {e}")
 for (
     folder,
     imports_list,
@@ -61,6 +61,6 @@ for (
     header = f"""# Auto-generated imports file for folder: {folder}
 """
     out_file.write_text(header + content)
-    logger.info(f"✅ saved: {out_file} ({len(imports_list)} files)")
+    print(f"✅ saved: {out_file} ({len(imports_list)} files)")
 print(f"\n✨ Done! Processed {processed_files_count} files in {len(folder_imports)} folder(s)")
 print(f"📁 Folders: {', '.join(sorted(folders_found))}")

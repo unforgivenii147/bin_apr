@@ -52,11 +52,11 @@ def restructure_file(filepath: Path):
 
 def main():
     if len(sys.argv) < 2:
-        logger.info("Usage: python restructure_text.py <filename>")
+        print("Usage: python restructure_text.py <filename>")
         sys.exit(1)
     file_arg = Path(sys.argv[1])
     if not file_arg.exists():
-        logger.info(f"Error: file '{file_arg}' does not exist.")
+        print(f"Error: file '{file_arg}' does not exist.")
         sys.exit(1)
     restructure_file(file_arg)
 

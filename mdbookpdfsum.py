@@ -62,7 +62,7 @@ def check_title(
         return True
     source_file = os.path.join(prefix_path, node.source_file)
     if not Path(source_file).exists():
-        logger.info(f"File {source_file} does not exist")
+        print(f"File {source_file} does not exist")
         return False
     with Path(source_file).open(encoding="utf-8") as f:
         lines = f.readlines()
@@ -71,13 +71,13 @@ def check_title(
             title = line[2:]
             if not title.startswith(node.title):
                 all_matched = False
-                logger.info(
+                print(
                     f"[ERROR] Title not matched: source_file:{source_file}, line num:{idx}, title:{title}, title in `SUMMARY.md`:{node.title}"
                 )
                 break
     if not all_matched and overwrite:
         lines.insert(0, f"# {node.title}\n")
-        logger.info(f"[Info] Overwrite title as {node.title} in {node.source_file}")
+        print(f"[Info] Overwrite title as {node.title} in {node.source_file}")
         with Path(source_file).open("w", encoding="utf-8") as f:
             f.writelines(lines)
         all_matched = True
@@ -105,10 +105,10 @@ def add_outline(
         try:
             results = html_root.get_element_by_id(id)
         except KeyError:
-            logger.info(f"[ERROR] Element not found: [{id}]")
+            print(f"[ERROR] Element not found: [{id}]")
             return
         if results is None:
-            logger.info(f"[ERROR] Element is None, id: [{id}]")
+            print(f"[ERROR] Element is None, id: [{id}]")
             return
         dest = reader.named_destinations[f"/{urllib.parse.quote(id)}"]
         page = None
@@ -163,11 +163,11 @@ def main():
         default="output_with_outline.pdf",
     )
     args = parser.parse_args()
-    logger.info("============ args =============")
-    logger.info("args.html_path: ", args.html_path)
-    logger.info("args.pdf_path: ", args.pdf_path)
-    logger.info("args.summary_path: ", args.summary_path)
-    logger.info("args.output_path: ", args.output_path)
+    print("============ args =============")
+    print("args.html_path: ", args.html_path)
+    print("args.pdf_path: ", args.pdf_path)
+    print("args.summary_path: ", args.summary_path)
+    print("args.output_path: ", args.output_path)
     if not Path(args.html_path).exists():
         msg = f"{args.html_path} does not exist"
         raise FileNotFoundError(msg)
@@ -191,11 +191,11 @@ def main():
     add_outline(html_root, reader, writer, section_root)
     with Path(args.output_path).open("wb") as f:
         writer.write(f)
-        logger.info(f"[INFO] Write to {args.output_path}")
+        print(f"[INFO] Write to {args.output_path}")
 
 
 def print_section_tree(root: Section):
-    logger.info(root)
+    print(root)
     for child in root.children:
         print_section_tree(child)
 

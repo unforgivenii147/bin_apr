@@ -67,11 +67,11 @@ def main():
     cwd = Path.cwd()
     for path in cwd.glob("*.whl"):
         if not is_valid(path) or not is_valid2(path):
-            logger.info(f"Invalid wheel name: {path}")
+            print(f"Invalid wheel name: {path}")
             dest = invalid_dir / path.name
             shutil.move(str(path), str(dest))
         else:
-            logger.info(f"Valid wheel name: {path.name}")
+            print(f"Valid wheel name: {path.name}")
 
 
 if __name__ == "__main__":

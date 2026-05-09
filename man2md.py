@@ -121,7 +121,7 @@ def man_to_markdown(content):
 
 def main():
     if len(sys.argv) != 2:
-        logger.info("Usage: python man2md.py <manfile>")
+        print("Usage: python man2md.py <manfile>")
         sys.exit(1)
     filename = sys.argv[1]
     raw = read_man_file(filename)
@@ -129,7 +129,7 @@ def main():
     base, _ = os.path.splitext(filename)
     outname = base + ".md"
     Path(outname).write_text(markdown, encoding="utf-8")
-    logger.info(f"Converted {filename} → {outname}")
+    print(f"Converted {filename} → {outname}")
 
 
 if __name__ == "__main__":

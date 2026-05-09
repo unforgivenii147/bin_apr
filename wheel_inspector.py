@@ -14,7 +14,7 @@ class WheelInspector:
     @typing.override
     def log(self, message: str):
         if self.verbose:
-            logger.info(f"[INSPECT] {message}")
+            print(f"[INSPECT] {message}")
 
     @typing.override
     def inspect_wheel(self, wheel_path: Path) -> dict:
@@ -79,7 +79,7 @@ class WheelInspector:
         results = []
         for wheel in wheels:
             info = self.inspect_wheel(wheel)
-            logger.info(info)
+            print(info)
             is_valid, issues = self.validate_wheel(wheel)
             info["is_valid"] = is_valid
             info["issues"] = issues
@@ -90,16 +90,16 @@ class WheelInspector:
     def print_inspection(self, wheel_path: Path):
         info = self.inspect_wheel(wheel_path)
         if "error" in info:
-            logger.info(f"Error: {info['error']}")
+            print(f"Error: {info['error']}")
             return
-        logger.info(f"\n{'=' * 60}")
-        logger.info(f"Wheel: {info['filename']}")
-        logger.info(f"{'=' * 60}")
-        logger.info("\nBasic Info:")
-        logger.info(f"  Size: {info['size_mb']:.2f} KB")
-        logger.info(f"  Files: {info['file_count']}")
+        print(f"\n{'=' * 60}")
+        print(f"Wheel: {info['filename']}")
+        print(f"{'=' * 60}")
+        print("\nBasic Info:")
+        print(f"  Size: {info['size_mb']:.2f} KB")
+        print(f"  Files: {info['file_count']}")
         if info["file_types"]:
-            logger.info("\nFile Types:")
+            print("\nFile Types:")
             for ext, count in info["file_types"].items():
                 if ext == ".py" and (not count or count == 1):
                     logger.debug(f"pkg:{wheel_path}\ncount : {count}")
@@ -109,9 +109,9 @@ class WheelInspector:
                     wheel_path.rename(outp)
                     continue
                 if count > 0:
-                    logger.info(f"  {ext}: {count}")
+                    print(f"  {ext}: {count}")
         if info["metadata"]:
-            logger.info("\nMetadata:")
+            print("\nMetadata:")
             for key, value in info["metadata"].items():
                 if key in {
                     "Name",
@@ -119,14 +119,14 @@ class WheelInspector:
                     "Summary",
                     "Author",
                 }:
-                    logger.info(f"  {key}: {value}")
+                    print(f"  {key}: {value}")
         is_valid, issues = self.validate_wheel(wheel_path)
-        logger.info(f"\nValidation: {'✓ VALID' if is_valid else '✗ INVALID'}")
+        print(f"\nValidation: {'✓ VALID' if is_valid else '✗ INVALID'}")
         if issues:
-            logger.info("Issues:")
+            print("Issues:")
             for issue in issues:
-                logger.info(f"  - {issue}")
-        logger.info(f"{'=' * 60}\n")
+                print(f"  - {issue}")
+        print(f"{'=' * 60}\n")
 
 
 def main():
@@ -159,9 +159,9 @@ def main():
 """
         wheels = list(path.glob("*.whl"))
         if not wheels:
-            logger.info(f"No .whl files found in {path}")
+            print(f"No .whl files found in {path}")
             return
-        logger.info(f"\nInspecting {len(wheels)} .whl files...\n")
+        print(f"\nInspecting {len(wheels)} .whl files...\n")
         results = inspector.inspect_directory(path)        
         valid_count = sum(1 for r in results if r.get("is_valid", True))
         invalid_count = len(results) - valid_count
@@ -169,11 +169,11 @@ def main():
             status = "✓" if result.get("is_valid", True) else "✗"
             size = result.get("size_mb", 0)
             files = result.get("file_count", 0)
-            logger.info(f"{status} {result['filename']:<50} {size:>.2f} KB ({files} files)")
-        logger.info(f"\nValid: {valid_count}/{len(results)}")
-        logger.info(f"Invalid: {invalid_count}/{len(results)}")
+            print(f"{status} {result['filename']:<50} {size:>.2f} KB ({files} files)")
+        print(f"\nValid: {valid_count}/{len(results)}")
+        print(f"Invalid: {invalid_count}/{len(results)}")
     else:
-        logger.info(f"Invalid path: {path}")
+        print(f"Invalid path: {path}")
         sys.exit(1)
 """
 if __name__ == "__main__":

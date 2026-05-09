@@ -106,9 +106,9 @@ def process_file(path: Path) -> None:
         cleaned = cleaned_text.encode("utf-8")
         parser.parse(cleaned)
         path.write_bytes(cleaned)
-        logger.info(f"[OK] {path}")
+        print(f"[OK] {path}")
     except Exception as e:
-        logger.info(f"[FAIL] {path} -> {e}")
+        print(f"[FAIL] {path} -> {e}")
 
 
 def collect_supported_files(root: Path) -> list[Path]:

@@ -14,8 +14,8 @@ def main():
     for f in cwd.rglob(f"*.{ext}"):
         total_size += f.stat().st_size
         count += 1
-    logger.info(f"Total number of .{ext} files: {count}")
-    logger.info(f"Total size of .{ext} files: {fsz(total_size)}")
+    print(f"Total number of .{ext} files: {count}")
+    print(f"Total size of .{ext} files: {fsz(total_size)}")
 
 
 if __name__ == "__main__":

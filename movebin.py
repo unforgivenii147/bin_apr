@@ -15,14 +15,14 @@ def main():
         if f.is_file() and is_binary(Path(f)):
             try:
                 shutil.move(str(f), binary_dir / f.name)
-                logger.info(f"Moved: {f.name} -> binary/{f.name}")
+                print(f"Moved: {f.name} -> binary/{f.name}")
                 files_moved += 1
             except Exception as e:
-                logger.info(f"Failed to move {f.name}: {e}")
+                print(f"Failed to move {f.name}: {e}")
     if files_moved == 0:
-        logger.info("No binary files found to move.")
+        print("No binary files found to move.")
     else:
-        logger.info(f"Total binary files moved: {files_moved}")
+        print(f"Total binary files moved: {files_moved}")
 
 
 if __name__ == "__main__":

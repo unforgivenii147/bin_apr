@@ -79,7 +79,7 @@ def process():
         out_img_path = OUTPUT_DIR / relative
         out_txt_path = out_img_path.with_suffix(".txt")
         out_img_path.parent.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Processing: {relative}")
+        print(f"Processing: {relative}")
         processed = preprocess_image(path)
         if processed is None:
             continue
@@ -90,4 +90,4 @@ def process():
 
 if __name__ == "__main__":
     process()
-    logger.info("Done. Images + OCR text saved in ./ocr_ready")
+    print("Done. Images + OCR text saved in ./ocr_ready")

@@ -54,11 +54,11 @@ def find_regex_in_dir(start_dir, output_dir, max_workers=4):
         for future in as_completed(futures):
             _, regex_count = future.result()
             if regex_count:
-                logger.info(f"Processed file '{futures[future]}' with {regex_count} regex patterns.")
+                print(f"Processed file '{futures[future]}' with {regex_count} regex patterns.")
             processed_files += 1
             progress_bar.update(1)
     progress_bar.close()
-    logger.info(f"Scanning complete. Processed {total_files} files.")
+    print(f"Scanning complete. Processed {total_files} files.")
 
 
 if __name__ == "__main__":
@@ -68,4 +68,4 @@ if __name__ == "__main__":
         output_directory,
         max_workers=4,
     )
-    logger.info(f"Regex extraction complete. Results saved in {output_directory}")
+    print(f"Regex extraction complete. Results saved in {output_directory}")

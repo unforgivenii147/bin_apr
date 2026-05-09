@@ -26,7 +26,7 @@ def rename_path(path: str, old: str, new: str) -> str:
     new_basename = basename.replace(old, new)
     new_path = os.path.join(dirname, new_basename)
     if Path(new_path).exists():
-        logger.info(f"path by name {new_path} already exists\n rename it manually")
+        print(f"path by name {new_path} already exists\n rename it manually")
         return path
     try:
         shutil.move(path, new_path)
@@ -37,7 +37,7 @@ def rename_path(path: str, old: str, new: str) -> str:
 
 def main() -> None:
     if len(sys.argv) != 3:
-        logger.info(f"Usage: {sys.argv[0]} <text_to_change> <replacement_text>")
+        print(f"Usage: {sys.argv[0]} <text_to_change> <replacement_text>")
         sys.exit(1)
     old = sys.argv[1]
     new = sys.argv[2]

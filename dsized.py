@@ -41,9 +41,9 @@ def download_file(url: str, dest_dir: Path) -> None:
     dest_file = dest_dir / filename
     try:
         urllib.request.urlretrieve(url, dest_file)
-        logger.info(f"Downloaded: {dest_file}")
+        print(f"Downloaded: {dest_file}")
     except Exception as e:
-        logger.info(f"Failed to download {url}: {e}")
+        print(f"Failed to download {url}: {e}")
 
 
 def process_url(url: str, download_dir: Path | None = None) -> str:
@@ -52,15 +52,15 @@ def process_url(url: str, download_dir: Path | None = None) -> str:
         if size is None:
             return f"{url}\tUnknown"
         size_str = fsz(size)
-        logger.info(f"URL: {url}, Size: {size_str}")
+        print(f"URL: {url}, Size: {size_str}")
         if download_dir and size <= MAX_DOWNLOAD_SIZE:
             user_input = input(f"Do you want to download this file (size: {size_str})? (y/n): ").strip().lower()
             if user_input == "y":
                 download_file(url, download_dir)
             else:
-                logger.info("Download skipped.")
+                print("Download skipped.")
         else:
-            logger.info("File is too large to download or no download directory specified.")
+            print("File is too large to download or no download directory specified.")
         return f"{url}\t{size_str}"
     except Exception as exc:
         return f"{url}\tError: {exc}"
@@ -88,9 +88,9 @@ def main() -> None:
             "\n".join(updated_lines),
             encoding="utf-8",
         )
-        logger.info(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
+        print(f"Updated file: {input_path} ({len(updated_lines)} URLs processed)")
     else:
-        logger.info(process_url(args.input, download_dir))
+        print(process_url(args.input, download_dir))
 
 
 if __name__ == "__main__":

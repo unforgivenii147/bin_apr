@@ -41,11 +41,11 @@ def get_pure():
     for ddir in dist_info_dirs:
         ispure = check_pure(ddir)
         if ispure:
-            logger.info(ispure)
+            print(ispure)
             purz.append(ispure)
     with Path("/sdcard/data/pure").open("w", encoding="utf-8") as f:
         f.writelines(f"{k}\n" for k in purz)
-    logger.info(len(purz))
+    print(len(purz))
 
 
 if __name__ == "__main__":

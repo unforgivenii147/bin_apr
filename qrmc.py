@@ -81,17 +81,17 @@ def strip_file(file_path):
         except SyntaxError:
             pass
     except Exception as e:
-        logger.info(f"Error processing {file_path}: {e}")
+        print(f"Error processing {file_path}: {e}")
 
 
 def main():
     files = [os.path.join(r, f) for r, _, fs in os.walk(".") for f in fs if f.endswith(".py")]
     if not files:
         return
-    logger.info(f"Processing {len(files)} files using QueryCursor...")
+    print(f"Processing {len(files)} files using QueryCursor...")
     with multiprocessing.get_context("spawn").Pool(8) as pool:
         pool.map(strip_file, files)
-    logger.info("In-place cleanup complete.")
+    print("In-place cleanup complete.")
 
 
 if __name__ == "__main__":

@@ -71,7 +71,7 @@ def process_file(filepath):
     if not confirmed:
         return None
     if confirmed:
-        logger.info(filepath)
+        print(filepath)
     return confirmed
 
 

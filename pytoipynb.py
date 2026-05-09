@@ -15,12 +15,12 @@ def simple_convert(py_file, ipynb_file=None):
     nb["cells"] = [nbf.v4.new_code_cell(code)]
     with Path(ipynb_file).open("w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1)
-    logger.info(f"Converted {py_file} to {ipynb_file}")
+    print(f"Converted {py_file} to {ipynb_file}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: python simple_convert.py input.py [output.ipynb]")
+        print("Usage: python simple_convert.py input.py [output.ipynb]")
         sys.exit(1)
     py_file = sys.argv[1]
     ipynb_file = sys.argv[2] if len(sys.argv) > 2 else None

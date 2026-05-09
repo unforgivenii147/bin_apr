@@ -19,11 +19,11 @@ def rename_files(base: Path):
         new_name = strip_ver_suffix(path.name)
         if new_name != path.name:
             new_path = path.with_name(new_name)
-            logger.info(f"Renaming: {path} -> {new_path}")
+            print(f"Renaming: {path} -> {new_path}")
             try:
                 path.rename(new_path)
             except FileExistsError:
-                logger.info(f"  Skipped (target exists): {new_path}")
+                print(f"  Skipped (target exists): {new_path}")
 
 
 def update_html_files(base: Path):
@@ -31,7 +31,7 @@ def update_html_files(base: Path):
         text = html_file.read_text(encoding="utf-8", errors="ignore")
         new_text = strip_ver_suffix(text)
         if new_text != text:
-            logger.info(f"Updating HTML: {html_file}")
+            print(f"Updating HTML: {html_file}")
             html_file.write_text(new_text, encoding="utf-8")
 
 
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     for d in DIRS:
         rename_files(d)
         update_html_files(d)
-    logger.info("\nDone. All ?ver=... removed from filenames and HTML files.")
+    print("\nDone. All ?ver=... removed from filenames and HTML files.")

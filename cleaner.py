@@ -33,9 +33,9 @@ def process_file(path):
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
         path.write_text(result, encoding="utf-8")
-        logger.info(f"✓  {path.name}")
+        print(f"✓  {path.name}")
     except Exception as e:
-        logger.info(f"✗ Error: {e}", file=sys.stderr)
+        print(f"✗ Error: {e}", file=sys.stderr)
         return
 
 

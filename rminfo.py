@@ -37,7 +37,7 @@ def remove_header(path) -> None:
     except Exception:
         return
     cleaned = [line for line in original if not (line.startswith(("# Author ", "# Email ", "# Time ")))]
-    logger.info(f"{len(original)}=={len(cleaned)}")
+    print(f"{len(original)}=={len(cleaned)}")
     if cleaned != original:
         ans = "y"
         if ans == "y":

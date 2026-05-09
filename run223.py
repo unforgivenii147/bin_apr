@@ -9,7 +9,7 @@ from loguru import logger
 
 def run_2to3(file_path) -> None:
     if not file_path.is_file():
-        logger.info(f"File not found: {file_path.name}")
+        print(f"File not found: {file_path.name}")
         return
     try:
         subprocess.run(
@@ -24,7 +24,7 @@ def run_2to3(file_path) -> None:
             check=True,
         )
     except subprocess.CalledProcessError as e:
-        logger.info(f"Error running 2to3: {e}")
+        print(f"Error running 2to3: {e}")
 
 
 if __name__ == "__main__":

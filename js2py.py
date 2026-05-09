@@ -12,7 +12,7 @@ def install_js2py():
     try:
         return True
     except ImportError:
-        logger.info("📦 Installing js2py library...")
+        print("📦 Installing js2py library...")
         import subprocess
 
         try:
@@ -25,10 +25,10 @@ def install_js2py():
                     "js2py",
                 ]
             )
-            logger.info("✅ js2py installed successfully")
+            print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
-            logger.info("❌ Failed to install js2py")
+            print("❌ Failed to install js2py")
             return False
 
 
@@ -181,13 +181,13 @@ def convert_file(
     try:
         js_code = Path(input_file).read_text(encoding="utf-8")
     except Exception as e:
-        logger.info(f"❌ Error reading file: {e}")
+        print(f"❌ Error reading file: {e}")
         return False
-    logger.info(f"📄 Converting: {input_file}")
-    logger.info(f"🔧 Method: {method}")
+    print(f"📄 Converting: {input_file}")
+    print(f"🔧 Method: {method}")
     if method == "js2py":
         if not install_js2py():
-            logger.info("⚠️  Falling back to simple conversion")
+            print("⚠️  Falling back to simple conversion")
             method = "simple"
         else:
             output_file = input_file.with_suffix(".py")
@@ -199,16 +199,16 @@ def convert_file(
         result = simple_js_to_python(js_code)
         success = True
     if not success:
-        logger.info(f"❌ Conversion failed: {result}")
+        print(f"❌ Conversion failed: {result}")
         return False
     if output_file is None:
         output_file = input_file.with_suffix(".py")
     try:
         Path(output_file).write_text(result, encoding="utf-8")
-        logger.info(f"✅ Converted successfully: {output_file}")
+        print(f"✅ Converted successfully: {output_file}")
         return True
     except Exception as e:
-        logger.info(f"❌ Error writing file: {e}")
+        print(f"❌ Error writing file: {e}")
         return False
 
 
@@ -246,7 +246,7 @@ def main():
     )
     args = parser.parse_args()
     if not args.input.exists():
-        logger.info(f"❌ Error: File not found: {args.input}")
+        print(f"❌ Error: File not found: {args.input}")
         sys.exit(1)
     outputfile = str(args.input).replace(".js", ".py")
     success = convert_file(
@@ -323,7 +323,7 @@ def calculate_sum(numbers):
     total = 0
     for i in range(len(numbers)):
         total += numbers[i]
-    logger.info("Total:", total)
+    print("Total:", total)
     return total
 nums = [1][2][3][4][5]
 result = calculate_sum(nums)

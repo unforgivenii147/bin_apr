@@ -53,7 +53,7 @@ def compress_data(data_bytes):
         compressed_data = buffer.getvalue()
         return base64.b64encode(compressed_data).decode("ascii")
     except Exception as e:
-        logger.info(f"    Compression error: {e!s}")
+        print(f"    Compression error: {e!s}")
         return None
 
 
@@ -67,7 +67,7 @@ def read_file_contents(filepath):
         ]
         get_size = Path(filepath).stat().st_size
         if get_size > 10 * 1024 * 1024:
-            logger.info(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
+            print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
         for encoding in encodings:
             try:
                 with Path(filepath).open(encoding=encoding) as f:
@@ -119,7 +119,7 @@ def get_files_in_current_dir():
             if Path(item_path).is_file():
                 get_size = Path(item_path).stat().st_size
                 size_str = f"{get_size / 1024:.1f}KB" if get_size < 1024 * 1024 else f"{get_size / 1024 / 1024:.1f}MB"
-                logger.info(f"  Processing: {item} ({size_str})")
+                print(f"  Processing: {item} ({size_str})")
                 file_data = read_file_contents(item_path)
                 if file_data["is_binary"]:
                     compressed = compress_data(file_data["content"])
@@ -133,7 +133,7 @@ def get_files_in_current_dir():
                                 "compressed_size": len(compressed),
                             }
                         )
-                        logger.info(
+                        print(
                             f"    ✓ Compressed {file_data['original_size'] / 1024:.1f}KB to {len(compressed) / 1024:.1f}KB"
                         )
                     else:
@@ -156,9 +156,9 @@ def get_files_in_current_dir():
                             "compressed_size": 0,
                         }
                     )
-                    logger.info(f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)")
+                    print(f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)")
     except PermissionError:
-        logger.info("Warning: Permission denied accessing some files")
+        print("Warning: Permission denied accessing some files")
     return files
 
 
@@ -183,46 +183,46 @@ def main():
     try:
         pass
     except ImportError:
-        logger.info("Error: py7zr library is not installed.")
-        logger.info("Install it with: pip install py7zr")
+        print("Error: py7zr library is not installed.")
+        print("Install it with: pip install py7zr")
         sys.exit(1)
     db_path = "/sdcard/pkgs.db"
     if not os.access("/sdcard/", os.W_OK):
-        logger.info("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
-        logger.info("On Android, you might need to:")
-        logger.info("1. Grant storage permissions to Termux/terminal app")
-        logger.info("2. Or run the script with appropriate permissions")
+        print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
+        print("On Android, you might need to:")
+        print("1. Grant storage permissions to Termux/terminal app")
+        print("2. Or run the script with appropriate permissions")
         sys.exit(1)
     default_name = get_current_folder_name()
     folder_name = get_user_folder_name(default_name)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     while folder_exists_in_db(cursor, folder_name):
-        logger.info(f"Folder name '{folder_name}' already exists in database!")
+        print(f"Folder name '{folder_name}' already exists in database!")
         folder_name = input("Please enter a different name: ").strip()
         if not folder_name:
             folder_name = default_name + "_new"
-            logger.info(f"Using '{folder_name}' as default")
+            print(f"Using '{folder_name}' as default")
     create_folder_table(cursor, folder_name)
-    logger.info(f"\nScanning current directory: {Path.cwd()}")
-    logger.info("Reading and compressing file contents...")
+    print(f"\nScanning current directory: {Path.cwd()}")
+    print("Reading and compressing file contents...")
     files = get_files_in_current_dir()
     if not files:
-        logger.info("No files found in current directory!")
+        print("No files found in current directory!")
     else:
         insert_files(cursor, folder_name, files)
         conn.commit()
         total_original = sum(f.get("original_size", 0) for f in files)
         total_compressed = sum(f.get("compressed_size", 0) for f in files)
-        logger.info(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
+        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
         if total_compressed > 0:
             ratio = (1 - total_compressed / total_original) * 100 if total_original > 0 else 0
-            logger.info("📊 Storage stats:")
-            logger.info(f"   Original size: {total_original / 1024 / 1024:.2f}MB")
-            logger.info(f"   Compressed size: {total_compressed / 1024 / 1024:.2f}MB")
-            logger.info(f"   Compression ratio: {ratio:.1f}% saved")
+            print("📊 Storage stats:")
+            print(f"   Original size: {total_original / 1024 / 1024:.2f}MB")
+            print(f"   Compressed size: {total_compressed / 1024 / 1024:.2f}MB")
+            print(f"   Compression ratio: {ratio:.1f}% saved")
         else:
-            logger.info(f"   Total size: {total_original / 1024 / 1024:.2f}MB")
+            print(f"   Total size: {total_original / 1024 / 1024:.2f}MB")
     conn.close()
 
 

@@ -11,7 +11,7 @@ def main():
     req = sys.argv[1].strip()
     found = [f for f in os.listdir(cwd) if f.startswith(req)]
     for k in found:
-        logger.info(k)
+        print(k)
 
 
 if __name__ == "__main__":

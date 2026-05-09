@@ -452,16 +452,16 @@ def extract_and_save_gitlinks(urllist) -> None:
     for url in urllist:
         if is_github_url(url):
             glinks.append(url)
-            logger.info(url)
+            print(url)
     repoz = extract_git_repos(glinks)
     if repoz:
         repos = "\n".join(repoz)
         append_text(REPO_FILE, repos)
         git_links = "\n".join(glinks)
         append_text(GIT_FILE, git_links)
-        logger.info(f"{len(glinks)} links found.")
+        print(f"{len(glinks)} links found.")
     else:
-        logger.info("no git link")
+        print("no git link")
 
 
 def main():
@@ -503,7 +503,7 @@ def main():
             continue
         for fname in files:
             path = os.path.join(root, fname)
-            logger.info(f"processing {os.path.relpath(path)}")
+            print(f"processing {os.path.relpath(path)}")
             process_path(
                 path,
                 max_bytes,
@@ -512,13 +512,13 @@ def main():
                 recursion_limit=args.max_recursion,
             )
     if not found:
-        logger.info("no url found")
+        print("no url found")
         sys.exit(0)
     sorted_urls = sorted(found)
     extract_and_save_gitlinks(sorted_urls)
     try:
         if Path(args.output).exists():
-            logger.info("urls.txt exists. appending new urls")
+            print("urls.txt exists. appending new urls")
             with Path(args.output).open("a", encoding="utf-8") as out:
                 out.write("\n\n")
                 for u in sorted_urls:
@@ -529,10 +529,10 @@ def main():
                 for u in sorted_urls:
                     if is_valid_url(u):
                         out.write(u + "\n")
-        logger.info(f"Wrote {len(sorted_urls)} unique URLs to {args.output}")
+        print(f"Wrote {len(sorted_urls)} unique URLs to {args.output}")
         any(p.endswith(".tar.zst") for p in sorted_urls)
     except OSError as e:
-        logger.info(
+        print(
             f"Error writing output file: {e}",
             file=sys.stderr,
         )

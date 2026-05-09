@@ -41,7 +41,7 @@ def extract_base64_data(data_url, file_hint="asset"):
 
 def download_external_url(url, file_hint="remote"):
     try:
-        logger.info("Downloading:", url)
+        print("Downloading:", url)
         r = requests.get(url, timeout=TIMEOUT)
         if r.status_code != 200:
             return None
@@ -116,11 +116,11 @@ def process_file(path: Path):
     output_html_path = OUTPUT_DIR / path.relative_to(INPUT_DIR)
     output_html_path.parent.mkdir(parents=True, exist_ok=True)
     output_html_path.write_text(str(soup), encoding="utf-8")
-    logger.info("Processed:", path)
+    print("Processed:", path)
 
 
 if __name__ == "__main__":
     for path in cwd.rglob("*"):
         if path.suffix.lower() in {".html", ".htm"} and "output" not in path.parts:
             process_file(path)
-    logger.info("\nAll done — extracted assets saved to ./output/")
+    print("\nAll done — extracted assets saved to ./output/")

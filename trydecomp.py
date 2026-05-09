@@ -28,7 +28,7 @@ except ImportError:
 
 
 def try_decompress(filename):
-    logger.info(f"Attempting to decompress: {filename}\n")
+    print(f"Attempting to decompress: {filename}\n")
     compression_methods = {
         "zlib": zlib.decompress,
         "bz2": bz2.decompress,
@@ -54,74 +54,68 @@ def try_decompress(filename):
     try:
         file_data = Path(filename).read_bytes()
     except FileNotFoundError:
-        logger.info(f"Error: File not found at {filename}\n")
+        print(f"Error: File not found at {filename}\n")
         return
     except Exception as e:
-        logger.info(f"Error reading file {filename}: {e}\n")
+        print(f"Error reading file {filename}: {e}\n")
         return
     success = False
     for name, func in compression_methods.items():
         try:
-            logger.info(f"Trying {name}...")
+            print(f"Trying {name}...")
             decompressed_data = func(file_data)
             if decompressed_data and len(decompressed_data) < len(file_data) * 10:
-                logger.info(f"  SUCCESS: Decompressed using {name}. Size: {len(decompressed_data)} bytes.\n")
+                print(f"  SUCCESS: Decompressed using {name}. Size: {len(decompressed_data)} bytes.\n")
                 success = True
             else:
-                logger.info(
-                    f"  FAILED: {name} did not yield valid decompressed data (size: {len(decompressed_data)}).\n"
-                )
+                print(f"  FAILED: {name} did not yield valid decompressed data (size: {len(decompressed_data)}).\n")
         except Exception as e:
-            logger.info(f"  FAILED: {name} raised an exception: {type(e).__name__}: {e}\n")
+            print(f"  FAILED: {name} raised an exception: {type(e).__name__}: {e}\n")
     if tarfile.is_tarfile(filename):
         try:
-            logger.info("Trying tarfile...")
+            print("Trying tarfile...")
             with tarfile.open(filename, "r") as tar:
                 members = tar.getmembers()
                 if members:
-                    logger.info(
+                    print(
                         f"  SUCCESS: Opened as tar archive with {len(members)} members. First member: {members[0].name}\n"
                     )
                     success = True
                 else:
-                    logger.info("  FAILED: tarfile is empty.\n")
+                    print("  FAILED: tarfile is empty.\n")
         except Exception as e:
-            logger.info(f"  FAILED: tarfile opened with exception: {type(e).__name__}: {e}\n")
+            print(f"  FAILED: tarfile opened with exception: {type(e).__name__}: {e}\n")
     if zipfile.is_zipfile(filename):
         try:
-            logger.info("Trying zipfile...")
+            print("Trying zipfile...")
             with zipfile.ZipFile(filename, "r") as zip_ref:
                 file_list = zip_ref.namelist()
                 if file_list:
-                    logger.info(
-                        f"  SUCCESS: Opened as zip archive with {len(file_list)} files. First file: {file_list[0]}\n"
-                    )
+                    print(f"  SUCCESS: Opened as zip archive with {len(file_list)} files. First file: {file_list[0]}\n")
                     success = True
                 else:
-                    logger.info("  FAILED: zipfile is empty.\n")
+                    print("  FAILED: zipfile is empty.\n")
         except Exception as e:
-            logger.info(f"  FAILED: zipfile opened with exception: {type(e).__name__}: {e}\n")
+            print(f"  FAILED: zipfile opened with exception: {type(e).__name__}: {e}\n")
     if py7zr:
         try:
-            logger.info("Trying py7zr (7z archive)...")
+            print("Trying py7zr (7z archive)...")
             with py7zr.SevenZipFile(filename, mode="r") as z:
                 file_list = z.getnames()
                 if file_list:
-                    logger.info(
-                        f"  SUCCESS: Opened as 7z archive with {len(file_list)} files. First file: {file_list[0]}\n"
-                    )
+                    print(f"  SUCCESS: Opened as 7z archive with {len(file_list)} files. First file: {file_list[0]}\n")
                     success = True
                 else:
-                    logger.info("  FAILED: py7zr archive is empty.\n")
+                    print("  FAILED: py7zr archive is empty.\n")
         except Exception as e:
-            logger.info(f"  FAILED: py7zr opened with exception: {type(e).__name__}: {e}\n")
+            print(f"  FAILED: py7zr opened with exception: {type(e).__name__}: {e}\n")
     if not success:
-        logger.info("No compression or archive format was successfully identified and decompressed.\n")
+        print("No compression or archive format was successfully identified and decompressed.\n")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: python your_script_name.py <filename>\n")
+        print("Usage: python your_script_name.py <filename>\n")
         sys.exit(1)
     input_filename = sys.argv[1]
     try_decompress(input_filename)

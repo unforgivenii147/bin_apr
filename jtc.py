@@ -15,13 +15,13 @@ def process_file(path) -> bool:
             try:
                 ast.parse(new_code)
                 path.write_text(new_code, encoding="utf-8")
-                logger.info(f"{path.name} updated.")
+                print(f"{path.name} updated.")
                 return True
             except:
-                logger.info("result code is not valid")
+                print("result code is not valid")
                 return False
     except Exception as e:
-        logger.info(f"Error processing {path.name}: {e}")
+        print(f"Error processing {path.name}: {e}")
         return False
 
 
@@ -38,7 +38,7 @@ def main():
     cwd = Path.cwd()
     files = walk_directory(cwd)
     for f in files:
-        logger.info(process_file(f))
+        print(process_file(f))
 
 
 if __name__ == "__main__":

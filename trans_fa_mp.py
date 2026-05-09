@@ -17,7 +17,7 @@ def translate_word(word):
         try:
             return GoogleTranslator(source="auto", target="en").translate(word)
         except Exception as e:
-            logger.info(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
+            print(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
             time.sleep(0.5)
     return None
 
@@ -25,9 +25,9 @@ def translate_word(word):
 def main():
     with Path(INPUT_FILE).open(encoding="utf-8") as f:
         words = [w.strip() for w in f if w.strip()]
-    logger.info(f"[INFO] Loaded {len(words)} Persian words")
+    print(f"[INFO] Loaded {len(words)} Persian words")
     results = {}
-    logger.info("[INFO] Translating in parallel...")
+    print("[INFO] Translating in parallel...")
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         future_map = {executor.submit(translate_word, w): w for w in words}
         for future in as_completed(future_map):
@@ -36,11 +36,11 @@ def main():
                 english = future.result()
                 if english:
                     results[persian_word] = english
-                    logger.info(f"{persian_word} → {english}")
+                    print(f"{persian_word} → {english}")
                 else:
-                    logger.info(f"[FAIL] Could not translate: {persian_word}")
+                    print(f"[FAIL] Could not translate: {persian_word}")
             except Exception as e:
-                logger.info(f"[ERROR] Unexpected error for '{persian_word}': {e}")
+                print(f"[ERROR] Unexpected error for '{persian_word}': {e}")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
         json.dump(
             results,
@@ -48,7 +48,7 @@ def main():
             ensure_ascii=False,
             indent=2,
         )
-    logger.info(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
+    print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

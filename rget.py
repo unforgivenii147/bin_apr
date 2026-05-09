@@ -141,11 +141,11 @@ def download_urls(urls, output_dir=OUTPUT_DIR):
     safe_urls = [url for url in urls if is_safe_extension(url)]
     skipped = len(urls) - len(safe_urls)
     if skipped > 0:
-        logger.info(f"⚠️  Skipped {skipped} URLs (not matching safe extensions).")
+        print(f"⚠️  Skipped {skipped} URLs (not matching safe extensions).")
     if not safe_urls:
-        logger.info("❌ No valid URLs to download.")
+        print("❌ No valid URLs to download.")
         return
-    logger.info(f"🚀 Starting download of {len(safe_urls)} URLs...\n")
+    print(f"🚀 Starting download of {len(safe_urls)} URLs...\n")
     session = requests.Session()
     session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; ResumableDownloader/1.0)"})
     results = []
@@ -174,13 +174,13 @@ if __name__ == "__main__":
         with Path(URLS_FILE).open("r", encoding="utf-8") as f:
             urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
     except FileNotFoundError:
-        logger.info(f"❌ Error: {URLS_FILE} not found.")
+        print(f"❌ Error: {URLS_FILE} not found.")
         sys.exit(1)
     if not urls:
-        logger.info(f"⚠️  No URLs found in {URLS_FILE}.")
+        print(f"⚠️  No URLs found in {URLS_FILE}.")
         sys.exit(0)
     if len(sys.argv) > 1:
         URLS_FILE = sys.argv[1]
-        logger.info(f"Using input file: {URLS_FILE}")
+        print(f"Using input file: {URLS_FILE}")
         download_urls(urls)
-    logger.info("\n✅ All downloads completed.")
+    print("\n✅ All downloads completed.")

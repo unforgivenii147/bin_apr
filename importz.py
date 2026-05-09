@@ -52,9 +52,9 @@ def main():
             "\n".join(third_party),
             encoding="utf-8",
         )
-        logger.info(f"✅ Saved {len(third_party)} 3rd-party imports to {output_file}")
+        print(f"✅ Saved {len(third_party)} 3rd-party imports to {output_file}")
     else:
-        logger.info("ℹ️ No 3rd-party imports found.")
+        print("ℹ️ No 3rd-party imports found.")
 
 
 if __name__ == "__main__":

@@ -11,5 +11,5 @@ def samefile(path1: str, path2: str) -> bool:
     except FileNotFoundError:
         return False
     except OSError as e:
-        logger.info(f"error: {e}", file=sys.stderr)
+        print(f"error: {e}", file=sys.stderr)
         return False

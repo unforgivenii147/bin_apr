@@ -18,7 +18,7 @@ def process_file(path: Path):
     words = extract_words(text)
     filtered = list(words)
     for word, _count in Counter(filtered).most_common(30):
-        logger.info(f"{word}", end=" ")
+        print(f"{word}", end=" ")
 
 
 def main():

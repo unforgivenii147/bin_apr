@@ -14,15 +14,15 @@ def process_file(fp):
         with pdfplumber.open(fp) as pdf:
             numpages = len(pdf.pages)
             new_name = fp.stem + str(numpages) + ".pdf"
-            logger.info(new_name)
+            print(new_name)
             np = Path(f"{fp.parent}/{new_name}")
             if str(numpages) in fp.stem:
                 return
             if not np.exists():
                 Path(fp).rename(np)
-                logger.info(f"{fp.name} --> {np.name}")
+                print(f"{fp.name} --> {np.name}")
             else:
-                logger.info(f"{np.name} exists.")
+                print(f"{np.name} exists.")
     return
 
 

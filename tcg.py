@@ -46,9 +46,9 @@ def create_symlink(out_file):
         symlink_path = out_file.parent / out_file.stem
         if not symlink_path.exists():
             symlink_path.symlink_to(out_file)
-            logger.info(f"{symlink_path} -> {out_file}")
+            print(f"{symlink_path} -> {out_file}")
         else:
-            logger.info("symlink exists.")
+            print("symlink exists.")
 
 
 def main():

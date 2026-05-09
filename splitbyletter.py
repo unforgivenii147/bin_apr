@@ -9,11 +9,11 @@ from loguru import logger
 
 def main():
     if len(sys.argv) != 2:
-        logger.info(f"Usage: {sys.argv[0]} <filename>")
+        print(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)
     input_file = sys.argv[1]
     if not Path(input_file).is_file():
-        logger.info(f"Error: file not found: {input_file}")
+        print(f"Error: file not found: {input_file}")
         sys.exit(1)
     Path("output").mkdir(exist_ok=True, parents=True)
     files = {

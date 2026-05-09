@@ -68,14 +68,14 @@ def main():
     output_file = cwd / "importz.txt"
     modules = find_imports(cwd)
     results = []
-    logger.info(f"{'Module':<20} | {'Version':<15}")
-    logger.info("-" * 40)
+    print(f"{'Module':<20} | {'Version':<15}")
+    print("-" * 40)
     for mod in modules:
         if mod.startswith("_"):
             continue
         ver = get_version(mod)
         line = f"{mod:<20} | {ver:<15}"
-        logger.info(line)
+        print(line)
         if "Not Installed" in ver:
             results.append(f"{mod}=={ver}")
     Path(output_file).write_text("\n".join(results), encoding="utf-8")
@@ -97,7 +97,7 @@ def main():
             f.write("\n".join(cleaned))
     elif output_file.exists():
         output_file.unlink()
-        logger.info(f"empty {output_file} removed")
+        print(f"empty {output_file} removed")
         return
     if output_file.exists() and output_file.stat().st_size < 2:
         output_file.unlink()

@@ -16,16 +16,16 @@ def clean_file(filename):
             cleaned_lines.append(cleaned_line)
         with Path(filename).open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)
-        logger.info(f"Successfully cleaned: {filename}")
+        print(f"Successfully cleaned: {filename}")
     except FileNotFoundError:
-        logger.info(f"Error: The file '{filename}' was not found.")
+        print(f"Error: The file '{filename}' was not found.")
     except Exception as e:
-        logger.info(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: python clean_text.py <filename>")
+        print("Usage: python clean_text.py <filename>")
     else:
         target_file = sys.argv[1]
         clean_file(target_file)

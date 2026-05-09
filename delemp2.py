@@ -31,7 +31,7 @@ def process_file(
     path: Path,
     collapse: bool,
 ) -> tuple[bool, int, str]:
-    logger.info(f"processing {path.name}")
+    print(f"processing {path.name}")
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()

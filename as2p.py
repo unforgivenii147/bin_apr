@@ -35,17 +35,17 @@ def refactor_file(file_path):
             content = "\n".join(lines)
         if content != original_content:
             Path(file_path).write_text(content, encoding="utf-8")
-            logger.info(f"Successfully refactored: {file_path}")
+            print(f"Successfully refactored: {file_path}")
         else:
-            logger.info(f"No changes needed for: {file_path}")
+            print(f"No changes needed for: {file_path}")
     except Exception as e:
-        logger.info(f"Error processing {file_path}: {e}")
+        print(f"Error processing {file_path}: {e}")
 
 
 for root, _dirs, files in os.walk("."):
     for file in files:
         if file.endswith(".py"):
             full_path = os.path.join(root, file)
-            logger.info(f"Processing: {full_path}")
+            print(f"Processing: {full_path}")
             refactor_file(full_path)
 print("\nMigration process finished.")

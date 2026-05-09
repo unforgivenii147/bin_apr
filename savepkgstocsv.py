@@ -64,7 +64,7 @@ def query_packages() -> list[list[str]]:
         cols = line.split("\t")
         if len(cols) != len(FIELDS):
             continue
-        logger.info(cols)
+        print(cols)
         rows.append(cols)
     rows.sort(key=lambda r: int(r[6] or 0), reverse=True)
     return rows
@@ -88,9 +88,9 @@ def main() -> None:
     rows = query_packages()
     save_tsv(rows)
     save_csv(rows)
-    logger.info(f"Saved {len(rows)} packages")
-    logger.info(f"TSV: {TSV_FILE}")
-    logger.info(f"CSV: {CSV_FILE}")
+    print(f"Saved {len(rows)} packages")
+    print(f"TSV: {TSV_FILE}")
+    print(f"CSV: {CSV_FILE}")
 
 
 if __name__ == "__main__":

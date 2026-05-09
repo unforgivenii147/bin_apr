@@ -21,12 +21,12 @@ def fold_content_pure(fname, width=45):
     with Path(fname).open("w", encoding="utf-8") as fo:
         for line in folded_lines:
             fo.write(line + "\n")
-    logger.info(f"{fname} updated.")
+    print(f"{fname} updated.")
 
 
 def fold_file_inplace(filename):
     if not Path(filename).exists():
-        logger.info(
+        print(
             f"Error: File '{filename}' not found.",
             file=sys.stderr,
         )
@@ -55,7 +55,7 @@ def fold_file_inplace(filename):
             encoding="utf-8",
         )
         if result.returncode != 0:
-            logger.info(
+            print(
                 f"Error running fold: {result.stderr}",
                 file=sys.stderr,
             )
@@ -63,7 +63,7 @@ def fold_file_inplace(filename):
             sys.exit(1)
         Path(filename).write_text(result.stdout, encoding="utf-8")
     Path(temp_filename).unlink()
-    logger.info(f"Successfully folded '{filename}' in place.")
+    print(f"Successfully folded '{filename}' in place.")
 
 
 if __name__ == "__main__":

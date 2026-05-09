@@ -41,13 +41,13 @@ def main():
     for py_file in Path().glob("*.py"):
         if py_file.name == Path(__file__).name:
             continue
-        logger.info(f"Checking {py_file}...")
+        print(f"Checking {py_file}...")
         if black_check(py_file):
             dest = unique_destination(OK_DIR / py_file.name)
-            logger.info(f"  ✓ OK → {dest}")
+            print(f"  ✓ OK → {dest}")
         else:
             dest = unique_destination(ERROR_DIR / py_file.name)
-            logger.info(f"  ✗ ERROR → {dest}")
+            print(f"  ✗ ERROR → {dest}")
         shutil.move(str(py_file), str(dest))
 
 

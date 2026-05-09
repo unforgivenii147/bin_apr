@@ -16,9 +16,9 @@ def download_image(url, output_dir):
         filename = os.path.join(output_dir, Path(url).name)
         with Path(filename).open("wb") as f:
             f.writelines(response.iter_content(1024))
-        logger.info(f"Downloaded: {filename}")
+        print(f"Downloaded: {filename}")
     except Exception as e:
-        logger.info(f"Failed to download {url}: {e}")
+        print(f"Failed to download {url}: {e}")
 
 
 def extract_images_from_url(url, output_dir):
@@ -35,7 +35,7 @@ def extract_images_from_url(url, output_dir):
                 img_url = urljoin(url, img_url)
                 download_image(img_url, output_dir)
     except Exception as e:
-        logger.info(f"Error: {e}")
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

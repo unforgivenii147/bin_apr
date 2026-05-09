@@ -23,7 +23,7 @@ def strip_comments_and_docstrings(file_path_str):
     try:
         original_content = Path(file_path).read_text(encoding="utf-8")
     except Exception as e:
-        logger.info(f"Error reading file {file_path}: {e}")
+        print(f"Error reading file {file_path}: {e}")
         return False
     cleaned_content = DOCSTRING_START_REGEX.sub(r"\1", original_content, count=3)
 
@@ -45,28 +45,28 @@ def strip_comments_and_docstrings(file_path_str):
             ast.parse(cleaned_content_heuristic)
             final_code = cleaned_content_heuristic
         except SyntaxError:
-            logger.info(f"Syntax error after stripping comments/docstrings from {file_path}. Reverting.")
+            print(f"Syntax error after stripping comments/docstrings from {file_path}. Reverting.")
             return False
     except SyntaxError as e:
-        logger.info(f"Original code has syntax error: {file_path} - {e}. Skipping.")
+        print(f"Original code has syntax error: {file_path} - {e}. Skipping.")
         return False
     try:
         shutil.copy2(file_path, backup_path)
-        logger.info(f"Backup created: {backup_path}")
+        print(f"Backup created: {backup_path}")
     except Exception as e:
-        logger.info(f"Error creating backup for {file_path}: {e}")
+        print(f"Error creating backup for {file_path}: {e}")
         return False
     try:
         Path(file_path).write_text(final_code, encoding="utf-8")
-        logger.info(f"Successfully stripped comments/docstrings from {file_path}")
+        print(f"Successfully stripped comments/docstrings from {file_path}")
         return True
     except Exception as e:
-        logger.info(f"Error writing cleaned file {file_path}: {e}")
+        print(f"Error writing cleaned file {file_path}: {e}")
         try:
             shutil.move(backup_path, file_path)
-            logger.info(f"Restored original content from backup for {file_path}")
+            print(f"Restored original content from backup for {file_path}")
         except Exception as restore_e:
-            logger.info(f"CRITICAL ERROR: Failed to write cleaned file and restore backup for {file_path}: {restore_e}")
+            print(f"CRITICAL ERROR: Failed to write cleaned file and restore backup for {file_path}: {restore_e}")
         return False
 
 
@@ -79,7 +79,7 @@ def find_python_files_recursively(directory):
 
 def process_directory(directory):
     python_files = list(find_python_files_recursively(directory))
-    logger.info(f"Found {len(python_files)} Python files to process.")
+    print(f"Found {len(python_files)} Python files to process.")
     processed_count = 0
     with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(strip_comments_and_docstrings, file_path): file_path for file_path in python_files}
@@ -90,13 +90,13 @@ def process_directory(directory):
                 if success:
                     processed_count += 1
             except Exception as e:
-                logger.info(f"Error processing future for {file_path}: {e}")
-    logger.info(
+                print(f"Error processing future for {file_path}: {e}")
+    print(
         f"\nFinished processing. Successfully stripped comments/docstrings from {processed_count}/{len(python_files)} files."
     )
 
 
 if __name__ == "__main__":
     target_directory = "."
-    logger.info(f"Starting comment and docstring stripping in directory: {Path(target_directory).resolve()}")
+    print(f"Starting comment and docstring stripping in directory: {Path(target_directory).resolve()}")
     process_directory(target_directory)

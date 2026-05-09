@@ -33,7 +33,7 @@ def update_summary():
         f.writelines(header)
         f.write("\n")
         f.writelines(new_entries)
-    logger.info(f"Updated SUMMARY.md with {len(new_entries)} chapters.")
+    print(f"Updated SUMMARY.md with {len(new_entries)} chapters.")
 
 
 if __name__ == "__main__":

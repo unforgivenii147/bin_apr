@@ -12,7 +12,7 @@ logger.add("/sdcard/allimport.log", diagnose=True)
 def tryimport(package):
     try:
         import_module(package)
-        logger.info(f"\u2713 {package}")
+        print(f"\u2713 {package}")
         return True
     except Exception:
         logger.debug(f"X {package}")
@@ -24,7 +24,7 @@ def tryallimport():
         pkn = pkg.metadata["name"]
         try:
             import_module(pkn)
-            logger.info(f"\u2713 {pkn}")
+            print(f"\u2713 {pkn}")
         except Exception:
             logger.debug(f"X {pkn}")
 

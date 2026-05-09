@@ -23,7 +23,7 @@ def process_again(pt):
         for line in lines:
             striped = line.strip()
             if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and striped != DOC_TH1:
-                logger.info(line)
+                print(line)
                 continue
             new_lines.append(line)
         new_code = "\n".join(new_lines)
@@ -103,7 +103,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
         parser.parse(cleaned)
         path.write_bytes(cleaned)
         process_again(path)
-        logger.info(f"[OK] {path.name}")
+        print(f"[OK] {path.name}")
     except Exception as e:
         cprint(f"[FAIL] {path.name} -> {e}", "cyan")
 

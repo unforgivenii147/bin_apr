@@ -33,4 +33,4 @@ def hex_to_rgb_dict(value: str) -> dict:
 
 if __name__ == "__main__":
     hexcolor = sys.argv[1].strip()
-    logger.info(gex_to_rgb(hexcolor))
+    print(gex_to_rgb(hexcolor))

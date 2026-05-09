@@ -39,10 +39,10 @@ def process_file(fp):
     cleaned = clean_text(text)
     removed = len(text) - len(cleaned)
     if removed:
-        logger.info(f"{removed} invisible characters removed")
+        print(f"{removed} invisible characters removed")
         fp.write_text(cleaned, encoding="utf-8")
         return
-    logger.info("No invisible characters found")
+    print("No invisible characters found")
     return
 
 

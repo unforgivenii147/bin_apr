@@ -48,17 +48,17 @@ def get_latest_version(package_name: str) -> str:
 
 
 def main():
-    logger.info("=== Python Packages Sanity Check ===")
+    print("=== Python Packages Sanity Check ===")
     installed_pkgs = get_installed_python_packages()
-    logger.info(f"Found {len(installed_pkgs)} installed Python packages.\n")
+    print(f"Found {len(installed_pkgs)} installed Python packages.\n")
     issues_found = 0
     for pkg_name, pkg_version in installed_pkgs:
         is_ok, msg = check_package_importable(pkg_name)
         if not is_ok:
-            logger.info(f"[!] {pkg_name} (v{pkg_version}): {msg}")
+            print(f"[!] {pkg_name} (v{pkg_version}): {msg}")
             issues_found += 1
-    logger.info("\n=== Version Check (Optional) ===")
-    logger.info("Checking for outdated packages (this may take a while)...")
+    print("\n=== Version Check (Optional) ===")
+    print("Checking for outdated packages (this may take a while)...")
     outdated_pkgs = []
     for pkg_name, pkg_version in installed_pkgs:
         latest_version = get_latest_version(pkg_name)
@@ -74,21 +74,21 @@ def main():
                 )
             )
     if outdated_pkgs:
-        logger.info("Outdated packages found:")
+        print("Outdated packages found:")
         for (
             pkg_name,
             pkg_version,
             latest_version,
         ) in outdated_pkgs:
-            logger.info(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
+            print(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
     else:
-        logger.info("All packages are up to date.")
-    logger.info("\n=== Summary ===")
-    logger.info(f"Issues found: {issues_found}")
+        print("All packages are up to date.")
+    print("\n=== Summary ===")
+    print(f"Issues found: {issues_found}")
     if issues_found == 0:
-        logger.info("All packages are importable.")
+        print("All packages are importable.")
     else:
-        logger.info("Some packages may need attention.")
+        print("Some packages may need attention.")
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ if __name__ == "__main__":
         cmd = f"python {path!s} bdist_wheel"
         ret, _, _ = run_command(cmd)
         if ret != 0:
-            logger.info("ok")
+            print("ok")
     for path in cwd.rglob("pyproject.toml"):
         pardir = path.parent
         distdir = pardir / "dist"
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         cmd = "python -m build -w"
         ret, _, _ = run_command(cmd)
         if not ret:
-            logger.info("ok")
+            print("ok")
             continue
     allwhl = list(cwd.rglob("*.whl"))
-    logger.info(f"done {len(allwhl)} wheels crwated.")
+    print(f"done {len(allwhl)} wheels crwated.")

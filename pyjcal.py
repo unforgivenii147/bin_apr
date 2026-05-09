@@ -427,7 +427,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) == 1:
-        logger.info(jcal())
+        print(jcal())
     elif sys.argv[1] == "jdate":
         fmt = None
         lang = "en"
@@ -436,7 +436,7 @@ if __name__ == "__main__":
                 lang = "fa"
             elif arg.startswith("+"):
                 fmt = arg[1:]
-        logger.info(jdate(fmt, language=lang))
+        print(jdate(fmt, language=lang))
     elif sys.argv[1] == "jcal":
         month = None
         year = None
@@ -450,7 +450,7 @@ if __name__ == "__main__":
                     month = int(arg)
                 elif year is None:
                     year = int(arg)
-        logger.info(jcal(month, year, language=lang))
+        print(jcal(month, year, language=lang))
     else:
         month = None
         year = None
@@ -464,6 +464,6 @@ if __name__ == "__main__":
                 elif year is None:
                     year = int(arg)
         if month is not None or year is not None:
-            logger.info(jcal(month, year, language=lang))
+            print(jcal(month, year, language=lang))
         else:
-            logger.info(jdate(language=lang))
+            print(jdate(language=lang))

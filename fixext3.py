@@ -99,13 +99,13 @@ def run_file_command(filepath: Path) -> str | None:
         )
         return result.stdout.strip()
     except FileNotFoundError:
-        logger.info("Error: 'file' command not found. Please ensure it's installed and in your PATH.")
+        print("Error: 'file' command not found. Please ensure it's installed and in your PATH.")
         return None
     except subprocess.CalledProcessError as e:
-        logger.info(f"Error running 'file' command on {filepath}: {e}")
+        print(f"Error running 'file' command on {filepath}: {e}")
         return None
     except Exception as e:
-        logger.info(f"An unexpected error occurred while running 'file' command on {filepath}: {e}")
+        print(f"An unexpected error occurred while running 'file' command on {filepath}: {e}")
         return None
 
 
@@ -143,16 +143,16 @@ def detect_and_fix_mismatches(
     similarity_threshold: int = 70,
     dry_run: bool = True,
 ):
-    logger.info("--- Starting File Type Mismatch Detection ---")
-    logger.info(f"Scanning directory: {start_directory.resolve()}")
+    print("--- Starting File Type Mismatch Detection ---")
+    print(f"Scanning directory: {start_directory.resolve()}")
     if dry_run:
-        logger.info("--- Running in DRY-RUN mode. No files will be renamed. ---")
+        print("--- Running in DRY-RUN mode. No files will be renamed. ---")
     else:
-        logger.info("--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
+        print("--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
     mismatched_files_found = []
     rename_operations = []
     files_to_process = list(find_files_recursively(start_directory))
-    logger.info(f"Found {len(files_to_process)} files to analyze.")
+    print(f"Found {len(files_to_process)} files to analyze.")
     for filepath in files_to_process:
         current_ext = get_current_extension(filepath)
         if not current_ext or current_ext in {".log", ".tmp", ".bak"}:
@@ -194,7 +194,7 @@ def detect_and_fix_mismatches(
             )
             new_filepath = filepath.with_suffix(detected_ext)
             if new_filepath.exists():
-                logger.info(f"  SKIP RENAME: Target file '{new_filepath}' already exists. Cannot rename '{filepath}'.")
+                print(f"  SKIP RENAME: Target file '{new_filepath}' already exists. Cannot rename '{filepath}'.")
             else:
                 rename_operations.append(
                     {
@@ -203,43 +203,41 @@ def detect_and_fix_mismatches(
                         "type_description": file_type_desc,
                     }
                 )
-                logger.info(
+                print(
                     f"  MISMATCH FOUND: '{filepath}' detected as '{file_type_desc}' (suggested extension: {detected_ext})."
                 )
-    logger.info("\n--- Analysis Complete ---")
+    print("\n--- Analysis Complete ---")
     if not mismatched_files_found:
-        logger.info("No file extension mismatches detected.")
+        print("No file extension mismatches detected.")
         return
-    logger.info(f"Found {len(mismatched_files_found)} files with potential extension mismatches.")
+    print(f"Found {len(mismatched_files_found)} files with potential extension mismatches.")
     if not rename_operations:
-        logger.info(
-            "No safe rename operations could be planned (e.g., due to existing files or no clear extension mapping)."
-        )
+        print("No safe rename operations could be planned (e.g., due to existing files or no clear extension mapping).")
         return
-    logger.info(f"\nIdentified {len(rename_operations)} files that can be safely renamed:")
+    print(f"\nIdentified {len(rename_operations)} files that can be safely renamed:")
     for op in rename_operations:
-        logger.info(f"  - '{op['source']}' -> '{op['destination']}' (Detected as: {op['type_description']})")
+        print(f"  - '{op['source']}' -> '{op['destination']}' (Detected as: {op['type_description']})")
     if dry_run:
-        logger.info("\n--- DRY-RUN MODE ACTIVE ---")
-        logger.info("No files were renamed. To perform renames, set 'dry_run=False' in the script.")
+        print("\n--- DRY-RUN MODE ACTIVE ---")
+        print("No files were renamed. To perform renames, set 'dry_run=False' in the script.")
     else:
-        logger.info("\n--- LIVE RENAME MODE ACTIVE ---")
+        print("\n--- LIVE RENAME MODE ACTIVE ---")
         confirm = input("Are you sure you want to proceed with renaming these files? (yes/no): ")
         if confirm.lower() == "yes":
             renamed_count = 0
             for op in rename_operations:
                 try:
                     op["source"].rename(op["destination"])
-                    logger.info(f"  Renamed '{op['source']}' to '{op['destination']}'")
+                    print(f"  Renamed '{op['source']}' to '{op['destination']}'")
                     renamed_count += 1
                 except OSError as e:
-                    logger.info(f"  ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
+                    print(f"  ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
                 except Exception as e:
-                    logger.info(f"  UNEXPECTED ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
-            logger.info(f"\nSuccessfully renamed {renamed_count} out of {len(rename_operations)} planned operations.")
+                    print(f"  UNEXPECTED ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
+            print(f"\nSuccessfully renamed {renamed_count} out of {len(rename_operations)} planned operations.")
         else:
-            logger.info("Rename operation cancelled by user.")
-    logger.info("\n--- Script Finished ---")
+            print("Rename operation cancelled by user.")
+    print("\n--- Script Finished ---")
 
 
 if __name__ == "__main__":

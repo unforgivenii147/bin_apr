@@ -9,7 +9,7 @@ from loguru import logger
 
 def py_to_ipynb(input_file, output_file=None):
     if not Path(input_file).exists():
-        logger.info(f"Error: File '{input_file}' not found.")
+        print(f"Error: File '{input_file}' not found.")
         return False
     code = Path(input_file).read_text(encoding="utf-8")
     nb = nbf.v4.new_notebook()
@@ -49,8 +49,8 @@ def py_to_ipynb(input_file, output_file=None):
         output_file = Path(input_file).stem + ".ipynb"
     with Path(output_file).open("w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1, ensure_ascii=False)
-    logger.info(f"Successfully converted '{input_file}' to '{output_file}'")
-    logger.info(f"Created {len(cells)} cell(s)")
+    print(f"Successfully converted '{input_file}' to '{output_file}'")
+    print(f"Created {len(cells)} cell(s)")
     return True
 
 
@@ -80,7 +80,7 @@ def main():
                 indent=1,
                 ensure_ascii=False,
             )
-        logger.info(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
+        print(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
     else:
         py_to_ipynb(args.input, args.output)
 

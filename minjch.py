@@ -54,12 +54,12 @@ def collect_files() -> list:
 def main() -> None:
     files = collect_files()
     if not files:
-        logger.info("No supported files found.")
+        print("No supported files found.")
         return
-    logger.info(f"Found {len(files)} files. Starting multiprocessing...")
+    print(f"Found {len(files)} files. Starting multiprocessing...")
     with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
         for result in pool.imap_unordered(process_file, files):
-            logger.info(result)
+            print(result)
 
 
 if __name__ == "__main__":

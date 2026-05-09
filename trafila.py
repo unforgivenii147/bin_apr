@@ -21,12 +21,12 @@ def process_file(html_file: Path):
         if markdown:
             md_file = html_file.with_suffix(".md")
             md_file.write_text(markdown, encoding="utf-8")
-            logger.info(f"✓ Converted: {html_file.name} -> {md_file.name}")
+            print(f"✓ Converted: {html_file.name} -> {md_file.name}")
             return (md_file, True)
-        logger.info(f"✗ No content extracted from {html_file.name}")
+        print(f"✗ No content extracted from {html_file.name}")
         return (html_file, False)
     except Exception as e:
-        logger.info(f"✗ Error: {e}")
+        print(f"✗ Error: {e}")
         return (html_file, False)
 
 

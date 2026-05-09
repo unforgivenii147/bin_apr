@@ -36,7 +36,7 @@ def main():
         for file in files:
             path = os.path.join(root, file)
             if is_text_file(path) and contains_non_english(path):
-                logger.info(os.path.relpath(path))
+                print(os.path.relpath(path))
 
 
 if __name__ == "__main__":

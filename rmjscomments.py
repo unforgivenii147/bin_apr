@@ -15,7 +15,7 @@ single_line_comment_re = r"//.*"
 
 
 def process_file(fp):
-    logger.info(f"processing ...{fp.name}")
+    print(f"processing ...{fp.name}")
     code = fp.read_text(encoding="utf-8")
     new_code = re.sub(multi_line_comment_re, "", code, flags=re.DOTALL)
     lines = new_code.splitlines()

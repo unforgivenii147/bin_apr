@@ -25,7 +25,7 @@ def get_installed_version(pkg_name):
                 if line.startswith("Version:"):
                     return line.split(":")[1].strip()
     except Exception as e:
-        logger.info(f"Error checking installed version for {pkg_name}: {e}")
+        print(f"Error checking installed version for {pkg_name}: {e}")
     return None
 
 
@@ -46,22 +46,22 @@ def get_wheel_package_info(wheel_file):
                             pkg_version,
                         )
     except Exception as e:
-        logger.info(f"Error reading {wheel_file}: {e}")
+        print(f"Error reading {wheel_file}: {e}")
     return None, None
 
 
 def remove_wheel_file(wheel_file):
     try:
         Path(wheel_file).unlink()
-        logger.info(f"Removed: {wheel_file}")
+        print(f"Removed: {wheel_file}")
     except Exception as e:
-        logger.info(f"Error removing {wheel_file}: {e}")
+        print(f"Error removing {wheel_file}: {e}")
 
 
 def main():
     whl_dir = "/sdcard/whl"
     if not Path(whl_dir).exists():
-        logger.info(f"Directory {whl_dir} does not exist.")
+        print(f"Directory {whl_dir} does not exist.")
         return
     for file in os.listdir(whl_dir):
         if file.endswith(".whl"):
@@ -71,21 +71,21 @@ def main():
                 installed_version = get_installed_version(pkg_name)
                 if installed_version:
                     if installed_version == pkg_version:
-                        logger.info(f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}")
+                        print(f"{pkg_name} {pkg_version} is already installed in the venv, removing {wheel_file}")
                         remove_wheel_file(wheel_file)
                     elif installed_version > pkg_version:
-                        logger.info(
+                        print(
                             f"{pkg_name} {installed_version} is newer than {pkg_version} in venv, removing {wheel_file}"
                         )
                         remove_wheel_file(wheel_file)
                     else:
-                        logger.info(
+                        print(
                             f"{pkg_name} {pkg_version} is newer than the installed version {installed_version} in venv. Keeping {wheel_file}"
                         )
                 else:
-                    logger.info(f"{pkg_name} is not installed in the venv, keeping {wheel_file}")
+                    print(f"{pkg_name} is not installed in the venv, keeping {wheel_file}")
             else:
-                logger.info(f"Could not extract info from {wheel_file}")
+                print(f"Could not extract info from {wheel_file}")
 
 
 if __name__ == "__main__":

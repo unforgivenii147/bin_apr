@@ -42,20 +42,20 @@ def find_dist_info(prefix):
 def uninstall_packages(pkg_name):
     try:
         subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", pkg_name], check=True)
-        logger.info(f"Uninstalled {pkg_name}")
+        print(f"Uninstalled {pkg_name}")
     except subprocess.CalledProcessError:
-        logger.info(f"Skipped {pkg_name} (not installed or error)")
+        print(f"Skipped {pkg_name} (not installed or error)")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info(f"Usage: {sys.argv[0]} <package_prefix>")
+        print(f"Usage: {sys.argv[0]} <package_prefix>")
         sys.exit(1)
     prefix = sys.argv[1].lower()
     installed = load_installed_packages()
     to_uninstall = [pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.WRatio(prefix, pkg.lower()) > 90]
     if not to_uninstall:
-        logger.info("no match found")
+        print("no match found")
         sys.exit(0)
     for k in to_uninstall:
         ans = input(f"remove {k} --> ? (y/n)")

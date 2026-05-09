@@ -11,7 +11,7 @@ def process_file(fp):
     for line in lines:
         if 'name = "' in line:
             pkg_name = line.split('name = "')[1].split('"')[0]
-            logger.info(pkg_name)
+            print(pkg_name)
             with Path("requirements.txt").open("a", encoding="utf-8") as f:
                 f.write(pkg_name + "\n")
 

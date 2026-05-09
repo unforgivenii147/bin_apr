@@ -245,18 +245,18 @@ def generate_requirements(imports_count):
                 f.write(f"{norm_pkg}\n")
             else:
                 f.write(f"{norm_pkg}\n")
-    logger.info(f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)")
-    logger.info("Top 10 most used packages:")
+    print(f"Generated requirements.txt with {len(sorted_imports)} packages (stdlib excluded)")
+    print("Top 10 most used packages:")
     for pkg, count in sorted_imports[:10]:
-        logger.info(f"  {pkg}: {count} files")
+        print(f"  {pkg}: {count} files")
 
 
 def main():
     load_known_packages()
-    logger.info(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
-    logger.info("Scanning current directory...")
+    print(f"Loaded {len(KNOWN_PACKAGES)} packages from pip.txt")
+    print("Scanning current directory...")
     imports_count = walk_directory(".")
-    logger.info(f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages")
+    print(f"Found {sum(imports_count.values())} total imports across {len(imports_count)} packages")
     generate_requirements(imports_count)
 
 

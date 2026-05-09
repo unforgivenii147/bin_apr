@@ -55,11 +55,11 @@ def process_file(fp):
         _ = ast.parse(result)
         fp.write_text(result, encoding="utf-8")
     except:
-        logger.info("result code is not valid")
+        print("result code is not valid")
         backup_path = fp.with_suffix(fp.suffix + ".bak")
         backup_path.write_text(data, encoding="utf-8")
         fp.write_text(result, encoding="utf-8")
-        logger.info(f"backup created {backup_path.name}")
+        print(f"backup created {backup_path.name}")
 
 
 def main():
@@ -72,7 +72,7 @@ def main():
         sys.exit(0)
     mpf(process_file, files)
     diff_size = before - gsz(cwd)
-    logger.info(f"space saved : {fsz(diff_size)}")
+    print(f"space saved : {fsz(diff_size)}")
 
 
 if __name__ == "__main__":

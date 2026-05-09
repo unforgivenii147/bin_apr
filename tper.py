@@ -21,7 +21,7 @@ def translate_word(word):
         try:
             return GoogleTranslator(source="auto", target="en").translate(word)
         except Exception as e:
-            logger.info(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
+            print(f"[WARN] Failed '{word}' (attempt {attempt + 1}): {e}")
             time.sleep(0.5)
     return None
 
@@ -39,7 +39,7 @@ def load_existing_results(output_file):
                 if isinstance(data, dict):
                     return data
         except Exception as e:
-            logger.info(f"[WARN] Could not load existing {output_file}: {e}")
+            print(f"[WARN] Could not load existing {output_file}: {e}")
     return {}
 
 
@@ -57,14 +57,14 @@ def save_results_atomic(results, output_file):
 
 def main():
     words = load_words(INPUT_FILE)
-    logger.info(f"[INFO] Loaded {len(words)} Persian words")
+    print(f"[INFO] Loaded {len(words)} Persian words")
     results = load_existing_results(OUTPUT_FILE)
-    logger.info(f"[INFO] Loaded {len(results)} existing translations from {OUTPUT_FILE}")
+    print(f"[INFO] Loaded {len(results)} existing translations from {OUTPUT_FILE}")
     to_translate = [w for w in words if w not in results]
     total_remaining = len(to_translate)
-    logger.info(f"[INFO] {total_remaining} words to translate (will skip already translated)")
+    print(f"[INFO] {total_remaining} words to translate (will skip already translated)")
     if total_remaining == 0:
-        logger.info("[INFO] Nothing to do. Exiting.")
+        print("[INFO] Nothing to do. Exiting.")
         return
     new_count = 0
     pbar = tqdm(
@@ -83,25 +83,25 @@ def main():
                         if english:
                             results[persian_word] = english
                             new_count += 1
-                            logger.info(f"{persian_word} → {english}")
+                            print(f"{persian_word} → {english}")
                         else:
-                            logger.info(f"[FAIL] Could not translate: {persian_word}")
+                            print(f"[FAIL] Could not translate: {persian_word}")
                         pbar.update(1)
                         if new_count % SAVE_EVERY == 0:
-                            logger.info(f"[INFO] Saving progress after {new_count} new translations...")
+                            print(f"[INFO] Saving progress after {new_count} new translations...")
                             save_results_atomic(
                                 results,
                                 OUTPUT_FILE,
                             )
                 except Exception as e:
-                    logger.info(f"[ERROR] Unexpected error for '{persian_word}': {e}")
+                    print(f"[ERROR] Unexpected error for '{persian_word}': {e}")
     except KeyboardInterrupt:
-        logger.info("\n[INFO] Interrupted by user. Saving progress...")
+        print("\n[INFO] Interrupted by user. Saving progress...")
     finally:
         with lock:
             save_results_atomic(results, OUTPUT_FILE)
         pbar.close()
-        logger.info(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
+        print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

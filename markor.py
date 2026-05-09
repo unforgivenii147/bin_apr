@@ -23,12 +23,12 @@ class GUIFramework:
     ) -> int:
         if buttons is None:
             buttons = ["OK"]
-        logger.info(f"\n{'=' * 50}")
-        logger.info(f"[{title}]")
-        logger.info(f"{message}")
-        logger.info(f"{'=' * 50}")
+        print(f"\n{'=' * 50}")
+        print(f"[{title}]")
+        print(f"{message}")
+        print(f"{'=' * 50}")
         for i, btn in enumerate(buttons):
-            logger.info(f"{i}: {btn}")
+            print(f"{i}: {btn}")
         choice = input("Select option: ").strip()
         return int(choice) if choice.isdigit() else 0
 
@@ -38,11 +38,11 @@ class GUIFramework:
         hint: str = "",
         multi_line: bool = False,
     ) -> str | None:
-        logger.info(f"\n[{title}]")
+        print(f"\n[{title}]")
         if hint:
-            logger.info(f"Hint: {hint}")
+            print(f"Hint: {hint}")
         if multi_line:
-            logger.info("Enter text (type 'END' on new line to finish):")
+            print("Enter text (type 'END' on new line to finish):")
             lines = []
             while True:
                 line = input()
@@ -58,12 +58,12 @@ class GUIFramework:
         return input(f"Enter file path (starting from {initial_path}): ").strip() or None
 
     def show_toast(self, message: str):
-        logger.info(f"[Toast] {message}")
+        print(f"[Toast] {message}")
 
     def show_menu(self, title: str, items: list[str]) -> int:
-        logger.info(f"\n[{title}]")
+        print(f"\n[{title}]")
         for i, item in enumerate(items):
-            logger.info(f"{i}: {item}")
+            print(f"{i}: {item}")
         choice = input("Select: ").strip()
         return int(choice) if choice.isdigit() else -1
 
@@ -75,7 +75,7 @@ class GUIFramework:
         msg = f"[Snackbar] {message}"
         if action:
             msg += f" [{action}]"
-        logger.info(msg)
+        print(msg)
 
 
 class DocumentFormat(ABC):
@@ -200,7 +200,7 @@ class Document:
             self.last_modified = datetime.now()
             return True
         except Exception as e:
-            logger.info(f"Error saving file: {e}")
+            print(f"Error saving file: {e}")
             return False
 
     def get_preview(self) -> str:
@@ -534,12 +534,12 @@ class TextEditor:
             self.close_document()
 
     def edit_document(self):
-        logger.info(f"\n{'=' * 50}")
-        logger.info(f"Editing: {self.current_document.file_path.name}")
-        logger.info(f"Current content ({self.current_document.get_line_count()} lines):")
-        logger.info(f"{'=' * 50}")
-        logger.info(self.current_document.content[:500] + ("..." if len(self.current_document.content) > 500 else ""))
-        logger.info(f"{'=' * 50}")
+        print(f"\n{'=' * 50}")
+        print(f"Editing: {self.current_document.file_path.name}")
+        print(f"Current content ({self.current_document.get_line_count()} lines):")
+        print(f"{'=' * 50}")
+        print(self.current_document.content[:500] + ("..." if len(self.current_document.content) > 500 else ""))
+        print(f"{'=' * 50}")
         edit_choice = self.gui.show_menu(
             "Edit Options",
             [
@@ -550,7 +550,7 @@ class TextEditor:
             ],
         )
         if edit_choice == 0:
-            logger.info("\n" + self.current_document.content)
+            print("\n" + self.current_document.content)
         elif edit_choice == 1:
             new_content = self.gui.show_text_input(
                 "Edit Content",
@@ -572,11 +572,11 @@ class TextEditor:
 
     def show_preview(self):
         preview = self.current_document.get_preview()
-        logger.info(f"\n{'=' * 50}")
-        logger.info(f"Preview: {self.current_document.file_path.name}")
-        logger.info(f"{'=' * 50}")
-        logger.info(preview)
-        logger.info(f"{'=' * 50}")
+        print(f"\n{'=' * 50}")
+        print(f"Preview: {self.current_document.file_path.name}")
+        print(f"{'=' * 50}")
+        print(preview)
+        print(f"{'=' * 50}")
         input("Press Enter to continue...")
 
     def insert_template(self):

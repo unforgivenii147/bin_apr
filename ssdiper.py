@@ -18,16 +18,16 @@ def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):
                 return None
             return ssdeep.hash(data)
     except FileNotFoundError:
-        logger.info(f"Error: File not found at {filepath}")
+        print(f"Error: File not found at {filepath}")
         return None
     except ssdeep.error as e:
-        logger.info(f"Error calculating ssdeep hash for {filepath}: {e}")
+        print(f"Error calculating ssdeep hash for {filepath}: {e}")
         return None
     except OSError as e:
-        logger.info(f"OS error accessing {filepath}: {e}")
+        print(f"OS error accessing {filepath}: {e}")
         return None
     except Exception as e:
-        logger.info(f"An unexpected error occurred for {filepath}: {e}")
+        print(f"An unexpected error occurred for {filepath}: {e}")
         return None
 
 
@@ -57,11 +57,9 @@ def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
                         }
                     )
             except ssdeep.error as e:
-                logger.info(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
+                print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
             except Exception as e:
-                logger.info(
-                    f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}"
-                )
+                print(f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}")
     similarities.sort(key=operator.itemgetter("similarity_score"), reverse=True)
     return similarities
 
@@ -71,7 +69,7 @@ def save_to_json(data, filename="simz.json"):
         with Path(filename).open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
     except Exception as e:
-        logger.info(f"Error saving data to JSON file '{filename}': {e}")
+        print(f"Error saving data to JSON file '{filename}': {e}")
 
 
 if __name__ == "__main__":
@@ -80,10 +78,10 @@ if __name__ == "__main__":
     OUTPUT_JSON_FILE = "simz.json"
     files = get_files(cwd)
     if not files:
-        logger.info("No files found matching the criteria in the specified directory.")
+        print("No files found matching the criteria in the specified directory.")
     else:
         similar_file_pairs = compare_files(files, MIN_SIMILARITY_THRESHOLD)
         if similar_file_pairs:
             save_to_json(similar_file_pairs, OUTPUT_JSON_FILE)
         else:
-            logger.info(f"\nNo files found with similarity >= {MIN_SIMILARITY_THRESHOLD}%.")
+            print(f"\nNo files found with similarity >= {MIN_SIMILARITY_THRESHOLD}%.")

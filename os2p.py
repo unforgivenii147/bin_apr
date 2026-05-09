@@ -22,17 +22,17 @@ def process_file(fp):
                     and node.func.attr == "path"
                 ):
                     if isinstance(node.func.value, ast.Attribute) and node.func.attr == "join":
-                        logger.info(
+                        print(
                             f"Warning: os.path.join found in {file_path}. Requires manual review for Path division operator. Node: {ast.dump(node)}"
                         )
                         return node
                     if node.func.attr == "listdir":
-                        logger.info(
+                        print(
                             f"Info: os.listdir found in {file_path}. Consider using Path(path).iterdir(). Node: {ast.dump(node)}"
                         )
                         return node
                     if node.func.attr == "remove":
-                        logger.info(
+                        print(
                             f"Info: os.remove found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                         )
                         new_node = ast.Call(
@@ -42,7 +42,7 @@ def process_file(fp):
                         )
                         return ast.copy_location(new_node, node)
                     if node.func.attr == "splitext":
-                        logger.info(
+                        print(
                             f"Info: os.path.splitext found in {file_path}. Replacing with Path.stem/suffix. Node: {ast.dump(node)}"
                         )
                         return node
@@ -53,7 +53,7 @@ def process_file(fp):
                     and isinstance(node.args[0], ast.Constant)
                     and "remove" in node.args[0].value
                 ):
-                    logger.info(
+                    print(
                         f"Warning: Direct os.remove(string) call found in {file_path}. Consider using Path.unlink(). Node: {ast.dump(node)}"
                     )
                     return node
@@ -61,7 +61,7 @@ def process_file(fp):
 
             def visit_Attribute(self, node):
                 if isinstance(node.value, ast.Name) and node.value.id == "os" and node.attr == "remove":
-                    logger.info(
+                    print(
                         f"Info: os.remove attribute found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                     )
                     new_node = ast.Attribute(value=ast.Name(id="Path"), attr="unlink", ctx=ast.Load())
@@ -79,18 +79,18 @@ def process_file(fp):
             import_pathlib = ast.Import(names=[ast.alias(name="Path")])
             ast.fix_missing_locations(import_pathlib)
             new_tree.body.insert(0, import_pathlib)
-            logger.info(f"Info: Added import Path from pathlib to {file_path}")
+            print(f"Info: Added import Path from pathlib to {file_path}")
         ast.fix_missing_locations(new_tree)
         new_content = ast.unparse(new_tree)
         try:
             ast.parse(new_content)
-            logger.info(f"Successfully validated and refactored: {file_path}")
+            print(f"Successfully validated and refactored: {file_path}")
             return new_content, True
         except SyntaxError as e:
-            logger.info(f"Syntax error in refactored {file_path}: {e}")
+            print(f"Syntax error in refactored {file_path}: {e}")
             return content, False
     except Exception as e:
-        logger.info(f"Error processing {file_path}: {e}")
+        print(f"Error processing {file_path}: {e}")
         return None, False
 
 

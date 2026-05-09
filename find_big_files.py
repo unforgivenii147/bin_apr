@@ -12,7 +12,7 @@ cwd = Path.cwd()
 def process_file(fp, threshold=THRESHOLD) -> None:
     sz = fp.stat().st_size
     if sz > threshold:
-        logger.info(f"{fp.relative_to(cwd)} : {fsz(sz)}")
+        print(f"{fp.relative_to(cwd)} : {fsz(sz)}")
 
 
 def main():

@@ -122,12 +122,12 @@ def main():
     ok, err = ast_validate(cleaned)
     if ok:
         dst.write_text(cleaned, encoding="utf-8")
-        logger.info(f"✔ AST valid → {dst}")
+        print(f"✔ AST valid → {dst}")
     else:
         dst.write_text(cleaned, encoding="utf-8")
-        logger.info("✘ AST validation failed")
-        logger.info(err)
-        logger.info("Wrote for inspection")
+        print("✘ AST validation failed")
+        print(err)
+        print("Wrote for inspection")
 
 
 if __name__ == "__main__":

@@ -14,26 +14,26 @@ def get_file_creation_time(filepath):
             return datetime.fromtimestamp(stat.st_ctime)
         return datetime.fromtimestamp(stat.st_mtime)
     except Exception as e:
-        logger.info(f"Error: {e}")
+        print(f"Error: {e}")
         return None
 
 
 def main():
     if len(sys.argv) != 2:
-        logger.info("Usage: python script.py <filename>")
+        print("Usage: python script.py <filename>")
         sys.exit(1)
     filename = sys.argv[1]
     if not Path(filename).exists():
-        logger.info(f"Error: File '{filename}' does not exist.")
+        print(f"Error: File '{filename}' does not exist.")
         sys.exit(1)
     directory = Path(filename).parent or "."
     target_time = get_file_creation_time(filename)
     if not target_time:
         sys.exit(1)
     target_date = target_time.date()
-    logger.info(f"Input file: {filename}")
-    logger.info(f"Created on: {target_date}")
-    logger.info("-" * 50)
+    print(f"Input file: {filename}")
+    print(f"Created on: {target_date}")
+    print("-" * 50)
     found_files = []
     for file in os.listdir(directory):
         filepath = os.path.join(directory, file)
@@ -44,11 +44,11 @@ def main():
             found_files.append((file_time, file))
     found_files.sort()
     if not found_files:
-        logger.info("No other files found created on the same day.")
+        print("No other files found created on the same day.")
     else:
-        logger.info(f"Found {len(found_files)} other file(s) created on the same day:")
+        print(f"Found {len(found_files)} other file(s) created on the same day:")
         for file_time, file in found_files:
-            logger.info(f"{file_time.strftime('%H:%M:%S')} - {file}")
+            print(f"{file_time.strftime('%H:%M:%S')} - {file}")
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ def translate_line(line):
             if trans and trans.strip() and trans.strip() != line.strip():
                 return trans
         except Exception as e:
-            logger.info(f"Translation error: {e} -- Line: {line}")
+            print(f"Translation error: {e} -- Line: {line}")
             return None
     return None
 
@@ -80,7 +80,7 @@ def process_file(filepath):
             type_comments=True,
         )
     except Exception as e:
-        logger.info(f"Failed to parse {filepath}: {e}")
+        print(f"Failed to parse {filepath}: {e}")
         return
     lines = code.splitlines(keepends=False)
     new_lines = list(lines)
@@ -141,14 +141,14 @@ def process_file(filepath):
                 indentation = re.match(r"\s*", line).group(0)
                 final_lines.append(f"{indentation}# {trans}")
     Path(filepath).write_text("\n".join(final_lines) + "\n", encoding="utf-8")
-    logger.info(f"Translated: {filepath}")
+    print(f"Translated: {filepath}")
 
 
 def main():
     cwd = Path.cwd()
     py_files = get_pyfiles(cwd)
     if not py_files:
-        logger.info("No Python files found.")
+        print("No Python files found.")
         return
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = {executor.submit(process_file, f): f for f in py_files}
@@ -156,7 +156,7 @@ def main():
             try:
                 future.result()
             except Exception as e:
-                logger.info(f"Failed processing {futures[future]}: {e}")
+                print(f"Failed processing {futures[future]}: {e}")
 
 
 if __name__ == "__main__":

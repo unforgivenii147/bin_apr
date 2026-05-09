@@ -57,11 +57,11 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     duplicates = find_duplicate_folders(cwd)
     if duplicates:
-        logger.info("Duplicate folder groups:")
+        print("Duplicate folder groups:")
         for h, paths in duplicates.items():
-            logger.info(f"\nGroup (Hash: {h}):")
+            print(f"\nGroup (Hash: {h}):")
             for path in paths:
-                logger.info(f"  - {path}")
+                print(f"  - {path}")
         cleaned = defaultdict(list)
         for h, paths in duplicates.items():
             for i in range(len(paths)):
@@ -73,4 +73,4 @@ if __name__ == "__main__":
         with Path("/sdcard/dupdirs.json").open("w", encoding="utf-8") as fo:
             json.dump(cleaned, fo)
     else:
-        logger.info("No duplicate folders found.")
+        print("No duplicate folders found.")

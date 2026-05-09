@@ -52,7 +52,7 @@ def main():
     args = parser.parse_args()
     cwd = Path.cwd()
     py_files = get_pyfiles(cwd)
-    logger.info(f"Scanning {len(py_files)} files...")
+    print(f"Scanning {len(py_files)} files...")
     with ProcessPoolExecutor() as executor:
         results = list(
             executor.map(
@@ -63,8 +63,8 @@ def main():
         )
     updates = [r for r in results if r]
     for msg in updates:
-        logger.info(msg)
-    logger.info(f"\nTask complete. Files modified: {len(updates)}")
+        print(msg)
+    print(f"\nTask complete. Files modified: {len(updates)}")
 
 
 if __name__ == "__main__":

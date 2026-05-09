@@ -25,9 +25,9 @@ def copy_if_match(src: Path) -> None:
             DEST_DIR.mkdir(parents=True, exist_ok=True)
             dest = DEST_DIR / src.name
             shutil.copy2(src, dest)
-            logger.info(src.relative_to(TEMPDIR))
+            print(src.relative_to(TEMPDIR))
         except Exception as e:
-            logger.info(f"Failed to copy {src.relative_to(TEMPDIR)}: {e}")
+            print(f"Failed to copy {src.relative_to(TEMPDIR)}: {e}")
 
 
 def startup_scan(root: Path) -> None:

@@ -14,7 +14,7 @@ def parse_minutes() -> float:
     try:
         return float(sys.argv[1])
     except ValueError:
-        logger.info("Invalid argument. Usage: script.py [minutes]")
+        print("Invalid argument. Usage: script.py [minutes]")
         sys.exit(1)
 
 
@@ -41,7 +41,7 @@ def main() -> None:
     for pth, ct in ctmsorted.items():
         ctime = datetime.fromtimestamp(ct).strftime("%Y/%m/%d-%H:%M:%S")
         newct[pth] = ctime
-        logger.info(f"\033[05;96m{Path(pth).name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
+        print(f"\033[05;96m{Path(pth).name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
 
 
 if __name__ == "__main__":

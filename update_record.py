@@ -15,7 +15,7 @@ def find_site_packages() -> Path | None:
         logger.error("No site-packages directories found")
         return None
     site_packages = Path(site_packages_dirs[0])
-    logger.info("Found site-packages directory: %s", site_packages)
+    print("Found site-packages directory: %s", site_packages)
     return site_packages
 
 
@@ -61,7 +61,7 @@ def should_include_file(filepath: Path) -> bool:
 
 
 def update_record_file(record_path: Path, dist_info_dir) -> bool:
-    logger.info("Processing %s", record_path)
+    print("Processing %s", record_path)
     if not record_path.exists():
         logger.error("RECORD file not found: %s", record_path)
         return False
@@ -98,12 +98,12 @@ def update_record_file(record_path: Path, dist_info_dir) -> bool:
     record_relative = str(record_path.relative_to(dist_info_dir.parent))
     new_lines.append(f"{record_relative},,")
     if missing_files:
-        logger.info(f"Found {len(missing_files)} missing files in {dist_info_dir.name}:")
+        print(f"Found {len(missing_files)} missing files in {dist_info_dir.name}:")
         for missing in missing_files:
-            logger.info("  - %s", missing)
+            print("  - %s", missing)
     try:
         Path(record_path).write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-        logger.info("Successfully updated %s", record_path)
+        print("Successfully updated %s", record_path)
         update_record_self_hash(record_path, dist_info_dir)
         return True
     except Exception as e:
@@ -138,7 +138,7 @@ def scan_and_update():
     if not dist_info_dirs:
         logger.warning("No .dist-info directories found in %s", site_packages)
         return
-    logger.info(f"Found {len(dist_info_dirs)} distribution info directories")
+    print(f"Found {len(dist_info_dirs)} distribution info directories")
     updated_count = 0
     failed_count = 0
     for dist_info_dir in dist_info_dirs:
@@ -147,17 +147,17 @@ def scan_and_update():
             updated_count += 1
         else:
             failed_count += 1
-    logger.info("Summary: %s RECORD files updated, %s failed", updated_count, failed_count)
+    print("Summary: %s RECORD files updated, %s failed", updated_count, failed_count)
 
 
 def main():
-    logger.info("Starting site-packages RECORD file updater")
+    print("Starting site-packages RECORD file updater")
     try:
         scan_and_update()
     except KeyboardInterrupt:
-        logger.info("Script interrupted by user")
+        print("Script interrupted by user")
         sys.exit(1)
-    logger.info("Script completed successfully")
+    print("Script completed successfully")
 
 
 if __name__ == "__main__":

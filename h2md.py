@@ -19,7 +19,7 @@ def convert_html_to_markdown(cwd):
                     html_content = html_file.read()
                     md_content = markdownify(html_content)
                 Path(md_file_path).write_text(md_content, encoding="utf-8")
-                logger.info(f"[\u2714] {Path(md_file_path).name}")
+                print(f"[\u2714] {Path(md_file_path).name}")
 
 
 if __name__ == "__main__":

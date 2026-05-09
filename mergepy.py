@@ -37,7 +37,7 @@ def merge_python_files():
                 content = infile.read()
                 content = resolve_imports(content, current_dir)
                 outfile.write(content)
-    logger.info(f"Merged {len(py_files)} files into {output_filename}")
+    print(f"Merged {len(py_files)} files into {output_filename}")
 
 
 if __name__ == "__main__":

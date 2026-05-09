@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
-from dh import fsz, get_files, gsz, mpf3, runcmd,cprint
+from dh import fsz, get_files, gsz, mpf3, runcmd, cprint
 
 
 def process_file(path):
@@ -29,7 +29,7 @@ def process_file(path):
 
 def main():
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".svg",".SVG"])
+    files = get_files(cwd, extensions=[".svg", ".SVG"])
     mpf3(process_file, files)
 
 

@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import colorsys
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
-HEX_RE = re.compile(r"^#([0-9a-fA-F]{6})$")
+HEX_RE = re.compile("^#([0-9a-fA-F]{6})$")
 
 
 def hex_to_hsv(hex_color: str):
@@ -26,7 +26,7 @@ def main(path: str):
         colors = [line.strip() for line in f if HEX_RE.match(line.strip())]
     colors.sort(key=sort_key)
     with Path(path).open("w", encoding="utf-8") as f:
-        f.writelines(c.lower() + "\n" for c in colors)
+        f.writelines((c.lower() + "\n" for c in colors))
 
 
 if __name__ == "__main__":

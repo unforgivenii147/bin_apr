@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import re
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 
-TAB_PATTERN = re.compile(r"\t")
+TAB_PATTERN = re.compile("\\t")
 SPACE_REPLACEMENT = " " * 4
 cwd = Path.cwd()
 
@@ -15,10 +15,7 @@ def replace_tabs_in_file(file_path: Path):
     try:
         content = file_path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
-        print(
-            f"Error: Could not decode {file_path.name} with UTF-8. Skipping.",
-            file=sys.stderr,
-        )
+        print(f"Error: Could not decode {file_path.name} with UTF-8. Skipping.", file=sys.stderr)
         return
     except OSError as e:
         print(f"Error reading {file_path.name}: {e}. Skipping.", file=sys.stderr)
@@ -43,10 +40,7 @@ def main():
         help="Specific files to process. If none, all *.py files in current directory and subdirectories are processed.",
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show verbose output (e.g., skip messages for files without tabs).",
+        "-v", "--verbose", action="store_true", help="Show verbose output (e.g., skip messages for files without tabs)."
     )
     args = parser.parse_args()
     if args.files:
@@ -63,7 +57,7 @@ def main():
         sys.exit(0)
     print(f"Found {len(file_paths)} files to process.")
     for file_path in file_paths:
-        replace_tabs_in_file(file_path)  # فراخوانی تابع با نام صحیح
+        replace_tabs_in_file(file_path)
 
 
 if __name__ == "__main__":

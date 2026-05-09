@@ -1,20 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import subprocess
 import sys
-
 from loguru import logger
 
 
 def run_git_command(cmd, check=True, capture_output=True):
     try:
-        return subprocess.run(
-            cmd,
-            shell=True,
-            check=check,
-            capture_output=capture_output,
-            text=True,
-        )
+        return subprocess.run(cmd, shell=True, check=check, capture_output=capture_output, text=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {cmd}")
         print(f"Error: {e}")
@@ -70,10 +64,7 @@ def delete_branches_except_main():
     for branch in branches:
         if branch != main_branch:
             print(f"Deleting branch: {branch}")
-            result = run_git_command(
-                f"git branch -D {branch}",
-                check=False,
-            )
+            result = run_git_command(f"git branch -D {branch}", check=False)
             if result and result.returncode == 0:
                 deleted_branches.append(branch)
                 print(f"✓ Deleted branch: {branch}")
@@ -127,11 +118,7 @@ def create_backup() -> bool | None:
     backup_dir = f"git_backup_{subprocess.getoutput('date +%Y%m%d_%H%M%S')}"
     print(f"Creating backup in: {backup_dir}")
     try:
-        shutil.copytree(
-            ".",
-            backup_dir,
-            ignore=shutil.ignore_patterns(".git"),
-        )
+        shutil.copytree(".", backup_dir, ignore=shutil.ignore_patterns(".git"))
         print(f"✓ Backup created: {backup_dir}")
         return True
     except Exception as e:
@@ -168,10 +155,7 @@ def main() -> None:
     print(f"   All branches: {', '.join(branches)}")
     if current_branch != main_branch:
         print(f"\n3. Switching to main branch: {main_branch}")
-        result = run_git_command(
-            f"git checkout {main_branch}",
-            check=False,
-        )
+        result = run_git_command(f"git checkout {main_branch}", check=False)
         if not result or result.returncode != 0:
             print(f"Failed to switch to {main_branch}")
             sys.exit(1)

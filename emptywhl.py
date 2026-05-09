@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import zipfile
 
 
@@ -12,7 +13,7 @@ def is_empty_wheel(wheel_path) -> bool:
         if record_path not in z.namelist():
             return False
         with z.open(record_path) as f:
-            reader = csv.reader(line.decode("utf-8") for line in f)
+            reader = csv.reader((line.decode("utf-8") for line in f))
             for row in reader:
                 if not row:
                     continue

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 from loguru import logger
@@ -10,7 +10,7 @@ from loguru import logger
 DIRECTORY = "."
 CHUNK_SIZE = 2000
 TARGET_LANGUAGE = "en"
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def chunk_text(text, chunk_size=CHUNK_SIZE):

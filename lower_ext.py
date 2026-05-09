@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import string
 import sys
 from pathlib import Path
-
 from dh import mpf
 from fastwalk import walk_files
 from loguru import logger
@@ -10,7 +10,7 @@ from loguru import logger
 
 def is_all_upper(str1):
     ln = len(str1)
-    return all(str1[i] in string.ascii_uppercase for i in range(ln))
+    return all((str1[i] in string.ascii_uppercase for i in range(ln)))
 
 
 def process_file(fp):

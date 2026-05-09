@@ -1,26 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 from loguru import logger
 
-EXCLUDED_NAMES: set[str] = {
-    "tmp",
-    "cache",
-    "bin",
-    ".git",
-    "etc",
-    "config",
-    "var",
-}
-EXCLUDED_PATH_COMPONENTS: set[str] = {
-    ".git",
-    "tmp",
-    "etc",
-    "var",
-    "config",
-}
+EXCLUDED_NAMES: set[str] = {"tmp", "cache", "bin", ".git", "etc", "config", "var"}
+EXCLUDED_PATH_COMPONENTS: set[str] = {".git", "tmp", "etc", "var", "config"}
 
 
 def is_excluded(path: Path, root_path: Path) -> bool:
@@ -28,7 +14,7 @@ def is_excluded(path: Path, root_path: Path) -> bool:
         return True
     try:
         relative_parts = path.relative_to(root_path).parts
-        if any(part in EXCLUDED_PATH_COMPONENTS for part in relative_parts):
+        if any((part in EXCLUDED_PATH_COMPONENTS for part in relative_parts)):
             return True
     except ValueError:
         pass
@@ -50,7 +36,7 @@ def delete_empty_dirs_iterative(root: Path, dry_run: bool = False, verbose: bool
                 print(f"Skipping excluded directory: {path.relative_to(root)}")
             continue
         try:
-            if not any(entry for entry in path.iterdir() if entry.is_dir() or entry.is_file()):
+            if not any((entry for entry in path.iterdir() if entry.is_dir() or entry.is_file())):
                 if verbose:
                     print(f"Empty directory found: {path.relative_to(root)}")
                 if not dry_run:
@@ -62,21 +48,12 @@ def delete_empty_dirs_iterative(root: Path, dry_run: bool = False, verbose: bool
                 else:
                     print(f"  (Dry Run) Would remove: {path.relative_to(root)}")
         except PermissionError:
-            print(
-                f"[ERROR] Permission denied for: {path.relative_to(root)}",
-                file=sys.stderr,
-            )
+            print(f"[ERROR] Permission denied for: {path.relative_to(root)}", file=sys.stderr)
         except OSError as e:
-            print(
-                f"[ERROR] Could not process {path.relative_to(root)}: {e}",
-                file=sys.stderr,
-            )
+            print(f"[ERROR] Could not process {path.relative_to(root)}: {e}", file=sys.stderr)
         except Exception as e:
-            print(
-                f"[ERROR] An unexpected error occurred with {path.relative_to(root)}: {e}",
-                file=sys.stderr,
-            )
-    return removed_count, removed_dirs_list
+            print(f"[ERROR] An unexpected error occurred with {path.relative_to(root)}: {e}", file=sys.stderr)
+    return (removed_count, removed_dirs_list)
 
 
 def main():
@@ -94,18 +71,12 @@ def main():
         help="Perform a dry run: show what would be deleted without actually deleting.",
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Enable verbose output, showing skipped and found directories.",
+        "-v", "--verbose", action="store_true", help="Enable verbose output, showing skipped and found directories."
     )
     args = parser.parse_args()
     root_path = args.path.resolve()
     if not root_path.is_dir():
-        print(
-            f"Error: The provided path '{root_path}' is not a valid directory.",
-            file=sys.stderr,
-        )
+        print(f"Error: The provided path '{root_path}' is not a valid directory.", file=sys.stderr)
         sys.exit(1)
     if args.dry_run:
         print("--- DRY RUN MODE (no changes will be made) ---")

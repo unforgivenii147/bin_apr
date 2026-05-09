@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
@@ -7,7 +8,6 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Dict, Optional
-
 from loguru import logger
 
 try:
@@ -29,7 +29,7 @@ except ImportError:
         def update(self, n):
             self.n += n
             if self.total:
-                percent = min(100, (self.n / self.total) * 100)
+                percent = min(100, self.n / self.total * 100)
                 bar_len = 30
                 filled = int(bar_len * self.n / self.total)
                 bar = "█" * filled + "-" * (bar_len - filled)
@@ -59,7 +59,7 @@ def get_console_width() -> int:
 
 def sanitize_filename(name: str) -> str:
     name = urllib.parse.unquote(name)
-    name = re.sub(r'[<>:"|?*]', "_", name)
+    name = re.sub('[<>:"|?*]', "_", name)
     return name[:255].strip() or "downloaded_file"
 
 
@@ -67,7 +67,7 @@ def extract_filename(url: str, headers: dict[str, str] | None = None) -> str:
     if headers:
         cd = headers.get("Content-Disposition", "")
         if cd:
-            match = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)"?', cd, re.IGNORECASE)
+            match = re.search('filename\\*?=(?:UTF-8\\\'\\\')?"?([^";]+)"?', cd, re.IGNORECASE)
             if match:
                 return sanitize_filename(match.group(1))
     parsed = urllib.parse.urlparse(url)
@@ -93,11 +93,7 @@ def filename_fix_existing(filepath: Path) -> Path:
 
 
 def download(
-    url: str,
-    output: str | None = None,
-    timeout: float = 30.0,
-    resume: bool = False,
-    quiet: bool = False,
+    url: str, output: str | None = None, timeout: float = 30.0, resume: bool = False, quiet: bool = False
 ) -> str:
     output_path = Path(output) if output else None
     if output_path and output_path.is_dir():
@@ -159,13 +155,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Modern wget clone in Python 3.13+",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python wget_modern.py https://example.com/file.zip
-  python wget_modern.py https://example.com/file.zip -o mydir/
-  python wget_modern.py https://example.com/file.zip --resume
-  python wget_modern.py https://example.com/file.zip -q  # quiet
-        """,
+        epilog="\nExamples:\n  python wget_modern.py https://example.com/file.zip\n  python wget_modern.py https://example.com/file.zip -o mydir/\n  python wget_modern.py https://example.com/file.zip --resume\n  python wget_modern.py https://example.com/file.zip -q\n        ",
     )
     parser.add_argument("url", help="URL to download")
     parser.add_argument("-o", "--output", help="Output file or directory")
@@ -175,13 +165,7 @@ Examples:
     parser.add_argument("--version", action="version", version="%(prog)s 1.0.0")
     vargs = parser.parse_args()
     try:
-        filename = download(
-            args.url,
-            output=args.output,
-            timeout=args.timeout,
-            resume=args.resume,
-            quiet=args.quiet,
-        )
+        filename = download(args.url, output=args.output, timeout=args.timeout, resume=args.resume, quiet=args.quiet)
     except RuntimeError as e:
         print(f"❌ {e}", file=sys.stderr)
         sys.exit(1)

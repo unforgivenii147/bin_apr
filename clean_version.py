@@ -1,17 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import re
 from pathlib import Path
 
 PKG_NAME_RE = re.compile(
-    r"""
-    ^\s*
-    (?:
-        -e\s+                # editable install
-    )?
-    (?P<name>[A-Za-z0-9_.\-]+)
-    """,
-    re.VERBOSE,
+    "\n    ^\\s*\n    (?:\n        -e\\s+\n    )?\n    (?P<name>[A-Za-z0-9_.\\-]+)\n    ", re.VERBOSE
 )
 
 
@@ -48,10 +42,7 @@ def main() -> None:
             packages.append(name)
     seen = set()
     cleaned = [p for p in packages if not (p in seen or seen.add(p))]
-    path.write_text(
-        "\n".join(cleaned) + "\n",
-        encoding="utf-8",
-    )
+    path.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

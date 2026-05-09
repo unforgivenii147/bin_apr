@@ -1,18 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import string
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 def find_unprintable_positions(text):
-    allowed = set(string.printable) | {
-        "\n",
-        "\r",
-        "\t",
-    }
+    allowed = set(string.printable) | {"\n", "\r", "\t"}
     positions = []
     line_num = 1
     col_num = 1
@@ -28,12 +24,8 @@ def find_unprintable_positions(text):
 
 
 def clean_text(text):
-    allowed = set(string.printable) | {
-        "\n",
-        "\r",
-        "\t",
-    }
-    return "".join(ch for ch in text if ch in allowed)
+    allowed = set(string.printable) | {"\n", "\r", "\t"}
+    return "".join((ch for ch in text if ch in allowed))
 
 
 def clean_file(path: str) -> None:

@@ -1,17 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import multiprocessing
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 from rcssmin import cssmin
 
 
 def minify_html(html: str) -> str:
-    html = re.sub(r">\s+<", "><", html)
-    html = re.sub(r"\s{2,}", " ", html)
+    html = re.sub(">\\s+<", "><", html)
+    html = re.sub("\\s{2,}", " ", html)
     return html.strip()
 
 
@@ -35,12 +35,7 @@ def process_file(path: str) -> str:
 
 
 def collect_files() -> list:
-    supported = (
-        ".css",
-        ".json",
-        ".html",
-        ".htm",
-    )
+    supported = (".css", ".json", ".html", ".htm")
     out = []
     for base, _, files in os.walk(Path.cwd()):
         for name in files:

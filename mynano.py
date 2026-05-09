@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import readline
 import rlcompleter
 import sys
 from pathlib import Path
-
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.log import TextLog
@@ -11,11 +11,7 @@ from textual.widgets import Footer, Header, TextEditor
 
 
 class BasicEditor(App):
-    BINDINGS = [
-        ("o", "open_file", "Open"),
-        ("s", "save_file", "Save"),
-        ("q", "app_quit", "Quit"),
-    ]
+    BINDINGS = [("o", "open_file", "Open"), ("s", "save_file", "Save"), ("q", "app_quit", "Quit")]
 
     def __init__(self, filename: str | None = None):
         super().__init__()

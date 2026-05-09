@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import json
 import readline
 import sys
 from difflib import get_close_matches
 from pathlib import Path
-
 from loguru import logger
 
 DICT_FILE = "/sdcard/isaac/dic.json"
@@ -13,16 +13,13 @@ DICT_FILE = "/sdcard/isaac/dic.json"
 
 def load_dictionary(path: Path):
     if not path.exists():
-        print(
-            f"Error: {path} not found",
-            file=sys.stderr,
-        )
+        print(f"Error: {path} not found", file=sys.stderr)
         sys.exit(1)
     with path.open(encoding="utf-8") as f:
         data = json.load(f)
     fa_en = {str(k).strip(): str(v).strip() for k, v in data.items()}
     en_fa = {v: k for k, v in fa_en.items()}
-    return fa_en, en_fa
+    return (fa_en, en_fa)
 
 
 def setup_readline(words):
@@ -46,7 +43,7 @@ def translate(word, fa_en, en_fa):
 
 
 def prefix_search(prefix, all_words):
-    return sorted(w for w in all_words if w.startswith(prefix))
+    return sorted((w for w in all_words if w.startswith(prefix)))
 
 
 def fuzzy_search(word, all_words, limit=5, cutoff=0.6):
@@ -72,19 +69,9 @@ def interactive_mode(fa_en, en_fa):
 
 def main():
     parser = argparse.ArgumentParser(description="Offline Persian ↔ English translator")
-    parser.add_argument(
-        "word",
-        nargs="*",
-        help="Word to translate",
-    )
-    parser.add_argument(
-        "--prefix",
-        help="List words starting with prefix",
-    )
-    parser.add_argument(
-        "--fuzzy",
-        help="Fuzzy search (typo tolerant)",
-    )
+    parser.add_argument("word", nargs="*", help="Word to translate")
+    parser.add_argument("--prefix", help="List words starting with prefix")
+    parser.add_argument("--fuzzy", help="Fuzzy search (typo tolerant)")
     args = parser.parse_args()
     fa_en, en_fa = load_dictionary(Path(DICT_FILE))
     all_words = set(fa_en) | set(en_fa)

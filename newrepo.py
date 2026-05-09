@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 
@@ -34,14 +34,7 @@ class GitHubRepoCreator:
             sys.exit(1)
 
     def _get_github_username(self) -> str:
-        success, username, _ = self._run_cmd(
-            [
-                "git",
-                "config",
-                "--global",
-                "user.name",
-            ]
-        )
+        success, username, _ = self._run_cmd(["git", "config", "--global", "user.name"])
         if success and username:
             return username
         print("👤 Attempting to get username from GitHub API...")
@@ -60,15 +53,7 @@ class GitHubRepoCreator:
                 user_data = json.loads(output)
                 username = user_data.get("login")
                 if username:
-                    self._run_cmd(
-                        [
-                            "git",
-                            "config",
-                            "--global",
-                            "user.name",
-                            username,
-                        ]
-                    )
+                    self._run_cmd(["git", "config", "--global", "user.name", username])
                     print(f"✅ Username found: {username}")
                     return username
             except json.JSONDecodeError:
@@ -79,23 +64,13 @@ class GitHubRepoCreator:
 
     def _run_cmd(self, cmd: list, cwd: Path | None = None) -> tuple[bool, str, str]:
         try:
-            result = subprocess.run(
-                cmd,
-                cwd=cwd or self.current_dir,
-                capture_output=True,
-                text=True,
-                #                #                check=True,
-            )
+            result = subprocess.run(cmd, cwd=cwd or self.current_dir, capture_output=True, text=True)
             print(result.stdout)
             if result.returncode:
                 print(result.stderr)
-            return (
-                result.returncode == 0,
-                result.stdout.strip(),
-                result.stderr.strip(),
-            )
+            return (result.returncode == 0, result.stdout.strip(), result.stderr.strip())
         except Exception as e:
-            return False, "", str(e)
+            return (False, "", str(e))
 
     def _check_prerequisites(self):
         print("\n🔍 Checking prerequisites...")
@@ -124,10 +99,7 @@ class GitHubRepoCreator:
                 return
             import shutil
 
-            shutil.rmtree(
-                self.current_dir / ".git",
-                ignore_errors=True,
-            )
+            shutil.rmtree(self.current_dir / ".git", ignore_errors=True)
         success, _, stderr = self._run_cmd(["git", "init"])
         if not success:
             print(f"❌ Failed to initialize git: {stderr}")
@@ -141,15 +113,12 @@ class GitHubRepoCreator:
     def _setup_gitignore(self):
         home_gitignore = Path.home() / ".gitignore"
         local_gitignore = self.current_dir / ".gitignore"
-        if home_gitignore.exists() and not local_gitignore.exists():
+        if home_gitignore.exists() and (not local_gitignore.exists()):
             print("\n📄 Copying .gitignore from home directory")
             try:
                 import shutil
 
-                shutil.copy2(
-                    home_gitignore,
-                    local_gitignore,
-                )
+                shutil.copy2(home_gitignore, local_gitignore)
                 print("✅ .gitignore copied")
             except Exception as e:
                 print(f"⚠️  Could not copy .gitignore: {e}")
@@ -231,29 +200,13 @@ class GitHubRepoCreator:
         remote_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
         success, remotes, _ = self._run_cmd(["git", "remote"])
         if "origin" in remotes.split("\n"):
-            success, _, stderr = self._run_cmd(
-                [
-                    "git",
-                    "remote",
-                    "set-url",
-                    "origin",
-                    remote_url,
-                ]
-            )
+            success, _, stderr = self._run_cmd(["git", "remote", "set-url", "origin", remote_url])
             if success:
                 print("✅ Remote origin updated")
             else:
                 print(f"⚠️  Could not update remote: {stderr}")
         else:
-            success, _, stderr = self._run_cmd(
-                [
-                    "git",
-                    "remote",
-                    "add",
-                    "origin",
-                    remote_url,
-                ]
-            )
+            success, _, stderr = self._run_cmd(["git", "remote", "add", "origin", remote_url])
             if success:
                 print("✅ Remote origin added")
             else:
@@ -270,14 +223,7 @@ class GitHubRepoCreator:
             print("ℹ️  No changes to commit")
             return False
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success, _, stderr = self._run_cmd(
-            [
-                "git",
-                "commit",
-                "-m",
-                f"Initial commit - {timestamp}",
-            ]
-        )
+        success, _, stderr = self._run_cmd(["git", "commit", "-m", f"Initial commit - {timestamp}"])
         if not success:
             print(f"❌ Failed to commit: {stderr}")
             sys.exit(1)
@@ -289,34 +235,10 @@ class GitHubRepoCreator:
         auth_remote_url = (
             f"https://{self.github_username}:{self.github_token}@github.com/{self.github_username}/{self.repo_name}.git"
         )
-        self._run_cmd(
-            [
-                "git",
-                "remote",
-                "set-url",
-                "origin",
-                auth_remote_url,
-            ]
-        )
-        success, _, stderr = self._run_cmd(
-            [
-                "git",
-                "push",
-                "-u",
-                "origin",
-                "main",
-            ]
-        )
+        self._run_cmd(["git", "remote", "set-url", "origin", auth_remote_url])
+        success, _, stderr = self._run_cmd(["git", "push", "-u", "origin", "main"])
         clean_url = f"https://github.com/{self.github_username}/{self.repo_name}.git"
-        self._run_cmd(
-            [
-                "git",
-                "remote",
-                "set-url",
-                "origin",
-                clean_url,
-            ]
-        )
+        self._run_cmd(["git", "remote", "set-url", "origin", clean_url])
         if not success:
             print(f"❌ Failed to push: {stderr}")
             print("\nTroubleshooting tips:")

@@ -1,19 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import hashlib
 import re
 import sys
 from collections.abc import Iterable
 from pathlib import Path
-
 from dh import get_nobinary
 from loguru import logger
 
 OUTPUT_DIR = Path("extracted_base64")
-DATA_URL_RE = re.compile(
-    r"data:(?P<mime>[-\w.+/]+);base64,(?P<data>[A-Za-z0-9+/=\s]+)",
-    re.IGNORECASE,
-)
+DATA_URL_RE = re.compile("data:(?P<mime>[-\\w.+/]+);base64,(?P<data>[A-Za-z0-9+/=\\s]+)", re.IGNORECASE)
 MIME_EXTENSION_MAP: dict[str, str] = {
     "image/png": "png",
     "image/jpeg": "jpg",
@@ -37,10 +34,7 @@ MIME_EXTENSION_MAP: dict[str, str] = {
 
 
 def infer_extension(mime: str) -> str:
-    return MIME_EXTENSION_MAP.get(
-        mime.lower(),
-        mime.rsplit("/", maxsplit=1)[-1],
-    )
+    return MIME_EXTENSION_MAP.get(mime.lower(), mime.rsplit("/", maxsplit=1)[-1])
 
 
 def decode_base64(data: str) -> bytes:
@@ -52,9 +46,7 @@ def content_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def extract_from_html(
-    html: str,
-) -> Iterable[tuple[str, bytes]]:
+def extract_from_html(html: str) -> Iterable[tuple[str, bytes]]:
     for matchz in DATA_URL_RE.finditer(html):
         mime = matchz.group("mime")
         raw_data = matchz.group("data")
@@ -62,7 +54,7 @@ def extract_from_html(
             decoded = decode_base64(raw_data)
         except Exception:
             continue
-        yield mime, decoded
+        yield (mime, decoded)
 
 
 def save_asset(mime: str, data: bytes) -> Path:

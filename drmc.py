@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import os
 import re
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 from loguru import logger
 
@@ -92,11 +92,11 @@ class Result:
 
 
 def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, support_backtick: bool = False) -> Result:
-    i, n = 0, len(src)
+    i, n = (0, len(src))
     out = []
     comments = 0
     removed_chars = 0
-    IN_STR_SGL, IN_STR_DBL, IN_TEMPLATE = 1, 2, 3
+    IN_STR_SGL, IN_STR_DBL, IN_TEMPLATE = (1, 2, 3)
     state = 0
     template_brace_depth = 0
 
@@ -150,7 +150,7 @@ def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, su
                 template_brace_depth -= 1
             i += 1
             continue
-        if ch == "'" and not support_backtick:
+        if ch == "'" and (not support_backtick):
             state = IN_STR_SGL
             out.append(ch)
             i += 1
@@ -177,13 +177,13 @@ def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, su
         if ch == "/" and ch2 == "*":
             comments += 1
             j = i + 2
-            while j < n - 1 and not (src[j] == "*" and src[j + 1] == "/"):
+            while j < n - 1 and (not (src[j] == "*" and src[j + 1] == "/")):
                 j += 1
             j = j + 2 if j < n else n
             removed_chars += j - i
             i = j
             continue
-        if treat_hash_as_line_comment and ch == "#" and not (i == 0 and i + 1 < n and src[i + 1] == "!"):
+        if treat_hash_as_line_comment and ch == "#" and (not (i == 0 and i + 1 < n and (src[i + 1] == "!"))):
             comments += 1
             j = i + 1
             while j < n and src[j] not in "\n\r":
@@ -249,7 +249,7 @@ def rmsl(data):
     removed = 0
     for line in lines:
         stripped = line.lstrip(" ").rstrip(" ").strip()
-        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and stripped != DOC_TH1 * 2:
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOC_TH1 * 2):
             removed += 1
             continue
         nl.append(line)
@@ -277,11 +277,11 @@ def strip_comments_python(code: str) -> Result:
         src = rmsl(streeped)
     except:
         src = rmsl(code)
-    i, n = 0, len(src)
+    i, n = (0, len(src))
     out = []
     comments = 0
     removed_chars = 0
-    IN_SGL, IN_DBL, IN_TSQ, IN_TDQ = 1, 2, 3, 4
+    IN_SGL, IN_DBL, IN_TSQ, IN_TDQ = (1, 2, 3, 4)
     state = 0
     while i < n:
         ch = src[i]
@@ -311,7 +311,7 @@ def strip_comments_python(code: str) -> Result:
             continue
         if state == IN_TSQ:
             out.append(ch)
-            if ch == "'" and ch2 == "'" and ch3 == "'":
+            if ch == "'" and ch2 == "'" and (ch3 == "'"):
                 out.extend((ch2, ch3))
                 i += 3
                 state = 0
@@ -320,19 +320,19 @@ def strip_comments_python(code: str) -> Result:
             continue
         if state == IN_TDQ:
             out.append(ch)
-            if ch == '"' and ch2 == '"' and ch3 == '"':
+            if ch == '"' and ch2 == '"' and (ch3 == '"'):
                 out.extend((ch2, ch3))
                 i += 3
                 state = 0
                 continue
             i += 1
             continue
-        if ch == "'" and ch2 == "'" and ch3 == "'":
+        if ch == "'" and ch2 == "'" and (ch3 == "'"):
             out.extend((ch, ch2, ch3))
             i += 3
             state = IN_TSQ
             continue
-        if ch == '"' and ch2 == '"' and ch3 == '"':
+        if ch == '"' and ch2 == '"' and (ch3 == '"'):
             out.extend((ch, ch2, ch3))
             i += 3
             state = IN_TDQ
@@ -347,7 +347,7 @@ def strip_comments_python(code: str) -> Result:
             i += 1
             state = IN_DBL
             continue
-        if ch == "#" and not (i == 0 and ch2 == "!"):
+        if ch == "#" and (not (i == 0 and ch2 == "!")):
             comments += 1
             j = i + 1
             while j < n and src[j] not in "\n\r":
@@ -369,7 +369,7 @@ def strip_comments_python(code: str) -> Result:
 def strip_comments_html(src: str) -> Result:
     comments = 0
     removed_chars = 0
-    pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
+    pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     return pattern.sub("", src)
 
 
@@ -378,8 +378,8 @@ def strip_comments_hash_and_semicolon(src: str, allow_semicolon: bool = True) ->
     removed = 0
     out_lines = []
     for line in src.splitlines(True):
-        i, n = 0, len(line)
-        IN_SGL, IN_DBL = 1, 2
+        i, n = (0, len(line))
+        IN_SGL, IN_DBL = (1, 2)
         state = 0
         cut = None
         while i < n:

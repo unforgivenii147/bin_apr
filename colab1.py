@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import site
 import zipfile
 from pathlib import Path
-
 from google.colab import drive
 
 drive.mount("/content/drive")
@@ -34,10 +34,7 @@ for entry in site_pkgs.iterdir():
                 for f in files:
                     if not str(file).endswith(".pyc"):
                         fp = Path(root) / f
-                        zf.write(
-                            fp,
-                            fp.relative_to(site_pkgs),
-                        )
+                        zf.write(fp, fp.relative_to(site_pkgs))
         zipped_dirs += 1
 print("Export completed successfully.")
 print(f"Site-packages source : {site_pkgs}")

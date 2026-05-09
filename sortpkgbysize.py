@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import csv
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -14,10 +14,7 @@ def sort_packages_by_size(filename: str):
     if "Installed-Size" not in fieldnames:
         print("Error: 'Installed-Size' column not found in CSV")
         return
-    rows.sort(
-        key=lambda x: int(x.get("Installed-Size") or 0),
-        reverse=True,
-    )
+    rows.sort(key=lambda x: int(x.get("Installed-Size") or 0), reverse=True)
     with Path(filename).open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

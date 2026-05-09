@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import glob
 
+import glob
 from loguru import logger
 from PIL import Image
 
@@ -10,29 +10,15 @@ def reduce_image_size(image_path, scale_factor=0.75) -> None:
         with Image.open(image_path) as img:
             new_width = int(img.width * scale_factor)
             new_height = int(img.height * scale_factor)
-            resized_img = img.resize(
-                (new_width, new_height),
-                Image.LANCZOS,
-            )
-            resized_img.save(
-                image_path,
-                optimize=True,
-                quality=85,
-            )
+            resized_img = img.resize((new_width, new_height), Image.LANCZOS)
+            resized_img.save(image_path, optimize=True, quality=85)
             print(f"Reduced: {image_path} ({img.width}x{img.height} -> {new_width}x{new_height})")
     except Exception as e:
         print(f"Error processing {image_path}: {e!s}")
 
 
 def main() -> None:
-    image_extensions = [
-        "*.jpg",
-        "*.jpeg",
-        "*.png",
-        "*.bmp",
-        "*.tiff",
-        "*.webp",
-    ]
+    image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.tiff", "*.webp"]
     image_files = []
     for extension in image_extensions:
         image_files.extend(glob.glob(extension))

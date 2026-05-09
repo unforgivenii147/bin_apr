@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import time
 from pathlib import Path
-
 from loguru import logger
 
 TIME_THRESHOLD = 8 * 60
@@ -39,18 +39,12 @@ def move_recent_files(start_dir="."):
                         counter = 1
                         while Path(dest_path).exists():
                             new_filename = f"{base}_{counter}{ext}"
-                            dest_path = os.path.join(
-                                dest_dir,
-                                new_filename,
-                            )
+                            dest_path = os.path.join(dest_dir, new_filename)
                             counter += 1
                     shutil.move(filepath, dest_path)
                     print(f"Moved: {filepath} -> {dest_path}")
                     moved_count += 1
-            except (
-                OSError,
-                PermissionError,
-            ) as e:
+            except (OSError, PermissionError) as e:
                 print(f"Error processing {filepath}: {e}")
     print(f"\nTotal files moved: {moved_count}")
 

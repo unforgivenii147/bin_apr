@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import get_files, unique_path
 from termcolor import cprint
 
@@ -30,7 +30,7 @@ def process_file(fp) -> bool | None:
             outpath = unique_path(outpath)
         outpath.write_text(content, encoding="utf-8")
         cprint(f"{outfn} created.", "green")
-    elif pkgname and not pkgversion:
+    elif pkgname and (not pkgversion):
         outfn = Path(pkgname + ".metadata")
         outpath = OUT_PATH / outfn
         content = fp.read_text(encoding="utf-8")
@@ -39,7 +39,7 @@ def process_file(fp) -> bool | None:
         content = fp.read_text(encoding="utf-8")
         outpath.write_text(content, encoding="utf-8")
         cprint(f"{outfn} created.", "yellow")
-    elif not pkgname and not pkgversion:
+    elif not pkgname and (not pkgversion):
         cprint(f"no data{fp}", "cyan")
         input("what u wanna do?")
     return None

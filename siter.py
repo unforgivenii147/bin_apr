@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import base64
 import csv
@@ -8,16 +9,11 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
-
 from loguru import logger
 
 
 class WheelBuilder:
-    def __init__(
-        self,
-        site_packages: Path,
-        output_dir: Path,
-    ) -> None:
+    def __init__(self, site_packages: Path, output_dir: Path) -> None:
         self.site_packages = site_packages.resolve()
         self.output_dir = output_dir.resolve()
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -65,10 +61,7 @@ class WheelBuilder:
                 if not row or not row[0]:
                     continue
                 path = row[0]
-                records[path] = {
-                    "hash": (row[1] if len(row) > 1 else ""),
-                    "size": (row[2] if len(row) > 2 else ""),
-                }
+                records[path] = {"hash": row[1] if len(row) > 1 else "", "size": row[2] if len(row) > 2 else ""}
         return records
 
     def _read_installer(self, dist_info: Path) -> str:
@@ -116,7 +109,7 @@ class WheelBuilder:
         for item in self.share_dir.rglob("*"):
             if not item.is_file():
                 continue
-            if any(pkg_normalized in p.name.lower() for p in item.parents):
+            if any((pkg_normalized in p.name.lower() for p in item.parents)):
                 try:
                     rel_path = item.relative_to(self.share_dir)
                     data_files.append((item, str(rel_path)))
@@ -129,12 +122,7 @@ class WheelBuilder:
             from packaging.tags import sys_tags
 
             tag = next(sys_tags())
-            return (
-                tag.interpreter,
-                tag.abi,
-                tag.platform,
-                False,
-            )
+            return (tag.interpreter, tag.abi, tag.platform, False)
         except ImportError:
             import platform
 
@@ -144,15 +132,10 @@ class WheelBuilder:
             plat = platform.system().lower()
             machine = platform.machine().lower()
             platform_tag = f"{plat}_{machine}"
-            return (
-                python_tag,
-                abi_tag,
-                platform_tag,
-                False,
-            )
+            return (python_tag, abi_tag, platform_tag, False)
 
     def _detect_purity(self, records: dict) -> bool:
-        return all(not path.endswith((".so", ".pyd", ".dll")) for path in records)
+        return all((not path.endswith((".so", ".pyd", ".dll")) for path in records))
 
     def build_wheel(self, dist_info_dir: Path) -> Path | None:
         if not dist_info_dir.is_dir():
@@ -170,18 +153,9 @@ class WheelBuilder:
             return None
         is_pure = self._detect_purity(records)
         if is_pure:
-            python_tag, abi_tag, platform_tag = (
-                "py3",
-                "none",
-                "any",
-            )
+            python_tag, abi_tag, platform_tag = ("py3", "none", "any")
         else:
-            (
-                python_tag,
-                abi_tag,
-                platform_tag,
-                _,
-            ) = self._get_wheel_tags()
+            python_tag, abi_tag, platform_tag, _ = self._get_wheel_tags()
         scripts = self._find_scripts_for_package(records=records)
         data_files = self._find_data_for_package(pkg_name)
         if scripts:
@@ -208,13 +182,7 @@ class WheelBuilder:
                 rel_path = dest.relative_to(tmp_path)
                 file_hash = self._compute_hash(dest)
                 get_size = dest.stat().st_size
-                new_record.append(
-                    (
-                        str(rel_path),
-                        file_hash,
-                        str(get_size),
-                    )
-                )
+                new_record.append((str(rel_path), file_hash, str(get_size)))
             if scripts:
                 data_dir = tmp_path / data_dir_name
                 scripts_dir = data_dir / "scripts"
@@ -225,71 +193,37 @@ class WheelBuilder:
                     rel_path = dest.relative_to(tmp_path)
                     file_hash = self._compute_hash(dest)
                     get_size = dest.stat().st_size
-                    new_record.append(
-                        (
-                            str(rel_path),
-                            file_hash,
-                            str(get_size),
-                        )
-                    )
+                    new_record.append((str(rel_path), file_hash, str(get_size)))
             if data_files:
                 if not data_dir:
                     data_dir = tmp_path / data_dir_name
                 data_data_dir = data_dir / "data"
                 data_data_dir.mkdir(parents=True, exist_ok=True)
-                for (
-                    src,
-                    rel_data_path,
-                ) in data_files:
+                for src, rel_data_path in data_files:
                     dest = data_data_dir / rel_data_path
-                    dest.parent.mkdir(
-                        parents=True,
-                        exist_ok=True,
-                    )
+                    dest.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(src, dest)
                     rel_path = dest.relative_to(tmp_path)
                     file_hash = self._compute_hash(dest)
                     get_size = dest.stat().st_size
-                    new_record.append(
-                        (
-                            str(rel_path),
-                            file_hash,
-                            str(get_size),
-                        )
-                    )
+                    new_record.append((str(rel_path), file_hash, str(get_size)))
             wheel_file = dist_info_dest / "WHEEL"
             with Path(wheel_file).open("w", encoding="utf-8") as f:
                 f.write("Wheel-Version: 1.0\n")
                 f.write("Generator: wheel-builder 1.0\n")
-                f.write(f"Root-Is-Purelib: {'true' if is_pure else 'false'}\n")
+                f.write(f"Root-Is-Purelib: {('true' if is_pure else 'false')}\n")
                 f.write(f"Tag: {python_tag}-{abi_tag}-{platform_tag}\n")
             rel_path = wheel_file.relative_to(tmp_path)
             file_hash = self._compute_hash(wheel_file)
             get_size = wheel_file.stat().st_size
-            new_record.append(
-                (
-                    str(rel_path),
-                    file_hash,
-                    str(get_size),
-                )
-            )
+            new_record.append((str(rel_path), file_hash, str(get_size)))
             record_file = dist_info_dest / "RECORD"
             with Path(record_file).open("w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 for row in new_record:
                     writer.writerow(row)
-                writer.writerow(
-                    [
-                        f"{dist_info_name}/RECORD",
-                        "",
-                        "",
-                    ]
-                )
-            with zipfile.ZipFile(
-                wheel_path,
-                "w",
-                zipfile.ZIP_DEFLATED,
-            ) as whl:
+                writer.writerow([f"{dist_info_name}/RECORD", "", ""])
+            with zipfile.ZipFile(wheel_path, "w", zipfile.ZIP_DEFLATED) as whl:
                 for file in tmp_path.rglob("*"):
                     if file.is_file():
                         arcname = file.relative_to(tmp_path)
@@ -343,38 +277,16 @@ def main():
     parser = argparse.ArgumentParser(
         description="Build proper wheel files from installed packages",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s
-  %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages
-  %(prog)s --output ./wheels
-  %(prog)s --package requests
-        """,
+        epilog="\nExamples:\n  %(prog)s\n  %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages\n  %(prog)s --output ./wheels\n  %(prog)s --package requests\n        ",
     )
     parser.add_argument(
-        "--site-packages",
-        "-s",
-        type=Path,
-        help="Path to site-packages directory (auto-detect if not specified)",
+        "--site-packages", "-s", type=Path, help="Path to site-packages directory (auto-detect if not specified)"
     )
     parser.add_argument(
-        "--output",
-        "-o",
-        type=Path,
-        default=Path("/sdcard/whl"),
-        help="Output directory for wheels (default: ./wheels)",
+        "--output", "-o", type=Path, default=Path("/sdcard/whl"), help="Output directory for wheels (default: ./wheels)"
     )
-    parser.add_argument(
-        "--package",
-        "-p",
-        help="Build only this package (by name)",
-    )
-    parser.add_argument(
-        "--list",
-        "-l",
-        action="store_true",
-        help="List available site-packages directories and exit",
-    )
+    parser.add_argument("--package", "-p", help="Build only this package (by name)")
+    parser.add_argument("--list", "-l", action="store_true", help="List available site-packages directories and exit")
     args = parser.parse_args()
     if args.list:
         sites = find_site_packages()

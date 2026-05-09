@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from collections import defaultdict
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from tree_sitter import Language, Parser
 
@@ -19,7 +19,7 @@ def extract_file(src: bytes, tree):
 
 folder_imports = defaultdict(list)
 for py in Path().rglob("*.py"):
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
+    if any((part.startswith(".") for part in py.parts)) or "site-packages" in py.parts:
         continue
     if OUT_DIR in py.parents:
         continue
@@ -30,10 +30,7 @@ for py in Path().rglob("*.py"):
         folder_path = py.parent
         relative_folder = folder_path.relative_to(".")
         folder_imports[relative_folder].append("\n".join(imports))
-for (
-    folder,
-    imports_list,
-) in folder_imports.items():
+for folder, imports_list in folder_imports.items():
     if not imports_list:
         continue
     out_file = OUT_DIR / folder / "imports.py"

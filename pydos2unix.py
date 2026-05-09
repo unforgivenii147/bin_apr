@@ -1,24 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import fnmatch
 import mmap
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import is_binary
 from tqdm import tqdm
 
 
 def needs_conversion(path: Path) -> bool:
     try:
-        with (
-            path.open("rb") as f,
-            mmap.mmap(
-                f.fileno(),
-                0,
-                access=mmap.ACCESS_READ,
-            ) as mm,
-        ):
+        with path.open("rb") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
             return mm.find(b"\r\n") != -1
     except Exception:
         return False
@@ -26,10 +19,7 @@ def needs_conversion(path: Path) -> bool:
 
 def convert_in_place(path: Path) -> None:
     print(f"processing {path.name}")
-    with (
-        path.open("r+b") as f,
-        mmap.mmap(f.fileno(), 0) as mm,
-    ):
+    with path.open("r+b") as f, mmap.mmap(f.fileno(), 0) as mm:
         data = mm[:]
         new = data.replace(b"\r\n", b"\n")
         if new == data:
@@ -43,12 +33,7 @@ def convert_in_place(path: Path) -> None:
 def convert_with_temp(path: Path) -> None:
     tmp = path.with_suffix(path.suffix + ".tmp")
     with (
-        path.open(
-            "r",
-            encoding="utf-8",
-            errors="ignore",
-            newline="",
-        ) as src,
+        path.open("r", encoding="utf-8", errors="ignore", newline="") as src,
         tmp.open("w", encoding="utf-8", newline="") as dst,
     ):
         for line in src:
@@ -89,7 +74,7 @@ def scan_paths(inputs, recursive: bool, excludes) -> list[Path]:
             result.append(p)
     out = []
     for p in result:
-        if any(fnmatch.fnmatch(str(p), pat) for pat in excludes):
+        if any((fnmatch.fnmatch(str(p), pat) for pat in excludes)):
             continue
         out.append(p)
     return out
@@ -105,11 +90,7 @@ def worker(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Fast dos2unix converter with mmap, tqdm")
-    parser.add_argument(
-        "paths",
-        nargs="*",
-        help="Files or directories.",
-    )
+    parser.add_argument("paths", nargs="*", help="Files or directories.")
     parser.add_argument("--recursive", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--exclude", nargs="*", default=[".git", "__pycache__"])

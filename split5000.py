@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from loguru import logger
 from nltk.tokenize import sent_tokenize
@@ -12,7 +12,7 @@ BINARY_SAMPLE = 4096
 
 
 def split_long_by_words(segment: str, max_chars: int = DEFAULT_MAX):
-    words = re.findall(r"\S+\s*", segment, flags=re.DOTALL)
+    words = re.findall("\\S+\\s*", segment, flags=re.DOTALL)
     parts = []
     cur = ""
     for w in words:
@@ -41,7 +41,7 @@ def chunk_text_with_nltk(text: str, max_chars: int):
     cur = ""
     for sent in sentences:
         sent_to_add = sent
-        if cur and not cur.endswith((" ", "\n")) and not sent_to_add.startswith((" ", "\n")):
+        if cur and (not cur.endswith((" ", "\n"))) and (not sent_to_add.startswith((" ", "\n"))):
             sent_to_add = " " + sent_to_add
         if len(cur) + len(sent_to_add) <= max_chars:
             cur += sent_to_add
@@ -80,16 +80,10 @@ def main():
     try:
         text = inp.read_text(encoding="utf-8")
     except Exception as exc:
-        print(
-            f"Failed to read input file with encoding {args.encoding}: {exc}",
-            file=sys.stderr,
-        )
+        print(f"Failed to read input file with encoding {args.encoding}: {exc}", file=sys.stderr)
         sys.exit(2)
     if len(text) < DEFAULT_MAX:
-        print(
-            f"File has fewer than {DEFAULT_MAX} characters ({len(text)}). Skipping.",
-            file=sys.stderr,
-        )
+        print(f"File has fewer than {DEFAULT_MAX} characters ({len(text)}). Skipping.", file=sys.stderr)
         sys.exit(0)
     chunks = chunk_text_with_nltk(text, DEFAULT_MAX)
     if not chunks:

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import Counter
 from pathlib import Path
-
 import regex as re
 from dh import unique_path
 
@@ -26,7 +26,7 @@ EXCLUDE = load_user_stopwords(USER_STOPWORDS_FILE)
 
 
 def extract_words(text):
-    return re.findall(r"[a-z]{3,}", text.lower())
+    return re.findall("[a-z]{3,}", text.lower())
 
 
 def main():

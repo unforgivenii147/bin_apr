@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
@@ -10,8 +10,8 @@ from termcolor import cprint
 
 CHUNK_SIZE = 1024 * 1024
 N_JOBS = -1
-multi_line_comment_re = r"/\*.*?\*/"
-single_line_comment_re = r"//.*"
+multi_line_comment_re = "/\\*.*?\\*/"
+single_line_comment_re = "//.*"
 
 
 def process_file(fp):
@@ -21,8 +21,8 @@ def process_file(fp):
     lines = new_code.splitlines()
     processed_lines = [re.sub(single_line_comment_re, "", line) for line in lines]
     final_code = "\n".join(processed_lines)
-    final_code = re.sub(r"\n\s*\n", "\n\n", final_code)
-    final_code = "\n".join(line.rstrip() for line in final_code.splitlines())
+    final_code = re.sub("\\n\\s*\\n", "\n\n", final_code)
+    final_code = "\n".join((line.rstrip() for line in final_code.splitlines()))
     fp.write_text(final_code, encoding="utf-8")
 
 
@@ -59,7 +59,7 @@ def main():
                 ".mm",
             ],
         )
-    Parallel(n_jobs=N_JOBS, backend="loky")(delayed(process_file)(f) for f in files)
+    Parallel(n_jobs=N_JOBS, backend="loky")((delayed(process_file)(f) for f in files))
     diffsize = before - gsz(root_dir)
     cprint(f"space change : {fsz(diffsize)}", "cyan")
 

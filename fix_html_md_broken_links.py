@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
@@ -8,15 +9,12 @@ static_dir = "/sdcard/_static"
 
 def fix_links(file_path: Path):
     content: str = file_path.read_text(encoding="utf-8", errors="replace")
-    links = re.findall(r'href=[\'"]?([^\'" >]+)', content)
+    links = re.findall("href=[\\'\"]?([^\\'\" >]+)", content)
     for link in links:
         if not Path(link).exists():
             static_file = static_dir / link
             if static_file.exists():
-                content = content.replace(
-                    link,
-                    str(static_file.resolve()),
-                )
+                content = content.replace(link, str(static_file.resolve()))
     backup_path = file_path.with_suffix(".bak")
     Path(file_path).replace(backup_path)
     Path(file_path).write_text(content, encoding="utf-8")

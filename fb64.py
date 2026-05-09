@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 from pathlib import Path
-
 from loguru import logger
 
 search_string = 'b64 = """'
@@ -14,8 +14,5 @@ for root, _dirs, files in os.walk(current_dir):
                 content = f.read()
                 if search_string in content:
                     print(f"Found in file: {file_path}")
-        except (
-            UnicodeDecodeError,
-            PermissionError,
-        ):
+        except (UnicodeDecodeError, PermissionError):
             continue

@@ -1,20 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import sys
 from pathlib import Path
-
 from dh import cprint
 from loguru import logger
 
 major, minor, _, _, _ = sys.version_info
 py_version = f"{major}.{minor}"
-ALLOWED = [
-    "METADATA",
-    "RECORD",
-    "WHEEL",
-    "top_level.txt",
-]
+ALLOWED = ["METADATA", "RECORD", "WHEEL", "top_level.txt"]
 NOT_ALLOWED = [
     "AUTHORS",
     "AUTHORS.md",
@@ -69,10 +64,7 @@ def main():
     for path in cwd.iterdir():
         if path.is_dir() and "dist-info" in path.name:
             if len(os.listdir(path)) < 2:
-                cprint(
-                    f"{path.name} empty pkg",
-                    "cyan",
-                )
+                cprint(f"{path.name} empty pkg", "cyan")
             missings.extend(process_lic(path))
     for k in missings:
         print(f"{k.parent.name}  ==>", end=" ")

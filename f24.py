@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 from tqdm import tqdm
 
@@ -17,7 +17,7 @@ def iter_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
-        files.extend(Path(dirpath) / fname for fname in filenames)
+        files.extend((Path(dirpath) / fname for fname in filenames))
     return files
 
 
@@ -25,12 +25,8 @@ def ctime_if_recent(path: Path) -> tuple[float, Path] | None:
     try:
         ctime = path.stat().st_ctime
         if NOW - ctime <= SECONDS_24H:
-            return ctime, path
-    except (
-        FileNotFoundError,
-        PermissionError,
-        OSError,
-    ):
+            return (ctime, path)
+    except (FileNotFoundError, PermissionError, OSError):
         pass
     return None
 
@@ -43,12 +39,7 @@ def main() -> None:
     recent: list[tuple[float, Path]] = []
     with ThreadPoolExecutor() as executor:
         futures = [executor.submit(ctime_if_recent, p) for p in files]
-        for fut in tqdm(
-            as_completed(futures),
-            total=len(futures),
-            desc="Scanning",
-            unit="file",
-        ):
+        for fut in tqdm(as_completed(futures), total=len(futures), desc="Scanning", unit="file"):
             result = fut.result()
             if result is not None:
                 recent.append(result)

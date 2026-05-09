@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
 import sys
 from os.path import commonpath
 from pathlib import Path
-
 from loguru import logger
 
 try:
@@ -14,13 +14,13 @@ except ImportError:
     print("Install termcolor: pip install termcolor")
     sys.exit(1)
 REGEX_RULES = [
-    r"\bOutcast\b",
-    r"\bS\d{2}\b",
-    r"\b720p\b",
-    r"\b1080p\b",
-    r"\bBluRay\b",
-    r"\bx264\b",
-    r"-REWARD_HI",
+    "\\bOutcast\\b",
+    "\\bS\\d{2}\\b",
+    "\\b720p\\b",
+    "\\b1080p\\b",
+    "\\bBluRay\\b",
+    "\\bx264\\b",
+    "-REWARD_HI",
 ]
 EXTENSIONS = {".srt", ".mkv", ".mp4", ".avi"}
 
@@ -36,7 +36,7 @@ def common_suffix(strings):
 def apply_regex(name):
     for rule in REGEX_RULES:
         name = re.sub(rule, "", name, flags=re.IGNORECASE)
-    return re.sub(r"\.+", ".", name).strip(". ")
+    return re.sub("\\.+", ".", name).strip(". ")
 
 
 def collect_files(path, recursive):
@@ -47,18 +47,8 @@ def collect_files(path, recursive):
 
 def main():
     ap = argparse.ArgumentParser(description="Clean repeated words from filenames")
-    ap.add_argument(
-        "-r",
-        "--recursive",
-        action="store_true",
-        help="scan recursively",
-    )
-    ap.add_argument(
-        "-w",
-        "--write",
-        action="store_true",
-        help="actually rename files",
-    )
+    ap.add_argument("-r", "--recursive", action="store_true", help="scan recursively")
+    ap.add_argument("-w", "--write", action="store_true", help="actually rename files")
     args = ap.parse_args()
     files = collect_files(Path(), args.recursive)
     if not files:
@@ -73,34 +63,18 @@ def main():
         core = name[len(prefix) : len(name) - len(suffix)]
         core = apply_regex(core)
         new_name = f"{f.stem.split('.')[0]}.{core}{f.suffix}"
-        new_name = re.sub(r"\.+", ".", new_name)
+        new_name = re.sub("\\.+", ".", new_name)
         if name == new_name:
             continue
-        print(
-            colored("OLD:", "red"),
-            name,
-            colored("-> NEW:", "green"),
-            new_name,
-        )
+        print(colored("OLD:", "red"), name, colored("-> NEW:", "green"), new_name)
         if args.write:
             target = f.with_name(new_name)
             if target.exists():
-                print(
-                    colored(
-                        "SKIPPED (exists)",
-                        "yellow",
-                    ),
-                    new_name,
-                )
+                print(colored("SKIPPED (exists)", "yellow"), new_name)
             else:
                 f.rename(target)
     if not args.write:
-        print(
-            colored(
-                "\nDry-run only. Use -w to apply changes.",
-                "yellow",
-            )
-        )
+        print(colored("\nDry-run only. Use -w to apply changes.", "yellow"))
 
 
 if __name__ == "__main__":

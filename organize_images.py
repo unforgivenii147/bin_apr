@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 from pathlib import Path
-
 import cv2
 import numpy as np
 from loguru import logger
@@ -31,14 +31,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
             print(f"Histogram calculation error for {image_path}: {e}")
             return None
         img_flat = img_resized.flatten()
-        features = np.concatenate(
-            [
-                hist_h.flatten(),
-                hist_s.flatten(),
-                hist_v.flatten(),
-                img_flat,
-            ]
-        )
+        features = np.concatenate([hist_h.flatten(), hist_s.flatten(), hist_v.flatten(), img_flat])
         norm = np.linalg.norm(features)
         if norm > 0:
             features /= norm
@@ -49,15 +42,7 @@ def get_image_features_cv2(image_path, size=(64, 64)):
 
 
 def get_all_images(directory):
-    image_extensions = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".bmp",
-        ".tiff",
-        ".webp",
-    }
+    image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"}
     image_files = []
     for root, _dirs, files in os.walk(directory):
         for file in files:
@@ -94,14 +79,8 @@ def simple_clustering(features, paths, n_clusters=10, threshold=0.7):
         cluster_ids = list(clusters.keys())
         for i in range(len(cluster_ids)):
             for j in range(i + 1, len(cluster_ids)):
-                id1, id2 = (
-                    cluster_ids[i],
-                    cluster_ids[j],
-                )
-                sim = compute_similarity(
-                    cluster_centers[id1],
-                    cluster_centers[id2],
-                )
+                id1, id2 = (cluster_ids[i], cluster_ids[j])
+                sim = compute_similarity(cluster_centers[id1], cluster_centers[id2])
                 if sim > max_sim:
                     max_sim = sim
                     merge_pair = (id1, id2)
@@ -121,12 +100,7 @@ def simple_clustering(features, paths, n_clusters=10, threshold=0.7):
     return labels
 
 
-def organize_photos(
-    source_dir=".",
-    n_clusters=10,
-    move=False,
-    threshold=0.7,
-):
+def organize_photos(source_dir=".", n_clusters=10, move=False, threshold=0.7):
     print(f"Scanning directory: {source_dir}")
     image_paths = get_all_images(source_dir)
     print(f"Found {len(image_paths)} images")
@@ -150,12 +124,7 @@ def organize_photos(
     features = np.array(features)
     n_clusters = min(n_clusters, len(features))
     print(f"Clustering into {n_clusters} groups...")
-    labels = simple_clustering(
-        features,
-        valid_paths,
-        n_clusters,
-        threshold,
-    )
+    labels = simple_clustering(features, valid_paths, n_clusters, threshold)
     output_base = os.path.join(source_dir, "organized_by_similarity")
     Path(output_base).mkdir(exist_ok=True, parents=True)
     print("Organizing files...")
@@ -169,10 +138,7 @@ def organize_photos(
         base_name = Path(dest_path).stem
         extension = Path(dest_path).suffix
         while Path(dest_path).exists():
-            dest_path = os.path.join(
-                dest_dir,
-                f"{base_name}_{counter}{extension}",
-            )
+            dest_path = os.path.join(dest_dir, f"{base_name}_{counter}{extension}")
             counter += 1
         try:
             if move:
@@ -189,36 +155,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Organize photos by similarity")
-    parser.add_argument(
-        "-d",
-        "--directory",
-        default=".",
-        help="Source directory (default: current)",
-    )
-    parser.add_argument(
-        "-k",
-        "--clusters",
-        type=int,
-        default=10,
-        help="Number of groups (default: 10)",
-    )
-    parser.add_argument(
-        "-m",
-        "--move",
-        action="store_true",
-        help="Move files instead of copy",
-    )
-    parser.add_argument(
-        "-t",
-        "--threshold",
-        type=float,
-        default=0.7,
-        help="Similarity threshold (default: 0.7)",
-    )
+    parser.add_argument("-d", "--directory", default=".", help="Source directory (default: current)")
+    parser.add_argument("-k", "--clusters", type=int, default=10, help="Number of groups (default: 10)")
+    parser.add_argument("-m", "--move", action="store_true", help="Move files instead of copy")
+    parser.add_argument("-t", "--threshold", type=float, default=0.7, help="Similarity threshold (default: 0.7)")
     args = parser.parse_args()
-    organize_photos(
-        args.directory,
-        args.clusters,
-        args.move,
-        args.threshold,
-    )
+    organize_photos(args.directory, args.clusters, args.move, args.threshold)

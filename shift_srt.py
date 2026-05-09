@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import re
 from pathlib import Path
-
 from loguru import logger
 
-TIMESTAMP_RE = re.compile(r"(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})")
+TIMESTAMP_RE = re.compile("(\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-->\\s(\\d{2}:\\d{2}:\\d{2},\\d{3})")
 
 
 def to_ms(ts: str) -> int:
@@ -23,6 +23,7 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
+
     def repl(m):
         start, end = m.groups()
         return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
@@ -39,25 +40,9 @@ def process_file(path: Path, shift_ms: int):
 
 def main():
     ap = argparse.ArgumentParser(description="Shift SRT subtitles inplace (batch folder supported)")
-    ap.add_argument(
-        "path",
-        nargs="?",
-        default=".",
-        help="SRT file or folder (default: current dir)",
-    )
-    ap.add_argument(
-        "-s",
-        "--shift",
-        type=float,
-        default=-1.0,
-        help="Seconds to shift (negative = back, default: -1.0)",
-    )
-    ap.add_argument(
-        "-r",
-        "--recursive",
-        action="store_true",
-        help="Process subdirectories",
-    )
+    ap.add_argument("path", nargs="?", default=".", help="SRT file or folder (default: current dir)")
+    ap.add_argument("-s", "--shift", type=float, default=-1.0, help="Seconds to shift (negative = back, default: -1.0)")
+    ap.add_argument("-r", "--recursive", action="store_true", help="Process subdirectories")
     args = ap.parse_args()
     shift_ms = int(args.shift * 1000)
     path = Path(args.path)

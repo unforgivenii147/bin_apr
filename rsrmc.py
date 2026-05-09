@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import tree_sitter_rust
 from dh import clean_blank_lines, fsz, gsz
 from loguru import logger
@@ -25,12 +25,7 @@ def process_file(path: Path) -> None:
                 text = source[node.start_byte : node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
 

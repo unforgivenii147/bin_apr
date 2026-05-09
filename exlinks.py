@@ -1,19 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import brotli
 import chardet
 from loguru import logger
 
 TARGET_EXTENSIONS = {".tar.gz", ".pdf", ".zip", ".css", ".js", ".tar.xz", ".7z", ".whl", ".html"}
 COMPRESSED_ARCHIVES = {".tar.xz", ".tar.gz", ".tar.zst", ".7z", ".br", ".zip", ".whl"}
-GITHUB_REPO_REGEX = re.compile(r"https?://(?:www\.)?github\.com/[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+")
-URL_REGEX = re.compile(r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
+GITHUB_REPO_REGEX = re.compile("https?://(?:www\\.)?github\\.com/[a-zA-Z0-9\\-]+/[a-zA-Z0-9\\-]+")
+URL_REGEX = re.compile("(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?")
 MAX_WORKERS = 4
 BINARY_CHECK_THRESHOLD = 0.7
 
@@ -21,7 +21,7 @@ BINARY_CHECK_THRESHOLD = 0.7
 def extract_links_from_text(text, file_path):
     urls = URL_REGEX.findall(text)
     github_urls = GITHUB_REPO_REGEX.findall(text)
-    return urls, github_urls
+    return (urls, github_urls)
 
 
 def is_likely_binary(file_path, chunk_size=1024):
@@ -34,8 +34,10 @@ def is_likely_binary(file_path, chunk_size=1024):
             return bool(
                 (result["encoding"] is None or result["confidence"] < BINARY_CHECK_THRESHOLD)
                 and any(
-                    not (32 <= ord(c) <= 126 or c in "\n\r\t")
-                    for c in chunk.decode(result["encoding"] or "latin-1", errors="ignore")
+                    (
+                        not (32 <= ord(c) <= 126 or c in "\n\r\t")
+                        for c in chunk.decode(result["encoding"] or "latin-1", errors="ignore")
+                    )
                 )
             )
     except Exception as e:
@@ -49,7 +51,7 @@ def read_file_with_encodings(file_path):
         try:
             content = Path(file_path).read_text(encoding=encoding)
             logger.debug(f"Successfully read {file_path} with {encoding}")
-            return content, None
+            return (content, None)
         except UnicodeDecodeError:
             continue
         except Exception as e:
@@ -63,12 +65,12 @@ def read_file_with_encodings(file_path):
             try:
                 content = raw_data.decode(detected_encoding)
                 logger.debug(f"Successfully read {file_path} with detected encoding {detected_encoding}")
-                return content, detected_encoding
+                return (content, detected_encoding)
             except Exception as e:
                 logger.warning(f"Error decoding {file_path} with detected encoding {detected_encoding}: {e}")
     except Exception as e:
         logger.error(f"Failed to read or detect encoding for {file_path}: {e}")
-    return None, None
+    return (None, None)
 
 
 def process_file(file_path):
@@ -77,7 +79,7 @@ def process_file(file_path):
     file_path = Path(file_path)
     file_extension = file_path.suffix.lower()
     if not file_path.is_file():
-        return [], []
+        return ([], [])
     try:
         if file_extension in TARGET_EXTENSIONS:
             if file_extension == ".pdf":
@@ -165,7 +167,7 @@ def process_file(file_path):
         if (
             is_likely_binary(file_path)
             and file_extension not in TARGET_EXTENSIONS
-            and file_extension not in COMPRESSED_ARCHIVES
+            and (file_extension not in COMPRESSED_ARCHIVES)
         ):
             content, _ = read_file_with_encodings(file_path)
             if content:
@@ -177,7 +179,7 @@ def process_file(file_path):
         logger.error(f"File not found: {file_path}")
     except Exception as e:
         logger.error(f"Failed to process {file_path}: {e}")
-    return list(set(local_urls)), list(set(github_urls))
+    return (list(set(local_urls)), list(set(github_urls)))
 
 
 def find_files_recursively(directory):

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from functools import partial
 from pathlib import Path
-
 from dh import mpf, unique_path
 from loguru import logger
 
@@ -64,7 +64,7 @@ def main():
     if dry_run:
         print("--- DRY RUN COMPLETE ---")
     else:
-        renamed_count = sum(1 for r in results if r is not None)
+        renamed_count = sum((1 for r in results if r is not None))
         print(f"\nSummary: Renamed {renamed_count} items.")
 
 

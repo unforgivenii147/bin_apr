@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, mpf
 from loguru import logger
 
@@ -12,7 +12,7 @@ def _get_comments_symbol(text: str, symbol: str) -> list[str]:
     i: int = 0
     indexes: list = []
     for i in range(len(text)):
-        if text[i] == symbol and len(text) > i + 2 and text[i] == text[i + 1] == text[i + 2]:
+        if text[i] == symbol and len(text) > i + 2 and (text[i] == text[i + 1] == text[i + 2]):
             if len(indexes) == 0:
                 indexes.append(i)
             elif len(indexes) == 1:

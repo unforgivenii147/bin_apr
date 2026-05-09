@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 MAX_LEN = 120
@@ -10,7 +10,7 @@ BREAK_PUNCTS = [",", ";", ":", "?"]
 
 
 def split_sentences(text: str):
-    pattern = re.compile(r"[^.!]+[.!]", re.MULTILINE | re.DOTALL)
+    pattern = re.compile("[^.!]+[.!]", re.MULTILINE | re.DOTALL)
     sentences = pattern.findall(text)
     return [s.strip() for s in sentences if s.strip()]
 
@@ -44,7 +44,7 @@ def restructure_file(filepath: Path):
     backup = filepath.with_suffix(filepath.suffix + ".bak")
     text = filepath.read_text(encoding="utf-8", errors="ignore")
     backup.write_text(text, encoding="utf-8")
-    paragraphs = re.split(r"\n\s*\n", text.strip(), flags=re.MULTILINE)
+    paragraphs = re.split("\\n\\s*\\n", text.strip(), flags=re.MULTILINE)
     new_paragraphs = [restructure_paragraph(p) for p in paragraphs]
     new_text = "\n\n".join(new_paragraphs) + "\n"
     filepath.write_text(new_text, encoding="utf-8")

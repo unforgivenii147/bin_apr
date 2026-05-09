@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ctypes
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import cprint, get_files
 from loguru import logger
 
@@ -23,44 +23,31 @@ class CtypesVerifier:
 
     def verify_so_file(self, file_path: Path) -> tuple[bool, str]:
         if not file_path.exists():
-            return False, "File does not exist"
+            return (False, "File does not exist")
         try:
             ctypes.CDLL(str(file_path), use_errno=True)
             err = ctypes.get_errno()
             if err:
                 self.log(f"Warning: errno set to {err}")
-            return (
-                True,
-                "ok",
-            )
+            return (True, "ok")
         except OSError as e:
             error_msg = f"OSError: {e!s}"
             self.log(f"Failed to load: {error_msg}")
             print(f"Failed to load: {error_msg}")
             cprint(f"Failed to load: {error_msg}", "yellow")
-            return False, error_msg
+            return (False, error_msg)
         except Exception as e:
             error_msg = f"{type(e).__name__}: {e!s}"
             self.log(f"Failed to load: {error_msg}")
-            return False, error_msg
+            return (False, error_msg)
 
     def verify_with_symbols(self, file_path: Path) -> tuple[bool, dict]:
         can_load, msg = self.verify_so_file(file_path)
-        symbol_info = {
-            "can_load": can_load,
-            "message": msg,
-            "has_symbols": False,
-            "symbol_count": 0,
-        }
+        symbol_info = {"can_load": can_load, "message": msg, "has_symbols": False, "symbol_count": 0}
         if not can_load:
-            return can_load, symbol_info
+            return (can_load, symbol_info)
         try:
-            result = subprocess.run(
-                ["nm", str(file_path)],
-                capture_output=True,
-                timeout=10,
-                text=True,
-            )
+            result = subprocess.run(["nm", str(file_path)], capture_output=True, timeout=10, text=True)
             if result.returncode == 0:
                 lines = [l for l in result.stdout.split("\n") if l.strip()]
                 symbol_info["symbol_count"] = len(lines)
@@ -68,7 +55,7 @@ class CtypesVerifier:
                 self.log(f"Found {len(lines)} symbols")
         except Exception as e:
             self.log(f"Could not extract symbols: {e!s}")
-        return can_load, symbol_info
+        return (can_load, symbol_info)
 
 
 def process_file(fp):

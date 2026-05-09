@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from dh import fsz, get_files, gsz
 from loguru import logger
@@ -19,7 +19,7 @@ def process_file(file_path: Path) -> None:
             img.decompose()
         for tag in soup.find_all(style=True):
             style = tag["style"]
-            new_style = "; ".join(s for s in style.split(";") if "background-image" not in s).strip()
+            new_style = "; ".join((s for s in style.split(";") if "background-image" not in s)).strip()
             if new_style:
                 tag["style"] = new_style
             else:
@@ -46,17 +46,7 @@ def main():
     if args:
         files = [Path(f) for f in args]
     else:
-        files = get_files(
-            cwd,
-            recursive=True,
-            extensions=[
-                ".html",
-                ".htm",
-                ".md",
-                ".rst",
-                ".txt",
-            ],
-        )
+        files = get_files(cwd, recursive=True, extensions=[".html", ".htm", ".md", ".rst", ".txt"])
     with get_context("spawn").Pool(8) as p:
         pending = deque()
         for f in files:

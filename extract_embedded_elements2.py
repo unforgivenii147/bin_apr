@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import mimetypes
 import re
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -31,7 +31,7 @@ def save_asset(content: bytes, mime_type: str, file_hint="asset"):
 
 
 def extract_base64_data(data_url, file_hint="asset"):
-    m = re.match(r"data:(.*?);base64,(.*)", data_url, re.DOTALL)
+    m = re.match("data:(.*?);base64,(.*)", data_url, re.DOTALL)
     if not m:
         return None
     mime_type, encoded = m.groups()
@@ -82,7 +82,7 @@ def process_file(path: Path):
             fpath = download_external_url(src, f"{file_prefix}_img_remote")
             if fpath:
                 img["src"] = str(fpath.relative_to(OUTPUT_DIR))
-    bg_re = re.compile(r'url\("(data:.*?)"\)')
+    bg_re = re.compile('url\\("(data:.*?)"\\)')
     for tag in soup.find_all(style=True):
         style = tag["style"]
         m = bg_re.search(style)
@@ -101,7 +101,7 @@ def process_file(path: Path):
         if not style.string:
             continue
         new_css = style.string
-        fonts = re.findall(r'url\("(data:font\/.+?)"\)', new_css)
+        fonts = re.findall('url\\("(data:font\\/.+?)"\\)', new_css)
         for f in fonts:
             fpath = extract_base64_data(f, f"{file_prefix}_font")
             if fpath:

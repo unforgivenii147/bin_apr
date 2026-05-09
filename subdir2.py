@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -30,10 +30,7 @@ def unzip_file(archive: Path, target_dir: Path) -> bool:
             check=True,
         )
         return result.returncode == 0
-    except (
-        subprocess.CalledProcessError,
-        FileNotFoundError,
-    ):
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
 

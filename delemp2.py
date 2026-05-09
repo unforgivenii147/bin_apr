@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 from loguru import logger
 
@@ -11,7 +11,7 @@ def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
     if not collapse:
         cleaned = [l for l in lines if l.strip()]
         removed = len(lines) - len(cleaned)
-        return cleaned, removed
+        return (cleaned, removed)
     cleaned = []
     blank_run = 0
     for line in lines:
@@ -24,25 +24,22 @@ def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:
                 cleaned.append(line)
             else:
                 removed += 1
-    return cleaned, removed
+    return (cleaned, removed)
 
 
-def process_file(
-    path: Path,
-    collapse: bool,
-) -> tuple[bool, int, str]:
+def process_file(path: Path, collapse: bool) -> tuple[bool, int, str]:
     print(f"processing {path.name}")
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
         cleaned, removed = clean_lines(lines, collapse)
         if removed == 0:
-            return False, 0, ""
+            return (False, 0, "")
         with Path(path).open("w", encoding="utf-8", errors="ignore") as f:
             f.writelines(cleaned)
-        return True, removed, path.suffix.lower()
+        return (True, removed, path.suffix.lower())
     except Exception:
-        return False, 0, ""
+        return (False, 0, "")
 
 
 def main() -> None:

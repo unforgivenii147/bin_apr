@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from loguru import logger
 from termcolor import cprint
@@ -15,7 +15,7 @@ MAX_QUEUE = 16
 def process_file(fp) -> None:
     before = gsz(fp)
     src = fp.read_text(encoding="utf-8")
-    pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
+    pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
     if out != src:
         fp.write_text(out, encoding="utf-8")
@@ -29,15 +29,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = (
-        [Path(f) for f in args]
-        if args
-        else get_files(
-            cwd,
-            recursive=True,
-            extensions=[".html", ".htm"],
-        )
-    )
+    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from multiprocessing import Lock, Pool
 from pathlib import Path
-
 from fastwalk import walk_files
 from loguru import logger
 
@@ -26,34 +26,15 @@ def is_python_file(path: Path) -> bool:
 
 def run_command(cmd):
     try:
-        result = subprocess.run(
-            cmd,
-            check=False,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
-        return (
-            result.returncode,
-            result.stdout,
-            result.stderr,
-        )
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True, encoding="utf-8")
+        return (result.returncode, result.stdout, result.stderr)
     except Exception as e:
-        return -1, "", str(e)
+        return (-1, "", str(e))
 
 
 def process_file(file_path) -> None:
     print(f"[OK] {file_path.name}")
-    check_cmd = [
-        "ruff",
-        "check",
-        "--fix",
-        "--unsafe-fixes",
-        "--line-length",
-        "120",
-        "--quiet",
-        str(file_path),
-    ]
+    check_cmd = ["ruff", "check", "--fix", "--unsafe-fixes", "--line-length", "120", "--quiet", str(file_path)]
     rc_check, out_check, err_check = run_command(check_cmd)
     format_cmd = [
         "ruff",
@@ -91,15 +72,8 @@ def get_all_files(cwd):
 
 def main() -> None:
     try:
-        subprocess.run(
-            ["ruff", "--version"],
-            capture_output=True,
-            check=True,
-        )
-    except (
-        FileNotFoundError,
-        subprocess.CalledProcessError,
-    ):
+        subprocess.run(["ruff", "--version"], capture_output=True, check=True)
+    except (FileNotFoundError, subprocess.CalledProcessError):
         print("Error: 'ruff' is not installed or not in PATH.")
         print("Please run: pip install ruff")
         sys.exit(1)
@@ -110,7 +84,7 @@ def main() -> None:
         return
     pool = Pool(8)
     for f in files:
-        pool.apply_async(process_file, ((f),))
+        pool.apply_async(process_file, (f,))
     pool.close()
     pool.join()
 

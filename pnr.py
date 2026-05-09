@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
@@ -7,7 +8,7 @@ from pathlib import Path
 def get_unique_name(path: Path, base_name: str) -> str:
     if not (path / base_name).exists():
         return base_name
-    name, ext = Path(base_name).stem, Path(base_name).suffix
+    name, ext = (Path(base_name).stem, Path(base_name).suffix)
     counter = 1
     while True:
         new_name = f"{name}_{counter}{ext}"
@@ -21,10 +22,7 @@ def ask_user_for_rename(old_name: str, new_name: str) -> bool:
 
 
 def remove_string_from_names(
-    string_to_remove: str,
-    dry_run: bool = False,
-    recursive: bool = False,
-    current_path: Path = Path(),
+    string_to_remove: str, dry_run: bool = False, recursive: bool = False, current_path: Path = Path()
 ) -> int:
     renamed_count = 0
     try:
@@ -84,21 +82,12 @@ def remove_string_from_names(
                     except OSError as e:
                         print(f"Error renaming '{item.name}': {e}")
             if recursive:
-                renamed_count += remove_string_from_names(
-                    string_to_remove,
-                    dry_run,
-                    recursive,
-                    item,
-                )
+                renamed_count += remove_string_from_names(string_to_remove, dry_run, recursive, item)
     return renamed_count
 
 
 def replace_string_in_names(
-    str1: str,
-    str2: str,
-    dry_run: bool = False,
-    recursive: bool = False,
-    current_path: Path = Path(),
+    str1: str, str2: str, dry_run: bool = False, recursive: bool = False, current_path: Path = Path()
 ) -> int:
     renamed_count = 0
     try:
@@ -152,21 +141,12 @@ def replace_string_in_names(
                     except OSError as e:
                         print(f"Error renaming '{item.name}': {e}")
             if recursive:
-                renamed_count += replace_string_in_names(
-                    str1,
-                    str2,
-                    dry_run,
-                    recursive,
-                    item,
-                )
+                renamed_count += replace_string_in_names(str1, str2, dry_run, recursive, item)
     return renamed_count
 
 
 def rename_by_template(
-    template: str,
-    dry_run: bool = False,
-    recursive: bool = False,
-    current_path: Path = Path(),
+    template: str, dry_run: bool = False, recursive: bool = False, current_path: Path = Path()
 ) -> int:
     renamed_count = 0
     try:
@@ -190,7 +170,7 @@ def rename_by_template(
     else:
         padding = 4
     for i, file_path in enumerate(sorted(files), 1):
-        name, ext = file_path.stem, file_path.suffix
+        name, ext = (file_path.stem, file_path.suffix)
         number_str = str(i).zfill(padding)
         new_name = f"{template}{number_str}{ext}"
         if new_name == file_path.name:
@@ -218,12 +198,7 @@ def rename_by_template(
     if recursive:
         for item in current_path.iterdir():
             if item.is_dir():
-                renamed_count += rename_by_template(
-                    template,
-                    dry_run,
-                    recursive,
-                    item,
-                )
+                renamed_count += rename_by_template(template, dry_run, recursive, item)
     return renamed_count
 
 
@@ -231,42 +206,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Rename files and directories using pathlib",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-  Examples:
-  python pnr.py -r "old_string"
-        """,
+        epilog='\n  Examples:\n  python pnr.py -r "old_string"\n        ',
     )
     group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-r", "--remove", metavar="STRING", help="Remove specified string from file and directory names")
     group.add_argument(
-        "-r",
-        "--remove",
-        metavar="STRING",
-        help="Remove specified string from file and directory names",
+        "-s", "--replace", nargs=2, metavar=("STR1", "STR2"), help="Replace STR1 with STR2 in file and directory names"
     )
     group.add_argument(
-        "-s",
-        "--replace",
-        nargs=2,
-        metavar=("STR1", "STR2"),
-        help="Replace STR1 with STR2 in file and directory names",
+        "-t", "--template", metavar="NAME", default="", help="Rename files using template with sequential numbering"
     )
-    group.add_argument(
-        "-t",
-        "--template",
-        metavar="NAME",
-        default="",
-        help="Rename files using template with sequential numbering",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be renamed without actually doing it",
-    )
-    parser.add_argument(
-        "--recursive",
-        action="store_true",
-        help="Process directories recursively",
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be renamed without actually doing it")
+    parser.add_argument("--recursive", action="store_true", help="Process directories recursively")
     args = parser.parse_args()
     current_dir = Path.cwd()
     print(f"Working in directory: {current_dir}")

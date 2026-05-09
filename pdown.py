@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 
 
 def process_pkg(pk):
-    return subprocess.run(
-        ["pip", "download", "--no-deps", pk],
-        check=False,
-    )
+    return subprocess.run(["pip", "download", "--no-deps", pk], check=False)
 
 
 def main():

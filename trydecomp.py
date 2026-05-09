@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import bz2
 import gzip
 import lzma
@@ -8,7 +9,6 @@ import tarfile
 import zipfile
 import zlib
 from pathlib import Path
-
 from loguru import logger
 
 try:

@@ -1,23 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
 import urllib
 from pathlib import Path
-
 import lxml.html
 import pypdf
 from loguru import logger
 
 
 class Section:
-    def __init__(
-        self,
-        title: str,
-        source_file: str,
-        depth: int,
-        index: int,
-    ) -> None:
+    def __init__(self, title: str, source_file: str, depth: int, index: int) -> None:
         self.title = title
         self.source_file = source_file
         self.depth = depth
@@ -48,11 +42,7 @@ class Section:
         return "{}. {}".format(".".join(path), self.title)
 
 
-def check_title(
-    prefix_path: str,
-    node: Section,
-    overwrite: bool,
-) -> bool:
+def check_title(prefix_path: str, node: Section, overwrite: bool) -> bool:
     all_matched = True
     for child in node.children:
         child_result = check_title(prefix_path, child, overwrite)
@@ -94,12 +84,7 @@ def get_dom_id(node: Section):
     return result.replace(" ", "-")
 
 
-def add_outline(
-    html_root,
-    reader: pypdf.PdfReader,
-    writer: pypdf.PdfWriter,
-    node: Section,
-):
+def add_outline(html_root, reader: pypdf.PdfReader, writer: pypdf.PdfWriter, node: Section):
     if not node.is_root():
         id = get_dom_id(node)
         try:
@@ -115,52 +100,23 @@ def add_outline(
         fit = None
         if dest.get("/Type") != "/Fit":
             page = reader.get_destination_page_number(dest)
-            fit = pypdf.generic.Fit(
-                dest.get("/Type"),
-                (
-                    dest.get("/Left"),
-                    dest.get("/Top"),
-                    dest.get("/Zoom"),
-                ),
-            )
-        node.outline_item = writer.add_outline_item(
-            str(node),
-            page,
-            node.parent.outline_item,
-            fit=fit,
-        )
+            fit = pypdf.generic.Fit(dest.get("/Type"), (dest.get("/Left"), dest.get("/Top"), dest.get("/Zoom")))
+        node.outline_item = writer.add_outline_item(str(node), page, node.parent.outline_item, fit=fit)
     for child in node.children:
         add_outline(html_root, reader, writer, child)
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        prog="mdbook_pdf_summary",
-        description="Add outline to the PDF file.",
+    parser = argparse.ArgumentParser(prog="mdbook_pdf_summary", description="Add outline to the PDF file.")
+    parser.add_argument(
+        "--html_path", type=str, help="path of the `print.html` generated `mdbook-pdf`", default="print.html"
     )
     parser.add_argument(
-        "--html_path",
-        type=str,
-        help="path of the `print.html` generated `mdbook-pdf`",
-        default="print.html",
+        "--pdf_path", type=str, help="path of the `output.pdf` generated `mdbook-pdf`", default="output.pdf"
     )
+    parser.add_argument("--summary_path", type=str, help="path of the `SUMMARY.md`", default="src/SUMMARY.md")
     parser.add_argument(
-        "--pdf_path",
-        type=str,
-        help="path of the `output.pdf` generated `mdbook-pdf`",
-        default="output.pdf",
-    )
-    parser.add_argument(
-        "--summary_path",
-        type=str,
-        help="path of the `SUMMARY.md`",
-        default="src/SUMMARY.md",
-    )
-    parser.add_argument(
-        "--output_path",
-        type=str,
-        help="path of the output PDF file",
-        default="output_with_outline.pdf",
+        "--output_path", type=str, help="path of the output PDF file", default="output_with_outline.pdf"
     )
     args = parser.parse_args()
     print("============ args =============")
@@ -187,7 +143,7 @@ def main():
         data = f.read()
         html_root = lxml.html.fromstring(data)
     if html_root is None:
-        raise ("[ERROR] html_root is None")
+        raise "[ERROR] html_root is None"
     add_outline(html_root, reader, writer, section_root)
     with Path(args.output_path).open("wb") as f:
         writer.write(f)
@@ -203,7 +159,7 @@ def print_section_tree(root: Section):
 def parse_section_tree(md_text: str):
     root = Section("root", "", 0, 0)
     bfs_map = {0: [root]}
-    pattern = re.compile(r"( *)- ([^:\n]+)(?:: ([^\n]*))?\n?")
+    pattern = re.compile("( *)- ([^:\\n]+)(?:: ([^\\n]*))?\\n?")
     tmp = None
     min_indent_num = 4
     for indent, name, _value in pattern.findall(md_text):

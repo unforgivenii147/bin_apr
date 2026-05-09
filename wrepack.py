@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import zipfile
 from pathlib import Path
-
 from wheel.archive import wheel_load
 from wheel.wheelfile import WheelFile
 
@@ -39,11 +39,7 @@ def create_wheel_for_dir(pkg_dir: Path, dest_dir: Path | None = None):
         dest_dir.mkdir(parents=True, exist_ok=True)
     print(f"Packing {pkg_dir} -> {output_path}")
     try:
-        with WheelFile(
-            str(output_path),
-            "w",
-            compression=zipfile.ZIP_DEFLATED,
-        ) as wf:
+        with WheelFile(str(output_path), "w", compression=zipfile.ZIP_DEFLATED) as wf:
             for item in pkg_dir.rglob("*"):
                 if item.is_file():
                     arcname = item.relative_to(pkg_dir).as_posix()
@@ -63,7 +59,7 @@ def main():
         print(f"Output directory for wheels: {WHEELS_OUTPUT_DIR}")
     processed_count = 0
     for entry in UNPACKED_WHEELS_SOURCE_DIR.iterdir():
-        if entry.is_dir() and not entry.name.endswith(".dist-info"):
+        if entry.is_dir() and (not entry.name.endswith(".dist-info")):
             dist_info = find_dist_info_dir(entry)
             if dist_info:
                 try:

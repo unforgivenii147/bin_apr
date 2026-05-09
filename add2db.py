@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sqlite3
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -11,39 +11,24 @@ def get_current_folder_name():
 
 
 def folder_exists_in_db(cursor, folder_name):
-    cursor.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name,),
-    )
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (folder_name,))
     return cursor.fetchone() is not None
 
 
 def create_folder_table(cursor, folder_name):
-    cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS "{folder_name}" (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
-            file_contents TEXT
-        )
-    """)
+    cursor.execute(
+        f'\n        CREATE TABLE IF NOT EXISTS "{folder_name}" (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            filename TEXT NOT NULL,\n            file_contents TEXT\n        )\n    '
+    )
 
 
 def read_file_contents(filepath):
     try:
-        encodings = [
-            "utf-8",
-            "latin-1",
-            "cp1252",
-            "iso-8859-1",
-        ]
+        encodings = ["utf-8", "latin-1", "cp1252", "iso-8859-1"]
         for encoding in encodings:
             try:
                 with Path(filepath).open(encoding=encoding) as f:
                     return f.read(1024 * 1024)
-            except (
-                UnicodeDecodeError,
-                UnicodeError,
-            ):
+            except (UnicodeDecodeError, UnicodeError):
                 continue
         return "[Binary file content not stored]"
     except PermissionError:
@@ -61,12 +46,7 @@ def get_files_in_current_dir():
             if Path(item_path).is_file():
                 print(f"  Reading: {item}")
                 contents = read_file_contents(item_path)
-                files.append(
-                    {
-                        "filename": item,
-                        "contents": contents,
-                    }
-                )
+                files.append({"filename": item, "contents": contents})
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
@@ -75,14 +55,8 @@ def get_files_in_current_dir():
 def insert_files(cursor, folder_name, files):
     for file_info in files:
         cursor.execute(
-            f"""
-            INSERT INTO "{folder_name}" (filename,  file_contents)
-            VALUES (?, ?)
-        """,
-            (
-                file_info["filename"],
-                file_info["contents"],
-            ),
+            f'\n            INSERT INTO "{folder_name}" (filename,  file_contents)\n            VALUES (?, ?)\n        ',
+            (file_info["filename"], file_info["contents"]),
         )
 
 

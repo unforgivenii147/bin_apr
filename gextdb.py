@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import ast
 import os
@@ -6,23 +7,15 @@ import re
 import sqlite3
 from pathlib import Path
 from typing import Any
-
 from loguru import logger
 
 OUTPUT_DIR = Path("output")
 DB_PATH = Path("/sdcard/ext.db")
-ALLOWED_PYTHON_EXTENSIONS = (
-    ".py",
-    "",
-)
+ALLOWED_PYTHON_EXTENSIONS = (".py", "")
 
 
 class EntityExtractor(ast.NodeVisitor):
-    def __init__(
-        self,
-        source_content: str,
-        original_path: Path,
-    ) -> None:
+    def __init__(self, source_content: str, original_path: Path) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
@@ -39,12 +32,7 @@ class EntityExtractor(ast.NodeVisitor):
             code_slice[-1] = last_line[: node.end_col_offset]
         return "".join(code_slice)
 
-    def _extract_and_save(
-        self,
-        node: ast.AST,
-        entity_type: str,
-        name: str,
-    ):
+    def _extract_and_save(self, node: ast.AST, entity_type: str, name: str):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
         full_name = f"{scope_prefix}_{name}" if scope_prefix else name
@@ -74,15 +62,8 @@ class EntityExtractor(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign):
         if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             target_name = node.targets[0].id
-            if re.match(
-                r"^[A-Z_][A-Z0-9_]*$",
-                target_name,
-            ):
-                self._extract_and_save(
-                    node,
-                    "constant",
-                    target_name,
-                )
+            if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
+                self._extract_and_save(node, "constant", target_name)
 
     def generic_visit(self, node: ast.AST):
         super().generic_visit(node)
@@ -146,7 +127,7 @@ class EntityExtractor(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign):
         if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             target_name = node.targets[0].id
-            if re.match(r"^[A-Z_][A-Z0-9_]*$", target_name):
+            if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
                 self._extract_and_save(node, "constant", target_name)
 
     def generic_visit(self, node: ast.AST):
@@ -156,19 +137,9 @@ class EntityExtractor(ast.NodeVisitor):
 def create_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS entities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            full_name TEXT,
-            type TEXT,
-            code TEXT,
-            path TEXT,
-            is_constant BOOLEAN,
-            is_class BOOLEAN,
-            is_function BOOLEAN
-        )
-    """)
+    cursor.execute(
+        "\n        CREATE TABLE IF NOT EXISTS entities (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name TEXT,\n            full_name TEXT,\n            type TEXT,\n            code TEXT,\n            path TEXT,\n            is_constant BOOLEAN,\n            is_class BOOLEAN,\n            is_function BOOLEAN\n        )\n    "
+    )
     conn.commit()
     conn.close()
 
@@ -177,10 +148,7 @@ def save_entity_to_db(entity: dict[str, Any]):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute(
-        """
-        INSERT INTO entities (name, full_name, type, code, path, is_constant, is_class, is_function)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """,
+        "\n        INSERT INTO entities (name, full_name, type, code, path, is_constant, is_class, is_function)\n        VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n    ",
         (
             entity["name"],
             entity["full_name"],
@@ -216,7 +184,7 @@ def is_python_file_no_extension(path: Path) -> bool:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_lines = "".join(f.readlines(1024))
             return bool(
-                re.match(r"#!\s*/.*python", first_lines)
+                re.match("#!\\s*/.*python", first_lines)
                 or ("def " in first_lines or "class " in first_lines or "import " in first_lines)
             )
     except:
@@ -236,12 +204,7 @@ def process_single_file(path: Path) -> list[dict[str, Any]]:
 
 def main():
     parser = argparse.ArgumentParser(description="Extract Python entities and save to database.")
-    parser.add_argument(
-        "-db",
-        "--database",
-        action="store_true",
-        help="Save extracted entities to the database",
-    )
+    parser.add_argument("-db", "--database", action="store_true", help="Save extracted entities to the database")
     args = parser.parse_args()
     print(f"Starting analysis in {Path.cwd()}...")
     create_database()

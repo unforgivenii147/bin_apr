@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import ast
 import multiprocessing as mp
@@ -11,7 +12,7 @@ def find_unused_functions(source):
     try:
         tree = ast.parse(source)
     except SyntaxError:
-        return [], ["SyntaxError while parsing file"]
+        return ([], ["SyntaxError while parsing file"])
     defined = set()
     called = set()
 
@@ -27,7 +28,7 @@ def find_unused_functions(source):
 
     Visitor().visit(tree)
     unused = defined - called
-    return list(unused), []
+    return (list(unused), [])
 
 
 def remove_functions_from_source(source, unused_functions):
@@ -47,21 +48,21 @@ def process_file(filepath, dry_run=False):
     try:
         source = filepath.read_text(encoding="utf-8")
     except Exception as e:
-        return filepath, [], [f"Error reading file: {e}"]
+        return (filepath, [], [f"Error reading file: {e}"])
     unused, parse_errors = find_unused_functions(source)
     errors.extend(parse_errors)
     if not unused:
-        return filepath, [], errors
+        return (filepath, [], errors)
     try:
         new_source = remove_functions_from_source(source, unused)
     except Exception:
         errors.append("Error rewriting file:\n" + traceback.format_exc())
-        return filepath, unused, errors
+        return (filepath, unused, errors)
     if not dry_run:
         backup_path = filepath.with_suffix(filepath.suffix + ".bak")
         shutil.copy2(filepath, backup_path)
         filepath.write_text(new_source, encoding="utf-8")
-    return filepath, unused, errors
+    return (filepath, unused, errors)
 
 
 def gather_python_files(root: Path):

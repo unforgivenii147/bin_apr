@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import defaultdict
 from pathlib import Path
-
 import ssdeep
 from loguru import logger
 
@@ -13,7 +13,7 @@ def find_fuzzy_duplicates(threshold: int = 70):
     duplicates = defaultdict(list)
     print(f"Scanning for fuzzy duplicates in: {start_dir}")
     for filepath in start_dir.rglob("*"):
-        if filepath.is_file() and not filepath.is_symlink():
+        if filepath.is_file() and (not filepath.is_symlink()):
             try:
                 read_size = 1024 * 1024
                 with Path(filepath).open("rb") as f:

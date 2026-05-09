@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 from pathlib import Path
-
 from loguru import logger
 from PIL import Image
 

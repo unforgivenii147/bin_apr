@@ -1,20 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import shutil
 from pathlib import Path
-
 from loguru import logger
 
 
 def get_all_files(root: Path) -> list[Path]:
-    return [p for p in root.rglob("*") if p.is_file() and not p.name.startswith(".") and p.name != "folderize.py"]
+    return [p for p in root.rglob("*") if p.is_file() and (not p.name.startswith(".")) and (p.name != "folderize.py")]
 
 
 def safe_rename(src: Path, dest_dir: Path) -> Path:
     dest = dest_dir / src.name
     if not dest.exists():
         return dest
-    stem, suffix = dest.stem, dest.suffix
+    stem, suffix = (dest.stem, dest.suffix)
     i = 1
     while True:
         new_name = f"{stem}_{i}{suffix}"
@@ -25,12 +25,13 @@ def safe_rename(src: Path, dest_dir: Path) -> Path:
 
 
 def format_size_range(min_s: int, max_s: int) -> str:
+
     def fmt(n):
         if n < 1000:
             return f"{n}B"
-        if n < 1_000_000:
+        if n < 1000000:
             return f"{n // 1000}k"
-        return f"{n // 1_000_000}M"
+        return f"{n // 1000000}M"
 
     return f"{fmt(min_s)}-{fmt(max_s)}"
 
@@ -41,15 +42,15 @@ def main():
     if not files:
         logger.warning("No files found to process.")
         return
-    total_size = sum(f.stat().st_size for f in files)
+    total_size = sum((f.stat().st_size for f in files))
     num_files = len(files)
     print(f"Found {num_files:,} files ({total_size:,} bytes)")
     avg_file_size = total_size / num_files if num_files else 1
     target_files_per_dir = max(1000, int(num_files / 10))
-    target_size_per_dir = max(1_000_000, total_size // 10)
+    target_size_per_dir = max(1000000, total_size // 10)
     n_dirs_by_count = (num_files + target_files_per_dir - 1) // target_files_per_dir
     n_dirs_by_size = (total_size + target_size_per_dir - 1) // target_size_per_dir
-    n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))  # clamp 2–100
+    n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))
     print(f"Targeting ~{n_dirs} directories")
     files_sorted = sorted(files, key=lambda p: p.stat().st_size, reverse=True)
     dirs_info = [{"files": [], "size": 0} for _ in range(n_dirs)]
@@ -64,7 +65,7 @@ def main():
         if not d["files"]:
             continue
         sizes = [f.stat().st_size for f in d["files"]]
-        min_s, max_s = min(sizes), max(sizes)
+        min_s, max_s = (min(sizes), max(sizes))
         dir_name = format_size_range(min_s, max_s)
         base_name = dir_name
         counter = 1
@@ -74,7 +75,7 @@ def main():
         dir_path = root / dir_name
         dir_path.mkdir(exist_ok=True)
         created_dirs.append((dir_name, len(d["files"]), d["size"]))
-        existing_dir_names.add(dir_name)  # mark as used
+        existing_dir_names.add(dir_name)
         print(f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes")
         for f in d["files"]:
             dest = safe_rename(f, dir_path)

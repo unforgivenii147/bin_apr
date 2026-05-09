@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import json
 import os
 import shutil
 from collections import defaultdict
 from pathlib import Path
-
 import xxhash
 from loguru import logger
 
@@ -59,18 +59,14 @@ def build_groups(root: Path, cache: dict):
             size = st.st_size
             mtime = st.st_mtime
             cached = cache.get(key)
-            if cached and cached.get("size") == size and cached.get("mtime") == mtime:
+            if cached and cached.get("size") == size and (cached.get("mtime") == mtime):
                 h = cached["hash"]
             else:
                 try:
                     h = xxh64_of_path(fp)
                 except Exception:
                     continue
-                cache[key] = {
-                    "size": size,
-                    "mtime": mtime,
-                    "hash": h,
-                }
+                cache[key] = {"size": size, "mtime": mtime, "hash": h}
             groups[h].append(fp)
     return groups
 
@@ -94,10 +90,7 @@ def dedupe(root: Path, dry_run=False, force=False):
                 print(f"[DRY] move: {original} -> {stored_path}")
             else:
                 stored_path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(
-                    str(original),
-                    str(stored_path),
-                )
+                shutil.move(str(original), str(stored_path))
                 print(f"moved: {original} -> {stored_path}")
             changed = True
         elif original.exists():
@@ -122,10 +115,7 @@ def dedupe(root: Path, dry_run=False, force=False):
                 Path(str(p)).symlink_to(str(stored_path.resolve()))
                 print(f"symlinked: {p} -> {stored_path.resolve()}")
             changed = True
-        manifest[str(stored_path)] = {
-            "hash": h,
-            "originals": [str(p) for p in paths_sorted],
-        }
+        manifest[str(stored_path)] = {"hash": h, "originals": [str(p) for p in paths_sorted]}
     if not dry_run and changed:
         save_json(MANIFEST_PATH, manifest)
         save_json(CACHE_PATH, cache)
@@ -146,7 +136,7 @@ def restore(dry_run=False):
             continue
         originals = [Path(p) for p in info.get("originals", [])]
         for orig in originals:
-            if orig.exists() and not orig.is_symlink():
+            if orig.exists() and (not orig.is_symlink()):
                 print(f"skipping restore for {orig} (exists and not a symlink)")
                 continue
             if orig.is_symlink():
@@ -190,37 +180,16 @@ def main():
     ap = argparse.ArgumentParser(
         description="Deduplicate files by moving one copy to ~/dups and symlinking duplicates using xxhash."
     )
-    ap.add_argument(
-        "path",
-        nargs="?",
-        default=".",
-        help="Path to scan (default current directory)",
-    )
-    ap.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show actions without making changes",
-    )
-    ap.add_argument(
-        "--restore",
-        action="store_true",
-        help="Restore files from ~/dups using manifest",
-    )
-    ap.add_argument(
-        "--force",
-        action="store_true",
-        help="Force overwrite behavior (not used for safety here)",
-    )
+    ap.add_argument("path", nargs="?", default=".", help="Path to scan (default current directory)")
+    ap.add_argument("--dry-run", action="store_true", help="Show actions without making changes")
+    ap.add_argument("--restore", action="store_true", help="Restore files from ~/dups using manifest")
+    ap.add_argument("--force", action="store_true", help="Force overwrite behavior (not used for safety here)")
     args = ap.parse_args()
     root = Path(args.path).resolve()
     if args.restore:
         restore(dry_run=args.dry_run)
     else:
-        dedupe(
-            root,
-            dry_run=args.dry_run,
-            force=args.force,
-        )
+        dedupe(root, dry_run=args.dry_run, force=args.force)
 
 
 if __name__ == "__main__":

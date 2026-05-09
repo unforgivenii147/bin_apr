@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 
+import sys
 from markdown2 import markdown, markdown_path
 from weasyprint import CSS, HTML
 
@@ -10,11 +10,7 @@ class ValidationError(Exception):
 
 
 def md2pdf(
-    pdf_file_path,
-    md_content=None,
-    md_file_path=None,
-    css_file_path="/sdcard/_static/css/markdown.css",
-    base_url=None,
+    pdf_file_path, md_content=None, md_file_path=None, css_file_path="/sdcard/_static/css/markdown.css", base_url=None
 ):
     raw_html = ""
     extras = ["cuddled-lists", "tables"]
@@ -35,7 +31,4 @@ def md2pdf(
 if __name__ == "__main__":
     md_file = sys.argv[1]
     pdf_file = md_file.replace(".md", ".pdf")
-    md2pdf(
-        pdf_file_path=pdf_file,
-        md_file_path=md_file,
-    )
+    md2pdf(pdf_file_path=pdf_file, md_file_path=md_file)

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import importlib
 import inspect
@@ -8,7 +9,6 @@ from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 from textwrap import dedent
-
 from dh import get_files, unique_path
 from loguru import logger
 
@@ -36,7 +36,7 @@ def extract_ast_docs(src: str) -> tuple[str, list, list]:
     try:
         tree = ast.parse(src)
     except Exception:
-        return "", [], []
+        return ("", [], [])
     module_doc = dedent(ast.get_docstring(tree) or "").strip()
     functions = []
     classes = []
@@ -51,7 +51,7 @@ def extract_ast_docs(src: str) -> tuple[str, list, list]:
             doc = dedent(doc).strip()
             if doc:
                 classes.append((node.name, doc))
-    return module_doc, functions, classes
+    return (module_doc, functions, classes)
 
 
 def extract_from_file(py_path: str) -> tuple[str, str, str, list, list]:
@@ -60,9 +60,9 @@ def extract_from_file(py_path: str) -> tuple[str, str, str, list, list]:
     except Exception:
         return None
     module_doc, functions, classes = extract_ast_docs(src)
-    if not module_doc and not functions and not classes:
+    if not module_doc and (not functions) and (not classes):
         return None
-    return module_doc, functions, classes
+    return (module_doc, functions, classes)
 
 
 def extract_from_importable(name: str):
@@ -77,14 +77,14 @@ def extract_from_importable(name: str):
         doc = dedent(inspect.getdoc(module) or "").strip()
         if not doc:
             return None
-        return doc, [], []
+        return (doc, [], [])
 
 
 def module_to_md_paths(name: str):
     parts = name.split(".")
     folder = os.path.join(BASE_DIR, *parts[:-1])
     filename = f"{parts[-1]}.md"
-    return folder, os.path.join(folder, filename)
+    return (folder, os.path.join(folder, filename))
 
 
 def file_to_md_paths(py_file: str, root: str):
@@ -93,7 +93,7 @@ def file_to_md_paths(py_file: str, root: str):
     parts[-1] = parts[-1].replace(".py", ".md")
     folder = os.path.join(BASE_DIR, *parts[:-1])
     outfile = os.path.join(BASE_DIR, *parts)
-    return folder, outfile
+    return (folder, outfile)
 
 
 def save_markdown(folder: str, path: str, content: str):
@@ -149,16 +149,6 @@ def main():
             pending.popleft().get()
 
 
-"""
-    print(f"processing {len(importable)} importable")
-    with get_context('spawn').Pool(8) as pool:
-        pending=deque()
-        for x in importables:
-            pending.append(pool.apply_async(process_importable_task, (x,)))
-            if len(pending)>16:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
-"""
+"\n    print(f\"processing {len(importable)} importable\")\n    with get_context('spawn').Pool(8) as pool:\n        pending=deque()\n        for x in importables:\n            pending.append(pool.apply_async(process_importable_task, (x,)))\n            if len(pending)>16:\n                pending.popleft().get()\n        while pending:\n            pending.popleft().get()\n"
 if __name__ == "__main__":
     main()

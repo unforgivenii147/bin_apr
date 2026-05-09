@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -21,11 +21,7 @@ def folderize_by_extension(cwd):
             ext = file_path.suffix.lower()[1:] if file_path.suffix else "no_extension"
             size = file_path.stat().st_size
             if ext not in extension_stats:
-                extension_stats[ext] = {
-                    "count": 0,
-                    "total_size": 0,
-                    "files": [],
-                }
+                extension_stats[ext] = {"count": 0, "total_size": 0, "files": []}
             extension_stats[ext]["count"] += 1
             extension_stats[ext]["total_size"] += size
             extension_stats[ext]["files"].append(file_path)
@@ -43,11 +39,7 @@ def folderize_by_extension(cwd):
                 target_path = target_dir / f"{file_path.stem}_{counter}{file_path.suffix}"
                 counter += 1
             shutil.move(str(file_path), str(target_path))
-    for dir_path in sorted(
-        root_path.glob("**/*"),
-        key=lambda p: len(p.parts),
-        reverse=True,
-    ):
+    for dir_path in sorted(root_path.glob("**/*"), key=lambda p: len(p.parts), reverse=True):
         if dir_path.is_dir() and dir_path != root_path:
             try:
                 dir_path.rmdir()
@@ -65,11 +57,11 @@ def folderize_by_extension(cwd):
         total_size += stats["total_size"]
         ext_display = ext or "no_extension"
         size_str = get_size_str(stats["total_size"])
-        print(f"{ext_display:<15} : {stats['count']:4} file{'s' if stats['count'] != 1 else ' '}  {size_str:>8}")
+        print(f"{ext_display:<15} : {stats['count']:4} file{('s' if stats['count'] != 1 else ' ')}  {size_str:>8}")
     print("-" * 50)
     print(f"{'TOTAL':<15} : {total_files:4} files  {get_size_str(total_size):>8}")
     print("=" * 50)
-    return created_dirs, extension_stats
+    return (created_dirs, extension_stats)
 
 
 if __name__ == "__main__":

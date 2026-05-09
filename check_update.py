@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import sys
 import time
-
 import requests
 from dh import get_installed_packages
 from loguru import logger
@@ -35,7 +35,7 @@ def compare_versions(current: str, latest: str) -> str:
         if current_v < latest_v:
             return "update"
         if current_v > latest_v:
-            return "newer"  # Curren return "current"
+            return "newer"
     except InvalidVersion:
         if current == latest:
             return "current"
@@ -63,10 +63,7 @@ def main() -> None:
     updates_found = []
     errors = []
     up_to_date = 0
-    for i, (
-        package,
-        current_version,
-    ) in enumerate(sorted(installed.items()), 1):
+    for i, (package, current_version) in enumerate(sorted(installed.items()), 1):
         progress = f"[{i:3d}/{total_packages:3d}]"
         latest_version = check_package_on_pypi(package.lower(), current_version)
         if latest_version is None:
@@ -76,16 +73,10 @@ def main() -> None:
         status = compare_versions(current_version, latest_version)
         if status == "update":
             print(f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}")
-            updates_found.append(
-                (
-                    package,
-                    current_version,
-                    latest_version,
-                )
-            )
+            updates_found.append((package, current_version, latest_version))
         elif status == "newer":
             print(
-                f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})",
+                f"{progress} {package:<30} : ⚠️  current version ({current_version}) is newer than PyPI ({latest_version})"
             )
             errors.append(package)
         else:
@@ -102,11 +93,7 @@ def main() -> None:
         print("\n" + "=" * 60)
         print("PACKAGES TO UPDATE")
         print("=" * 60)
-        for (
-            package,
-            current,
-            latest,
-        ) in updates_found:
+        for package, current, latest in updates_found:
             print(f"  {package:<30} {current} -> {latest}")
         print("\n💡 To upgrade all packages, run:")
         packages_to_upgrade = [p[0] for p in updates_found]

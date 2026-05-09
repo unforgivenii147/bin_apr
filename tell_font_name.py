@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
 from loguru import logger
@@ -10,11 +10,11 @@ from termcolor import cprint
 
 
 def is_ascii_printable(s: str) -> bool:
-    return all(32 <= ord(c) <= 126 for c in s)
+    return all((32 <= ord(c) <= 126 for c in s))
 
 
 def clean_filename(s: str) -> str:
-    s = re.sub(r"[^\w\-\.]", "", s)
+    s = re.sub("[^\\w\\-\\.]", "", s)
     return s.strip("_-.")
 
 
@@ -27,7 +27,7 @@ def get_best_name(font, name_id):
             name = rec.toUnicode().strip()
         except Exception:
             continue
-        if rec.platformID == 3 and rec.langID == 0x0409:
+        if rec.platformID == 3 and rec.langID == 1033:
             return name
         if is_ascii_printable(name):
             fallback = name
@@ -39,12 +39,12 @@ def get_font_names(path):
     family = get_best_name(font, 1)
     subfamily = get_best_name(font, 2)
     if not family:
-        return None, None
+        return (None, None)
     family = clean_filename(family)
     subfamily = "Regular" if not subfamily else clean_filename(subfamily)
     if subfamily.lower() == family.lower():
         subfamily = "Regular"
-    return family, subfamily
+    return (family, subfamily)
 
 
 def process_file(fn):

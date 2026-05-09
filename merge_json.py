@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import sys
 from pathlib import Path
-
 from dh import get_random_name
 from loguru import logger
 
@@ -50,12 +50,7 @@ def main():
         print(f"{out_file} exists")
         sys.exit(0)
     with Path(out_file).open("w", encoding="utf-8") as fj:
-        json.dump(
-            merged,
-            fj,
-            indent=2,
-            ensure_ascii=False,
-        )
+        json.dump(merged, fj, indent=2, ensure_ascii=False)
     print(f"saved to {out_file}")
 
 

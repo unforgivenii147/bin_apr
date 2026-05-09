@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 from dh import fsz, gsz, is_image, mpf3, unique_path
 from loguru import logger
 
@@ -15,9 +15,7 @@ except ImportError:
     from PIL import Image
 
     USE_CV2 = False
-IGNORED_DIRS = {
-    ".git",
-}
+IGNORED_DIRS = {".git"}
 
 
 def process_file(file_path: str) -> bool:
@@ -38,11 +36,7 @@ def process_file(file_path: str) -> bool:
                 return False
             if img.shape[2] == 4:
                 b, g, r, a = cv2.split(img)
-                white_bg = np.full(
-                    img.shape[:2],
-                    255,
-                    dtype=np.uint8,
-                )
+                white_bg = np.full(img.shape[:2], 255, dtype=np.uint8)
                 alpha = a.astype(float) / 255.0
                 img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
                 img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
@@ -50,22 +44,11 @@ def process_file(file_path: str) -> bool:
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
-            success = cv2.imwrite(
-                str(output_path),
-                final_img,
-                [
-                    int(cv2.IMWRITE_JPEG_QUALITY),
-                    95,
-                ],
-            )
+            success = cv2.imwrite(str(output_path), final_img, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         else:
             img = Image.open(path)
             if img.mode in {"RGBA", "LA"}:
-                background = Image.new(
-                    "RGB",
-                    img.size,
-                    (255, 255, 255),
-                )
+                background = Image.new("RGB", img.size, (255, 255, 255))
                 background.paste(img, mask=img.split()[-1])
                 final_img = background
             else:
@@ -93,7 +76,7 @@ def main() -> None:
         files = [
             f
             for f in cwd.rglob("*")
-            if f.is_file() and is_image(f) and not any(part in IGNORED_DIRS for part in f.parts)
+            if f.is_file() and is_image(f) and (not any((part in IGNORED_DIRS for part in f.parts)))
         ]
     if not files:
         print("No image files detected.")

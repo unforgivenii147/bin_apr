@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import datetime
 import grp
@@ -9,21 +10,16 @@ import shutil
 import stat
 import subprocess
 from pathlib import Path
-
 from loguru import logger
 
 
-def colorize(
-    text: str,
-    mode: int,
-    link_target: str | None = None,
-) -> str:
+def colorize(text: str, mode: int, link_target: str | None = None) -> str:
     if stat.S_ISDIR(mode):
-        return f"\033[34;1m{text}\033[0m"
+        return f"\x1b[34;1m{text}\x1b[0m"
     if stat.S_ISLNK(mode):
-        return f"\033[36m{text}\033[0m"
+        return f"\x1b[36m{text}\x1b[0m"
     if mode & stat.S_IXUSR:
-        return f"\033[32m{text}\033[0m"
+        return f"\x1b[32m{text}\x1b[0m"
     return text
 
 
@@ -33,13 +29,7 @@ def detect_icon(name: str, mode: int) -> str:
     if stat.S_ISLNK(mode):
         return "🔗"
     ext = name.lower().split(".")[-1]
-    if ext in {
-        "png",
-        "jpg",
-        "jpeg",
-        "gif",
-        "webp",
-    }:
+    if ext in {"png", "jpg", "jpeg", "gif", "webp"}:
         return "🖼️"
     if ext in {"py", "sh"}:
         return "🐍"
@@ -51,14 +41,7 @@ def detect_icon(name: str, mode: int) -> str:
 def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
     try:
         p = subprocess.run(
-            [
-                "git",
-                "-C",
-                path,
-                "status",
-                "--porcelain=v2",
-                "-z",
-            ],
+            ["git", "-C", path, "status", "--porcelain=v2", "-z"],
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             text=False,
@@ -76,25 +59,14 @@ def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
         if len(parts) < 8:
             continue
         xy = parts[1].decode("utf-8")
-        x, y = xy[0], xy[1]
+        x, y = (xy[0], xy[1])
         filename = parts[-1].decode("utf-8", errors="ignore")
-        result[filename] = {
-            "index": x,
-            "work": y,
-            "raw": xy,
-        }
+        result[filename] = {"index": x, "work": y, "raw": xy}
     return result
 
 
 class Entry:
-    def __init__(
-        self,
-        path: str,
-        name: str,
-        stat_obj,
-        link_target=None,
-        git=None,
-    ) -> None:
+    def __init__(self, path: str, name: str, stat_obj, link_target=None, git=None) -> None:
         self.path = path
         self.name = name
         self.stat = stat_obj
@@ -117,7 +89,7 @@ def mode_to_string(mode: int) -> str:
         (stat.S_IXOTH, "x"),
     ]
     for bit, ch in perms:
-        chars.append(ch if (mode & bit) else "-")
+        chars.append(ch if mode & bit else "-")
     return "".join(chars)
 
 
@@ -129,12 +101,7 @@ def human_size(n: int) -> str:
     return f"{n:.1f}P"
 
 
-def output_long(
-    entries: list[Entry],
-    icons=False,
-    colors=True,
-    human=True,
-) -> None:
+def output_long(entries: list[Entry], icons=False, colors=True, human=True) -> None:
     for e in entries:
         st = e.stat
         mode_s = mode_to_string(st.st_mode)
@@ -155,12 +122,7 @@ def output_long(
         print(f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}")
 
 
-def output_columns(
-    entries: list[Entry],
-    icons=False,
-    colors=True,
-    width=None,
-) -> None:
+def output_columns(entries: list[Entry], icons=False, colors=True, width=None) -> None:
     if width is None:
         env_cols = os.environ.get("COLUMNS")
         if env_cols and env_cols.isdigit():
@@ -177,14 +139,14 @@ def output_columns(
     def real_len(s: str) -> int:
         import re
 
-        return len(re.sub(r"\x1b\[[0-9;]*m", "", s))
+        return len(re.sub("\\x1b\\[[0-9;]*m", "", s))
 
     def truncate(text: str, max_len: int) -> str:
         if real_len(text) <= max_len:
             return text
         import regex as re
 
-        plain = re.sub(r"\x1b\[[0-9;]*m", "", text)
+        plain = re.sub("\\x1b\\[[0-9;]*m", "", text)
         return plain[: max_len - 1] + "…"
 
     rendered = []
@@ -202,12 +164,7 @@ def output_columns(
         print("".join(padded))
 
 
-def print_tree(
-    base: str,
-    prefix: str = "",
-    icons=False,
-    colors=True,
-) -> None:
+def print_tree(base: str, prefix: str = "", icons=False, colors=True) -> None:
     try:
         names = sorted(os.listdir(base))
     except PermissionError:
@@ -274,36 +231,21 @@ def print_entries(entries: list[Entry], args) -> None:
                 "mode": mode_to_string(e.stat.st_mode),
                 "mtime": e.stat.st_mtime,
                 "git": e.git,
-                "type": (
-                    "dir" if stat.S_ISDIR(e.stat.st_mode) else ("link" if stat.S_ISLNK(e.stat.st_mode) else "file")
-                ),
+                "type": "dir" if stat.S_ISDIR(e.stat.st_mode) else "link" if stat.S_ISLNK(e.stat.st_mode) else "file",
             }
             for e in entries
         ]
         print(json.dumps(out, indent=2))
         return
     if args.long:
-        output_long(
-            entries,
-            icons=args.icons,
-            colors=not args.no_color,
-        )
+        output_long(entries, icons=args.icons, colors=not args.no_color)
         return
-    output_columns(
-        entries,
-        icons=args.icons,
-        colors=not args.no_color,
-    )
+    output_columns(entries, icons=args.icons, colors=not args.no_color)
 
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument(
-        "paths",
-        nargs="*",
-        default=["."],
-        help="Files or directories",
-    )
+    p.add_argument("paths", nargs="*", default=["."], help="Files or directories")
     p.add_argument("-l", "--long", action="store_true")
     p.add_argument("-a", "--all", action="store_true")
     p.add_argument("-R", "--recursive", action="store_true")
@@ -317,11 +259,7 @@ def main() -> None:
         if len(args.paths) > 1:
             print(f"{path}:")
         if args.tree:
-            print_tree(
-                path,
-                icons=args.icons,
-                colors=not args.no_color,
-            )
+            print_tree(path, icons=args.icons, colors=not args.no_color)
             continue
         if args.recursive:
             list_recursive(path, args)
@@ -335,12 +273,7 @@ def main() -> None:
             if args.git:
                 gitmap = get_git_status_for_dir(Path(path).parent)
                 git = gitmap.get(Path(path).name)
-            e = Entry(
-                Path(path).parent,
-                Path(path).name,
-                st,
-                git=git,
-            )
+            e = Entry(Path(path).parent, Path(path).name, st, git=git)
             print_entries([e], args)
             continue
         try:
@@ -365,15 +298,7 @@ def main() -> None:
                     link_t = Path(fp).readlink()
                 except OSError:
                     link_t = None
-            entries.append(
-                Entry(
-                    fp,
-                    n,
-                    st,
-                    link_t,
-                    gitmap.get(n),
-                )
-            )
+            entries.append(Entry(fp, n, st, link_t, gitmap.get(n)))
         print_entries(entries, args)
 
 

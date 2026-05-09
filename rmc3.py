@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, cprint, fsz, gsz, mpf
 from loguru import logger
 from termcolor import cprint
@@ -17,7 +17,7 @@ def process_file(fp):
     removed = 0
     for line in lines:
         stripped = line.lstrip(" ").rstrip(" ").strip()
-        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and stripped != DOC_TH1 * 2:
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOC_TH1 * 2):
             removed += 1
             continue
         nl.append(line)

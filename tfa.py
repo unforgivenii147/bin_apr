@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from loguru import logger
 
@@ -28,12 +28,7 @@ def main():
             translations[w] = eng
             print(f"{w} → {eng}")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
-        json.dump(
-            translations,
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
+        json.dump(translations, f, ensure_ascii=False, indent=2)
     print(f"\nSaved JSON dictionary to {OUTPUT_FILE}")
 
 

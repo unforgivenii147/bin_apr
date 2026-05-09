@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import json
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -17,13 +17,7 @@ def csv_to_json(csv_file):
         reader = csv.DictReader(f)
         data = list(reader)
     with json_path.open("w", encoding="utf-8") as f:
-        json.dump(
-            data,
-            f,
-            indent=4,
-            ensure_ascii=False,
-            sort_keys=True,
-        )
+        json.dump(data, f, indent=4, ensure_ascii=False, sort_keys=True)
     print(f"Converted (pretty JSON): {csv_path} → {json_path}")
 
 

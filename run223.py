@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import get_files
 from loguru import logger
 
@@ -12,17 +12,7 @@ def run_2to3(file_path) -> None:
         print(f"File not found: {file_path.name}")
         return
     try:
-        subprocess.run(
-            [
-                "2to3",
-                "-w",
-                "-n",
-                "-f",
-                "all",
-                file_path,
-            ],
-            check=True,
-        )
+        subprocess.run(["2to3", "-w", "-n", "-f", "all", file_path], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running 2to3: {e}")
 

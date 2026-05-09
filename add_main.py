@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -48,15 +48,9 @@ def add_main_block_if_missing(filepath: Path):
         if MAINBLOCK_INDICATOR in original_content:
             return
         print(f"Adding __main__ block to: '{filepath.name}'")
-        lines_to_add = [
-            "",
-            MAINBLOCK_INDICATOR,
-            "    # Placeholder for main execution logic",
-            "    pass",
-            "",
-        ]
+        lines_to_add = ["", MAINBLOCK_INDICATOR, "    # Placeholder for main execution logic", "    pass", ""]
         new_content_lines = content_lines[:]
-        if new_content_lines and not new_content_lines[-1].endswith("\n"):
+        if new_content_lines and (not new_content_lines[-1].endswith("\n")):
             new_content_lines.append("")
         new_content_lines.extend(lines_to_add)
         new_content = "\n".join(new_content_lines)

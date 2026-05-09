@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import io
 import os
 import re
 import tokenize
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -21,7 +21,7 @@ def remove_comments_and_docstrings(source_code):
         _end_lineno, end_col = tok[3]
         if start_lineno > last_lineno:
             last_col = 0
-        if (toktype == tokenize.COMMENT) or (toktype == tokenize.STRING and prev_toktype == tokenize.INDENT):
+        if toktype == tokenize.COMMENT or (toktype == tokenize.STRING and prev_toktype == tokenize.INDENT):
             pass
         else:
             if start_col > last_col:
@@ -56,8 +56,8 @@ def compress_python_file_aggressively(filepath):
             return name
         return shorten_variable_name(name)
 
-    content_no_multiline_strings = re.sub(r"'''.*?'''|\"\"\".*?\"\"\"", "", content, flags=re.DOTALL)
-    content_no_comments_single = re.sub(r"#.*", "", content_no_multiline_strings)
+    content_no_multiline_strings = re.sub("'''.*?'''|\\\"\\\"\\\".*?\\\"\\\"\\\"", "", content, flags=re.DOTALL)
+    content_no_comments_single = re.sub("#.*", "", content_no_multiline_strings)
     lines = content_no_comments_single.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]
     final_content = "\n".join(non_empty_lines)

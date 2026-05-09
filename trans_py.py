@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import os
 import re
@@ -6,7 +7,6 @@ import shutil
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 from loguru import logger
@@ -21,22 +21,19 @@ _thread_local = threading.local()
 
 def get_translator():
     if not hasattr(_thread_local, "translator"):
-        _thread_local.translator = GoogleTranslator(
-            source=SRC_LANG,
-            target=TARGET_LANG,
-        )
+        _thread_local.translator = GoogleTranslator(source=SRC_LANG, target=TARGET_LANG)
     return _thread_local.translator
 
 
 def is_non_english(line):
-    return re.search(r"[^\x00-\x7F]", line)
+    return re.search("[^\\x00-\\x7F]", line)
 
 
 def translate_line(line):
     if is_non_english(line.strip()):
         try:
             trans = get_translator().translate(line.strip())
-            if trans and trans.strip() and trans.strip() != line.strip():
+            if trans and trans.strip() and (trans.strip() != line.strip()):
                 return trans
         except Exception as e:
             print(f"Translation error: {e} -- Line: {line}")
@@ -74,11 +71,7 @@ def process_file(filepath):
     code = Path(filepath).read_text(encoding="utf-8")
     len(code) > CHUNK_SIZE
     try:
-        parsed = ast.parse(
-            code,
-            filename=filepath,
-            type_comments=True,
-        )
+        parsed = ast.parse(code, filename=filepath, type_comments=True)
     except Exception as e:
         print(f"Failed to parse {filepath}: {e}")
         return
@@ -86,15 +79,7 @@ def process_file(filepath):
     new_lines = list(lines)
     offset_map = {}
     for node in ast.walk(parsed):
-        if isinstance(
-            node,
-            (
-                ast.FunctionDef,
-                ast.AsyncFunctionDef,
-                ast.ClassDef,
-                ast.Module,
-            ),
-        ):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Module)):
             docstring = ast.get_docstring(node, clean=False)
             if docstring:
                 doc_start = node.body[0].lineno - 1 if node.body else None
@@ -116,12 +101,7 @@ def process_file(filepath):
                         break
                     line_idx += 1
                 doc_block = "\n".join(doc_lines)
-                doc_body = re.sub(
-                    rf"^{quote_type}|{quote_type}$",
-                    "",
-                    doc_block.strip(),
-                    flags=re.MULTILINE,
-                ).strip()
+                doc_body = re.sub(f"^{quote_type}|{quote_type}$", "", doc_block.strip(), flags=re.MULTILINE).strip()
                 translated_doc_body = translate_docstring(doc_body)
                 translated_doc_block = f"{quote_type}\n{translated_doc_body}\n{quote_type}"
                 start = docstring_line + offset_map.get(docstring_line, 0)
@@ -138,7 +118,7 @@ def process_file(filepath):
         if stripped.startswith("#") and is_non_english(stripped[1:]):
             trans = translate_line(stripped[1:].strip())
             if trans:
-                indentation = re.match(r"\s*", line).group(0)
+                indentation = re.match("\\s*", line).group(0)
                 final_lines.append(f"{indentation}# {trans}")
     Path(filepath).write_text("\n".join(final_lines) + "\n", encoding="utf-8")
     print(f"Translated: {filepath}")

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gext, gsz, mpf
 from loguru import logger
 from rjsmin import jsmin
@@ -26,11 +26,11 @@ def process_file(path) -> str:
         after = gsz(path)
         diff_size = before - after
         if diff_size > 0:
-            reduction = ((before - after) / before) * 100
+            reduction = (before - after) / before * 100
             cprint(f"- {fsz(diff_size)} | reduction : {reduction:.3f}%", "cyan")
             return None
         if diff_size < 0:
-            expantion = ((after - before) / after) * 100
+            expantion = (after - before) / after * 100
             cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%", "yellow")
             return None
     except Exception as e:

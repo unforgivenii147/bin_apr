@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import mmap
 import random
 import secrets
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 MMAP_THRESHOLD_BYTES = 1 * 1024 * 1024
@@ -13,10 +13,7 @@ MMAP_THRESHOLD_BYTES = 1 * 1024 * 1024
 
 def get_line_offsets(file_path):
     offsets = []
-    with (
-        file_path.open("rb") as f,
-        mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm,
-    ):
+    with file_path.open("rb") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
         offset = 0
         while True:
             offsets.append(offset)
@@ -31,7 +28,7 @@ def crypto_shuffle_offsets(offsets):
     n = len(offsets)
     for i in range(n - 1, 0, -1):
         j = secrets.randbelow(i + 1)
-        offsets[i], offsets[j] = offsets[j], offsets[i]
+        offsets[i], offsets[j] = (offsets[j], offsets[i])
 
 
 def shuffle3_offsets(offsets):
@@ -39,18 +36,18 @@ def shuffle3_offsets(offsets):
     n = len(offsets)
     for i in range(n - 1, 0, -1):
         j = sys_random.randint(0, i)
-        offsets[i], offsets[j] = offsets[j], offsets[i]
+        offsets[i], offsets[j] = (offsets[j], offsets[i])
 
 
 def weighted_shuffle_offsets(offsets):
     n = len(offsets)
     for i in range(n - 1, 0, -1):
         j = random.randint(0, i)
-        offsets[i], offsets[j] = offsets[j], offsets[i]
+        offsets[i], offsets[j] = (offsets[j], offsets[i])
     if n > 1:
         for i in range(n - 1):
             swap_pos = random.randint(i + 1, n - 1)
-            offsets[i], offsets[swap_pos] = offsets[swap_pos], offsets[i]
+            offsets[i], offsets[swap_pos] = (offsets[swap_pos], offsets[i])
 
 
 def enhanced_shuffle_large_file(input_file_path, output_file_path):
@@ -117,8 +114,7 @@ def enhanced_shuffle_small_file(input_file_path, output_file_path):
             lines = f.readlines()
     except MemoryError:
         print(
-            f"MemoryError: File '{input_file_path}' is too large to load into memory. "
-            "Consider increasing 1mb or using a system with more RAM.",
+            f"MemoryError: File '{input_file_path}' is too large to load into memory. Consider increasing 1mb or using a system with more RAM.",
             file=sys.stderr,
         )
         return False
@@ -149,7 +145,7 @@ def crypto_shuffle(lst):
     n = len(lst)
     for i in range(n - 1, 0, -1):
         j = secrets.randbelow(i + 1)
-        lst[i], lst[j] = lst[j], lst[i]
+        lst[i], lst[j] = (lst[j], lst[i])
 
 
 def shuffle3(lst):
@@ -157,18 +153,18 @@ def shuffle3(lst):
     n = len(lst)
     for i in range(n - 1, 0, -1):
         j = sys_random.randint(0, i)
-        lst[i], lst[j] = lst[j], lst[i]
+        lst[i], lst[j] = (lst[j], lst[i])
 
 
 def weighted_shuffle(lst):
     n = len(lst)
     for i in range(n - 1, 0, -1):
         j = random.randint(0, i)
-        lst[i], lst[j] = lst[j], lst[i]
+        lst[i], lst[j] = (lst[j], lst[i])
     if n > 1:
         for i in range(n - 1):
             swap_pos = random.randint(i + 1, n - 1)
-            lst[i], lst[swap_pos] = lst[swap_pos], lst[i]
+            lst[i], lst[swap_pos] = (lst[swap_pos], lst[i])
 
 
 def main():

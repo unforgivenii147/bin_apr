@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import os
 from pathlib import Path
-
 import jsbeautifier
 
 
@@ -39,11 +39,7 @@ def beautify_files_in_directory(cwd=".") -> None:
         ".html": (jsbeautifier.beautify, "HTML"),
         ".css": (jsbeautifier.beautify, "CSS"),
     }
-    for (
-        foldername,
-        _subfolders,
-        filenames,
-    ) in os.walk(cwd):
+    for foldername, _subfolders, filenames in os.walk(cwd):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)
             if filename.endswith(".json"):
@@ -52,16 +48,9 @@ def beautify_files_in_directory(cwd=".") -> None:
                     processed_count += 1
                 else:
                     errors_count += 1
-            for ext, (
-                func,
-                asset_type,
-            ) in beautifier_map.items():
+            for ext, (func, asset_type) in beautifier_map.items():
                 if filename.endswith(ext):
-                    success = beautify_code_file(
-                        file_path,
-                        func,
-                        asset_type,
-                    )
+                    success = beautify_code_file(file_path, func, asset_type)
                     if success:
                         processed_count += 1
                     else:

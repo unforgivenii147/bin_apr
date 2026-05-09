@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, mpf3
 from termcolor import cprint
 
@@ -14,7 +14,7 @@ MAX_QUEUE = 16
 def process_file(fp) -> None:
     before = gsz(fp)
     src = fp.read_text(encoding="utf-8")
-    pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
+    pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
     if out != src:
         code = out.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
@@ -29,15 +29,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = (
-        [Path(f) for f in args]
-        if args
-        else get_files(
-            cwd,
-            recursive=True,
-            extensions=[".html", ".htm", ".xml"],
-        )
-    )
+    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm", ".xml"])
     mpf3(process_file, files)
     diff_size = before - gsz(cwd)
     print(f"space saved : {fsz(diff_size)}")

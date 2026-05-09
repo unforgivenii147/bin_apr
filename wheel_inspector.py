@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import typing
 import zipfile
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -57,13 +57,13 @@ class WheelInspector:
         try:
             with zipfile.ZipFile(wheel_path, "r") as zf:
                 files = zf.namelist()
-                has_metadata = any(f.endswith("/METADATA") for f in files)
+                has_metadata = any((f.endswith("/METADATA") for f in files))
                 if not has_metadata:
                     issues.append("Missing METADATA file")
-                has_wheel = any(f.endswith("/WHEEL") for f in files)
+                has_wheel = any((f.endswith("/WHEEL") for f in files))
                 if not has_wheel:
                     issues.append("Missing WHEEL file")
-                has_record = any(f.endswith("/RECORD") for f in files)
+                has_record = any((f.endswith("/RECORD") for f in files))
                 if not has_record:
                     issues.append("Missing RECORD file")
                 dist_info = [f for f in files if ".dist-info/" in f]
@@ -71,7 +71,7 @@ class WheelInspector:
                     issues.append("No dist-info directory found")
         except Exception as e:
             issues.append(f"Error reading wheel: {e!s}")
-        return len(issues) == 0, issues
+        return (len(issues) == 0, issues)
 
     @typing.override
     def inspect_directory(self, directory: Path) -> list[dict]:
@@ -113,15 +113,10 @@ class WheelInspector:
         if info["metadata"]:
             print("\nMetadata:")
             for key, value in info["metadata"].items():
-                if key in {
-                    "Name",
-                    "Version",
-                    "Summary",
-                    "Author",
-                }:
+                if key in {"Name", "Version", "Summary", "Author"}:
                     print(f"  {key}: {value}")
         is_valid, issues = self.validate_wheel(wheel_path)
-        print(f"\nValidation: {'✓ VALID' if is_valid else '✗ INVALID'}")
+        print(f"\nValidation: {('✓ VALID' if is_valid else '✗ INVALID')}")
         if issues:
             print("Issues:")
             for issue in issues:
@@ -133,17 +128,8 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Inspect and validate .whl files")
-    parser.add_argument(
-        "wheel",
-        nargs="?",
-        help="Path to .whl file or directory",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Verbose output",
-    )
+    parser.add_argument("wheel", nargs="?", help="Path to .whl file or directory")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
     if not args.wheel:
         args.wheel = Path("/sdcard/whl")
@@ -156,25 +142,6 @@ def main():
             inspector.print_inspection(p)
 
 
-"""
-        wheels = list(path.glob("*.whl"))
-        if not wheels:
-            print(f"No .whl files found in {path}")
-            return
-        print(f"\nInspecting {len(wheels)} .whl files...\n")
-        results = inspector.inspect_directory(path)        
-        valid_count = sum(1 for r in results if r.get("is_valid", True))
-        invalid_count = len(results) - valid_count
-        for result in results:
-            status = "✓" if result.get("is_valid", True) else "✗"
-            size = result.get("size_mb", 0)
-            files = result.get("file_count", 0)
-            print(f"{status} {result['filename']:<50} {size:>.2f} KB ({files} files)")
-        print(f"\nValid: {valid_count}/{len(results)}")
-        print(f"Invalid: {invalid_count}/{len(results)}")
-    else:
-        print(f"Invalid path: {path}")
-        sys.exit(1)
-"""
+'\n        wheels = list(path.glob("*.whl"))\n        if not wheels:\n            print(f"No .whl files found in {path}")\n            return\n        print(f"\nInspecting {len(wheels)} .whl files...\n")\n        results = inspector.inspect_directory(path)\n        valid_count = sum(1 for r in results if r.get("is_valid", True))\n        invalid_count = len(results) - valid_count\n        for result in results:\n            status = "✓" if result.get("is_valid", True) else "✗"\n            size = result.get("size_mb", 0)\n            files = result.get("file_count", 0)\n            print(f"{status} {result[\'filename\']:<50} {size:>.2f} KB ({files} files)")\n        print(f"\nValid: {valid_count}/{len(results)}")\n        print(f"Invalid: {invalid_count}/{len(results)}")\n    else:\n        print(f"Invalid path: {path}")\n        sys.exit(1)\n'
 if __name__ == "__main__":
     main()

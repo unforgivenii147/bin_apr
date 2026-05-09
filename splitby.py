@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -9,7 +9,7 @@ def split_file_by_delimiter(fname, delimiter) -> None:
     content = Path(fname).read_text(encoding="utf-8")
     parts = content.split(delimiter)
     with Path(fname).open("w", encoding="utf-8") as f:
-        f.writelines(part.strip() + f"{delimiter}\n" for part in parts)
+        f.writelines((part.strip() + f"{delimiter}\n" for part in parts))
 
 
 def main() -> None:

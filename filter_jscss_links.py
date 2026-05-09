@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
 from urllib.parse import urlparse
-
 from loguru import logger
 
 INPUT_FILE = Path("urls.txt")
 OUTPUT_FILE = Path("filtered_urls.txt")
-EXT_PATTERN = re.compile(r"\.(min\.)?(js|css)$", re.IGNORECASE)
+EXT_PATTERN = re.compile("\\.(min\\.)?(js|css)$", re.IGNORECASE)
 
 
 def is_static_asset(url: str) -> bool:
@@ -28,7 +28,7 @@ def main():
     with INPUT_FILE.open("r", encoding="utf-8") as f:
         for line in f:
             url = line.strip()
-            if url and is_static_asset(url) and url not in seen:
+            if url and is_static_asset(url) and (url not in seen):
                 seen.add(url)
                 filtered.append(url)
     OUTPUT_FILE.write_text("\n".join(filtered), encoding="utf-8")

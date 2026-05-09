@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from loguru import logger
@@ -21,12 +21,7 @@ def get_videos(youtube, channel_id):
     past_date = (datetime.now(UTC) - timedelta(days=30)).isoformat()
     videos = []
     request = youtube.search().list(
-        part="snippet",
-        channelId=channel_id,
-        publishedAfter=past_date,
-        maxResults=50,
-        order="date",
-        type="video",
+        part="snippet", channelId=channel_id, publishedAfter=past_date, maxResults=50, order="date", type="video"
     )
     while request:
         response = request.execute()
@@ -48,7 +43,7 @@ def get_videos(youtube, channel_id):
 
 
 def extract_th18_links(description):
-    pattern = r"(https?://link\.clashofclans\.com/[^\s]+)"
+    pattern = "(https?://link\\.clashofclans\\.com/[^\\s]+)"
     links = re.findall(pattern, description)
     return [l for l in links if "TH18" in l.upper() or "TH18" in description.upper()]
 
@@ -58,27 +53,9 @@ def create_html(channel_name, base_data):
     dir_name = f"output/{date_str}_{channel_name}"
     Path(dir_name).mkdir(exist_ok=True, parents=True)
     file_path = os.path.join(dir_name, "bases.html")
-    html_content = f"""
-    <html>
-    <head>
-        <title>{channel_name} TH18 Bases</title>
-        <style>
-            body {{ font-family: sans-serif; padding: 20px; background:
-            .card {{ background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-            a {{ color:
-            .vid-ref {{ font-size: 0.9em; color:
-        </style>
-    </head>
-    <body>
-        <h1>TH18 Bases from {channel_name} (Last 30 Days)</h1>
-    """
+    html_content = f"\n    <html>\n    <head>\n        <title>{channel_name} TH18 Bases</title>\n        <style>\n            body {{ font-family: sans-serif; padding: 20px; background:\n            .card {{ background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}\n            a {{ color:\n            .vid-ref {{ font-size: 0.9em; color:\n        </style>\n    </head>\n    <body>\n        <h1>TH18 Bases from {channel_name} (Last 30 Days)</h1>\n    "
     for item in base_data:
-        html_content += f"""
-        <div class="card">
-            <h3>{item["title"]}</h3>
-            <p class="vid-ref">Source: <a href="{item["video_url"]}" target="_blank">Watch Video</a></p>
-            <ul>
-        """
+        html_content += f'''\n        <div class="card">\n            <h3>{item["title"]}</h3>\n            <p class="vid-ref">Source: <a href="{item["video_url"]}" target="_blank">Watch Video</a></p>\n            <ul>\n        '''
         for link in item["links"]:
             html_content += f'<li><a href="{link}">Get Base Layout</a></li>'
         html_content += "</ul></div>"
@@ -99,13 +76,7 @@ def main():
         for v in vids:
             links = extract_th18_links(v["description"])
             if links:
-                results.append(
-                    {
-                        "title": v["title"],
-                        "video_url": v["url"],
-                        "links": list(set(links)),
-                    }
-                )
+                results.append({"title": v["title"], "video_url": v["url"], "links": list(set(links))})
         if results:
             create_html(name, results)
         else:

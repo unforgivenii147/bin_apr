@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import get_files, is_binary, run_command
 from pbar import Pbar
 

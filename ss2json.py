@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import pandas as pd
 
 fn = Path(sys.argv[1])

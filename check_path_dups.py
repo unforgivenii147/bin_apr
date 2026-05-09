@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import hashlib
 import os
 import sys
 from pathlib import Path
-
 from dh import cprint, get_sha256, runcmd
 from loguru import logger
 

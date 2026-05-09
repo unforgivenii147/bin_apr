@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 from bs4 import BeautifulSoup
 from loguru import logger
 
@@ -23,9 +23,9 @@ def extract_common_structure(html_files: list[Path]) -> dict:
             with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 if soup.head:
-                    meta_tags.extend(str(meta) for meta in soup.head.find_all("meta"))
-                    link_tags.extend(str(link) for link in soup.head.find_all("link"))
-                    script_tags.extend(str(script) for script in soup.head.find_all("script") if script.get("src"))
+                    meta_tags.extend((str(meta) for meta in soup.head.find_all("meta")))
+                    link_tags.extend((str(link) for link in soup.head.find_all("link")))
+                    script_tags.extend((str(script) for script in soup.head.find_all("script") if script.get("src")))
                 if soup.body and soup.body.get("class"):
                     body_classes.extend(soup.body.get("class"))
         except Exception as e:
@@ -49,12 +49,7 @@ def merge_html_content(html_files: list[Path]) -> str:
             with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 content = soup.body.decode_contents() if soup.body else str(soup)
-                section_html = f"""
-    <!-- Content from: {file_path.relative_to(Path.cwd())} -->
-    <section class="merged-content" data-source="{file_path.name}">
-        {content}
-    </section>
-"""
+                section_html = f'\n    <!-- Content from: {file_path.relative_to(Path.cwd())} -->\n    <section class="merged-content" data-source="{file_path.name}">\n        {content}\n    </section>\n'
                 merged_sections.append(section_html)
         except Exception as e:
             print(f"⚠️  Error merging {file_path}: {e}")
@@ -62,9 +57,7 @@ def merge_html_content(html_files: list[Path]) -> str:
 
 
 def create_template_html(
-    html_files: list[Path],
-    output_file: str = "template.html",
-    title: str = "Merged HTML Template",
+    html_files: list[Path], output_file: str = "template.html", title: str = "Merged HTML Template"
 ) -> bool:
     if not html_files:
         print("⚠️  No HTML files found")
@@ -72,111 +65,7 @@ def create_template_html(
     print(f"📄 Processing {len(html_files)} HTML files...")
     structure = extract_common_structure(html_files)
     merged_content = merge_html_content(html_files)
-    template = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title}</title>
-    <!-- Common Meta Tags -->
-    {chr(10).join("    " + tag for tag in structure["meta_tags"])}
-    <!-- Common Stylesheets -->
-    {chr(10).join("    " + tag for tag in structure["link_tags"])}
-    <!-- Template Styles -->
-    <style>
-        body {{
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }}
-        .container {{
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }}
-        .merged-content {{
-            margin-bottom: 40px;
-            padding: 20px;
-            border-left: 4px solid #007bff;
-            background: #f9f9f9;
-        }}
-        .merged-content::before {{
-            content: attr(data-source);
-            display: block;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }}
-        h1, h2, h3 {{
-            color: #333;
-        }}
-        .toc {{
-            background: #e9ecef;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 5px;
-        }}
-        .toc h2 {{
-            margin-top: 0;
-        }}
-        .toc ul {{
-            list-style: none;
-            padding-left: 0;
-        }}
-        .toc li {{
-            margin: 5px 0;
-        }}
-        .toc a {{
-            color: #007bff;
-            text-decoration: none;
-        }}
-        .toc a:hover {{
-            text-decoration: underline;
-        }}
-    </style>
-    <!-- Common Scripts -->
-    {chr(10).join("    " + tag for tag in structure["script_tags"])}
-</head>
-<body{' class="' + structure["body_class"] + '"' if structure["body_class"] else ""}>
-    <div class="container">
-        <h1>{title}</h1>
-        <!-- Table of Contents -->
-        <div class="toc">
-            <h2>📑 Table of Contents</h2>
-            <ul>
-{chr(10).join(f'                <li><a href="#{Path(f).stem}">{Path(f).relative_to(Path.cwd())}</a></li>' for f in html_files)}
-            </ul>
-        </div>
-        <!-- Merged Content -->
-{merged_content}
-    </div>
-    <!-- Template Scripts -->
-    <script>
-        // Add smooth scrolling
-        document.querySelectorAll('.toc a').forEach(anchor => {{
-            anchor.addEventListener('click', function (e) {{
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {{
-                    target.scrollIntoView({{ behavior: 'smooth' }});
-                }}
-            }});
-        }});
-        // Add IDs to sections for navigation
-        document.querySelectorAll('.merged-content').forEach((section, index) => {{
-            const source = section.getAttribute('data-source');
-            const id = source.replace(/\\.html?$/, '');
-            section.id = id;
-        }});
-    </script>
-</body>
-</html>
-"""
+    template = f"""<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>{title}</title>\n    <!-- Common Meta Tags -->\n    {chr(10).join(("    " + tag for tag in structure["meta_tags"]))}\n    <!-- Common Stylesheets -->\n    {chr(10).join(("    " + tag for tag in structure["link_tags"]))}\n    <!-- Template Styles -->\n    <style>\n        body {{\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            margin: 0;\n            padding: 20px;\n            background-color:\n        }}\n        .container {{\n            max-width: 1200px;\n            margin: 0 auto;\n            background: white;\n            padding: 20px;\n            box-shadow: 0 0 10px rgba(0,0,0,0.1);\n        }}\n        .merged-content {{\n            margin-bottom: 40px;\n            padding: 20px;\n            border-left: 4px solid\n            background:\n        }}\n        .merged-content::before {{\n            content: attr(data-source);\n            display: block;\n            font-weight: bold;\n            color:\n            margin-bottom: 10px;\n            font-size: 0.9em;\n        }}\n        h1, h2, h3 {{\n            color:\n        }}\n        .toc {{\n            background:\n            padding: 20px;\n            margin-bottom: 30px;\n            border-radius: 5px;\n        }}\n        .toc h2 {{\n            margin-top: 0;\n        }}\n        .toc ul {{\n            list-style: none;\n            padding-left: 0;\n        }}\n        .toc li {{\n            margin: 5px 0;\n        }}\n        .toc a {{\n            color:\n            text-decoration: none;\n        }}\n        .toc a:hover {{\n            text-decoration: underline;\n        }}\n    </style>\n    <!-- Common Scripts -->\n    {chr(10).join(("    " + tag for tag in structure["script_tags"]))}\n</head>\n<body{(' class="' + structure["body_class"] + '"' if structure["body_class"] else "")}>\n    <div class="container">\n        <h1>{title}</h1>\n        <!-- Table of Contents -->\n        <div class="toc">\n            <h2>📑 Table of Contents</h2>\n            <ul>\n{chr(10).join((f'                <li><a href="#{Path(f).stem}">{Path(f).relative_to(Path.cwd())}</a></li>' for f in html_files))}\n            </ul>\n        </div>\n        <!-- Merged Content -->\n{merged_content}\n    </div>\n    <!-- Template Scripts -->\n    <script>\n        // Add smooth scrolling\n        document.querySelectorAll('.toc a').forEach(anchor => {{\n            anchor.addEventListener('click', function (e) {{\n                e.preventDefault();\n                const target = document.querySelector(this.getAttribute('href'));\n                if (target) {{\n                    target.scrollIntoView({{ behavior: 'smooth' }});\n                }}\n            }});\n        }});\n        // Add IDs to sections for navigation\n        document.querySelectorAll('.merged-content').forEach((section, index) => {{\n            const source = section.getAttribute('data-source');\n            const id = source.replace(/\\.html?$/, '');\n            section.id = id;\n        }});\n    </script>\n</body>\n</html>\n"""
     try:
         Path(output_file).write_text(template, encoding="utf-8")
         print(f"✅ Template created successfully: {output_file}")
@@ -198,11 +87,7 @@ def main():
         print(f"   - {file_path.relative_to(Path.cwd())}")
     if len(html_files) > 10:
         print(f"   ... and {len(html_files) - 10} more")
-    success = create_template_html(
-        html_files,
-        output_file="template.html",
-        title="Merged HTML Template",
-    )
+    success = create_template_html(html_files, output_file="template.html", title="Merged HTML Template")
     if success:
         print("\n" + "=" * 60)
         print("✨ Template generation complete!")
@@ -218,14 +103,6 @@ if __name__ == "__main__":
         import subprocess
         import sys
 
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "beautifulsoup4",
-            ]
-        )
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "beautifulsoup4"])
         from bs4 import BeautifulSoup
     main()

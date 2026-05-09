@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from time import perf_counter
-
 import fastwalk
 from loguru import logger
 
@@ -31,15 +31,9 @@ def format_file(file_path):
     pth = Path(file_path)
     print(f"formating {pth.stem}")
     try:
-        subprocess.run(
-            ["clang-format", "-i", file_path],
-            check=True,
-        )
+        subprocess.run(["clang-format", "-i", file_path], check=True)
         return True
-    except (
-        subprocess.CalledProcessError,
-        FileNotFoundError,
-    ):
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
 
@@ -61,7 +55,7 @@ def main() -> None:
     print(f"Formatting {len(files_to_format)} files...")
     with ProcessPoolExecutor(max_workers=12) as executor:
         results = executor.map(format_file, files_to_format)
-        sum(1 for success in results if success)
+        sum((1 for success in results if success))
     print(f"{perf_counter() - start} sec")
 
 

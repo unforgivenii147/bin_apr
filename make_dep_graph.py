@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import os
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -27,8 +27,8 @@ def get_installed_packages_dependencies():
                 with Path(metadata_path).open(encoding="utf-8") as f:
                     for line in f:
                         if line.startswith("Requires-Dist:"):
-                            dep = re.sub(r";.*", "", line.split("Requires-Dist:")[1].strip())
-                            dep = re.sub(r"[<>=~]", "", dep).split("(")[0].strip()
+                            dep = re.sub(";.*", "", line.split("Requires-Dist:")[1].strip())
+                            dep = re.sub("[<>=~]", "", dep).split("(")[0].strip()
                             package_dependencies.append(dep)
                 dependencies[package_name] = package_dependencies
     return dependencies

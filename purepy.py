@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import requests
 from loguru import logger
 
@@ -11,17 +11,7 @@ def has_native_wheels(info) -> bool:
     urls = info.get("urls", [])
     for u in urls:
         filename = u.get("filename", "").lower()
-        if any(
-            ext in filename
-            for ext in [
-                ".so",
-                ".pyd",
-                ".dll",
-                "win_amd64",
-                "manylinux",
-                "macosx",
-            ]
-        ):
+        if any((ext in filename for ext in [".so", ".pyd", ".dll", "win_amd64", "manylinux", "macosx"])):
             return True
     return False
 

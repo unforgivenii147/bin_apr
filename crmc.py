@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
-
 import tree_sitter_cpp
 from dh import clean_blank_lines, fsz, gsz
 from loguru import logger
@@ -25,12 +25,7 @@ def remove_comments_cpp(path: Path) -> None:
                 text = source[node.start_byte : node.end_byte]
                 if text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
 
@@ -51,15 +46,7 @@ def remove_comments_cpp(path: Path) -> None:
 
 
 def collect_cpp_files(root: Path) -> list[Path]:
-    exts = {
-        ".cpp",
-        ".cc",
-        ".cxx",
-        ".hpp",
-        ".h",
-        ".hh",
-        ".hxx",
-    }
+    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx"}
     if root.is_file() and root.suffix in exts:
         return [root]
     return [p for p in root.rglob("*") if p.is_file() and p.suffix in exts]

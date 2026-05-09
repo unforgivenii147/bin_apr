@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import os
 import re
 import sys
 from pathlib import Path
-
 import requests
 from loguru import logger
 
@@ -17,7 +17,7 @@ def get_file_extension(url):
 
 def is_font_url(url):
     extensions = [".woff", ".woff2", ".ttf", ".eot", ".svg"]
-    return any(url.lower().endswith(ext) for ext in extensions)
+    return any((url.lower().endswith(ext) for ext in extensions))
 
 
 def find_local_font(font_filename):
@@ -114,8 +114,8 @@ def make_css_standalone(input_css_path, output_css_path):
     except Exception as e:
         print(f"Error reading input CSS file {input_css_path}: {e}")
         return
-    import_pattern = re.compile(r'@import\s+(?:url\()?(["\'])(.*?)\1\)?;', re.IGNORECASE)
-    font_url_pattern = re.compile(r'url\((["\']?)([^)"\'\s]+?)\1?\)', re.IGNORECASE)
+    import_pattern = re.compile("@import\\s+(?:url\\()?([\"\\'])(.*?)\\1\\)?;", re.IGNORECASE)
+    font_url_pattern = re.compile("url\\(([\"\\']?)([^)\"\\'\\s]+?)\\1?\\)", re.IGNORECASE)
     processed_content = content
     import_urls_to_process = []
     for match in import_pattern.finditer(content):

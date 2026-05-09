@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import json
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -28,13 +28,7 @@ def csv_to_json_map(csv_file):
             if key:
                 result[key] = value
     with json_path.open("w", encoding="utf-8") as f:
-        json.dump(
-            result,
-            f,
-            indent=4,
-            ensure_ascii=False,
-            sort_keys=True,
-        )
+        json.dump(result, f, indent=4, ensure_ascii=False, sort_keys=True)
     print(f"Converted (mapping JSON): {csv_path} → {json_path}")
 
 

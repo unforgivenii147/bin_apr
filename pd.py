@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 from pathlib import Path
-
 import requests
 from loguru import logger
 from packaging import tags
@@ -9,7 +9,7 @@ from packaging import tags
 
 def is_pure_python(requires_python):
     return requires_python is None or all(
-        tag.interpreter == "py" and tag.abi == "none" and tag.platform == "any" for tag in tags.sys_tags()
+        (tag.interpreter == "py" and tag.abi == "none" and (tag.platform == "any") for tag in tags.sys_tags())
     )
 
 
@@ -24,7 +24,7 @@ def get_package_urls(pkg_name):
     latest_version = max(releases.keys())
     print(f"latest version : {latest_version}")
     release_files = releases[latest_version]
-    return release_files, latest_version
+    return (release_files, latest_version)
 
 
 def download_package(pkg_name):
@@ -53,9 +53,6 @@ def download_package(pkg_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download a Python package from PyPI.")
-    parser.add_argument(
-        "pkg_name",
-        help="Name of the package to download",
-    )
+    parser.add_argument("pkg_name", help="Name of the package to download")
     args = parser.parse_args()
     download_package(args.pkg_name)

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import operator
 import os
 import sys
 from collections import defaultdict
 from pathlib import Path
-
 import matplotlib.pyplot as plt
 
 
@@ -29,13 +29,7 @@ def scan_directory(path="."):
             ext = ext.lower() if ext else "(no extension)"
             extensions.add(ext)
             size_by_ext[ext] += size
-    return (
-        total_size,
-        file_count,
-        folder_count,
-        extensions,
-        size_by_ext,
-    )
+    return (total_size, file_count, folder_count, extensions, size_by_ext)
 
 
 def format_size(size_in_bytes):
@@ -50,13 +44,7 @@ def format_size(size_in_bytes):
 
 
 def write_summary(filename: Path | None = None) -> None:
-    (
-        total_size,
-        file_count,
-        folder_count,
-        extensions,
-        size_by_ext,
-    ) = scan_directory()
+    total_size, file_count, folder_count, extensions, size_by_ext = scan_directory()
     summary_lines = []
     summary_lines.append(f"Total size: {format_size(total_size)}\n")
     summary_lines.append("File extensions:\n")
@@ -84,7 +72,7 @@ def write_summary(filename: Path | None = None) -> None:
 
 
 def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> None:
-    (_, _, _, _, size_by_ext) = scan_directory()
+    _, _, _, _, size_by_ext = scan_directory()
     sorted_items = sorted(
         [(ext, size) for ext, size in size_by_ext.items() if size > 0], key=operator.itemgetter(1), reverse=True
     )

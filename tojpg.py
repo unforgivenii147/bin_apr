@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 try:
@@ -13,15 +13,7 @@ except ImportError:
     from PIL import Image
 
     USE_CV2 = False
-SUPPORTED_FORMATS = {
-    ".png",
-    ".bmp",
-    ".tiff",
-    ".webp",
-    ".ico",
-    ".jpg",
-    ".jpeg",
-}
+SUPPORTED_FORMATS = {".png", ".bmp", ".tiff", ".webp", ".ico", ".jpg", ".jpeg"}
 
 
 def convert_to_jpg(file_path: str) -> bool:
@@ -44,11 +36,7 @@ def convert_to_jpg(file_path: str) -> bool:
                 return False
             if img.shape[2] == 4:
                 b, g, r, a = cv2.split(img)
-                white_bg = np.full(
-                    img.shape[:2],
-                    255,
-                    dtype=np.uint8,
-                )
+                white_bg = np.full(img.shape[:2], 255, dtype=np.uint8)
                 alpha = a.astype(float) / 255.0
                 img_b = (b.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
                 img_g = (g.astype(float) * alpha + white_bg.astype(float) * (1 - alpha)).astype(np.uint8)
@@ -56,22 +44,11 @@ def convert_to_jpg(file_path: str) -> bool:
                 final_img = cv2.merge((img_b, img_g, img_r))
             else:
                 final_img = img
-            success = cv2.imwrite(
-                str(output_path),
-                final_img,
-                [
-                    int(cv2.IMWRITE_JPEG_QUALITY),
-                    95,
-                ],
-            )
+            success = cv2.imwrite(str(output_path), final_img, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         else:
             img = Image.open(path)
             if img.mode in {"RGBA", "LA"}:
-                background = Image.new(
-                    "RGB",
-                    img.size,
-                    (255, 255, 255),
-                )
+                background = Image.new("RGB", img.size, (255, 255, 255))
                 background.paste(img, mask=img.split()[-1])
                 final_img = background
             else:

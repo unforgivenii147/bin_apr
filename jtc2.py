@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 from pathlib import Path
 from sys import argv
-
 from dh import run_command
 from loguru import logger
 

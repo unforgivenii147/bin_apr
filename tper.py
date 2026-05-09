@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from threading import Lock
-
 from deep_translator import GoogleTranslator
 from loguru import logger
 from tqdm import tqdm
@@ -46,12 +46,7 @@ def load_existing_results(output_file):
 def save_results_atomic(results, output_file):
     tmp = output_file + ".tmp"
     with Path(tmp).open("w", encoding="utf-8") as f:
-        json.dump(
-            results,
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
+        json.dump(results, f, ensure_ascii=False, indent=2)
     Path(tmp).replace(output_file)
 
 
@@ -67,11 +62,7 @@ def main():
         print("[INFO] Nothing to do. Exiting.")
         return
     new_count = 0
-    pbar = tqdm(
-        total=total_remaining,
-        desc="Translating",
-        unit="word",
-    )
+    pbar = tqdm(total=total_remaining, desc="Translating", unit="word")
     try:
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             future_map = {executor.submit(translate_word, w): w for w in to_translate}
@@ -89,10 +80,7 @@ def main():
                         pbar.update(1)
                         if new_count % SAVE_EVERY == 0:
                             print(f"[INFO] Saving progress after {new_count} new translations...")
-                            save_results_atomic(
-                                results,
-                                OUTPUT_FILE,
-                            )
+                            save_results_atomic(results, OUTPUT_FILE)
                 except Exception as e:
                     print(f"[ERROR] Unexpected error for '{persian_word}': {e}")
     except KeyboardInterrupt:

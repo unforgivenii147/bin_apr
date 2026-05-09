@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import time
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from loguru import logger
 from tqdm import tqdm
@@ -18,12 +18,7 @@ def get_output_filename(input_file):
 
 
 def load_file(input_file):
-    encodings = [
-        "utf-8",
-        "latin-1",
-        "cp1252",
-        "iso-8859-1",
-    ]
+    encodings = ["utf-8", "latin-1", "cp1252", "iso-8859-1"]
     for encoding in encodings:
         try:
             return Path(input_file).read_text(encoding=encoding)
@@ -41,16 +36,7 @@ def find_chunk_boundary(text, max_chars):
     if len(text) <= max_chars:
         return len(text)
     search_area = text[:max_chars]
-    for delimiter in [
-        "\n",
-        "\r\n",
-        ".  ",
-        "!  ",
-        "?  ",
-        "; ",
-        ", ",
-        " ",
-    ]:
+    for delimiter in ["\n", "\r\n", ".  ", "!  ", "?  ", "; ", ", ", " "]:
         last_pos = search_area.rfind(delimiter)
         if last_pos > 0:
             return last_pos + len(delimiter)
@@ -79,7 +65,7 @@ def translate_chunk(text, source_lang="auto"):
         try:
             translator = GoogleTranslator(source=source_lang, target="fa")
             translated = translator.translate(text)
-            return translated, source_lang
+            return (translated, source_lang)
         except Exception as e:
             print(f"[WARN] Translation failed (attempt {attempt + 1}/3): {e}")
             time.sleep(1 + attempt)
@@ -104,19 +90,12 @@ def translate_file(input_file, source_lang="auto"):
     print(f"[INFO] Chunk sizes: {[len(c) for c in chunks]}")
     translated_chunks = []
     detected_lang = None
-    pbar = tqdm(
-        total=total_chunks,
-        desc="Translating",
-        unit="chunk",
-    )
+    pbar = tqdm(total=total_chunks, desc="Translating", unit="chunk")
     try:
         for i, chunk in enumerate(chunks):
             print(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
             try:
-                (
-                    translated_chunk,
-                    detected_lang,
-                ) = translate_chunk(chunk, source_lang)
+                translated_chunk, detected_lang = translate_chunk(chunk, source_lang)
                 translated_chunks.append(translated_chunk)
                 pbar.update(1)
             except Exception as e:

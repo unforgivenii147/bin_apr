@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import os
 import re
@@ -8,32 +9,15 @@ import zipfile
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
-
 from loguru import logger
 
 OUTPUT_DIR = Path("output")
-ARCHIVE_EXTENSIONS = (
-    ".whl",
-    ".zip",
-    ".tar.gz",
-    ".tgz",
-    ".tar.zst",
-    ".tar.xz",
-    ".tar",
-    ".zst",
-)
-ALLOWED_PYTHON_EXTENSIONS = (
-    ".py",
-    "",
-)
+ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")
+ALLOWED_PYTHON_EXTENSIONS = (".py", "")
 
 
 class EntityExtractor(ast.NodeVisitor):
-    def __init__(
-        self,
-        source_content: str,
-        original_path: Path,
-    ) -> None:
+    def __init__(self, source_content: str, original_path: Path) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
         self.original_path = original_path
@@ -50,12 +34,7 @@ class EntityExtractor(ast.NodeVisitor):
             code_slice[-1] = last_line[: node.end_col_offset]
         return "".join(code_slice)
 
-    def _extract_and_save(
-        self,
-        node: ast.AST,
-        entity_type: str,
-        name: str,
-    ):
+    def _extract_and_save(self, node: ast.AST, entity_type: str, name: str):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
         full_name = f"{scope_prefix}_{name}" if scope_prefix else name
@@ -66,8 +45,8 @@ class EntityExtractor(ast.NodeVisitor):
                 "type": entity_type,
                 "code": entity_code,
                 "path": str(self.original_path),
-                "is_constant": entity_type in ("constant"),
-                "is_class": entity_type in ("class"),
+                "is_constant": entity_type in "constant",
+                "is_class": entity_type in "class",
                 "is_function": entity_type in {"function", "method"},
             }
         )
@@ -95,15 +74,8 @@ class EntityExtractor(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign):
         if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             target_name = node.targets[0].id
-            if re.match(
-                r"^[A-Z_][A-Z0-9_]*$",
-                target_name,
-            ):
-                self._extract_and_save(
-                    node,
-                    "constant",
-                    target_name,
-                )
+            if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
+                self._extract_and_save(node, "constant", target_name)
 
     def generic_visit(self, node: ast.AST):
         super().generic_visit(node)
@@ -154,7 +126,7 @@ def is_python_file_no_extension(path: Path) -> bool:
     try:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_lines = "".join(f.readlines(1024))
-            if re.match(r"#!\s*/.*python", first_lines):
+            if re.match("#!\\s*/.*python", first_lines):
                 return True
             if "def " in first_lines or "class " in first_lines or "import " in first_lines:
                 return True
@@ -191,40 +163,14 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
                     member_path = Path(member)
                     if member_path.suffix == ".py":
                         with zf.open(member) as member_file:
-                            content = member_file.read().decode(
-                                "utf-8",
-                                errors="ignore",
-                            )
+                            content = member_file.read().decode("utf-8", errors="ignore")
                             virtual_path = Path(f"{path}/{member}")
-                            entities.extend(
-                                extract_entities_from_content(
-                                    content,
-                                    virtual_path,
-                                )
-                            )
+                            entities.extend(extract_entities_from_content(content, virtual_path))
         except Exception as e:
             print(f"Error processing ZIP/WHL archive {path}: {e}")
-    elif any(
-        path.name.endswith(ext)
-        for ext in [
-            ".tar",
-            ".tar.gz",
-            ".tgz",
-            ".tar.zst",
-            ".tar.xz",
-        ]
-    ):
-        mode_map = {
-            ".tar.gz": "r:gz",
-            ".tgz": "r:gz",
-            ".tar.zst": "r:zst",
-            ".tar.xz": "r:xz",
-            ".tar": "r",
-        }
-        mode = next(
-            (mode_map[ext] for ext in mode_map if path.name.endswith(ext)),
-            "r",
-        )
+    elif any((path.name.endswith(ext) for ext in [".tar", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz"])):
+        mode_map = {".tar.gz": "r:gz", ".tgz": "r:gz", ".tar.zst": "r:zst", ".tar.xz": "r:xz", ".tar": "r"}
+        mode = next((mode_map[ext] for ext in mode_map if path.name.endswith(ext)), "r")
         try:
             with tarfile.open(path, mode) as tf:
                 for member in tf.getmembers():
@@ -232,17 +178,9 @@ def process_archive(path: Path) -> list[dict[str, Any]]:
                     if member.isfile() and member_path.suffix == ".py":
                         member_file = tf.extractfile(member)
                         if member_file:
-                            content = member_file.read().decode(
-                                "utf-8",
-                                errors="ignore",
-                            )
+                            content = member_file.read().decode("utf-8", errors="ignore")
                             virtual_path = Path(f"{path}/{member.name}")
-                            entities.extend(
-                                extract_entities_from_content(
-                                    content,
-                                    virtual_path,
-                                )
-                            )
+                            entities.extend(extract_entities_from_content(content, virtual_path))
         except tarfile.ReadError:
             pass
         except Exception as e:
@@ -270,7 +208,9 @@ def main():
             path = Path(root) / name
             if path.is_relative_to(OUTPUT_DIR):
                 continue
-            is_archive = path.suffix in ARCHIVE_EXTENSIONS or any(path.name.endswith(ext) for ext in ARCHIVE_EXTENSIONS)
+            is_archive = path.suffix in ARCHIVE_EXTENSIONS or any(
+                (path.name.endswith(ext) for ext in ARCHIVE_EXTENSIONS)
+            )
             is_py = path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path)
             if is_archive or is_py:
                 files_to_process.append(str(path))

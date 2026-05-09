@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import fsz, gsz, mpf3, run_command
 from fastwalk import walk_files
 from loguru import logger
@@ -26,10 +26,7 @@ def main():
     files = []
     for pth in walk_files(cwd):
         path = Path(pth)
-        if path.is_file() and path.suffix in {
-            ".c",
-            ".cpp",
-        }:
+        if path.is_file() and path.suffix in {".c", ".cpp"}:
             files.append(path)
     mpf3(process_file, files)
     print(f"{fsz(start_size - gsz(cwd))}")

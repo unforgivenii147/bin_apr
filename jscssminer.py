@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 from pathlib import Path
-
 from loguru import logger
 from rcssmin import cssmin
 from rjsmin import jsmin
@@ -10,11 +10,7 @@ from rjsmin import jsmin
 def minify_assets_in_directory(cwd=".") -> None:
     minified_count = 0
     errors_count = 0
-    for (
-        foldername,
-        _subfolders,
-        filenames,
-    ) in os.walk(cwd):
+    for foldername, _subfolders, filenames in os.walk(cwd):
         for filename in filenames:
             file_path = os.path.join(foldername, filename)
             minifier_func = None

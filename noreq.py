@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import tarfile
@@ -22,7 +23,7 @@ def clean_text(text: str) -> tuple[str, list[str]]:
         else:
             cleaned.append(line)
     final_text = "\n".join(cleaned) + ("\n" if text.endswith("\n") else "")
-    return final_text, removed
+    return (final_text, removed)
 
 
 def clean_file(path: str) -> None:
@@ -38,10 +39,7 @@ def clean_file(path: str) -> None:
 
 def process_zip(path: str) -> None:
     tmp = tempfile.mktemp(suffix=".zip")
-    with (
-        zipfile.ZipFile(path, "r") as zin,
-        zipfile.ZipFile(tmp, "w") as zout,
-    ):
+    with zipfile.ZipFile(path, "r") as zin, zipfile.ZipFile(tmp, "w") as zout:
         for item in zin.infolist():
             data = zin.read(item.filename)
             base = Path(item.filename).name
@@ -88,20 +86,12 @@ def main() -> None:
             full_path = os.path.join(root, filename)
             if filename in TARGET_FILES or filename.endswith(".metadata"):
                 clean_file(full_path)
-            elif filename.lower().endswith(
-                (
-                    ".zip",
-                    ".whl",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar",
-                )
-            ):
+            elif filename.lower().endswith((".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
                 dispatch_archive(full_path)
     if removed_lines_accumulator:
         try:
             with Path(LOG_FILE).open("a", encoding="utf-8") as f:
-                f.writelines(line + "\n" for line in removed_lines_accumulator)
+                f.writelines((line + "\n" for line in removed_lines_accumulator))
             print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
         except PermissionError:
             pass

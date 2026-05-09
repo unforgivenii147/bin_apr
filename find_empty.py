@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -15,7 +15,7 @@ def main():
             path = Path(r) / f
             if path.is_symlink():
                 continue
-            if path.is_file() and not path.stat().st_size:
+            if path.is_file() and (not path.stat().st_size):
                 print(path.relative_to(cwd))
 
 

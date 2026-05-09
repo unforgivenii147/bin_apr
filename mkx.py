@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import stat
 from pathlib import Path
-
 from dh import is_binary, should_skip
 
 
@@ -28,13 +28,6 @@ def make_exec(filename: Path) -> None:
             continue
 
 
-# def make_exec(path: Path) -> None:
-#    current_mode = path.stat().st_mode
-#    executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-#    new_mode = current_mode | executable_bits
-#    path.chmod(new_mode)
-
-
 def is_exec(path: Path) -> bool:
     return bool(path.stat().st_mode & stat.S_IXUSR)
 
@@ -44,7 +37,7 @@ def process_directory(cwd: Path) -> None:
         if should_skip(path):
             continue
         pardir = path.parent.name
-        if pardir in {"sbin", "bin"} and not is_exec(path):
+        if pardir in {"sbin", "bin"} and (not is_exec(path)):
             make_exec(path)
             print(f"[+] Made executable: {path.relative_to(cwd)}")
             continue

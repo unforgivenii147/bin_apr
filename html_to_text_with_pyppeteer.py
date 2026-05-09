@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import asyncio
 import sys
 from pathlib import Path
-
 from loguru import logger
 from pyppeteer import launch
 
@@ -16,13 +16,9 @@ async def main():
     content = await page.evaluate("document.body.textContent", force_expr=True)
     outfile = Path(url).with_suffix(".txt")
     Path(outfile).write_text(content, encoding="utf-8")
-    dimensions = await page.evaluate("""() => {
-        return {
-            width: document.documentElement.clientWidth,
-            height: document.documentElement.clientHeight,
-            deviceScaleFactor: window.devicePixelRatio,
-        }
-    }""")
+    dimensions = await page.evaluate(
+        "() => {\n        return {\n            width: document.documentElement.clientWidth,\n            height: document.documentElement.clientHeight,\n            deviceScaleFactor: window.devicePixelRatio,\n        }\n    }"
+    )
     print(dimensions)
     await browser.close()
 

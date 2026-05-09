@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 import pdfplumber
 from fastwalk import walk_files
 from loguru import logger
@@ -10,7 +10,7 @@ from loguru import logger
 
 def process_file(fp):
     fp = Path(fp)
-    if fp.exists() and not fp.is_symlink():
+    if fp.exists() and (not fp.is_symlink()):
         with pdfplumber.open(fp) as pdf:
             numpages = len(pdf.pages)
             new_name = fp.stem + str(numpages) + ".pdf"

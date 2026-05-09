@@ -1,5 +1,5 @@
 [gate]
-test_coverage_threshold = .5
+test_coverage_threshold = 0.5
 min_similarity = 0.3
 duplication_enabled = true
 [python]

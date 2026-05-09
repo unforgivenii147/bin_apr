@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import io
 import os
 import runpy
@@ -10,9 +11,11 @@ def find_python_files(root_dir="."):
     py_files = []
     for dirpath, _, filenames in os.walk(root_dir):
         py_files.extend(
-            os.path.join(dirpath, fname)
-            for fname in filenames
-            if fname.endswith(".py") and fname != Path(__file__).name
+            (
+                os.path.join(dirpath, fname)
+                for fname in filenames
+                if fname.endswith(".py") and fname != Path(__file__).name
+            )
         )
     return sorted(py_files)
 

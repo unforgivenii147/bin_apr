@@ -1,21 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import os
 import site
 from pathlib import Path
-
 from loguru import logger
 
 
 def get_all_dist_info_dirs():
     dist_info_dirs = []
-    for site_dir in [
-        *site.getsitepackages(),
-        site.getusersitepackages(),
-    ]:
+    for site_dir in [*site.getsitepackages(), site.getusersitepackages()]:
         if Path(site_dir).exists():
             dist_info_dirs.extend(
-                os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info")
+                (os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info"))
             )
     return dist_info_dirs
 
@@ -44,7 +41,7 @@ def get_pure():
             print(ispure)
             purz.append(ispure)
     with Path("/sdcard/data/pure").open("w", encoding="utf-8") as f:
-        f.writelines(f"{k}\n" for k in purz)
+        f.writelines((f"{k}\n" for k in purz))
     print(len(purz))
 
 

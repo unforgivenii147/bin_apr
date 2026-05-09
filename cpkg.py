@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import shutil
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -16,11 +16,7 @@ def find_dist_info_dir(site_packages: Path, pkg_name: str) -> Path:
         msg = f"Could not find any dist-info directory for package '{pkg_name}' in {site_packages}"
         raise FileNotFoundError(msg)
     if len(candidates) > 1:
-        logger.warning(
-            "Multiple dist-info directories found for '{}', using: {}",
-            pkg_name,
-            candidates[0],
-        )
+        logger.warning("Multiple dist-info directories found for '{}', using: {}", pkg_name, candidates[0])
     return candidates[0]
 
 

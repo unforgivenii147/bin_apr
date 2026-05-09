@@ -1,20 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 from loguru import logger
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
-DIR_NAMES = [
-    "__pycache__",
-    ".ruff_cache",
-    ".mypy_cache",
-    "dist",
-    "build",
-    "target",
-]
+DIR_NAMES = ["__pycache__", ".ruff_cache", ".mypy_cache", "dist", "build", "target"]
 
 
 def remove_path(path) -> None:
@@ -33,7 +26,7 @@ def remove_path(path) -> None:
 def scan_and_remove(base_path):
     for root, dirs, files in os.walk(base_path, topdown=True):
         for file in files:
-            if any(file.endswith(ext) for ext in FILE_EXTENSIONS):
+            if any((file.endswith(ext) for ext in FILE_EXTENSIONS)):
                 yield os.path.join(root, file)
         dirs_to_remove = [d for d in dirs if d in DIR_NAMES]
         for d in dirs_to_remove:
@@ -47,10 +40,7 @@ def scan_and_remove(base_path):
 def main() -> None:
     base_path = Path().cwd().resolve()
     with Pool(cpu_count()) as pool:
-        pool.map(
-            remove_path,
-            scan_and_remove(base_path),
-        )
+        pool.map(remove_path, scan_and_remove(base_path))
 
 
 if __name__ == "__main__":

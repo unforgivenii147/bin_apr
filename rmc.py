@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import operator
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, fsz, get_pyfiles, gsz
 from termcolor import cprint
@@ -11,11 +11,7 @@ from tree_sitter import Language, Parser
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
-PRESERVED: set = {
-    "#!",
-    "# type",
-    "# fmt",
-}
+PRESERVED: set = {"#!", "# type", "# fmt"}
 
 
 def havedoc(code):
@@ -28,7 +24,7 @@ def havedoc(code):
 
 def should_preserve_comment(content):
     content = content.strip()
-    return any(pat in content for pat in PRESERVED)
+    return any((pat in content for pat in PRESERVED))
 
 
 def strip_code(source_code):
@@ -42,31 +38,16 @@ def strip_code(source_code):
             if node.type == "comment":
                 comment_text = source_code[node.start_byte : node.end_byte]
                 if not should_preserve_comment(comment_text):
-                    to_delete.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    to_delete.append((node.start_byte, node.end_byte))
             elif node.type == "expression_statement":
                 child = node.named_children[0] if node.named_children else None
                 if child and child.type == "string":
                     parent = node.parent
                     if parent and parent.type == "block":
                         if parent.named_child_count == 1:
-                            to_replace_with_pass.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_replace_with_pass.append((node.start_byte, node.end_byte))
                         else:
-                            to_delete.append(
-                                (
-                                    node.start_byte,
-                                    node.end_byte,
-                                )
-                            )
+                            to_delete.append((node.start_byte, node.end_byte))
             for child in node.children:
                 traverse(child)
 
@@ -75,11 +56,7 @@ def strip_code(source_code):
         modifications += [(s, e, "pass") for s, e in to_replace_with_pass]
         modifications.sort(key=operator.itemgetter(0), reverse=True)
         working_code = source_code
-        for (
-            start,
-            end,
-            replacement,
-        ) in modifications:
+        for start, end, replacement in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
         return working_code
     except:
@@ -96,22 +73,14 @@ def rm_ast(content: str) -> tuple[str, int]:
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
-    return "\n".join(lines), len(ranges)
+    return ("\n".join(lines), len(ranges))
 
 
 def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
         if (
-            isinstance(
-                child,
-                (
-                    ast.Module,
-                    ast.FunctionDef,
-                    ast.AsyncFunctionDef,
-                    ast.ClassDef,
-                ),
-            )
+            isinstance(child, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
             and child.body
             and isinstance(child.body[0], ast.Expr)
         ):
@@ -122,12 +91,7 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
                 and child.body[0].lineno
                 and child.body[0].end_lineno
             ):
-                ranges.append(
-                    (
-                        child.body[0].lineno,
-                        child.body[0].end_lineno,
-                    )
-                )
+                ranges.append((child.body[0].lineno, child.body[0].end_lineno))
     return ranges
 
 
@@ -143,10 +107,7 @@ def process_file(file_path: Path) -> bool:
             file_path.write_text(wcode, encoding="utf-8")
             dsz = before - gsz(file_path)
             print(f"{file_path.name}", end=" ")
-            cprint(
-                f"{fsz(dsz)}",
-                "blue",
-            )
+            cprint(f"{fsz(dsz)}", "blue")
             return True
         except:
             print("ast parse error")

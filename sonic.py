@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import mmap
 import os
@@ -11,7 +12,6 @@ from collections import Counter
 from collections.abc import Generator
 from datetime import UTC, datetime
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -39,21 +39,14 @@ class MmapReader(LineProcessor):
         super().__init__(verbose=verbose)
 
     def read_lines_mmap(
-        self,
-        file_path: Path,
-        encoding: str = "utf-8",
-        skip_empty: bool = False,
+        self, file_path: Path, encoding: str = "utf-8", skip_empty: bool = False
     ) -> Generator[str, None, None]:
         get_size = self.get_file_size(file_path)
         self.log(f"Reading {file_path} ({self.fsz(get_size)})")
         try:
             with Path(file_path).open("rb") as f:
                 if get_size > 1024 * 1024:
-                    with mmap.mmap(
-                        f.fileno(),
-                        0,
-                        access=mmap.ACCESS_READ,
-                    ) as mmapped_file:
+                    with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mmapped_file:
                         offset = 0
                         while offset < len(mmapped_file):
                             newline_pos = mmapped_file.find(b"\n", offset)
@@ -81,10 +74,7 @@ class MmapReader(LineProcessor):
             raise OSError(msg)
 
     def read_lines_regular(
-        self,
-        file_path: Path,
-        encoding: str = "utf-8",
-        skip_empty: bool = False,
+        self, file_path: Path, encoding: str = "utf-8", skip_empty: bool = False
     ) -> Generator[str, None, None]:
         self.log(f"Reading {file_path} (regular mode)")
         try:
@@ -98,11 +88,7 @@ class MmapReader(LineProcessor):
             raise OSError(msg)
 
     def read_lines(
-        self,
-        file_path: Path,
-        encoding: str = "utf-8",
-        skip_empty: bool = False,
-        use_mmap: bool = True,
+        self, file_path: Path, encoding: str = "utf-8", skip_empty: bool = False, use_mmap: bool = True
     ) -> Generator[str, None, None]:
         if use_mmap:
             yield from self.read_lines_mmap(file_path, encoding, skip_empty)
@@ -114,19 +100,10 @@ class LineSorter(LineProcessor):
     def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
 
-    def sort_in_memory(
-        self,
-        lines: list[str],
-        reverse: bool = False,
-        case_insensitive: bool = False,
-    ) -> list[str]:
+    def sort_in_memory(self, lines: list[str], reverse: bool = False, case_insensitive: bool = False) -> list[str]:
         self.log(f"Sorting {len(lines)} lines in memory")
         if case_insensitive:
-            return sorted(
-                lines,
-                key=str.lower,
-                reverse=reverse,
-            )
+            return sorted(lines, key=str.lower, reverse=reverse)
         return sorted(lines, reverse=reverse)
 
     def sort_with_temp_files(
@@ -146,11 +123,7 @@ class LineSorter(LineProcessor):
             for _i, line in enumerate(reader.read_lines(file_path, encoding)):
                 chunk.append(line)
                 if len(chunk) >= chunk_size:
-                    sorted_chunk = self.sort_in_memory(
-                        chunk,
-                        reverse,
-                        case_insensitive,
-                    )
+                    sorted_chunk = self.sort_in_memory(chunk, reverse, case_insensitive)
                     temp_file = temp_dir / f".sort_chunk_{os.getpid()}_{len(temp_files)}.tmp"
                     with Path(temp_file).open("w", encoding=encoding) as f:
                         for line in sorted_chunk:
@@ -159,11 +132,7 @@ class LineSorter(LineProcessor):
                     chunk = []
                     self.log(f"Written {len(temp_files)} chunk(s)")
             if chunk:
-                sorted_chunk = self.sort_in_memory(
-                    chunk,
-                    reverse,
-                    case_insensitive,
-                )
+                sorted_chunk = self.sort_in_memory(chunk, reverse, case_insensitive)
                 temp_file = temp_dir / f".sort_chunk_{os.getpid()}_{len(temp_files)}.tmp"
                 with Path(temp_file).open("w", encoding=encoding) as f:
                     for line in sorted_chunk:
@@ -181,11 +150,7 @@ class LineDeduplicator(LineProcessor):
     def __init__(self, verbose: bool = False) -> None:
         super().__init__(verbose=verbose)
 
-    def deduplicate_list(
-        self,
-        lines: list[str],
-        preserve_order: bool = False,
-    ) -> list[str]:
+    def deduplicate_list(self, lines: list[str], preserve_order: bool = False) -> list[str]:
         if preserve_order:
             self.log(f"Deduplicating {len(lines)} lines (preserving order)")
             seen = set()
@@ -210,11 +175,7 @@ class LineDeduplicator(LineProcessor):
 
 
 class FileSorter(LineProcessor):
-    def __init__(
-        self,
-        verbose: bool = False,
-        dry_run: bool = False,
-    ) -> None:
+    def __init__(self, verbose: bool = False, dry_run: bool = False) -> None:
         super().__init__(verbose=verbose)
         self.dry_run = dry_run
         self.reader = MmapReader(verbose=verbose)
@@ -245,33 +206,16 @@ class FileSorter(LineProcessor):
         print("╚════════════════════════════════════════════════════════════╝\n")
         print(f"Input file: {input_path}")
         print(f"Output file: {output_path}")
-        print(f"Mode: {'DRY RUN' if self.dry_run else 'NORMAL'}")
+        print(f"Mode: {('DRY RUN' if self.dry_run else 'NORMAL')}")
         print("-" * 60)
         start_time = time.time()
         try:
             original_size = self.get_file_size(input_path)
-            original_lines = sum(
-                1
-                for _ in self.reader.read_lines(
-                    input_path,
-                    encoding,
-                    skip_empty,
-                )
-            )
+            original_lines = sum((1 for _ in self.reader.read_lines(input_path, encoding, skip_empty)))
             self.log(f"Original file: {original_lines} lines, {self.fsz(original_size)}")
-            lines = list(
-                self.reader.read_lines(
-                    input_path,
-                    encoding,
-                    skip_empty,
-                )
-            )
+            lines = list(self.reader.read_lines(input_path, encoding, skip_empty))
             if sort:
-                lines = self.sorter.sort_in_memory(
-                    lines,
-                    reverse,
-                    case_insensitive,
-                )
+                lines = self.sorter.sort_in_memory(lines, reverse, case_insensitive)
                 self.log("Lines sorted")
             unique_count = len(lines)
             if unique:
@@ -285,14 +229,14 @@ class FileSorter(LineProcessor):
                     self.log(f"Backup created: {backup_path}")
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 with Path(output_path).open("w", encoding=encoding) as f:
-                    f.writelines(line + "\n" for line in lines)
+                    f.writelines((line + "\n" for line in lines))
                 self.log(f"Output written: {output_path}")
             else:
                 self.log("DRY RUN: File not written")
             if not self.dry_run:
                 after = self.get_file_size(output_path)
             else:
-                after = sum(len(line.encode(encoding)) + 1 for line in lines)
+                after = sum((len(line.encode(encoding)) + 1 for line in lines))
             elapsed_time = time.time() - start_time
             return {
                 "input_file": str(input_path),
@@ -303,11 +247,11 @@ class FileSorter(LineProcessor):
                 "final_lines": len(lines),
                 "after_bytes": after,
                 "after": self.fsz(after),
-                "duplicate_lines": (unique_count if unique else 0),
-                "size_reduction": (original_size - after if original_size > 0 else 0),
-                "size_reduction_pct": (((original_size - after) / original_size * 100) if original_size > 0 else 0),
+                "duplicate_lines": unique_count if unique else 0,
+                "size_reduction": original_size - after if original_size > 0 else 0,
+                "size_reduction_pct": (original_size - after) / original_size * 100 if original_size > 0 else 0,
                 "processing_time": elapsed_time,
-                "lines_per_second": (original_lines / elapsed_time if elapsed_time > 0 else 0),
+                "lines_per_second": original_lines / elapsed_time if elapsed_time > 0 else 0,
             }
         except Exception as e:
             msg = f"Error processing file: {e!s}"
@@ -320,7 +264,7 @@ class FileSorter(LineProcessor):
         print(f"Original lines: {stats['original_lines']:,}")
         print(f"Final lines: {stats['final_lines']:,}")
         if stats["duplicate_lines"] > 0:
-            dup_pct = (stats["duplicate_lines"] / stats["original_lines"] * 100) if stats["original_lines"] > 0 else 0
+            dup_pct = stats["duplicate_lines"] / stats["original_lines"] * 100 if stats["original_lines"] > 0 else 0
             print(f"Duplicate lines removed: {stats['duplicate_lines']:,} ({dup_pct:.1f}%)")
         print()
         print(f"Original size: {stats['original_size']}")
@@ -332,19 +276,12 @@ class FileSorter(LineProcessor):
         print(f"Speed: {stats['lines_per_second']:,.0f} lines/second")
         print("=" * 60)
 
-    def save_report(
-        self,
-        stats: dict,
-        report_file: str | None = None,
-    ):
+    def save_report(self, stats: dict, report_file: str | None = None):
         if report_file is None:
             report_file = "sort_unique_report.json"
         import json
 
-        report = {
-            "timestamp": datetime.now(tz=UTC).isoformat(),
-            "statistics": stats,
-        }
+        report = {"timestamp": datetime.now(tz=UTC).isoformat(), "statistics": stats}
         try:
             with Path(report_file).open("w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
@@ -358,20 +295,13 @@ class FileAnalyzer(LineProcessor):
         super().__init__(verbose=verbose)
         self.reader = MmapReader(verbose=verbose)
 
-    def analyze_file(
-        self,
-        file_path: Path,
-        encoding: str = "utf-8",
-    ) -> dict:
+    def analyze_file(self, file_path: Path, encoding: str = "utf-8") -> dict:
         get_size = self.get_file_size(file_path)
         lines = list(self.reader.read_lines(file_path, encoding))
         line_counts = Counter(lines)
-        duplicate_count = sum(count - 1 for count in line_counts.values())
-        max_length = max(
-            (len(line) for line in lines),
-            default=0,
-        )
-        avg_length = sum(len(line) for line in lines) / len(lines) if lines else 0
+        duplicate_count = sum((count - 1 for count in line_counts.values()))
+        max_length = max((len(line) for line in lines), default=0)
+        avg_length = sum((len(line) for line in lines)) / len(lines) if lines else 0
         most_common = line_counts.most_common(10)
         return {
             "file": str(file_path),
@@ -380,17 +310,13 @@ class FileAnalyzer(LineProcessor):
             "total_lines": len(lines),
             "unique_lines": len(line_counts),
             "duplicate_lines": duplicate_count,
-            "duplicate_percentage": ((duplicate_count / len(lines) * 100) if lines else 0),
+            "duplicate_percentage": duplicate_count / len(lines) * 100 if lines else 0,
             "max_line_length": max_length,
             "avg_line_length": avg_length,
             "most_common_lines": most_common,
         }
 
-    def print_analysis(
-        self,
-        file_path: Path,
-        encoding: str = "utf-8",
-    ):
+    def print_analysis(self, file_path: Path, encoding: str = "utf-8"):
         analysis = self.analyze_file(file_path, encoding)
         print(f"\n{'=' * 60}")
         print(f"File Analysis: {file_path.name}")
@@ -415,103 +341,23 @@ def main():
     parser = argparse.ArgumentParser(
         description="Sort lines in a file and remove duplicates (uses mmap for large files)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python sort_unique_lines.py input.txt
-  python sort_unique_lines.py input.txt --no-unique
-  python sort_unique_lines.py input.txt --no-sort
-  python sort_unique_lines.py input.txt --output sorted_output.txt
-  python sort_unique_lines.py input.txt --reverse
-  python sort_unique_lines.py input.txt --case-insensitive
-  python sort_unique_lines.py input.txt --skip-empty
-  python sort_unique_lines.py input.txt --dry-run -v
-  python sort_unique_lines.py input.txt --analyze
-  python sort_unique_lines.py input.txt --report stats.json
-  python sort_unique_lines.py input.txt -v
-        """,
+        epilog="\nExamples:\n  python sort_unique_lines.py input.txt\n  python sort_unique_lines.py input.txt --no-unique\n  python sort_unique_lines.py input.txt --no-sort\n  python sort_unique_lines.py input.txt --output sorted_output.txt\n  python sort_unique_lines.py input.txt --reverse\n  python sort_unique_lines.py input.txt --case-insensitive\n  python sort_unique_lines.py input.txt --skip-empty\n  python sort_unique_lines.py input.txt --dry-run -v\n  python sort_unique_lines.py input.txt --analyze\n  python sort_unique_lines.py input.txt --report stats.json\n  python sort_unique_lines.py input.txt -v\n        ",
     )
     parser.add_argument("filename", help="Input filename")
-    parser.add_argument(
-        "--output",
-        "-o",
-        help="Output filename (default: overwrite input)",
-    )
-    parser.add_argument(
-        "--sort",
-        action="store_true",
-        default=True,
-        help="Sort lines (default: True)",
-    )
-    parser.add_argument(
-        "--no-sort",
-        dest="sort",
-        action="store_false",
-        help="Do not sort lines",
-    )
-    parser.add_argument(
-        "--unique",
-        action="store_true",
-        default=True,
-        help="Remove duplicates (default: True)",
-    )
-    parser.add_argument(
-        "--no-unique",
-        dest="unique",
-        action="store_false",
-        help="Do not remove duplicates",
-    )
-    parser.add_argument(
-        "--reverse",
-        "-r",
-        action="store_true",
-        help="Sort in reverse order",
-    )
-    parser.add_argument(
-        "--case-insensitive",
-        "-i",
-        action="store_true",
-        help="Case-insensitive sorting",
-    )
-    parser.add_argument(
-        "--skip-empty",
-        action="store_true",
-        help="Skip empty lines",
-    )
-    parser.add_argument(
-        "--no-backup",
-        action="store_true",
-        default=True,
-        help="Do not create backup file",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        default=False,
-        help="Preview without modifying files",
-    )
-    parser.add_argument(
-        "--analyze",
-        action="store_true",
-        help="Analyze file before processing",
-    )
-    parser.add_argument(
-        "--report",
-        "-R",
-        metavar="FILE",
-        help="Save report to JSON file",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        default=True,
-        action="store_true",
-        help="Verbose output",
-    )
-    parser.add_argument(
-        "--encoding",
-        default="utf-8",
-        help="File encoding (default: utf-8)",
-    )
+    parser.add_argument("--output", "-o", help="Output filename (default: overwrite input)")
+    parser.add_argument("--sort", action="store_true", default=True, help="Sort lines (default: True)")
+    parser.add_argument("--no-sort", dest="sort", action="store_false", help="Do not sort lines")
+    parser.add_argument("--unique", action="store_true", default=True, help="Remove duplicates (default: True)")
+    parser.add_argument("--no-unique", dest="unique", action="store_false", help="Do not remove duplicates")
+    parser.add_argument("--reverse", "-r", action="store_true", help="Sort in reverse order")
+    parser.add_argument("--case-insensitive", "-i", action="store_true", help="Case-insensitive sorting")
+    parser.add_argument("--skip-empty", action="store_true", help="Skip empty lines")
+    parser.add_argument("--no-backup", action="store_true", default=True, help="Do not create backup file")
+    parser.add_argument("--dry-run", action="store_true", default=False, help="Preview without modifying files")
+    parser.add_argument("--analyze", action="store_true", help="Analyze file before processing")
+    parser.add_argument("--report", "-R", metavar="FILE", help="Save report to JSON file")
+    parser.add_argument("-v", "--verbose", default=True, action="store_true", help="Verbose output")
+    parser.add_argument("--encoding", default="utf-8", help="File encoding (default: utf-8)")
     args = parser.parse_args()
     try:
         pdb.set_trace()
@@ -523,10 +369,7 @@ Examples:
             analyzer = FileAnalyzer(verbose=args.verbose)
             analyzer.print_analysis(input_path, args.encoding)
             return
-        sorter = FileSorter(
-            verbose=args.verbose,
-            dry_run=args.dry_run,
-        )
+        sorter = FileSorter(verbose=args.verbose, dry_run=args.dry_run)
         stats = sorter.process_file(
             args.filename,
             output_path=args.output,

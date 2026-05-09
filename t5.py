@@ -1,22 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_pyfiles, mpf
 from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
-QUERY_STRING = """
-(comment) @comment
-(block
-  . (expression_statement
-    (string)) @docstring)
-(module
-  . (expression_statement
-    (string)) @docstring)
-"""
+QUERY_STRING = "\n(comment) @comment\n(block\n  . (expression_statement\n    (string)) @docstring)\n(module\n  . (expression_statement\n    (string)) @docstring)\n"
 
 
 class TSRemover:
@@ -33,14 +25,8 @@ class TSRemover:
         deletions = []
         comment_count = 0
         docstring_count = 0
-        for (
-            _pattern_index,
-            captures_dict,
-        ) in matches:
-            for (
-                capture_name,
-                node_list,
-            ) in captures_dict.items():
+        for _pattern_index, captures_dict in matches:
+            for capture_name, node_list in captures_dict.items():
                 for node in node_list:
                     start = node.start_byte
                     end = node.end_byte
@@ -61,11 +47,7 @@ class TSRemover:
             new_source = new_source[:start] + new_source[end:]
         cleaned = new_source.decode("utf-8")
         cleaned = clean_blank_lines(cleaned)
-        return (
-            cleaned,
-            comment_count,
-            docstring_count,
-        )
+        return (cleaned, comment_count, docstring_count)
 
 
 def process_file(fp):

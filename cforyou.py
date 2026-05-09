@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import json
 import re
 import time
 from pathlib import Path
-
 import requests
 from dh import get_installed_packages
 from loguru import logger
@@ -31,8 +31,7 @@ def get_latest_version(pkg_name: str) -> str | None:
     except:
         return None
     wheel_pattern = re.compile(
-        rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)",
-        re.IGNORECASE,
+        f"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\\.\\-_]*)\\.(?:whl|tar\\.gz|zip)", re.IGNORECASE
     )
     versions = []
     print(html[:-100])
@@ -52,10 +51,7 @@ def load_previous_results() -> dict[str, dict]:
             with Path(RESULTS_FILE).open(encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError:
-            cprint(
-                f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.",
-                "red",
-            )
+            cprint(f"Warning: Corrupted results file '{RESULTS_FILE}'. Starting fresh.", "red")
             return {}
     return {}
 
@@ -113,11 +109,8 @@ if __name__ == "__main__":
                     "yellow",
                 )
         else:
-            cprint(
-                f"[{i + 1}/{len(packages_to_check)}] {pkg_name}: Could not get latest version from PyPI.",
-                "yellow",
-            )
-        if (i + 1) % 10 == 0 or (i + 1) == len(packages_to_check):
+            cprint(f"[{i + 1}/{len(packages_to_check)}] {pkg_name}: Could not get latest version from PyPI.", "yellow")
+        if (i + 1) % 10 == 0 or i + 1 == len(packages_to_check):
             save_results(current_results)
             cprint("Results saved periodically.", "blue")
     cprint("\n--- Summary of Updatable Packages ---", "blue")

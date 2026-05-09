@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -31,8 +31,8 @@ def man_to_markdown(content):
             subheader = line[3:].strip()
             md_lines.append(f"## {subheader.title()}")
             continue
-        line = re.sub(r"\.B\s+(.+)", r"**\1**", line)
-        line = re.sub(r"\.I\s+(.+)", r"*\1*", line)
+        line = re.sub("\\.B\\s+(.+)", "**\\1**", line)
+        line = re.sub("\\.I\\s+(.+)", "*\\1*", line)
         if line.startswith(".BR"):
             parts = line.split(maxsplit=1)
             if len(parts) > 1:
@@ -96,10 +96,7 @@ def man_to_markdown(content):
             continue
         if line.startswith("."):
             continue
-        if re.match(r"^\s*\$", line) or re.match(
-            r"^\s*(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\b",
-            line,
-        ):
+        if re.match("^\\s*\\$", line) or re.match("^\\s*(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\\b", line):
             if not in_code_block:
                 md_lines.append("```sh")
                 in_code_block = True
@@ -108,11 +105,7 @@ def man_to_markdown(content):
         if in_code_block:
             md_lines.append("```")
             in_code_block = False
-        line = re.sub(
-            r"\b(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\b",
-            r"`\1`",
-            line,
-        )
+        line = re.sub("\\b(ls|cat|grep|echo|pwd|cd|mkdir|rm|touch|man)\\b", "`\\1`", line)
         md_lines.append(line)
     if in_code_block:
         md_lines.append("```")

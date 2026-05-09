@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from collections import defaultdict
@@ -14,7 +15,7 @@ def main():
         print(f"File not found: {src_path}")
         sys.exit(1)
     dup_path = src_path.parent / "dup_const.py"
-    assign_re = re.compile(r"^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=")
+    assign_re = re.compile("^\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*=")
     lines = src_path.read_text().splitlines(keepends=True)
     first_seen = {}
     duplicates = []

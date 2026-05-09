@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import tempfile
 from pathlib import Path
-
 from dh import cprint, fsz, get_nobinary, gsz, mpf3
 
 
@@ -56,16 +56,10 @@ def main():
     for result in results:
         if result:
             lines_removed += result
-    cprint(
-        f"total removed : {lines_removed}",
-        "green",
-    )
+    cprint(f"total removed : {lines_removed}", "green")
     diffsize = before - gsz(cwd)
     print("space freed: ", end="")
-    cprint(
-        f"{fsz(diffsize)}",
-        "cyan",
-    )
+    cprint(f"{fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
@@ -6,7 +7,6 @@ import shutil
 import sysconfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 from wheel.wheelfile import WheelFile
 
@@ -20,10 +20,10 @@ def list_installed_packages(site: Path):
     for item in site.iterdir():
         if item.name.endswith(".dist-info"):
             name_version = item.name[:-10]
-            m = re.match(r"(.+)-([\w\.]+)", name_version)
+            m = re.match("(.+)-([\\w\\.]+)", name_version)
             if not m:
                 continue
-            pkg, version = m.group(1), m.group(2)
+            pkg, version = (m.group(1), m.group(2))
             pkgs[pkg.lower()] = (pkg, version)
     return pkgs
 
@@ -64,19 +64,13 @@ def copy_scripts(pkg: str, dst: Path) -> None:
     scripts_dir = Path(sysconfig.get_paths()["scripts"])
     if not scripts_dir.exists():
         return
-    pattern = re.compile(rf"^{pkg}(-.+)?$")
+    pattern = re.compile(f"^{pkg}(-.+)?$")
     for script in scripts_dir.iterdir():
         if script.is_file() and pattern.match(script.name):
             shutil.copy2(script, dst / script.name)
 
 
-def build_wheel(
-    pkg: str,
-    version: str,
-    tag: str,
-    src_dir: Path,
-    out_dir: Path,
-):
+def build_wheel(pkg: str, version: str, tag: str, src_dir: Path, out_dir: Path):
     wheel_name = f"{pkg}-{version}-{tag}.whl"
     wheel_path = out_dir / wheel_name
     with WheelFile(str(wheel_path), "w") as wf:
@@ -88,12 +82,7 @@ def build_wheel(
     return wheel_path
 
 
-def repack(
-    pkg: str,
-    site: Path,
-    out_repack: Path,
-    out_whl: Path,
-) -> None:
+def repack(pkg: str, site: Path, out_repack: Path, out_whl: Path) -> None:
     pkg_lower = pkg.lower()
     installed = list_installed_packages(site)
     if pkg_lower not in installed:
@@ -107,29 +96,14 @@ def repack(
     copy_scripts(real_pkg, target_dir)
     tags = get_wheel_tags(dist_info)
     tag = tags[0]
-    wheel = build_wheel(
-        real_pkg,
-        version,
-        tag,
-        target_dir,
-        out_whl,
-    )
+    wheel = build_wheel(real_pkg, version, tag, target_dir, out_whl)
     print(f"Repacked: {real_pkg} → {wheel}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Repack installed Python packages")
-    parser.add_argument(
-        "packages",
-        nargs="*",
-        help="Package names",
-    )
-    parser.add_argument(
-        "-a",
-        "--all",
-        action="store_true",
-        help="Repack all installed pkgs",
-    )
+    parser.add_argument("packages", nargs="*", help="Package names")
+    parser.add_argument("-a", "--all", action="store_true", help="Repack all installed pkgs")
     args = parser.parse_args()
     site = find_site_packages()
     out_repack = Path.home() / "tmp" / "repack"
@@ -138,23 +112,14 @@ def main() -> None:
     out_whl.mkdir(parents=True, exist_ok=True)
     if args.all:
         pkgs = list_installed_packages(site)
-        pkg_list = [real for (real, _) in pkgs.values()]
+        pkg_list = [real for real, _ in pkgs.values()]
     else:
         pkg_list = args.packages
     if not pkg_list:
         print("No packages specified.")
         return
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
-        futures = {
-            executor.submit(
-                repack,
-                pkg,
-                site,
-                out_repack,
-                out_whl,
-            ): pkg
-            for pkg in pkg_list
-        }
+        futures = {executor.submit(repack, pkg, site, out_repack, out_whl): pkg for pkg in pkg_list}
         for future in as_completed(futures):
             pkg = futures[future]
             try:

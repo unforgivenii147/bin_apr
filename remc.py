@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import re
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from loguru import logger
 from termcolor import cprint
@@ -50,7 +50,7 @@ def rm_doc(content: str) -> tuple[str, int]:
         else:
             result_lines.append(line)
             i += 1
-    return "\n".join(result_lines), removed_count
+    return ("\n".join(result_lines), removed_count)
 
 
 def rm_ast(content: str) -> tuple[str, int]:
@@ -62,22 +62,14 @@ def rm_ast(content: str) -> tuple[str, int]:
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
         del lines[start - 1 : end]
-    return "\n".join(lines), len(ranges)
+    return ("\n".join(lines), len(ranges))
 
 
 def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
         if (
-            isinstance(
-                child,
-                (
-                    ast.Module,
-                    ast.FunctionDef,
-                    ast.AsyncFunctionDef,
-                    ast.ClassDef,
-                ),
-            )
+            isinstance(child, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
             and child.body
             and isinstance(child.body[0], ast.Expr)
         ):
@@ -88,18 +80,13 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
                 and child.body[0].lineno
                 and child.body[0].end_lineno
             ):
-                ranges.append(
-                    (
-                        child.body[0].lineno,
-                        child.body[0].end_lineno,
-                    )
-                )
+                ranges.append((child.body[0].lineno, child.body[0].end_lineno))
     return ranges
 
 
 def clean_blank_lines(content: str) -> str:
-    content = re.sub(r"\n\n+", "\n", content)
-    return "\n".join(line.rstrip() for line in content.split("\n"))
+    content = re.sub("\\n\\n+", "\n", content)
+    return "\n".join((line.rstrip() for line in content.split("\n")))
 
 
 def process_file(file_path: Path) -> None:
@@ -119,10 +106,7 @@ def process_file(file_path: Path) -> None:
                 del tree
                 return
             except:
-                cprint(
-                    f"{file_path.name} ast parse error",
-                    "cyan",
-                )
+                cprint(f"{file_path.name} ast parse error", "cyan")
                 return
     except Exception as exc:
         print(f"✗ Error processing {file_path}: {exc}")

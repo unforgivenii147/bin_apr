@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from pathlib import Path
 
 input_file = "/data/data/com.termux/files/home/.local/share/mc/history"
@@ -19,4 +20,4 @@ with Path(input_file).open(encoding="utf-8") as file:
             cmdline_section.append(cleaned_line)
 soniq = list(set(cmdline_section))
 with Path(output_file).open("a", encoding="utf-8") as file:
-    file.writelines(cmd + "\n" for cmd in soniq)
+    file.writelines((cmd + "\n" for cmd in soniq))

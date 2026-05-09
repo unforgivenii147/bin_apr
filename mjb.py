@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -17,11 +17,7 @@ def minify_json_file(path: Path, dry_run: bool = False) -> bool:
     except json.JSONDecodeError:
         print(f"[SKIP] Invalid JSON: {path}")
         return False
-    minified = json.dumps(
-        data,
-        separators=(",", ":"),
-        ensure_ascii=False,
-    )
+    minified = json.dumps(data, separators=(",", ":"), ensure_ascii=False)
     if original.strip() == minified:
         return False
     if dry_run:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -32,7 +32,7 @@ def split_internal_external(base_url, links):
             internal.append(link)
         else:
             external.append(link)
-    return internal, external
+    return (internal, external)
 
 
 def save_links(name, links):
@@ -47,18 +47,12 @@ def main():
     args = parser.parse_args()
     url = args.url or input("Enter URL: ").strip()
     if not url.startswith(("http://", "https://")):
-        print(
-            "Error: URL must start with http:// or https://",
-            file=sys.stderr,
-        )
+        print("Error: URL must start with http:// or https://", file=sys.stderr)
         sys.exit(1)
     try:
         links = extract_links(url)
     except Exception as e:
-        print(
-            f"Failed to fetch or parse URL: {e}",
-            file=sys.stderr,
-        )
+        print(f"Failed to fetch or parse URL: {e}", file=sys.stderr)
         sys.exit(1)
     internal, external = split_internal_external(url, links)
     if internal and external:

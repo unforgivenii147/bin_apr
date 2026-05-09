@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 from loguru import logger
 
@@ -9,8 +9,8 @@ INVISIBLE_CHARS = {
     "\u200b",
     "\u200c",
     "\u200d",
-    "\u00a0",
-    "\u00ad",
+    "\xa0",
+    "\xad",
     "\ufeff",
     "\u202a",
     "\u202b",

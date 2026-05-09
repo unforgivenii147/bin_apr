@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import random
 import string
 import sys
 import traceback
 from importlib.machinery import SourceFileLoader
-
 from loguru import logger
 
 if __name__ == "__main__":
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     has_failure = False
     for file in files:
         try:
-            module_name = "".join(random.choice(string.ascii_letters) for _ in range(20))
+            module_name = "".join((random.choice(string.ascii_letters) for _ in range(20)))
             SourceFileLoader(module_name, file).load_module()
         except Exception:
             has_failure = True

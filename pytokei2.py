@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 
+import os
 from loguru import logger
 
 
 def count_lines_of_code(file_path, lang):
     if ".git" in str(file_path):
-        return 0, 0, 0
+        return (0, 0, 0)
     if is_binary(file_path):
         print(f"{file_path} is binary")
-        return 0, 0, 0
+        return (0, 0, 0)
     with Path(file_path).open(encoding="utf-8") as file:
         code_lines = 0
         comment_lines = 0
@@ -17,31 +17,17 @@ def count_lines_of_code(file_path, lang):
         for line in file:
             if not line.strip():
                 blank_lines += 1
-            elif re.match(
-                COMMENT_PATTERNS.get(lang, ""),
-                line,
-            ):
+            elif re.match(COMMENT_PATTERNS.get(lang, ""), line):
                 comment_lines += 1
             else:
                 code_lines += 1
-    return code_lines, comment_lines, blank_lines
+    return (code_lines, comment_lines, blank_lines)
 
 
 def scan_directory(directory="."):
     stats = {
-        "total": {
-            "code": 0,
-            "comments": 0,
-            "blank": 0,
-        },
-        "languages": {
-            lang: {
-                "code": 0,
-                "comments": 0,
-                "blank": 0,
-            }
-            for lang in LANG_EXTENSIONS
-        },
+        "total": {"code": 0, "comments": 0, "blank": 0},
+        "languages": {lang: {"code": 0, "comments": 0, "blank": 0} for lang in LANG_EXTENSIONS},
     }
     for root, _, files in os.walk(directory):
         for file in files:
@@ -50,10 +36,7 @@ def scan_directory(directory="."):
             if not file_extension:
                 lang = get_language_from_shebang(file_path)
                 if lang:
-                    code, comments, blanks = count_lines_of_code(
-                        file_path,
-                        lang,
-                    )
+                    code, comments, blanks = count_lines_of_code(file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks
@@ -61,15 +44,9 @@ def scan_directory(directory="."):
                     stats["total"]["comments"] += comments
                     stats["total"]["blank"] += blanks
                     continue
-            for (
-                lang,
-                extensions,
-            ) in LANG_EXTENSIONS.items():
+            for lang, extensions in LANG_EXTENSIONS.items():
                 if file_extension in extensions:
-                    code, comments, blanks = count_lines_of_code(
-                        file_path,
-                        lang,
-                    )
+                    code, comments, blanks = count_lines_of_code(file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks

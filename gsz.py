@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
-
 import requests
 from loguru import logger
 
 
 def get_repo_size(input_str):
     if input_str.startswith("https://github.com/"):
-        match = re.search(r"github\.com/([^/]+)/([^/]+)", input_str)
+        match = re.search("github\\.com/([^/]+)/([^/]+)", input_str)
         if not match:
             print("Invalid GitHub URL format.")
             return

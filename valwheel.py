@@ -1,27 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import shutil
 from pathlib import Path
-
 from loguru import logger
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 WHEEL_PATTERN = re.compile(
-    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])"
-    r"-"
-    r"([^-]+)"
-    r"-"
-    r"(\d[^-]*)"
-    r"-"
-    r"([^-]+)"
-    r"-"
-    r"([^-]+)"
-    r"-"
-    r"([^-]+)"
-    r"\.whl$",
-    re.IGNORECASE,
+    "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\\.whl$", re.IGNORECASE
 )
 
 
@@ -37,13 +25,7 @@ def is_valid(path):
         parts = basename.split("-")
         if len(parts) != 5:
             return False
-        (
-            dist_name,
-            version,
-            build_tag,
-            py_tag,
-            abi_platform,
-        ) = parts
+        dist_name, version, build_tag, py_tag, abi_platform = parts
         if canonicalize_name(dist_name) != dist_name.lower():
             return False
         try:

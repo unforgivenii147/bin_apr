@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import subprocess
 from collections.abc import Iterable
 from pathlib import Path
-
 from loguru import logger
 
 REQUIREMENTS_FILE = Path("requirements.txt")
-MISSING_PATTERN = re.compile(r"requires ([A-Za-z0-9_\-]+), which is not installed\.")
+MISSING_PATTERN = re.compile("requires ([A-Za-z0-9_\\-]+), which is not installed\\.")
 BLACKLIST = {
     "audioread",
     "av",
@@ -50,12 +50,7 @@ BLACKLIST = {
 
 
 def run_pip_check() -> str:
-    result = subprocess.run(
-        ["pip", "check"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = subprocess.run(["pip", "check"], capture_output=True, text=True, check=False)
     return result.stdout.strip()
 
 
@@ -74,7 +69,7 @@ def read_existing_requirements() -> set[str]:
     return {
         line.strip()
         for line in REQUIREMENTS_FILE.read_text(encoding="utf-8").splitlines()
-        if line.strip() and not line.startswith("#")
+        if line.strip() and (not line.startswith("#"))
     }
 
 

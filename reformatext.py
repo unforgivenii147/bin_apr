@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -30,7 +30,7 @@ def restructure_text_file(filepath: Path):
         if not paragraph.strip():
             restructured_lines.append("")
             continue
-        sentences = re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|!)\s+", paragraph)
+        sentences = re.split("(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|!)\\s+", paragraph)
         for sentence in sentences:
             if not sentence.strip():
                 continue

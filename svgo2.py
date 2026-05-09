@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 import tempfile
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, move_file
 from loguru import logger
 from termcolor import cprint
@@ -19,16 +19,7 @@ def process_file(in_file):
     with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_file:
         tmp_file_path = tmp_file.name
     try:
-        subprocess.run(
-            [
-                "svgcleaner",
-                "--multipass",
-                str(in_file),
-                tmp_file_path,
-            ],
-            check=True,
-            capture_output=True,
-        )
+        subprocess.run(["svgcleaner", "--multipass", str(in_file), tmp_file_path], check=True, capture_output=True)
         move_file(tmp_file_path, in_file, overwrite=True)
         print(f"{in_file.name} updated")
     except subprocess.CalledProcessError as e:
@@ -60,10 +51,7 @@ def main() -> None:
         p.close()
         p.join()
         after = gsz(cwd)
-        cprint(
-            f"{fsz(before - after)}",
-            "cyan",
-        )
+        cprint(f"{fsz(before - after)}", "cyan")
 
 
 if __name__ == "__main__":

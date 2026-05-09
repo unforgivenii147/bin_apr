@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 
 CHUNK_SIZE = 524288
@@ -19,9 +19,9 @@ class QuickXorHash:
             shift = self._length % 160
             byte_index = shift // 8
             bit_index = shift % 8
-            self._hash[byte_index] ^= (b << bit_index) & 0xFF
+            self._hash[byte_index] ^= b << bit_index & 255
             if bit_index > 0 and byte_index < MAX_BYTE_INDEX:
-                self._hash[byte_index + 1] ^= (b >> (8 - bit_index)) & 0xFF
+                self._hash[byte_index + 1] ^= b >> 8 - bit_index & 255
             self._length += 1
 
     def digest(self):
@@ -43,10 +43,10 @@ def calculate_xorhash(path: Path) -> tuple[str, Path]:
                 if not chunk:
                     break
                 q.update(chunk)
-        return q.hexdigest(), path
+        return (q.hexdigest(), path)
     except Exception as e:
         print(f"Error hashing file {path}: {e}")
-        return None, path
+        return (None, path)
 
 
 def find_dups_optimized(root: Path):

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"
@@ -25,24 +25,14 @@ def detect_shebang(content: str) -> str | None:
         return TERMUX_PYTHON
     if stripped.startswith(("import ", "def ", "class ", "!python", "from ")):
         return TERMUX_PYTHON
-    if stripped.startswith(
-        (
-            "echo ",
-            "cd ",
-            "export ",
-            "set ",
-            "if ",
-            "for ",
-            "#!/bin/sh",
-        )
-    ):
+    if stripped.startswith(("echo ", "cd ", "export ", "set ", "if ", "for ", "#!/bin/sh")):
         return TERMUX_BASH
     return None
 
 
 def create_symlink(out_file):
     ext = out_file.suffix
-    if ext and (cwd in {homebin, homebin2}):
+    if ext and cwd in {homebin, homebin2}:
         symlink_path = out_file.parent / out_file.stem
         if not symlink_path.exists():
             symlink_path.symlink_to(out_file)
@@ -66,7 +56,7 @@ def main():
         content = "\n".join(lines)
     out_file.write_text(content, encoding="utf-8")
     if cwd in {homebin, homebin2}:
-        out_file.chmod(0o755)
+        out_file.chmod(493)
         create_symlink(out_file)
 
 

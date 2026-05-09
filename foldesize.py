@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import math
 import operator
 import os
 import shutil
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -12,16 +12,10 @@ def get_all_files_in_root_only(root_path):
     files_info = []
     try:
         for path in root_path.rglob("*"):
-            if path.is_file() and not path.is_symlink():
+            if path.is_file() and (not path.is_symlink()):
                 try:
                     size = path.stat().st_size
-                    files_info.append(
-                        {
-                            "path": path,
-                            "name": path.name,
-                            "size": size,
-                        }
-                    )
+                    files_info.append({"path": path, "name": path.name, "size": size})
                 except OSError as e:
                     print(f"Error accessing {path}: {e}")
     except Exception as e:
@@ -66,11 +60,7 @@ def analyze_size_distribution(files_info):
     }
 
 
-def organize_files_in_root(
-    root_path=".",
-    target_folders=4,
-    max_get_size_mb=None,
-):
+def organize_files_in_root(root_path=".", target_folders=4, max_get_size_mb=None):
     print("=" * 70)
     print("File Organization - Direct to Root Path (No Subdirectories)")
     print("=" * 70)
@@ -113,10 +103,7 @@ def organize_files_in_root(
         folders = []
         for i in range(num_folders):
             start_idx = i * files_per_folder
-            end_idx = min(
-                start_idx + files_per_folder,
-                stats["count"],
-            )
+            end_idx = min(start_idx + files_per_folder, stats["count"])
             folders.append(files_info[start_idx:end_idx])
     print("\nOrganization Plan:")
     print(f"  Number of folders to create: {len(folders)}")
@@ -135,9 +122,9 @@ def organize_files_in_root(
             continue
         min_size = folder_files[0]["size"]
         max_size = folder_files[-1]["size"]
-        total_size = sum(f["size"] for f in folder_files)
+        total_size = sum((f["size"] for f in folder_files))
         folder_name = f"{convert_size(min_size)}-{convert_size(max_size)}"
-        folder_name = "".join(c for c in folder_name if c not in r'<>:"/\|?*')
+        folder_name = "".join((c for c in folder_name if c not in '<>:"/\\|?*'))
         folder_path = os.path.join(root_path, folder_name)
         try:
             Path(folder_path).mkdir(exist_ok=True, parents=True)
@@ -152,10 +139,7 @@ def organize_files_in_root(
                 counter = 1
                 base_name, ext = os.path.splitext(file_info["name"])
                 while Path(dst).exists():
-                    dst = os.path.join(
-                        folder_path,
-                        f"{base_name}_{counter}{ext}",
-                    )
+                    dst = os.path.join(folder_path, f"{base_name}_{counter}{ext}")
                     counter += 1
                 try:
                     shutil.move(src, dst)

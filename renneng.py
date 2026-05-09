@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 from loguru import logger
 
 DIRECTORY = "."
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def translate_if_needed(name: str) -> str:

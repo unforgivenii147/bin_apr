@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 from xxhash import xxh64
 
@@ -85,30 +85,14 @@ def main() -> None:
     cwd = Path.cwd()
     p = argparse.ArgumentParser(description="Find and delete duplicate files by content.")
     p.add_argument(
-        "-r",
-        "--recursive",
-        default=True,
-        action="store_true",
-        help="Search directories recursively (default: False).",
+        "-r", "--recursive", default=True, action="store_true", help="Search directories recursively (default: False)."
     )
     p.add_argument(
-        "-n",
-        "--dry-run",
-        default=False,
-        action="store_true",
-        help="Don't delete; just show what would be done.",
+        "-n", "--dry-run", default=False, action="store_true", help="Don't delete; just show what would be done."
     )
+    p.add_argument("--follow-symlinks", default=False, action="store_true", help="Follow symlinks to files.")
     p.add_argument(
-        "--follow-symlinks",
-        default=False,
-        action="store_true",
-        help="Follow symlinks to files.",
-    )
-    p.add_argument(
-        "--min-size",
-        type=int,
-        default=1,
-        help="Minimum file size (bytes) to consider. Default 1 (skip zero-size).",
+        "--min-size", type=int, default=1, help="Minimum file size (bytes) to consider. Default 1 (skip zero-size)."
     )
     p.add_argument(
         "-k",
@@ -132,7 +116,7 @@ def main() -> None:
         print("No potential duplicates found (no groups with equal size).")
         return
     print(
-        f"Found {sum(len(v) for v in candidates_by_size.values())} files in {len(candidates_by_size)} size-groups to examine.",
+        f"Found {sum((len(v) for v in candidates_by_size.values()))} files in {len(candidates_by_size)} size-groups to examine."
     )
     quick_groups = defaultdict(list)
     with ThreadPoolExecutor(max_workers=16) as ex:

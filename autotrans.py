@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import is_binary
 from fastwalk import walk_files
@@ -10,7 +10,7 @@ from loguru import logger
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def split_into_chunks(text: str, size: int):
@@ -62,7 +62,7 @@ def process_directory(directory: str):
     files = []
     for pth in walk_files(directory):
         path = Path(pth)
-        if path.is_file() and not is_binary(path):
+        if path.is_file() and (not is_binary(path)):
             files.append(path)
             print(f"[FOUND] Text file: {path}")
     print(f"\n[INFO] Total text files found: {len(files)}")

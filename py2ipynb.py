@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import json
 from pathlib import Path
-
 import nbformat as nbf
 from loguru import logger
 
@@ -23,13 +23,13 @@ def py_to_ipynb(input_file, output_file=None):
             i > 0
             and (
                 line.startswith(("def ", "class "))
-                or ((line.startswith(("import ", "from "))) and not current_cell[-1].startswith(("import ", "from ")))
+                or (line.startswith(("import ", "from ")) and (not current_cell[-1].startswith(("import ", "from "))))
                 or (
                     line.strip() == ""
                     and current_cell
-                    and i + 1 < len(lines)
+                    and (i + 1 < len(lines))
                     and lines[i + 1].strip()
-                    and not lines[i + 1].startswith((" ", "\t"))
+                    and (not lines[i + 1].startswith((" ", "\t")))
                 )
             )
             and current_cell
@@ -57,16 +57,8 @@ def py_to_ipynb(input_file, output_file=None):
 def main():
     parser = argparse.ArgumentParser(description="Convert a Python script to a Jupyter notebook")
     parser.add_argument("input", help="Input Python file (.py)")
-    parser.add_argument(
-        "output",
-        nargs="?",
-        help="Output notebook file (.ipynb) (optional)",
-    )
-    parser.add_argument(
-        "--no-split",
-        action="store_true",
-        help="Don't split code into multiple cells (one cell only)",
-    )
+    parser.add_argument("output", nargs="?", help="Output notebook file (.ipynb) (optional)")
+    parser.add_argument("--no-split", action="store_true", help="Don't split code into multiple cells (one cell only)")
     args = parser.parse_args()
     if args.no_split:
         code = Path(args.input).read_text(encoding="utf-8")
@@ -74,12 +66,7 @@ def main():
         nb["cells"] = [nbf.v4.new_code_cell(code)]
         output_file = args.output or Path(args.input).stem + ".ipynb"
         with Path(output_file).open("w", encoding="utf-8") as f:
-            json.dump(
-                nb,
-                f,
-                indent=1,
-                ensure_ascii=False,
-            )
+            json.dump(nb, f, indent=1, ensure_ascii=False)
         print(f"Successfully converted '{args.input}' to '{output_file}' (single cell)")
     else:
         py_to_ipynb(args.input, args.output)

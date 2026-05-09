@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import sys
 from pathlib import Path
-
 import brotlicffi
 from dh import fsz, get_files, gsz
 from loguru import logger
@@ -63,7 +63,7 @@ def process_file(fp):
         outfile.unlink()
         return
     after = gsz(outfile)
-    ratio = round(((after - before) / after) * 100, 3)
+    ratio = round((after - before) / after * 100, 3)
     cprint(f"{outfile.name}", "green", end=" | ")
     cprint(f"{ratio}", "cyan")
     del before, after, ratio

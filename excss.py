@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from dh import get_files, get_random_name, mpf3
 from termcolor import cprint
@@ -27,10 +27,7 @@ def process_file(fp):
     soup = BeautifulSoup(html_content, "html.parser")
     styles = soup.find_all("style")
     if styles:
-        cprint(
-            f"{[fp.name]} : {len(styles)} styles found.",
-            "green",
-        )
+        cprint(f"{[fp.name]} : {len(styles)} styles found.", "green")
         for style in styles:
             save_style(style.contents)
     return True
@@ -42,15 +39,7 @@ def main():
         outpath.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            cwd,
-            recursive=True,
-            extensions=[".html", ".htm"],
-        )
-    )
+    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm"])
     mpf3(process_file, files)
 
 

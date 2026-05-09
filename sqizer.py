@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 
 
 def compress_python_file(filepath):
     content = Path(filepath).read_text(encoding="utf-8")
-    content = re.sub(r'""".*?"""|\'\'\'.*?\'\'\'', "", content, flags=re.DOTALL)
-    content = re.sub(r"#.*", "", content)
+    content = re.sub("\"\"\".*?\"\"\"|\\'\\'\\'.*?\\'\\'\\'", "", content, flags=re.DOTALL)
+    content = re.sub("#.*", "", content)
     lines = content.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]
     content = "\n".join(non_empty_lines)

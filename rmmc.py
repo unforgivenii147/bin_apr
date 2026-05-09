@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import re
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import get_nobinary, is_binary
 from loguru import logger
 
@@ -14,8 +14,8 @@ def process_file(file_path: Path) -> None:
         return
     before = gsz(file_path)
     file_path.read_text(encoding="utf-8")
-    orig = re.sub(r"#.*", "")
-    orig = re.sub(r"\n\n*", "\n")
+    orig = re.sub("#.*", "")
+    orig = re.sub("\\n\\n*", "\n")
     if file_path.suffix == ".py":
         try:
             ast.parse(orig)

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -10,18 +10,10 @@ def refactor_file(file_path):
     try:
         content = Path(file_path).read_text(encoding="utf-8")
         original_content = content
-        content = re.sub(
-            r"os\.path\.join\(([^,]+),\s*([^)]+)\)",
-            r"(Path(\g<1>) / \g<2>)",
-            content,
-        )
-        content = re.sub(
-            r"os\.listdir\(([^)]+)\)",
-            r"[f.name for f in Path(\g<1>).iterdir()]",
-            content,
-        )
-        content = re.sub(r"os\.remove\(([^)]+)\)", r"Path(\g<1>).unlink()", content)
-        content = re.sub(r"os\.path\.splitext\(([^)]+)\)", r"(\1.stem, \1.suffix)", content)
+        content = re.sub("os\\.path\\.join\\(([^,]+),\\s*([^)]+)\\)", "(Path(\\g<1>) / \\g<2>)", content)
+        content = re.sub("os\\.listdir\\(([^)]+)\\)", "[f.name for f in Path(\\g<1>).iterdir()]", content)
+        content = re.sub("os\\.remove\\(([^)]+)\\)", "Path(\\g<1>).unlink()", content)
+        content = re.sub("os\\.path\\.splitext\\(([^)]+)\\)", "(\\1.stem, \\1.suffix)", content)
         if "import os" in content and "from pathlib import Path" not in content:
             lines = content.splitlines()
             import_path = -1

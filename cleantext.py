@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import unicodedata
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -12,7 +12,7 @@ def clean_file(filename):
             lines = f.readlines()
         cleaned_lines = []
         for line in lines:
-            cleaned_line = "".join(ch for ch in line if unicodedata.category(ch)[0] != "C" or ch in "\n\r\t")
+            cleaned_line = "".join((ch for ch in line if unicodedata.category(ch)[0] != "C" or ch in "\n\r\t"))
             cleaned_lines.append(cleaned_line)
         with Path(filename).open("w", encoding="utf-8") as f:
             f.writelines(cleaned_lines)

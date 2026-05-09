@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import json
 import logging
@@ -6,17 +7,13 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -32,10 +29,7 @@ class CodeBlock:
 class HTTPSession:
     def __init__(self, max_retries=3, timeout=10) -> None:
         self.session = requests.Session()
-        retry_strategy = Retry(
-            total=max_retries,
-            backoff_factor=1,
-        )
+        retry_strategy = Retry(total=max_retries, backoff_factor=1)
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
@@ -66,11 +60,7 @@ class CodeBlockExtractor:
         code_blocks.extend(self._extract_from_canvas(soup, source_file))
         return code_blocks
 
-    def _extract_from_pre_code(
-        self,
-        soup: BeautifulSoup,
-        source_file: str,
-    ) -> list[CodeBlock]:
+    def _extract_from_pre_code(self, soup: BeautifulSoup, source_file: str) -> list[CodeBlock]:
         blocks = []
         for idx, pre in enumerate(soup.find_all("pre")):
             code = pre.find("code")
@@ -87,11 +77,7 @@ class CodeBlockExtractor:
                     blocks.append(block)
         return blocks
 
-    def _extract_from_code_tags(
-        self,
-        soup: BeautifulSoup,
-        source_file: str,
-    ) -> list[CodeBlock]:
+    def _extract_from_code_tags(self, soup: BeautifulSoup, source_file: str) -> list[CodeBlock]:
         blocks = []
         offset = len(soup.find_all("pre"))
         for idx, code in enumerate(soup.find_all("code")):
@@ -109,11 +95,7 @@ class CodeBlockExtractor:
                 blocks.append(block)
         return blocks
 
-    def _extract_from_canvas(
-        self,
-        soup: BeautifulSoup,
-        source_file: str,
-    ) -> list[CodeBlock]:
+    def _extract_from_canvas(self, soup: BeautifulSoup, source_file: str) -> list[CodeBlock]:
         blocks = []
         offset = len(soup.find_all("pre")) + len(soup.find_all("code"))
         for idx, script in enumerate(soup.find_all("script")):
@@ -134,10 +116,7 @@ class CodeBlockExtractor:
                                         suggested_name=self._extract_filename_from_code(py_code),
                                     )
                                     blocks.append(block)
-                except (
-                    json.JSONDecodeError,
-                    TypeError,
-                ):
+                except (json.JSONDecodeError, TypeError):
                     pass
         return blocks
 
@@ -147,24 +126,12 @@ class CodeBlockExtractor:
         python_codes = []
         if isinstance(data, dict):
             for value in data.values():
-                python_codes.extend(
-                    self._extract_from_json(
-                        value,
-                        depth + 1,
-                        max_depth,
-                    )
-                )
+                python_codes.extend(self._extract_from_json(value, depth + 1, max_depth))
         elif isinstance(data, list):
             for item in data:
                 python_codes.extend(self._extract_from_json(item, depth + 1, max_depth))
         elif isinstance(data, str) and any(
-            keyword in data
-            for keyword in [
-                "def ",
-                "import ",
-                "class ",
-                "if __name__",
-            ]
+            (keyword in data for keyword in ["def ", "import ", "class ", "if __name__"])
         ):
             python_codes.append(data)
         return python_codes
@@ -194,27 +161,23 @@ class CodeBlockExtractor:
             "self.",
         ]
         content_lower = content.lower()
-        keyword_count = sum(1 for keyword in python_keywords if keyword.lower() in content_lower)
+        keyword_count = sum((1 for keyword in python_keywords if keyword.lower() in content_lower))
         python_patterns = [
-            r"\bdef\s+\w+\s*\(",
-            r"\bclass\s+\w+",
-            r"\bif\s+.*:",
-            r"\bfor\s+.*\s+in\s+",
-            r"\bimport\s+",
-            r"\breturn\s+",
-            r"\b(True|False|None)\b",
+            "\\bdef\\s+\\w+\\s*\\(",
+            "\\bclass\\s+\\w+",
+            "\\bif\\s+.*:",
+            "\\bfor\\s+.*\\s+in\\s+",
+            "\\bimport\\s+",
+            "\\breturn\\s+",
+            "\\b(True|False|None)\\b",
         ]
-        pattern_matches = sum(1 for pattern in python_patterns if re.search(pattern, content))
+        pattern_matches = sum((1 for pattern in python_patterns if re.search(pattern, content)))
         return keyword_count >= 2 or pattern_matches >= 2
 
     def _extract_filename_from_code(self, content: str) -> str | None:
         lines = content.split("\n")
         for line in lines[:10]:
-            match = re.search(
-                r"#\s*(?:filename|name|file)\s*:?\s*([\w\-._]+\.py)",
-                line,
-                re.IGNORECASE,
-            )
+            match = re.search("#\\s*(?:filename|name|file)\\s*:?\\s*([\\w\\-._]+\\.py)", line, re.IGNORECASE)
             if match:
                 return match.group(1)
         return None
@@ -258,11 +221,7 @@ class FileProcessor:
             logger.exception("Error processing URL %s: %s", url, e)
             return 0
 
-    def _save_code_blocks(
-        self,
-        code_blocks: list[CodeBlock],
-        source: str,
-    ) -> None:
+    def _save_code_blocks(self, code_blocks: list[CodeBlock], source: str) -> None:
         source_name = Path(source).stem if not source.startswith("http") else "url_content"
         source_dir = self.output_dir / source_name
         source_dir.mkdir(parents=True, exist_ok=True)
@@ -295,32 +254,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Extract Python code blocks from HTML files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python script.py -f document.html
-  python script.py -p /path/to/documents
-  python script.py -u https://example.com/page.html
-  python script.py
-        """,
+        epilog="\nExamples:\n  python script.py -f document.html\n  python script.py -p /path/to/documents\n  python script.py -u https://example.com/page.html\n  python script.py\n        ",
     )
-    parser.add_argument(
-        "-f",
-        "--file",
-        type=str,
-        help="Path to a single HTML file",
-    )
-    parser.add_argument(
-        "-p",
-        "--path",
-        type=str,
-        help="Path to directory containing HTML files",
-    )
-    parser.add_argument(
-        "-u",
-        "--url",
-        type=str,
-        help="URL to fetch HTML content from",
-    )
+    parser.add_argument("-f", "--file", type=str, help="Path to a single HTML file")
+    parser.add_argument("-p", "--path", type=str, help="Path to directory containing HTML files")
+    parser.add_argument("-u", "--url", type=str, help="URL to fetch HTML content from")
     parser.add_argument(
         "-o",
         "--output",
@@ -328,13 +266,7 @@ Examples:
         default="./output",
         help="Output directory for extracted code blocks (default: ./output)",
     )
-    parser.add_argument(
-        "-j",
-        "--jobs",
-        type=int,
-        default=5,
-        help="Number of parallel jobs (default: 5)",
-    )
+    parser.add_argument("-j", "--jobs", type=int, default=5, help="Number of parallel jobs (default: 5)")
     args = parser.parse_args()
     processor = FileProcessor(output_dir=args.output)
     total_blocks = 0
@@ -351,13 +283,7 @@ Examples:
             if html_files:
                 print(f"Found {len(html_files)} HTML files")
                 with ThreadPoolExecutor(max_workers=args.jobs) as executor:
-                    futures = {
-                        executor.submit(
-                            processor.process_file,
-                            file,
-                        ): file
-                        for file in html_files
-                    }
+                    futures = {executor.submit(processor.process_file, file): file for file in html_files}
                     for future in as_completed(futures):
                         total_blocks += future.result()
             else:
@@ -368,13 +294,7 @@ Examples:
             if html_files:
                 print(f"Found {len(html_files)} HTML files")
                 with ThreadPoolExecutor(max_workers=args.jobs) as executor:
-                    futures = {
-                        executor.submit(
-                            processor.process_file,
-                            file,
-                        ): file
-                        for file in html_files
-                    }
+                    futures = {executor.submit(processor.process_file, file): file for file in html_files}
                     for future in as_completed(futures):
                         total_blocks += future.result()
             else:

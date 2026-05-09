@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 from packaging.version import Version
 
@@ -9,10 +9,10 @@ from packaging.version import Version
 def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]:
     upgradable_packages = []
     package_pattern = re.compile(
-        r"^(?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>[^|]+?)\s*\|\s*(?P<latest_version>\S+)$"
+        "^(?P<package_name>[a-zA-Z0-9\\-_.]+)\\s*:\\s*(?P<installed_version>[^|]+?)\\s*\\|\\s*(?P<latest_version>\\S+)$"
     )
     updatable_pattern_with_arrow = re.compile(
-        r"^(?P<package_name>[a-zA-Z0-9\-_.]+)\s*:\s*(?P<installed_version>\S+)\s*->\s*(?P<latest_version>\S+)\s*\(Updatable!\)$"
+        "^(?P<package_name>[a-zA-Z0-9\\-_.]+)\\s*:\\s*(?P<installed_version>\\S+)\\s*->\\s*(?P<latest_version>\\S+)\\s*\\(Updatable!\\)$"
     )
     try:
         with Path(results_file_path).open(encoding="utf-8") as f:
@@ -25,7 +25,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
                     package_name = match.group("package_name")
                     latest_version = match.group("latest_version")
                     upgradable_packages.append((package_name, latest_version))
-                    continue  # به خط بعدی می‌رویم
+                    continue
                 match = package_pattern.match(line)
                 if match:
                     package_name = match.group("package_name")

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import sys
 from pathlib import Path
-
 from loguru import logger
 from termcolor import cprint
 
@@ -15,10 +15,7 @@ def process_dir(dr):
     print(dr.name)
     if "dist-info" in str(dr.name):
         for k in os.listdir(dr):
-            if k in {
-                "top_level.txt",
-                "entry_points.txt",
-            }:
+            if k in {"top_level.txt", "entry_points.txt"}:
                 cprint(f"{dr} removed", "cyan")
                 shutil.rmtree(dr)
     return True

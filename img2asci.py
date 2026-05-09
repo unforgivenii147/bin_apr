@@ -1,19 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
 from pathlib import Path
-
 from ascii_magic import AsciiArt
 from dh import get_files
 
 
 def process_file(image_path):
     art = AsciiArt.from_image(image_path)
-    art.to_terminal(
-        columns=os.get_terminal_size().columns,
-        width_ratio=2,
-        monochrome=False,
-    )
+    art.to_terminal(columns=os.get_terminal_size().columns, width_ratio=2, monochrome=False)
 
 
 def main():

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import tempfile
 from pathlib import Path
-
 from loguru import logger
 
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
@@ -18,13 +18,7 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
         with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_out:
             tmp_out_path = tmp_out.name
         subprocess.run(
-            [
-                svgcleaner_path,
-                "--copy-on-error",
-                "--remove-comments=yes",
-                in_file,
-                tmp_out_path,
-            ],
+            [svgcleaner_path, "--copy-on-error", "--remove-comments=yes", in_file, tmp_out_path],
             check=True,
             capture_output=True,
         )
@@ -32,36 +26,12 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
         if after_size != 0:
             Path(tmp_out_path).replace(in_file)
             size_change = before_size - after_size
-            return (
-                True,
-                in_file,
-                before_size,
-                after_size,
-                size_change,
-            )
-        return (
-            False,
-            in_file,
-            before_size,
-            after_size,
-            size_change,
-        )
+            return (True, in_file, before_size, after_size, size_change)
+        return (False, in_file, before_size, after_size, size_change)
     except subprocess.CalledProcessError as e:
-        return (
-            False,
-            in_file,
-            0,
-            0,
-            f"Error: {e.stderr.decode('utf-8')}",
-        )
+        return (False, in_file, 0, 0, f"Error: {e.stderr.decode('utf-8')}")
     except Exception as e:
-        return (
-            False,
-            in_file,
-            0,
-            0,
-            f"Unexpected error: {e}",
-        )
+        return (False, in_file, 0, 0, f"Unexpected error: {e}")
     finally:
         if tmp_out_path and Path(tmp_out_path).exists():
             Path(tmp_out_path).unlink()

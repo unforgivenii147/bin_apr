@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from loguru import logger
 
@@ -42,12 +42,7 @@ def main():
             except Exception as e:
                 print(f"[ERROR] Unexpected error for '{persian_word}': {e}")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as f:
-        json.dump(
-            results,
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
+        json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"\n[SAVED] Translation dictionary saved to {OUTPUT_FILE}")
 
 

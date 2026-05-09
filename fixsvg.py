@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 from fastwalk import walk_files
 from loguru import logger
 
@@ -10,13 +10,7 @@ def process_file(fp: Path):
         return False
     print(f"processing  ... {fp.name}")
     last_tag_pos = -1
-    tags = (
-        "</svg>",
-        "</html>",
-        "</body>",
-        "</script>",
-        "</div>",
-    )
+    tags = ("</svg>", "</html>", "</body>", "</script>", "</div>")
     content = []
     with fp.open("r", encoding="utf-8") as f:
         for line in f:
@@ -25,7 +19,7 @@ def process_file(fp: Path):
         for tag in tags:
             idx = line.rfind(tag)
             if idx != -1:
-                last_tag_pos = sum(len(content[j]) for j in range(i)) + idx + len(tag)
+                last_tag_pos = sum((len(content[j]) for j in range(i))) + idx + len(tag)
                 break
         if last_tag_pos != -1:
             break
@@ -40,10 +34,5 @@ if __name__ == "__main__":
     cwd = Path().cwd().resolve()
     for pth in walk_files(cwd):
         path = Path(pth)
-        if path.suffix in {
-            ".html",
-            ".htm",
-            ".svg",
-            ".xml",
-        }:
+        if path.suffix in {".html", ".htm", ".svg", ".xml"}:
             process_file(path)

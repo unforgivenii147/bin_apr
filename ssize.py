@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 from pathlib import Path
-
 from loguru import logger
 
 total = 0
@@ -10,7 +10,7 @@ total = 0
 def gsz(path: Path) -> int:
     if path.is_file():
         return path.stat().st_size
-    return sum(f.stat().st_size for f in path.rglob("*") if f.is_file() and not f.is_symlink())
+    return sum((f.stat().st_size for f in path.rglob("*") if f.is_file() and (not f.is_symlink())))
 
 
 def fsz(sz: float) -> str:
@@ -39,5 +39,5 @@ def list_and_sort_by_size(path: Path = Path()):
 if __name__ == "__main__":
     data = list_and_sort_by_size()
     for k in data:
-        print(f"{k['name']} : \033[5;96m {fsz(k['size'])}\033[0m")
-    print(f"\ntotal:\033[5;94m {fsz(total)}\033[0m")
+        print(f"{k['name']} : \x1b[5;96m {fsz(k['size'])}\x1b[0m")
+    print(f"\ntotal:\x1b[5;94m {fsz(total)}\x1b[0m")

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import os
 import re
 import site
 from collections import defaultdict
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -18,13 +18,10 @@ def get_site_packages_dirs():
 
 
 def parse_pkg_info(dirname):
-    m = re.match(
-        r"(.+)-(\d+.*?)(\.dist-info|\.egg-info)$",
-        dirname,
-    )
+    m = re.match("(.+)-(\\d+.*?)(\\.dist-info|\\.egg-info)$", dirname)
     if m:
-        return m.group(1).lower(), m.group(2)
-    return None, None
+        return (m.group(1).lower(), m.group(2))
+    return (None, None)
 
 
 def find_multiple_versions() -> None:

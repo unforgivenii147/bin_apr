@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from pathlib import Path
-
 from dh import SOURCE_CODE_EXT, clean_blank_lines, fsz, get_nobinary, gsz, is_binary, mpf3
 from loguru import logger
 from termcolor import cprint
@@ -27,7 +27,7 @@ def process_file(fp):
         if stripped.startswith("#!") or "#!" in stripped:
             cleaned.append(line)
             continue
-        if "#" in stripped and not stripped.startswith("#"):
+        if "#" in stripped and (not stripped.startswith("#")):
             indx = line.index("#")
             cleaned.append(line[:indx] + "\n")
             inline += 1
@@ -43,20 +43,14 @@ def process_file(fp):
             _ = ast.parse(code)
             fp.write_text(code, encoding="utf-8")
             diffsize = before - gsz(fp)
-            cprint(
-                f"{fsz(diffsize)}|removed :{removed}|inline :{inline}",
-                "yellow",
-            )
+            cprint(f"{fsz(diffsize)}|removed :{removed}|inline :{inline}", "yellow")
         except:
             cprint("result code invalid.", "magenta")
             return
     else:
         fp.write_text(code, encoding="utf-8")
         diffsize = before - gsz(fp)
-        cprint(
-            f"{fsz(diffsize)}|removed :{removed}|inline :{inline}",
-            "yellow",
-        )
+        cprint(f"{fsz(diffsize)}|removed :{removed}|inline :{inline}", "yellow")
 
 
 def main() -> None:
@@ -72,10 +66,7 @@ def main() -> None:
     before = gsz(cwd)
     _ = mpf3(process_file, files)
     diffsize = before - gsz(cwd)
-    cprint(
-        f"{fsz(diffsize)}",
-        "cyan",
-    )
+    cprint(f"{fsz(diffsize)}", "cyan")
 
 
 if __name__ == "__main__":

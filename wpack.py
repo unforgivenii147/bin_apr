@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import asyncio
 import multiprocessing
 import sys
 import zipfile
 from pathlib import Path
 from typing import Tuple
-
 from wheel.archive import wheel_load
 from wheel.wheelfile import WheelFile
 
@@ -55,12 +55,7 @@ def create_wheel_for_dir_sync(pkg_dir: Path, dest_dir: Path | None = None) -> tu
 
 async def process_package_async(pkg_dir: Path, dest_dir: Path | None, task_queue: asyncio.Queue):
     loop = asyncio.get_running_loop()
-    wheel_filename, success = await loop.run_in_executor(
-        None,
-        create_wheel_for_dir_sync,
-        pkg_dir,
-        dest_dir,
-    )
+    wheel_filename, success = await loop.run_in_executor(None, create_wheel_for_dir_sync, pkg_dir, dest_dir)
     await task_queue.put_nowait((wheel_filename, success))
 
 
@@ -72,7 +67,7 @@ async def main_async():
     task_queue = asyncio.Queue()
     dirs_to_process = []
     for entry in UNPACKED_WHEELS_SOURCE_DIR.iterdir():
-        if entry.is_dir() and not entry.name.endswith(".dist-info"):
+        if entry.is_dir() and (not entry.name.endswith(".dist-info")):
             dist_info = find_dist_info_dir(entry)
             if dist_info:
                 dirs_to_process.append(entry)
@@ -111,7 +106,7 @@ def main_multiprocessing():
         whl = Path(str(entry.name) + ".whl")
         if whl.exists():
             continue
-        if entry.is_dir() and not entry.name.endswith(".dist-info"):
+        if entry.is_dir() and (not entry.name.endswith(".dist-info")):
             dist_info = find_dist_info_dir(entry)
             if dist_info:
                 dirs_to_process.append(entry)

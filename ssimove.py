@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 from pathlib import Path
-
 import ssdeep
 from loguru import logger
 
@@ -22,16 +22,11 @@ def calculate_fuzzy_hash(filepath: Path) -> str:
         return ""
 
 
-def find_similar_files(
-    search_dir: Path,
-    output_dir: Path,
-    similarity_threshold: int,
-    min_group_size: int,
-) -> None:
+def find_similar_files(search_dir: Path, output_dir: Path, similarity_threshold: int, min_group_size: int) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     file_hashes: dict[Path, str] = {}
     for filepath in search_dir.rglob("*"):
-        if filepath.is_file() and not filepath.is_symlink():
+        if filepath.is_file() and (not filepath.is_symlink()):
             hash_value = calculate_fuzzy_hash(filepath)
             if hash_value:
                 file_hashes[filepath] = hash_value

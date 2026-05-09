@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import datetime
 import json
 import os
@@ -23,15 +24,7 @@ def is_python_file(path: str) -> bool:
             if first_line.startswith("#!"):
                 return "python" in first_line
             sample = f.read(200)
-            return any(
-                tok in sample
-                for tok in (
-                    "def ",
-                    "class ",
-                    "import ",
-                    "from ",
-                )
-            )
+            return any((tok in sample for tok in ("def ", "class ", "import ", "from ")))
     except Exception:
         return False
 

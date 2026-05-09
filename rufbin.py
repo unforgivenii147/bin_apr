@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -37,24 +37,17 @@ def format_with_ruff(file_path):
     try:
         print(f"processing {file_path.name}")
         result = subprocess.run(
-            ["ruff", "format", str(file_path)],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30,
+            ["ruff", "format", str(file_path)], check=False, capture_output=True, text=True, timeout=30
         )
         if result.returncode == 0:
-            return True, ""
-        return False, result.stderr.strip()
+            return (True, "")
+        return (False, result.stderr.strip())
     except subprocess.TimeoutExpired:
-        return False, "Timeout (30s)"
+        return (False, "Timeout (30s)")
     except FileNotFoundError:
-        return (
-            False,
-            "ruff not installed or not in PATH",
-        )
+        return (False, "ruff not installed or not in PATH")
     except Exception as e:
-        return False, str(e)
+        return (False, str(e))
 
 
 def main() -> None:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import subprocess
 import sys
 from pathlib import Path
-
 import requests
 from tqdm import tqdm
 
@@ -18,10 +18,7 @@ def get_repo_size(repo_url):
     if not repo_url.startswith(("http://", "https://", "git@")):
         repo_url = f"https://github.com/{repo_url}"
     if repo_url.startswith("git@"):
-        repo_url = repo_url.replace(
-            "git@github.com:",
-            "https://github.com/",
-        )
+        repo_url = repo_url.replace("git@github.com:", "https://github.com/")
     api_url = repo_url.replace("github.com", "api.github.com/repos", 1)
     try:
         response = requests.get(api_url, timeout=55)
@@ -35,31 +32,13 @@ def get_repo_size(repo_url):
 
 def clone_repo(repo, branch="main"):
     print(f"[INFO] Cloning repository: {repo} (branch: {branch})")
-    cmd = [
-        "git",
-        "clone",
-        "--depth",
-        "1",
-        "--single-branch",
-        "--branch",
-        branch,
-        repo,
-        "--progress",
-    ]
+    cmd = ["git", "clone", "--depth", "1", "--single-branch", "--branch", branch, repo, "--progress"]
     try:
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         for line in process.stderr:
             line = line.strip()
             if "Receiving objects:" in line:
-                progress = re.search(
-                    r"(\d+)%.*?(\d+\.?\d*)\s*MB",
-                    line,
-                )
+                progress = re.search("(\\d+)%.*?(\\d+\\.?\\d*)\\s*MB", line)
                 if progress:
                     percent, mb = progress.groups()
                     tqdm.write(f"[PROGRESS] {percent}% ({mb} MB)")
@@ -101,17 +80,7 @@ def main():
         print("[INFO] Submodules found. Initialize and update? (y/n)")
         if input().lower() == "y":
             print("[INFO] Initializing and updating submodules...")
-            subprocess.run(
-                [
-                    "git",
-                    "submodule",
-                    "update",
-                    "--init",
-                    "--recursive",
-                ],
-                check=True,
-                capture_output=True,
-            )
+            subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True, capture_output=True)
             print("[INFO] Submodules updated.")
 
 

@@ -1,18 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import os
 import re
 import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-
 from loguru import logger
 
 COMMENT_AND_DOCSTRING_REGEX = re.compile(
-    r"(?:^(\s*)#.*$)|(?:^(\s*)(''').*?(\3)|^(\s*)(\"{3}).*?(\5))|(?:\b(def|class)\s+\w+[^():]*\([^)]*\)\s*:\s*)(\s*)((''').*?(\7)|(\"{3}).*?(\9))",
+    "(?:^(\\s*)#.*$)|(?:^(\\s*)(''').*?(\\3)|^(\\s*)(\\\"{3}).*?(\\5))|(?:\\b(def|class)\\s+\\w+[^():]*\\([^)]*\\)\\s*:\\s*)(\\s*)((''').*?(\\7)|(\\\"{3}).*?(\\9))",
     re.MULTILINE | re.DOTALL,
 )
-DOCSTRING_START_REGEX = re.compile(r"^\s*('''|\"{3}).*?(\1)\s*", re.MULTILINE | re.DOTALL)
+DOCSTRING_START_REGEX = re.compile("^\\s*('''|\\\"{3}).*?(\\1)\\s*", re.MULTILINE | re.DOTALL)
 MAX_WORKERS = os.cpu_count() - 1 or 1
 
 
@@ -25,7 +25,7 @@ def strip_comments_and_docstrings(file_path_str):
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
         return False
-    cleaned_content = DOCSTRING_START_REGEX.sub(r"\1", original_content, count=3)
+    cleaned_content = DOCSTRING_START_REGEX.sub("\\1", original_content, count=3)
 
     def replace_comments(match):
         _indent1, comment1, quote1, _indent2, _quote2, fn_type, indent3, quote3, quote4 = match.groups()
@@ -37,10 +37,10 @@ def strip_comments_and_docstrings(file_path_str):
             return f"{fn_type}{indent3}"
         return match.group(0)
 
-    no_single_line_comments = re.sub(r"^\s*#.*$", "", original_content, flags=re.MULTILINE)
+    no_single_line_comments = re.sub("^\\s*#.*$", "", original_content, flags=re.MULTILINE)
     try:
         tree = ast.parse(no_single_line_comments)
-        cleaned_content_heuristic = DOCSTRING_START_REGEX.sub(r"\1", no_single_line_comments, count=3)
+        cleaned_content_heuristic = DOCSTRING_START_REGEX.sub("\\1", no_single_line_comments, count=3)
         try:
             ast.parse(cleaned_content_heuristic)
             final_code = cleaned_content_heuristic

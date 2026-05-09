@@ -1,29 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import multiprocessing as mp
 import sys
 import time
 import zipfile
 from pathlib import Path
-
 from print_persian import print_persian as _print
 
-"""
-def attempt_password2(args):
-    zip_file_path, password_candidate = args
-    try:
-        with AESZipFile(zip_file_path, "r") as zf:
-            zf.setpassword(password_candidate.encode("utf-8"))
-            zf.testzip()
-            return password_candidate
-    except RuntimeError as e:
-        if "Bad password" in str(e) or "Incorrect password" in str(e):
-            return None
-        _print(f"خطای ناشناخته در حین تلاش با '{password_candidate}': {e}")
-        return None
-    except Exception as e:
-        _print(f"خطای کلی در حین تلاش با '{password_candidate}': {e}")
-        return None
-"""
+'\ndef attempt_password2(args):\n    zip_file_path, password_candidate = args\n    try:\n        with AESZipFile(zip_file_path, "r") as zf:\n            zf.setpassword(password_candidate.encode("utf-8"))\n            zf.testzip()\n            return password_candidate\n    except RuntimeError as e:\n        if "Bad password" in str(e) or "Incorrect password" in str(e):\n            return None\n        _print(f"خطای ناشناخته در حین تلاش با \'{password_candidate}\': {e}")\n        return None\n    except Exception as e:\n        _print(f"خطای کلی در حین تلاش با \'{password_candidate}\': {e}")\n        return None\n'
 
 
 def attempt_password(args):
@@ -60,7 +44,7 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
                 if result:
                     found_password = result
                     break
-                (i + 1) % 1000 == 0 or (i + 1) == total_passwords
+                (i + 1) % 1000 == 0 or i + 1 == total_passwords
             pool.terminate()
             pool.join()
         end_time = time.time()

@@ -1,17 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import get_files, is_binary
 
 
 def process_file(fp) -> None:
     if not fp.exists():
         return
-    if fp.exists() and fp.stat().st_size < 50 and len(fp.read_text().splitlines()) < 3:
+    if fp.exists() and fp.stat().st_size < 50 and (len(fp.read_text().splitlines()) < 3):
         fp.unlink()
         print(f"{fp.name} removed")
-    if fp.exists() and len(fp.read_text().splitlines()) < 2 and fp.stat().st_size < 50:
+    if fp.exists() and len(fp.read_text().splitlines()) < 2 and (fp.stat().st_size < 50):
         fp.unlink()
         print(f"{fp.name} removed")
 

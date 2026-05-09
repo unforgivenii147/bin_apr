@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import sys
 from multiprocessing import Pool, cpu_count
@@ -12,9 +13,9 @@ def is_binary(path: Path, blocksize=4096):
         sample = f.read(blocksize)
     if b"\x00" in sample:
         return True
-    text_chars = bytes(range(32, 127)) + b"\n\r\t\b"
-    nontext = sum(c not in text_chars for c in sample)
-    return nontext / max(len(sample), 1) > 0.30
+    text_chars = bytes(range(32, 127)) + b"\n\r\t\x08"
+    nontext = sum((c not in text_chars for c in sample))
+    return nontext / max(len(sample), 1) > 0.3
 
 
 def _process_chunk(chunk: list[str]):

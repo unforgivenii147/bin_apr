@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import io
 import re
@@ -7,14 +8,13 @@ import tempfile
 import tokenize
 from multiprocessing import get_context
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2
 from fastwalk import walk_files
 from loguru import logger
 
 DIRECTORY = "."
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def is_english(text: str) -> bool:
@@ -42,12 +42,7 @@ def translate_text(text: str) -> str:
 
 
 def safe_overwrite(filepath: Path, content: str) -> None:
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        delete=False,
-        dir=filepath.parent,
-    ) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False, dir=filepath.parent) as tmp:
         tmp.write(content)
         tmp_path = Path(tmp.name)
     shutil.move(tmp_path, filepath)
@@ -56,17 +51,9 @@ def safe_overwrite(filepath: Path, content: str) -> None:
 def extract_docstrings(tree: ast.AST) -> dict[int, str]:
     docstrings = {}
     for node in ast.walk(tree):
-        if isinstance(
-            node,
-            (
-                ast.Module,
-                ast.FunctionDef,
-                ast.AsyncFunctionDef,
-                ast.ClassDef,
-            ),
-        ):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             doc = ast.get_docstring(node, clean=False)
-            if doc and not is_english(doc):
+            if doc and (not is_english(doc)):
                 docstrings[id(node)] = doc
     return docstrings
 
@@ -86,11 +73,11 @@ def translate_python_file(source: str) -> str:
         if start > prev_end:
             lines_between = source.splitlines()[prev_end[0] - 1 : start[0]]
             if len(lines_between) > 1:
-                result.extend(line_content + "\n" for line_content in lines_between[:-1])
+                result.extend((line_content + "\n" for line_content in lines_between[:-1]))
                 result.append(lines_between[-1][: start[1]])
             elif lines_between:
                 result.append(lines_between[0][prev_end[1] : start[1]])
-        if tok_type == tokenize.COMMENT and not is_english(tok_str):
+        if tok_type == tokenize.COMMENT and (not is_english(tok_str)):
             comment_text = tok_str[1:].strip()
             print(f"  Translating comment: {comment_text[:50]}...")
             translated = translate_text(comment_text)
@@ -98,7 +85,7 @@ def translate_python_file(source: str) -> str:
             translated_count += 1
         elif tok_type == tokenize.STRING:
             stripped = tok_str.strip("'\"")
-            if stripped and not is_english(stripped) and len(stripped) > 10:
+            if stripped and (not is_english(stripped)) and (len(stripped) > 10):
                 try:
                     print(f"  Translating string: {stripped[:50]}...")
                     translated = translate_text(stripped)
@@ -125,14 +112,7 @@ def process_files(directory: str) -> None:
     print(f"Scanning directory: {directory}")
     paths = [Path(p) for p in walk_files(directory)]
     files = [p for p in paths if p.is_file()]
-    supported_extensions = {
-        ".txt",
-        ".md",
-        ".srt",
-        ".json",
-        ".html",
-        ".py",
-    }
+    supported_extensions = {".txt", ".md", ".srt", ".json", ".html", ".py"}
     target_files = [f for f in files if f.suffix.lower() in supported_extensions]
     print(f"Found {len(target_files)} supported files out of {len(files)} total files")
     print("-" * 50)

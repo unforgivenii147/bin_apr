@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python
 from dh import DOC_TH1, clean_blank_lines, fsz, gsz
 from loguru import logger
@@ -22,7 +22,7 @@ def process_again(pt):
         lines = text.splitlines()
         for line in lines:
             striped = line.strip()
-            if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and striped != DOC_TH1:
+            if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and (striped != DOC_TH1):
                 print(line)
                 continue
             new_lines.append(line)
@@ -35,6 +35,7 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -46,29 +47,15 @@ def _collect_docstrings(node, source: bytes, deletions: list):
         if first and first.type == "expression_statement":
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
-                deletions.append(
-                    (
-                        first.start_byte,
-                        first.end_byte,
-                    )
-                )
-    if node.type in {
-        "class_definition",
-        "function_definition",
-        "async_function_definition",
-    }:
+                deletions.append((first.start_byte, first.end_byte))
+    if node.type in {"class_definition", "function_definition", "async_function_definition"}:
         body = node.child_by_field_name("body")
         if body:
             first = first_named_child(body)
             if first and first.type == "expression_statement":
                 string_node = first.child_by_field_name("expression")
                 if string_node and string_node.type == "string":
-                    deletions.append(
-                        (
-                            first.start_byte,
-                            first.end_byte,
-                        )
-                    )
+                    deletions.append((first.start_byte, first.end_byte))
     for child in node.children:
         _collect_docstrings(child, source, deletions)
 
@@ -83,12 +70,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
             if node.type == "comment":
                 text = source[node.start_byte : node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
-                    deletions.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk_comments(child)
 

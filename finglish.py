@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import unicodedata
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -66,7 +66,7 @@ def custom_persian_to_finglish(text):
 
 def convert_filenames_with_pathlib(directory="."):
     start_path = Path(directory)
-    for filepath in start_path.rglob("*"):  # rglob finds files recursively
+    for filepath in start_path.rglob("*"):
         original_filename_stem = filepath.stem
         original_extension = filepath.suffix
         normalized_stem = unicodedata.normalize("NFKD", original_filename_stem)

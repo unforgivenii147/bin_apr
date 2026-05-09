@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 from loguru import logger
 
 
@@ -20,7 +20,7 @@ def update_summary():
     lines = summarymd.read_text(encoding="utf-8").splitlines()
     header = []
     for line in lines:
-        if line.strip() and not line.strip().startswith("- ["):
+        if line.strip() and (not line.strip().startswith("- [")):
             header.append(line)
         else:
             break

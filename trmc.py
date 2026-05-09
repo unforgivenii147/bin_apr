@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_files
 from termcolor import cprint
@@ -22,21 +22,11 @@ class TSRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                to_delete.append((node.start_byte, node.end_byte))
             if node.type == "expression_statement" and len(node.children) == 1:
                 child = node.children[0]
                 if child.type == "string":
-                    to_delete.append(
-                        (
-                            node.start_byte,
-                            node.end_byte,
-                        )
-                    )
+                    to_delete.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
 
@@ -60,22 +50,13 @@ def process_file(fp):
             file_path.write_text(result, encoding="utf-8")
             after = file_path.stat().st_size
             sr = before - after
-            cprint(
-                f"[OK] {file_path.name} {fsz(sr)}",
-                "cyan",
-            )
+            cprint(f"[OK] {file_path.name} {fsz(sr)}", "cyan")
             return
         except:
-            cprint(
-                f"[ERROR] {file_path.name}",
-                "yellow",
-            )
+            cprint(f"[ERROR] {file_path.name}", "yellow")
             return
     else:
-        cprint(
-            f"[NO CHANGE] {file_path.name}",
-            "blue",
-        )
+        cprint(f"[NO CHANGE] {file_path.name}", "blue")
         return
 
 
@@ -90,7 +71,4 @@ if __name__ == "__main__":
     pool.close()
     pool.join()
     sres = before - gsz(cwd)
-    cprint(
-        f"dir size reduced: {fsz(sres)}",
-        "cyan",
-    )
+    cprint(f"dir size reduced: {fsz(sres)}", "cyan")

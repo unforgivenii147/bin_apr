@@ -1,18 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 from pathlib import Path
-
 from loguru import logger
 
 
 def create_unpinned_requirements(output_file="req.txt"):
     try:
-        result = subprocess.run(
-            ["pip", "freeze"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
+        result = subprocess.run(["pip", "freeze"], capture_output=True, text=True, check=True)
         package_names = []
         for line in result.stdout.splitlines():
             if not line or line.startswith("#"):

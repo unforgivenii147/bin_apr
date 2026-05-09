@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 from os import scandir as _scandir
 from pathlib import Path
-
 from autoflake import fix_code as fix_with_autoflake
 from autopep8 import fix_code as fix_with_autopep
 from black import Mode as _Mode
@@ -26,9 +26,9 @@ def is_binary(path: Path | str) -> bool:
             return False
         if b"\x00" in chunk:
             return True
-        text_chars = bytearray(range(32, 127)) + b"\n\r\t\b"
-        nontext = sum(1 for b in chunk if b not in text_chars)
-        return nontext / len(chunk) > 0.30
+        text_chars = bytearray(range(32, 127)) + b"\n\r\t\x08"
+        nontext = sum((1 for b in chunk if b not in text_chars))
+        return nontext / len(chunk) > 0.3
     except Exception:
         return True
 
@@ -48,18 +48,11 @@ def is_python_file(path: str | Path) -> bool:
         if not lines:
             return False
         first_line = lines[0]
-        if first_line.startswith("#!") and ("python" in first_line):
+        if first_line.startswith("#!") and "python" in first_line:
             return True
         for line in lines:
             if line and (not line.startswith("#")):
-                return line.startswith(
-                    (
-                        "import ",
-                        "from ",
-                        "class ",
-                        "def ",
-                    )
-                )
+                return line.startswith(("import ", "from ", "class ", "def "))
     return False
 
 
@@ -101,38 +94,23 @@ def format_single_file(file_path, args) -> bool:
     try:
         original_code: str = file_path.read_text(encoding="utf-8")
         if args.raui:
-            code = fix_with_autoflake(
-                original_code,
-                remove_all_unused_imports=True,
-            )
+            code = fix_with_autoflake(original_code, remove_all_unused_imports=True)
             file_path.write_text(code, encoding="utf-8")
         if args.isort:
             code = fix_with_isort(original_code)
             file_path.write_text(code, encoding="utf-8")
         if args.black:
-            code = format_str(
-                original_code,
-                mode=_Mode(
-                    target_versions={_tv.PY310, _tv.PY313},
-                    line_length=120,
-                ),
-            )
+            code = format_str(original_code, mode=_Mode(target_versions={_tv.PY310, _tv.PY313}, line_length=120))
             file_path.write_text(code, encoding="utf-8")
         elif args.autopep:
-            code = fix_with_autopep(
-                original_code,
-                options={"aggressive": 2},
-            )
+            code = fix_with_autopep(original_code, options={"aggressive": 2})
             file_path.write_text(code, encoding="utf-8")
         else:
             code, _ = fix_with_yapf(original_code)
             file_path.write_text(code, encoding="utf-8")
         after = gsz(file_path)
         print(f"[OK] {file_path.name} ", end=" ")
-        cprint(
-            f"{fsz(before - after)}",
-            "cyan",
-        )
+        cprint(f"{fsz(before - after)}", "cyan")
         return False
     except Exception as e:
         cprint("[ERROR]", "red", end=" ")
@@ -142,30 +120,10 @@ def format_single_file(file_path, args) -> bool:
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
-    p.add_argument(
-        "-b",
-        "--black",
-        action="store_true",
-        help="Use black style",
-    )
-    p.add_argument(
-        "-a",
-        "--autopep",
-        action="store_true",
-        help="Use autopep8 style",
-    )
-    p.add_argument(
-        "-i",
-        "--isort",
-        action="store_true",
-        help="Sort imports",
-    )
-    p.add_argument(
-        "-r",
-        "--raui",
-        action="store_true",
-        help="Autoflake cleanup",
-    )
+    p.add_argument("-b", "--black", action="store_true", help="Use black style")
+    p.add_argument("-a", "--autopep", action="store_true", help="Use autopep8 style")
+    p.add_argument("-i", "--isort", action="store_true", help="Sort imports")
+    p.add_argument("-r", "--raui", action="store_true", help="Autoflake cleanup")
     args = p.parse_args()
     cwd = Path.cwd()
     before = gsz(cwd)

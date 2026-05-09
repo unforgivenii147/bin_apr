@@ -1,33 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import re
 import shutil
 from pathlib import Path
-
 from loguru import logger
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
-IMPORT_RE = re.compile(
-    r"@import\s+url\([^)]+fonts\.googleapis[^)]+\);?",
-    re.IGNORECASE,
-)
-URL_RE = re.compile(r'url\((["\']?)([^)]+)\1\)', re.IGNORECASE)
-RULE_RE = re.compile(r"([^{]+)\{([^}]*)\}", re.DOTALL)
-FONT_EXTS = {
-    ".woff",
-    ".woff2",
-    ".ttf",
-    ".otf",
-    ".eot",
-}
-IMG_EXTS = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".svg",
-    ".webp",
-}
+IMPORT_RE = re.compile("@import\\s+url\\([^)]+fonts\\.googleapis[^)]+\\);?", re.IGNORECASE)
+URL_RE = re.compile("url\\(([\"\\']?)([^)]+)\\1\\)", re.IGNORECASE)
+RULE_RE = re.compile("([^{]+)\\{([^}]*)\\}", re.DOTALL)
+FONT_EXTS = {".woff", ".woff2", ".ttf", ".otf", ".eot"}
+IMG_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 
 
 def detect_family(filename: str):
@@ -61,6 +45,7 @@ def copy_asset(src, assets_dir):
 
 
 def rewrite_urls(css_text, css_dir, assets_dir):
+
     def repl(match):
         url = match.group(2).strip().strip("\"'")
         if url.startswith("http"):
@@ -102,10 +87,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="*")
     ap.add_argument("-o", "--output", default="bundle.css")
-    ap.add_argument(
-        "--assets-dir",
-        default="/sdcard/_static/assets",
-    )
+    ap.add_argument("--assets-dir", default="/sdcard/_static/assets")
     args = ap.parse_args()
     assets_dir = Path(args.assets_dir)
     assets_dir.mkdir(parents=True, exist_ok=True)

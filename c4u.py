@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import html as _html
 import re
 import sys
 import urllib.parse
 from pathlib import Path
-
 import requests
 from loguru import logger
 from packaging.version import Version
@@ -21,11 +21,11 @@ def parse_version_obj(s):
 
 
 def extract_links(html_text):
-    pattern = re.compile(r'<a\s+[^>]*href=(["\'])(?P<href>.*?)\1[^>]*>(?P<text>.*?)</a>', re.IGNORECASE | re.DOTALL)
+    pattern = re.compile("<a\\s+[^>]*href=([\"\\'])(?P<href>.*?)\\1[^>]*>(?P<text>.*?)</a>", re.IGNORECASE | re.DOTALL)
     for m in pattern.finditer(html_text):
         href = _html.unescape(m.group("href")).strip()
-        text = _html.unescape(re.sub(r"<[^>]+>", "", m.group("text"))).strip()
-        yield href, text
+        text = _html.unescape(re.sub("<[^>]+>", "", m.group("text"))).strip()
+        yield (href, text)
 
 
 def filename_from_href(href):
@@ -38,7 +38,7 @@ def filename_from_href(href):
 
 
 def find_version_in_text(s):
-    m = re.search(r"(?<![\d.])(\d+(?:\.\d+)+)(?![\d.])", s)
+    m = re.search("(?<![\\d.])(\\d+(?:\\.\\d+)+)(?![\\d.])", s)
     return m.group(1) if m else None
 
 
@@ -89,8 +89,7 @@ def get_latest_pkg_version(pkg_name):
     except:
         return None
     wheel_pattern = re.compile(
-        rf"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\.\-_]*)\.(?:whl|tar\.gz|zip)",
-        re.IGNORECASE,
+        f"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\\.\\-_]*)\\.(?:whl|tar\\.gz|zip)", re.IGNORECASE
     )
     versions = []
     for match in wheel_pattern.finditer(html):

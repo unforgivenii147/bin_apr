@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import shutil
 import tarfile
@@ -11,7 +12,7 @@ PREFIX = "Tag: py2-none-any"
 
 
 def clean_text(text: str) -> str:
-    return "\n".join(line for line in text.splitlines() if not line.startswith(PREFIX)) + (
+    return "\n".join((line for line in text.splitlines() if not line.startswith(PREFIX))) + (
         "\n" if text.endswith("\n") else ""
     )
 
@@ -28,10 +29,7 @@ def clean_file(path: str) -> None:
 
 def process_zip(path: str) -> None:
     tmp = tempfile.mktemp(suffix=".zip")
-    with (
-        zipfile.ZipFile(path, "r") as zin,
-        zipfile.ZipFile(tmp, "w") as zout,
-    ):
+    with zipfile.ZipFile(path, "r") as zin, zipfile.ZipFile(tmp, "w") as zout:
         for item in zin.infolist():
             data = zin.read(item.filename)
             base = Path(item.filename).name
@@ -76,15 +74,7 @@ def main() -> None:
             if name in TARGET_FILES:
                 clean_file(full_path)
                 continue
-            if name.lower().endswith(
-                (
-                    ".zip",
-                    ".whl",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar",
-                )
-            ):
+            if name.lower().endswith((".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
                 dispatch_archive(full_path)
 
 

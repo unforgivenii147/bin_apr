@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import get_files
 from loguru import logger
 from PIL import Image
@@ -11,11 +11,7 @@ from pytesseract import image_to_string
 
 def extract_text(image_path):
     img = Image.open(image_path)
-    return image_to_string(
-        img,
-        lang="eng",
-        config="--oem 1 --psm 6",
-    )
+    return image_to_string(img, lang="eng", config="--oem 1 --psm 6")
 
 
 def process_file(path):

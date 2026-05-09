@@ -1,27 +1,27 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")
-SKIP_OPEN_RE = re.compile(r"<\s*(pre|code)\b", re.IGNORECASE)
-SKIP_CLOSE_RE = re.compile(r"<\s*/\s*(pre|code)\s*>", re.IGNORECASE)
+SKIP_OPEN_RE = re.compile("<\\s*(pre|code)\\b", re.IGNORECASE)
+SKIP_CLOSE_RE = re.compile("<\\s*/\\s*(pre|code)\\s*>", re.IGNORECASE)
 cwd = Path.cwd()
 
 
 def split_tags_preserve_indent(line: str) -> str:
-    indent = re.match(r"\s*", line).group(0)
+    indent = re.match("\\s*", line).group(0)
     stripped = line.strip()
-    parts = re.split(r"(>)(\s*)(<)", stripped)
+    parts = re.split("(>)(\\s*)(<)", stripped)
     if len(parts) <= 1:
         return line.rstrip()
     rebuilt = []
     buffer = ""
     i = 0
     while i < len(parts):
-        if i + 3 < len(parts) and parts[i + 1] == ">" and parts[i + 3] == "<":
+        if i + 3 < len(parts) and parts[i + 1] == ">" and (parts[i + 3] == "<"):
             buffer += parts[i] + ">"
             rebuilt.append(indent + buffer.strip())
             buffer = "<"
@@ -48,10 +48,7 @@ def format_file(path: Path):
             formatted.append(split_tags_preserve_indent(line))
         if SKIP_CLOSE_RE.search(line):
             skip_mode = False
-    path.write_text(
-        "\n".join(formatted) + "\n",
-        encoding="utf-8",
-    )
+    path.write_text("\n".join(formatted) + "\n", encoding="utf-8")
     print(f"[+] Processed: {path.relative_to(cwd)}")
 
 

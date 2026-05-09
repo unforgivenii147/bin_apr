@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from dh import cprint, gsz, fsz
 from xxhash import xxh64_hexdigest
 
@@ -12,22 +12,22 @@ def should_skip(path):
     return bool(
         path.is_symlink()
         or not path.stat().st_size
-        or any(pat in path.parts for pat in (".git", "__pycache__", ".mypy_cache", ".ruff_cache"))
+        or any((pat in path.parts for pat in (".git", "__pycache__", ".mypy_cache", ".ruff_cache")))
     )
 
 
 def get_hash_file(path):
     if not path.exists() or not path.stat().st_size:
-        return "", path
+        return ("", path)
     with path.open("rb") as f:
-        return xxh64_hexdigest(f.read()), path
+        return (xxh64_hexdigest(f.read()), path)
 
 
 def find_duplicates():
     cwd = Path.cwd()
     files_by_hash = defaultdict(list)
     duplicate_count = 0
-    ptp = [path for path in cwd.rglob("*") if path.is_file() and not should_skip(path)]
+    ptp = [path for path in cwd.rglob("*") if path.is_file() and (not should_skip(path))]
     files_by_size = {}
     for p in ptp:
         try:
@@ -47,10 +47,7 @@ def find_duplicates():
             if hash_result is not None:
                 files_by_hash.setdefault(hash_result, []).append(path)
     total = 0
-    for (
-        hash,
-        paths,
-    ) in files_by_hash.items():
+    for hash, paths in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1
             print(f"hash {hash} :")

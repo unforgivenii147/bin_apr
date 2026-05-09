@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import hashlib
 import json
 import signal
@@ -7,7 +8,6 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import unquote
-
 import requests
 from rich.console import Console
 from rich.progress import BarColumn, DownloadColumn, Progress, TextColumn, TimeRemainingColumn, TransferSpeedColumn
@@ -19,30 +19,18 @@ STATE_SUFFIX = ".progress"
 
 
 class Downloader:
-    def __init__(
-        self,
-        url,
-        output_path=None,
-        expected_hash=None,
-    ) -> None:
+    def __init__(self, url, output_path=None, expected_hash=None) -> None:
         self.url = url
         self.stop_event = threading.Event()
         self.file_size = 0
         self.filename = output_path
         self.expected_hash = expected_hash
         self.state_file = None
-        self.progress_data = {
-            "downloaded_chunks": [],
-            "total_chunks": 0,
-        }
+        self.progress_data = {"downloaded_chunks": [], "total_chunks": 0}
         self.lock = threading.Lock()
 
     def _get_info(self):
-        resp = requests.head(
-            self.url,
-            allow_redirects=True,
-            timeout=10,
-        )
+        resp = requests.head(self.url, allow_redirects=True, timeout=10)
         resp.raise_for_status()
         self.file_size = int(resp.headers.get("content-length", 0))
         if not self.filename:
@@ -80,30 +68,15 @@ class Downloader:
                 pass
 
     def _save_state(self):
-        with (
-            self.lock,
-            Path(self.state_file).open("w", encoding="utf-8") as f,
-        ):
+        with self.lock, Path(self.state_file).open("w", encoding="utf-8") as f:
             json.dump(self.progress_data, f)
 
-    def _download_chunk(
-        self,
-        chunk_id,
-        start,
-        end,
-        progress,
-        task_id,
-    ):
+    def _download_chunk(self, chunk_id, start, end, progress, task_id):
         if self.stop_event.is_set():
             return
         headers = {"Range": f"bytes={start}-{end}"}
         try:
-            with requests.get(
-                self.url,
-                headers=headers,
-                stream=True,
-                timeout=15,
-            ) as r:
+            with requests.get(self.url, headers=headers, stream=True, timeout=15) as r:
                 r.raise_for_status()
                 with Path(self.filename).open("r+b") as f:
                     f.seek(start)
@@ -111,10 +84,7 @@ class Downloader:
                         if self.stop_event.is_set():
                             return
                         f.write(data)
-                        progress.update(
-                            task_id,
-                            advance=len(data),
-                        )
+                        progress.update(task_id, advance=len(data))
             with self.lock:
                 self.progress_data["downloaded_chunks"].append(chunk_id)
             self._save_state()
@@ -127,16 +97,7 @@ class Downloader:
         if not Path(self.filename).exists():
             with Path(self.filename).open("wb") as f:
                 f.truncate(self.file_size)
-        chunks = [
-            (
-                i,
-                min(
-                    i + CHUNK_SIZE - 1,
-                    self.file_size - 1,
-                ),
-            )
-            for i in range(0, self.file_size, CHUNK_SIZE)
-        ]
+        chunks = [(i, min(i + CHUNK_SIZE - 1, self.file_size - 1)) for i in range(0, self.file_size, CHUNK_SIZE)]
         self.progress_data["total_chunks"] = len(chunks)
         pending_chunks = [
             (idx, s, e) for idx, (s, e) in enumerate(chunks) if idx not in self.progress_data["downloaded_chunks"]
@@ -160,20 +121,10 @@ class Downloader:
                 total=self.file_size,
                 completed=len(self.progress_data["downloaded_chunks"]) * CHUNK_SIZE,
             )
-            signal.signal(
-                signal.SIGINT,
-                lambda s, f: self.stop_event.set(),
-            )
+            signal.signal(signal.SIGINT, lambda s, f: self.stop_event.set())
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 futures = [
-                    executor.submit(
-                        self._download_chunk,
-                        cid,
-                        s,
-                        e,
-                        progress,
-                        main_task,
-                    )
+                    executor.submit(self._download_chunk, cid, s, e, progress, main_task)
                     for cid, s, e in pending_chunks
                 ]
                 for f in futures:

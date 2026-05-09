@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, mpf3, runcmd
 
 
@@ -13,7 +13,7 @@ def process_file(fp):
         return
     dz = before - after
     if dz:
-        print(f"{fp.name} -> {fsz(before)}/{fsz(after)} | ratio: {((before - after) / before) * 100:.1f}%")
+        print(f"{fp.name} -> {fsz(before)}/{fsz(after)} | ratio: {(before - after) / before * 100:.1f}%")
     else:
         print(f"{fp.name} : no change")
 

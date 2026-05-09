@@ -1,22 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from dh import get_files, mpf
 from loguru import logger
 
 
 def process_file(path):
     ansi_tmux_re = re.compile(
-        rb"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])|\x08|\x0C|\x0F|\x18|\x1C|\(\d+[a-z]\(B|\(0[Bqtxl]\(B"
+        b"\\x1B(?:[@-Z\\\\-_]|\\[[0-?]*[ -/]*[@-~])|\\x08|\\x0C|\\x0F|\\x18|\\x1C|\\(\\d+[a-z]\\(B|\\(0[Bqtxl]\\(B"
     )
     status_re = re.compile(
-        rb"\b\d{4}[MGB]\b|"
-        rb"\d{3,4}\s+\([^\)]+\)|"
-        rb"\[\^\]\(B\(0l\(B<\(0q\(B\s*\d+|"
-        rb"\~\\/[^\r\n]*?\s+\$|"
-        rb"\(0mqq\(B\s+\d+M\s*/\s*\d+G"
+        b"\\b\\d{4}[MGB]\\b|\\d{3,4}\\s+\\([^\\)]+\\)|\\[\\^\\]\\(B\\(0l\\(B<\\(0q\\(B\\s*\\d+|\\~\\\\/[^\\r\\n]*?\\s+\\$|\\(0mqq\\(B\\s+\\d+M\\s*/\\s*\\d+G"
     )
     try:
         content = path.read_bytes()
@@ -25,11 +21,7 @@ def process_file(path):
         text = content.decode("utf-8", errors="replace")
         cleaned_lines = []
         for line in text.splitlines(keepends=True):
-            cleaned_line = re.sub(
-                r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]",
-                "",
-                line,
-            )
+            cleaned_line = re.sub("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]", "", line)
             cleaned_lines.append(cleaned_line)
         result = "".join(cleaned_lines)
         path.write_text(result, encoding="utf-8")

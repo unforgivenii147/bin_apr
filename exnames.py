@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -17,10 +17,10 @@ def load_names(names_filepath):
                     if len(parts) >= 2:
                         first_initial_pattern = re.escape(parts[0][0].upper())
                         last_initial_pattern = re.escape(parts[-1][0].upper())
-                        pattern_str = rf"{first_initial_pattern}[\w\s\-']+\s+{last_initial_pattern}[\w\s\-']+"
+                        pattern_str = f"{first_initial_pattern}[\\w\\s\\-']+\\s+{last_initial_pattern}[\\w\\s\\-']+"
                         names.add((name, re.compile(pattern_str, re.IGNORECASE)))
                     else:
-                        names.add((name, re.compile(re.escape(name[0].upper()) + r"[\w\s\-']+", re.IGNORECASE)))
+                        names.add((name, re.compile(re.escape(name[0].upper()) + "[\\w\\s\\-']+", re.IGNORECASE)))
     except FileNotFoundError:
         print(f"Error: Names file not found at {names_filepath}")
         sys.exit(1)

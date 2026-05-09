@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import re
 from pathlib import Path
-
 from dh import mpf3
 from loguru import logger
 
@@ -10,18 +10,18 @@ LOG_EXT = ".log"
 MMAP_THRESHOLD = 1 * 1024 * 1024
 NUM_WORKERS = 4
 PATTERNS = [
-    r"\^\[",
-    r"\[[\dA-Z;]+m",
-    r"\[\d+[A-Z]",
-    r"\[[\dA-Z;]+",
-    r"\^M",
-    r"\(B",
-    r"\(0",
-    r"\x1b\[[0-9;]*[A-Za-z]",
-    r"\x1b\([0-9AB]",
-    r"\r",
-    r"\x0f",
-    r"\x0e",
+    "\\^\\[",
+    "\\[[\\dA-Z;]+m",
+    "\\[\\d+[A-Z]",
+    "\\[[\\dA-Z;]+",
+    "\\^M",
+    "\\(B",
+    "\\(0",
+    "\\x1b\\[[0-9;]*[A-Za-z]",
+    "\\x1b\\([0-9AB]",
+    "\\r",
+    "\\x0f",
+    "\\x0e",
 ]
 COMPILED_PATTERNS = [re.compile(pattern) for pattern in PATTERNS]
 
@@ -30,7 +30,7 @@ def clean_line(line: str) -> str:
     cleaned = line
     for pattern in COMPILED_PATTERNS:
         cleaned = pattern.sub("", cleaned)
-    return re.sub(r" {2,}", " ", cleaned)
+    return re.sub(" {2,}", " ", cleaned)
 
 
 def clean_file_small(path: Path) -> tuple:
@@ -51,22 +51,14 @@ def clean_file_large(path: Path) -> tuple:
             get_size = f.seek(0, 2)
             f.seek(0)
             if get_size == 0:
-                return (
-                    path,
-                    True,
-                    "empty file",
-                )
+                return (path, True, "empty file")
             with mmap.mmap(f.fileno(), 0) as mmapped_file:
                 content = mmapped_file.read().decode("utf-8", errors="ignore")
         lines = content.splitlines(keepends=True)
         cleaned_lines = [clean_line(line) for line in lines]
         cleaned_content = "".join(cleaned_lines)
         Path(path).write_text(cleaned_content, encoding="utf-8")
-        return (
-            path,
-            True,
-            "large file (mmap)",
-        )
+        return (path, True, "large file (mmap)")
     except Exception as e:
         return (path, False, str(e))
 

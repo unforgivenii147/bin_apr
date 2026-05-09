@@ -1,36 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 def main():
     path = Path(sys.argv[1])
-    template = """#!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
-import sys
-from dh import get_files
-from pbar import Pbar
-def process_file(fp) -> None:
-def main():
-    cwd = Path.cwd()
-    args = argv[1:]
-    if args:
-        for arg in args:
-            p = Path(arg)
-            if p.is_file():
-                files.append(p)
-            if p.is_dir():
-                files.extend(get_files(p))
-    else:
-        files = get_files(cwd)
-    with Pbar("") as pbar:
-        for f in pbar.wrap(files):
-            process_file(f)
-if __name__ == "__main__":
-    sys.exit(main())
-"""
+    template = '#!/data/data/com.termux/files/usr/bin/python\nfrom pathlib import Path\nimport sys\nfrom dh import get_files\nfrom pbar import Pbar\ndef process_file(fp) -> None:\ndef main():\n    cwd = Path.cwd()\n    args = argv[1:]\n    if args:\n        for arg in args:\n            p = Path(arg)\n            if p.is_file():\n                files.append(p)\n            if p.is_dir():\n                files.extend(get_files(p))\n    else:\n        files = get_files(cwd)\n    with Pbar("") as pbar:\n        for f in pbar.wrap(files):\n            process_file(f)\nif __name__ == "__main__":\n    sys.exit(main())\n'
     path.write_text(template, encoding="utf-8")
     print(f"{path.name} created.")
 

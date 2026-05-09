@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 from pathlib import Path
 
@@ -14,7 +15,7 @@ def fsz(sz) -> str:
 
 
 def gsz(path: Path) -> int:
-    return sum(p.stat().st_size for p in path.rglob("*") if p.is_file())
+    return sum((p.stat().st_size for p in path.rglob("*") if p.is_file()))
 
 
 def clean_pycache(start_dir: Path = Path.cwd()):

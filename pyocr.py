@@ -1,19 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import cv2
 import pytesseract
 from loguru import logger
 
-SUPPORTED_FORMATS = {
-    ".png",
-    ".bmp",
-    ".tiff",
-    ".webp",
-    ".jpg",
-    ".jpeg",
-}
+SUPPORTED_FORMATS = {".png", ".bmp", ".tiff", ".webp", ".jpg", ".jpeg"}
 
 
 def extract_text(file_path: str) -> bool:

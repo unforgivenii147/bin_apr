@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import string
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 

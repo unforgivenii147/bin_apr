@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import compileall
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from loguru import logger
 
@@ -20,7 +20,7 @@ def process_file(fp):
     if fp.is_dir():
         for f in fp.rglob("*.py"):
             process_file(f)
-    if fp.is_file() and not fp.is_symlink():
+    if fp.is_file() and (not fp.is_symlink()):
         pyc_file = fp.with_suffix(".pyc")
         if pyc_file.exists():
             pyc_file.unlink()

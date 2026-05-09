@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
-
 import matplotlib.pyplot as plt
 
 MAX_DIRS = 25
@@ -46,7 +46,7 @@ def create_chart(target_dir="."):
     total_size = 0
     try:
         for entry in os.scandir(target_dir):
-            if entry.is_dir() and not entry.name.startswith(".") and not os.path.islink(entry.path):
+            if entry.is_dir() and (not entry.name.startswith(".")) and (not os.path.islink(entry.path)):
                 size = get_dir_size(entry.path)
                 if size >= MIN_SIZE_KB * 1024:
                     subdir_sizes[entry.name] = size
@@ -59,10 +59,10 @@ def create_chart(target_dir="."):
         return
     sorted_subdirs = sorted(subdir_sizes.items(), key=lambda item: item[1], reverse=True)
     top_subdirs = dict(sorted_subdirs[:MAX_DIRS])
-    remaining_size = sum(size for name, size in subdir_sizes.items() if name not in top_subdirs)
-    percentages = {name: (size / total_size) * 100 for name, size in top_subdirs.items()}
+    remaining_size = sum((size for name, size in subdir_sizes.items() if name not in top_subdirs))
+    percentages = {name: size / total_size * 100 for name, size in top_subdirs.items()}
     if remaining_size > 0:
-        percentages["Other"] = (remaining_size / total_size) * 100
+        percentages["Other"] = remaining_size / total_size * 100
     labels = list(top_subdirs.keys())
     if remaining_size > 0:
         labels.append("Other")

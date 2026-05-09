@@ -1,32 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 import tokenize
 from io import StringIO
 from pathlib import Path
-
 from loguru import logger
 
-python_keywords = {
-    "def",
-    "class",
-    "import",
-    "from",
-    "lambda",
-    "yield",
-    "async",
-    "await",
-}
+python_keywords = {"def", "class", "import", "from", "lambda", "yield", "async", "await"}
 
 
 def is_probably_python(lines):
     score = 0
     for line in lines:
-        if any(kw in line for kw in python_keywords):
+        if any((kw in line for kw in python_keywords)):
             score += 1
-        if re.search(r":\s*$", line):
+        if re.search(":\\s*$", line):
             score += 1
-        if re.match(r"\s{4}", line):
+        if re.match("\\s{4}", line):
             score += 1
     return score >= 2
 
@@ -40,14 +31,11 @@ def looks_like_python(code_block) -> bool | None:
 
 
 def is_python_like(line) -> bool:
-    if re.match(
-        r"\s*(def|class|if|elif|else|for|while|try|except|with)\b.*:",
-        line,
-    ):
+    if re.match("\\s*(def|class|if|elif|else|for|while|try|except|with)\\b.*:", line):
         return True
-    if re.match(r"\s*@[A-Za-z_]\w*", line):
+    if re.match("\\s*@[A-Za-z_]\\w*", line):
         return True
-    return bool(re.match(r"\s*import\b|\s*from\b", line))
+    return bool(re.match("\\s*import\\b|\\s*from\\b", line))
 
 
 if __name__ == "__main__":

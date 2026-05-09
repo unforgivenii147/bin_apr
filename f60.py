@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -23,7 +23,7 @@ def main() -> None:
     ctm = {}
     cwd = Path.cwd()
     max_path_string = 20
-    cutoff = time.time() - (minutes * 60)
+    cutoff = time.time() - minutes * 60
     for path in cwd.glob("*"):
         if ".git" in path.parts:
             continue
@@ -41,7 +41,7 @@ def main() -> None:
     for pth, ct in ctmsorted.items():
         ctime = datetime.fromtimestamp(ct).strftime("%Y/%m/%d-%H:%M:%S")
         newct[pth] = ctime
-        print(f"\033[05;96m{Path(pth).name[:19]:<{max_path_string}} \033[05;93m{ctime}\033[0m")
+        print(f"\x1b[05;96m{Path(pth).name[:19]:<{max_path_string}} \x1b[05;93m{ctime}\x1b[0m")
 
 
 if __name__ == "__main__":

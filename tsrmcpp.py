@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, run_command
 from termcolor import cprint
@@ -27,7 +27,7 @@ class TSCppRemover:
             removed += 1
         cleaned = new_source.decode("utf-8")
         cleaned = clean_blank_lines(cleaned)
-        return cleaned, removed
+        return (cleaned, removed)
 
     def _collect_comments(self, node, to_delete, source_bytes):
         if node.type == "comment":
@@ -48,9 +48,9 @@ def validate_with_clang(file_path: Path) -> tuple[bool, str]:
     cmd = f"clang++ -std=c++20 -fsyntax-only {file_path!s}"
     ret, txt, err = run_command(cmd)
     if ret != 0:
-        return False, err
+        return (False, err)
     if ret == 0:
-        return True, txt
+        return (True, txt)
     return None
 
 
@@ -61,45 +61,24 @@ def process_file(fp):
     code = file_path.read_text(encoding="utf-8", errors="ignore")
     result, removed = remover.remove_comments(code)
     if removed == 0:
-        cprint(
-            f"[NO CHANGE] {file_path.name}",
-            "blue",
-        )
+        cprint(f"[NO CHANGE] {file_path.name}", "blue")
         return
     if not validate_with_treesitter(remover.parser, result):
-        cprint(
-            f"[TS ERROR] {file_path.name} - changes discarded",
-            "red",
-        )
+        cprint(f"[TS ERROR] {file_path.name} - changes discarded", "red")
         return
     file_path.write_text(result, encoding="utf-8")
     ok, _err = validate_with_clang(file_path)
     if not ok:
-        cprint(
-            f"[CLANG ERROR] {file_path.name} - reverting",
-            "red",
-        )
+        cprint(f"[CLANG ERROR] {file_path.name} - reverting", "red")
         file_path.write_text(code, encoding="utf-8")
         return
     after = file_path.stat().st_size
     reduced = before - after
-    cprint(
-        f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes",
-        "cyan",
-    )
+    cprint(f"[OK] {file_path.name} - removed {removed} comments, reduced {reduced} bytes", "cyan")
 
 
 if __name__ == "__main__":
-    exts = {
-        ".cpp",
-        ".cc",
-        ".cxx",
-        ".hpp",
-        ".h",
-        ".hh",
-        ".hxx",
-        ".c",
-    }
+    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx", ".c"}
     for path in Path().rglob("*"):
         if path.is_file() and path.suffix in exts:
             process_file(path)

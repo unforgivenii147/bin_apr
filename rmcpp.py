@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, get_files
 from loguru import logger
@@ -15,12 +15,7 @@ class TSCppRemover:
     def __init__(self) -> None:
         self.language = Language(tscpp.language())
         self.parser = Parser(self.language)
-        self.query = Query(
-            self.language,
-            """
-            (comment) @comment
-        """,
-        )
+        self.query = Query(self.language, "\n            (comment) @comment\n        ")
 
     def remove_comments(self, source: str):
         source_bytes = source.encode("utf-8")
@@ -29,26 +24,14 @@ class TSCppRemover:
         matches = cursor.matches(tree.root_node)
         deletions = []
         comment_count = 0
-        for (
-            _pattern_idx,
-            captures_dict,
-        ) in matches:
+        for _pattern_idx, captures_dict in matches:
             for nodes in captures_dict.values():
                 for node in nodes:
                     start = node.start_byte
                     end = node.end_byte
                     text = source_bytes[start:end].decode("utf-8")
                     stripped = text.strip()
-                    if stripped.startswith(
-                        (
-                            "//!",
-                            "///",
-                            "/**",
-                            "/*!",
-                            "///<",
-                            "//!<",
-                        )
-                    ):
+                    if stripped.startswith(("//!", "///", "/**", "/*!", "///<", "//!<")):
                         continue
                     comment_count += 1
                     if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
@@ -62,10 +45,10 @@ class TSCppRemover:
         tree = self.parser.parse(new_source)
         if tree.root_node.has_error:
             print("Warning: Resulted code has syntax errors, returning original")
-            return source, 0
+            return (source, 0)
         cleaned = new_source.decode("utf-8")
         cleaned = clean_blank_lines(cleaned)
-        return cleaned, comment_count
+        return (cleaned, comment_count)
 
 
 def ts_remover_initializer():
@@ -84,11 +67,7 @@ def process_file(path):
     if comments:
         path.write_text(result, encoding="utf-8")
         print(f"[OK] {path.name}: {comments} comments removed")
-        return (
-            "changed",
-            path,
-            comments,
-        )
+        return ("changed", path, comments)
     print(f"[NO CHANGE] {path.name}")
     return ("nochange", path, 0)
 
@@ -105,9 +84,9 @@ if __name__ == "__main__":
     with get_context("spawn").Pool(processes=8, initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
     diffsize = before - gsz(cwd)
-    changed = sum(1 for r in results if r[0] == "changed")
+    changed = sum((1 for r in results if r[0] == "changed"))
     errors = [r for r in results if r[0] == "error"]
-    nochg = sum(1 for r in results if r[0] == "nochange")
+    nochg = sum((1 for r in results if r[0] == "nochange"))
     print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
     if errors:
         print("\nErrors in:")

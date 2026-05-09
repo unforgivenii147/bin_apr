@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines
 from termcolor import cprint
@@ -19,12 +19,7 @@ class TSCppRemover:
 
         def walk(node):
             if node.type == "comment":
-                to_delete.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                to_delete.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
 
@@ -45,29 +40,14 @@ def process_file(fp):
     if len(result) != len(code):
         file_path.write_text(result, encoding="utf-8")
         after = file_path.stat().st_size
-        reduced = round(((before - after) / before) / 100, 3)
-        cprint(
-            f"[OK] {file_path.name} - {reduced} ",
-            "cyan",
-        )
+        reduced = round((before - after) / before / 100, 3)
+        cprint(f"[OK] {file_path.name} - {reduced} ", "cyan")
     else:
-        cprint(
-            f"[NO CHANGE] {file_path.name}",
-            "blue",
-        )
+        cprint(f"[NO CHANGE] {file_path.name}", "blue")
 
 
 if __name__ == "__main__":
-    exts = {
-        ".cpp",
-        ".cc",
-        ".cxx",
-        ".hpp",
-        ".h",
-        ".hh",
-        ".hxx",
-        ".c",
-    }
+    exts = {".cpp", ".cc", ".cxx", ".hpp", ".h", ".hh", ".hxx", ".c"}
     for path in Path().rglob("*"):
         if path.is_file() and path.suffix in exts:
             process_file(path)

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import hashlib
 import mimetypes
 import re
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -38,7 +38,7 @@ def save_hashed_asset(content: bytes, mime_type: str):
 
 
 def extract_base64(data_url):
-    m = re.match(r"data:(.*?);base64,(.*)", data_url, re.DOTALL)
+    m = re.match("data:(.*?);base64,(.*)", data_url, re.DOTALL)
     if not m:
         return None
     mime_type, encoded = m.groups()
@@ -88,7 +88,7 @@ def process_html(path: Path):
             fpath = extract_base64(src)
             if fpath:
                 img["src"] = str(fpath.relative_to(OUTPUT_DIR))
-    bg_re = re.compile(r'url\("(data:.*?)"\)')
+    bg_re = re.compile('url\\("(data:.*?)"\\)')
     for tag in soup.find_all(style=True):
         m = bg_re.search(tag["style"])
         if m:
@@ -131,7 +131,7 @@ def build_single_page():
     for link in merged.find_all("link", rel="stylesheet"):
         href = link.get("href", "")
         if href.startswith("data:"):
-            css_data = re.sub(r"^data:.*?;base64,", "", href)
+            css_data = re.sub("^data:.*?;base64,", "", href)
             decoded = base64.b64decode(css_data).decode("utf-8", errors="ignore")
             style_tag = merged.new_tag("style")
             style_tag.string = decoded
@@ -139,7 +139,7 @@ def build_single_page():
     for script in merged.find_all("script", src=True):
         src = script["src"]
         if src.startswith("data:"):
-            js_data = re.sub(r"^data:.*?;base64,", "", src)
+            js_data = re.sub("^data:.*?;base64,", "", src)
             decoded = base64.b64decode(js_data).decode("utf-8", errors="ignore")
             new_script = merged.new_tag("script")
             new_script.string = decoded

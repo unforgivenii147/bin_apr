@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import subprocess
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -12,15 +12,7 @@ def extract_subtitles(input_file, output_file=None, subtitle_index=0):
         raise FileNotFoundError(msg)
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + ".srt"
-    cmd = [
-        "ffmpeg",
-        "-i",
-        input_file,
-        "-map",
-        f"0:s:{subtitle_index}",
-        "-y",
-        output_file,
-    ]
+    cmd = ["ffmpeg", "-i", input_file, "-map", f"0:s:{subtitle_index}", "-y", output_file]
     try:
         subprocess.run(cmd, check=True)
         print(f"Subtitles extracted to: {output_file}")

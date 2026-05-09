@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz, mpf3, runcmd
 
 START_DIR = Path.cwd()
@@ -11,18 +11,8 @@ NUM_PROCESSES = 4
 def process_file(path):
     before = gsz(path)
     try:
-        cmd = [
-            "pngcrush",
-            "-ow",
-            "--no-force",
-            "-new",
-            "-brute",
-            str(path),
-        ]
-        ret, txt, err = runcmd(
-            cmd,
-            show_output=False,
-        )
+        cmd = ["pngcrush", "-ow", "--no-force", "-new", "-brute", str(path)]
+        ret, txt, err = runcmd(cmd, show_output=False)
         if "skipping" in txt.lower():
             print(f" Skipped: {path.name}")
             return
@@ -32,7 +22,7 @@ def process_file(path):
             if not dz:
                 print(f"✅ : {path.name} : (no change)")
                 return
-            ratio = ((before - after) / before) * 100
+            ratio = (before - after) / before * 100
             print(f"✅ : {path.name}", end=" | ")
             cprint(f"{ratio:.1f} %")
             return

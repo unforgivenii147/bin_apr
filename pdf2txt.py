@@ -1,11 +1,11 @@
-#!/data/data/com.termux/files/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import logging
 import sys
 from collections.abc import Container, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-
 import pdfminer.high_level
 from pdfminer.layout import LAParams
 from pdfminer.pdfexceptions import PDFValueError
@@ -67,26 +67,9 @@ def extract_text(
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, add_help=True)
-    parser.add_argument(
-        "files",
-        type=str,
-        default=None,
-        nargs="+",
-        help="One or more paths to PDF files.",
-    )
-    parser.add_argument(
-        "--version",
-        "-v",
-        action="version",
-        version=f"pdfminer.six v{pdfminer.__version__}",
-    )
-    parser.add_argument(
-        "--debug",
-        "-d",
-        default=False,
-        action="store_true",
-        help="Use debug logging level.",
-    )
+    parser.add_argument("files", type=str, default=None, nargs="+", help="One or more paths to PDF files.")
+    parser.add_argument("--version", "-v", action="version", version=f"pdfminer.six v{pdfminer.__version__}")
+    parser.add_argument("--debug", "-d", default=False, action="store_true", help="Use debug logging level.")
     parser.add_argument(
         "--disable-caching",
         "-C",
@@ -94,38 +77,19 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="If caching or resources, such as fonts, should be disabled.",
     )
-    parse_params = parser.add_argument_group(
-        "Parser",
-        description="Used during PDF parsing",
-    )
+    parse_params = parser.add_argument_group("Parser", description="Used during PDF parsing")
     parse_params.add_argument(
-        "--page-numbers",
-        type=int,
-        default=None,
-        nargs="+",
-        help="A space-seperated list of page numbers to parse.",
+        "--page-numbers", type=int, default=None, nargs="+", help="A space-seperated list of page numbers to parse."
     )
     parse_params.add_argument(
         "--pagenos",
         "-p",
         type=str,
-        help="A comma-separated list of page numbers to parse. "
-        "Included for legacy applications, use --page-numbers "
-        "for more idiomatic argument entry.",
+        help="A comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.",
     )
+    parse_params.add_argument("--maxpages", "-m", type=int, default=0, help="The maximum number of pages to parse.")
     parse_params.add_argument(
-        "--maxpages",
-        "-m",
-        type=int,
-        default=0,
-        help="The maximum number of pages to parse.",
-    )
-    parse_params.add_argument(
-        "--password",
-        "-P",
-        type=str,
-        default="",
-        help="The password to use for decrypting PDF file.",
+        "--password", "-P", type=str, default="", help="The password to use for decrypting PDF file."
     )
     parse_params.add_argument(
         "--rotation",
@@ -135,10 +99,7 @@ def create_parser() -> argparse.ArgumentParser:
         help="The number of degrees to rotate the PDF before other types of processing.",
     )
     la_params = LAParams()
-    la_param_group = parser.add_argument_group(
-        "Layout analysis",
-        description="Used during layout analysis.",
-    )
+    la_param_group = parser.add_argument_group("Layout analysis", description="Used during layout analysis.")
     la_param_group.add_argument(
         "--no-laparams",
         "-n",
@@ -157,50 +118,35 @@ def create_parser() -> argparse.ArgumentParser:
         "--line-overlap",
         type=float,
         default=la_params.line_overlap,
-        help="If two characters have more overlap than this they "
-        "are considered to be on the same line. The overlap is specified "
-        "relative to the minimum height of both characters.",
+        help="If two characters have more overlap than this they are considered to be on the same line. The overlap is specified relative to the minimum height of both characters.",
     )
     la_param_group.add_argument(
         "--char-margin",
         "-M",
         type=float,
         default=la_params.char_margin,
-        help="If two characters are closer together than this margin they "
-        "are considered to be part of the same line. The margin is "
-        "specified relative to the width of the character.",
+        help="If two characters are closer together than this margin they are considered to be part of the same line. The margin is specified relative to the width of the character.",
     )
     la_param_group.add_argument(
         "--word-margin",
         "-W",
         type=float,
         default=la_params.word_margin,
-        help="If two characters on the same line are further apart than this "
-        "margin then they are considered to be two separate words, and "
-        "an intermediate space will be added for readability. The margin "
-        "is specified relative to the width of the character.",
+        help="If two characters on the same line are further apart than this margin then they are considered to be two separate words, and an intermediate space will be added for readability. The margin is specified relative to the width of the character.",
     )
     la_param_group.add_argument(
         "--line-margin",
         "-L",
         type=float,
         default=la_params.line_margin,
-        help="If two lines are close together they are considered to "
-        "be part of the same paragraph. The margin is specified "
-        "relative to the height of a line.",
+        help="If two lines are close together they are considered to be part of the same paragraph. The margin is specified relative to the height of a line.",
     )
     la_param_group.add_argument(
         "--boxes-flow",
         "-F",
         type=float_or_disabled,
         default=la_params.boxes_flow,
-        help="Specifies how much a horizontal and vertical position of a "
-        "text matters when determining the order of lines. The value "
-        "should be within the range of -1.0 (only horizontal position "
-        "matters) to +1.0 (only vertical position matters). You can also "
-        "pass `disabled` to disable advanced layout analysis, and "
-        "instead return text based on the position of the bottom left "
-        "corner of the text box.",
+        help="Specifies how much a horizontal and vertical position of a text matters when determining the order of lines. The value should be within the range of -1.0 (only horizontal position matters) to +1.0 (only vertical position matters). You can also pass `disabled` to disable advanced layout analysis, and instead return text based on the position of the bottom left corner of the text box.",
     )
     la_param_group.add_argument(
         "--all-texts",
@@ -209,10 +155,7 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="If layout analysis should be performed on text in figures.",
     )
-    output_params = parser.add_argument_group(
-        "Output",
-        description="Used during output generation.",
-    )
+    output_params = parser.add_argument_group("Output", description="Used during output generation.")
     output_params.add_argument(
         "--outfile",
         "-o",
@@ -221,19 +164,9 @@ def create_parser() -> argparse.ArgumentParser:
         help='Path to file where output is written. Or "-" (default) to write to stdout.',
     )
     output_params.add_argument(
-        "--output_type",
-        "-t",
-        type=str,
-        default="text",
-        help="Type of output to generate {text,html,xml,tag}.",
+        "--output_type", "-t", type=str, default="text", help="Type of output to generate {text,html,xml,tag}."
     )
-    output_params.add_argument(
-        "--codec",
-        "-c",
-        type=str,
-        default="utf-8",
-        help="Text encoding to use in output file.",
-    )
+    output_params.add_argument("--codec", "-c", type=str, default="utf-8", help="Text encoding to use in output file.")
     output_params.add_argument(
         "--output-dir",
         "-O",
@@ -245,13 +178,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-Y",
         default="normal",
         type=str,
-        help="Type of layout to use when generating html "
-        "{normal,exact,loose}. If normal,each line is"
-        " positioned separately in the html. If exact"
-        ", each character is positioned separately in"
-        " the html. If loose, same result as normal "
-        "but with an additional newline after each "
-        "text line. Only used when output_type is html.",
+        help="Type of layout to use when generating html {normal,exact,loose}. If normal,each line is positioned separately in the html. If exact, each character is positioned separately in the html. If loose, same result as normal but with an additional newline after each text line. Only used when output_type is html.",
     )
     output_params.add_argument(
         "--scale",

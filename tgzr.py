@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import tarfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 from loguru import logger
 
 

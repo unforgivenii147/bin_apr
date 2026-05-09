@@ -1,42 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, mpf3
 from loguru import logger
 from termcolor import cprint
 
 MAX_QUEUE = 16
-EXT = [
-    ".java",
-    ".c",
-    ".cpp",
-    ".cxx",
-    ".cc",
-    ".h",
-    ".hh",
-    ".hpp",
-    ".hxx",
-    ".js",
-    ".json",
-]
+EXT = [".java", ".c", ".cpp", ".cxx", ".cc", ".h", ".hh", ".hpp", ".hxx", ".js", ".json"]
 
 
 def process_file(path):
     before = gsz(path)
     print(f"{path.name} ", end=" ")
     try:
-        res = subprocess.run(
-            [
-                "clang-format",
-                "-i",
-                "--style=LLVM",
-                str(path),
-            ],
-            check=True,
-            capture_output=True,
-        )
+        res = subprocess.run(["clang-format", "-i", "--style=LLVM", str(path)], check=True, capture_output=True)
         size_diff = before - gsz(path)
         if size_diff == 0:
             cprint("[NO CHANGE]", "magenta")
@@ -48,10 +27,7 @@ def process_file(path):
         del size_diff
         del before
         return True
-    except (
-        subprocess.CalledProcessError,
-        FileNotFoundError,
-    ):
+    except (subprocess.CalledProcessError, FileNotFoundError):
         del res
         del size_diff
         del before

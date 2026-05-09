@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import os
 import re
 from pathlib import Path
-
 from dh import get_files
 from packaging.version import Version
 
@@ -19,8 +19,8 @@ def cdeb(fp):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    wheel_pattern = re.compile(r"(?P<name>.+)-(?P<version>\d+(\.\d+)+).*\.whl")
-    deb_pattern = re.compile(r"(?P<name>.+)_(?P<version>\d+(\.\d+)+).*\.deb")
+    wheel_pattern = re.compile("(?P<name>.+)-(?P<version>\\d+(\\.\\d+)+).*\\.whl")
+    deb_pattern = re.compile("(?P<name>.+)_(?P<version>\\d+(\\.\\d+)+).*\\.deb")
     files = get_files(cwd, extensions=[".metadata", ".whl", ".deb"])
     print(f"{len(files)} files found.")
     packages = {}
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     for f in files:
         match1 = wheel_pattern.match(f.name)
         match2 = deb_pattern.match(f.name)
-        if not match1 and not match2:
+        if not match1 and (not match2):
             continue
         if match1:
             name = match1.group("name")

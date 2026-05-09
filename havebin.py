@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import subprocess
-
 from dh import get_ipkgs
 from loguru import logger
 from Pathlib import Path
@@ -29,11 +29,7 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
                     errors="ignore",
                 )
                 lines = result.stdout.split("\n")
-                bin_indicators = [
-                    os.path.join(os.sep, "bin", ""),
-                    os.path.join("bin", ""),
-                    os.path.join("scripts", ""),
-                ]
+                bin_indicators = [os.path.join(os.sep, "bin", ""), os.path.join("bin", ""), os.path.join("scripts", "")]
                 found_script_in_bin = False
                 for line in lines:
                     line = line.strip()
@@ -49,14 +45,13 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
                                 or os.path.splitext(line)[1] == ""
                                 or os.path.splitext(line)[1] == ".exe"
                             )
-                            and not any(
-                                exclude_part in line
-                                for exclude_part in [
-                                    "__pycache__",
-                                    ".dist-info",
-                                    ".egg-info",
-                                    ".pth",
-                                ]
+                            and (
+                                not any(
+                                    (
+                                        exclude_part in line
+                                        for exclude_part in ["__pycache__", ".dist-info", ".egg-info", ".pth"]
+                                    )
+                                )
                             )
                         ):
                             found_script_in_bin = True
@@ -70,7 +65,7 @@ def find_packages_with_bin_scripts(output_file="have_scripts.txt"):
             except Exception as e:
                 print(f"\nAn unexpected error occurred while checking '{package_name}': {e}")
         with Path(output_file).open("w", encoding="utf-8") as f:
-            f.writelines(pkg + "\n" for pkg in packages_with_scripts)
+            f.writelines((pkg + "\n" for pkg in packages_with_scripts))
         print(f"\nSearch complete. Found {len(packages_with_scripts)} packages with 'bin' scripts.")
         print(f"List saved to '{output_file}'.")
     except FileNotFoundError:

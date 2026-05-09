@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -16,15 +16,7 @@ def install_js2py():
         import subprocess
 
         try:
-            subprocess.check_call(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "js2py",
-                ]
-            )
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "js2py"])
             print("✅ js2py installed successfully")
             return True
         except subprocess.CalledProcessError:
@@ -39,35 +31,20 @@ def convert_with_js2py(js_file: Path, outfile: Path) -> bool:
         js2py.translate_file(js_file, out_file)
         return True
     except Exception as e:
-        return (
-            False,
-            f"js2py conversion error: {e!s}",
-        )
+        return (False, f"js2py conversion error: {e!s}")
 
 
 def convert_with_openai(js_code: str, api_key: str | None = None) -> tuple[bool, str]:
     try:
         import openai
     except ImportError:
-        return (
-            False,
-            "OpenAI library not installed. Install with: pip install openai",
-        )
+        return (False, "OpenAI library not installed. Install with: pip install openai")
     api_key = api_key or os.getenv("OPENAI_API_KEY")
     if not api_key:
-        return (
-            False,
-            "OpenAI API key not found. Set OPENAI_API_KEY environment variable or pass --api-key",
-        )
+        return (False, "OpenAI API key not found. Set OPENAI_API_KEY environment variable or pass --api-key")
     try:
         client = openai.OpenAI(api_key=api_key)
-        prompt = f"""Convert the following JavaScript code to Python.
-Preserve the logic and functionality while using Pythonic idioms.
-Only return the Python code without explanations.
-JavaScript code:
-```javascript
-{js_code}
-python code:"""
+        prompt = f"Convert the following JavaScript code to Python.\nPreserve the logic and functionality while using Pythonic idioms.\nOnly return the Python code without explanations.\nJavaScript code:\n```javascript\n{js_code}\npython code:"
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -75,29 +52,18 @@ python code:"""
                     "role": "system",
                     "content": "You are an expert programmer who converts JavaScript to Python accurately.",
                 },
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
+                {"role": "user", "content": prompt},
             ],
             temperature=0.3,
             max_tokens=2000,
         )
         python_code = response.choices[0].message.content
         if "```python" in python_code:
-            python_code = re.search(
-                r"```python\n(.*?)```",
-                python_code,
-                re.DOTALL,
-            )
+            python_code = re.search("```python\\n(.*?)```", python_code, re.DOTALL)
             if python_code:
                 python_code = python_code.group(1)
         elif "```" in python_code:
-            python_code = re.search(
-                r"```\n(.*?)```",
-                python_code,
-                re.DOTALL,
-            )
+            python_code = re.search("```\\n(.*?)```", python_code, re.DOTALL)
             if python_code:
                 python_code = python_code.group(1)
         return (True, python_code.strip())
@@ -107,76 +73,31 @@ python code:"""
 
 def simple_js_to_python(js_code: str) -> str:
     python_code = js_code
-    python_code = re.sub(r"\b(let|const|var)\s+", "", python_code)
-    python_code = re.sub(
-        r"console\.log\s*\(",
-        "print(",
-        python_code,
-    )
-    python_code = re.sub(r"\btrue\b", "True", python_code)
-    python_code = re.sub(r"\bfalse\b", "False", python_code)
-    python_code = re.sub(
-        r"\b(null|undefined)\b",
-        "None",
-        python_code,
-    )
-    python_code = re.sub(
-        r"\bfunction\s+(\w+)\s*\((.*?)\)\s*{",
-        r"def \1(\2):",
-        python_code,
-    )
-    python_code = re.sub(
-        r"const\s+(\w+)\s*=\s*\((.*?)\)\s*=>\s*{",
-        r"def \1(\2):",
-        python_code,
-    )
-    python_code = re.sub(
-        r"(\w+)\s*=\s*\((.*?)\)\s*=>\s*{",
-        r"def \1(\2):",
-        python_code,
-    )
-    python_code = python_code.replace(r"//", "#")
-    python_code = re.sub(r";$", "", python_code, flags=re.MULTILINE)
-    python_code = re.sub(
-        r"\s*{\s*$",
-        ":",
-        python_code,
-        flags=re.MULTILINE,
-    )
-    python_code = re.sub(
-        r"^\s*}\s*$",
-        "",
-        python_code,
-        flags=re.MULTILINE,
-    )
-    python_code = re.sub(
-        r"\bif\s*\((.*?)\)\s*{",
-        r"if \1:",
-        python_code,
-    )
-    python_code = re.sub(
-        r"\belse\s+if\s*\((.*?)\)\s*{",
-        r"elif \1:",
-        python_code,
-    )
-    python_code = re.sub(r"\belse\s*{", r"else:", python_code)
-    python_code = re.sub(
-        r"\bwhile\s*\((.*?)\)\s*{",
-        r"while \1:",
-        python_code,
-    )
+    python_code = re.sub("\\b(let|const|var)\\s+", "", python_code)
+    python_code = re.sub("console\\.log\\s*\\(", "print(", python_code)
+    python_code = re.sub("\\btrue\\b", "True", python_code)
+    python_code = re.sub("\\bfalse\\b", "False", python_code)
+    python_code = re.sub("\\b(null|undefined)\\b", "None", python_code)
+    python_code = re.sub("\\bfunction\\s+(\\w+)\\s*\\((.*?)\\)\\s*{", "def \\1(\\2):", python_code)
+    python_code = re.sub("const\\s+(\\w+)\\s*=\\s*\\((.*?)\\)\\s*=>\\s*{", "def \\1(\\2):", python_code)
+    python_code = re.sub("(\\w+)\\s*=\\s*\\((.*?)\\)\\s*=>\\s*{", "def \\1(\\2):", python_code)
+    python_code = python_code.replace("//", "#")
+    python_code = re.sub(";$", "", python_code, flags=re.MULTILINE)
+    python_code = re.sub("\\s*{\\s*$", ":", python_code, flags=re.MULTILINE)
+    python_code = re.sub("^\\s*}\\s*$", "", python_code, flags=re.MULTILINE)
+    python_code = re.sub("\\bif\\s*\\((.*?)\\)\\s*{", "if \\1:", python_code)
+    python_code = re.sub("\\belse\\s+if\\s*\\((.*?)\\)\\s*{", "elif \\1:", python_code)
+    python_code = re.sub("\\belse\\s*{", "else:", python_code)
+    python_code = re.sub("\\bwhile\\s*\\((.*?)\\)\\s*{", "while \\1:", python_code)
     return re.sub(
-        r"for\s*\(\s*let\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\w+)\s*;\s*\1\+\+\s*\)\s*{",
-        r"for \1 in range(\2, \3):",
+        "for\\s*\\(\\s*let\\s+(\\w+)\\s*=\\s*(\\d+)\\s*;\\s*\\1\\s*<\\s*(\\w+)\\s*;\\s*\\1\\+\\+\\s*\\)\\s*{",
+        "for \\1 in range(\\2, \\3):",
         python_code,
     )
 
 
 def convert_file(
-    input_file: Path,
-    output_file: Path | None = None,
-    method: str = "js2py",
-    api_key: str | None = None,
+    input_file: Path, output_file: Path | None = None, method: str = "js2py", api_key: str | None = None
 ) -> bool:
     try:
         js_code = Path(input_file).read_text(encoding="utf-8")
@@ -216,23 +137,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Convert JavaScript code to Python",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-             Examples:
-                 Convert using js2py (default)
-                     python js_to_py.py script.js
-                 Convert using OpenAI API
-                     python js_to_py.py script.js --method openai --api-key YOUR_KEY
-                 Convert using simple rule-based method
-                     python js_to_py.py script.js --method simple
-                 Specify output file
-                     python js_to_py.py script.js -o output.py
-        """,
+        epilog="\n             Examples:\n                 Convert using js2py (default)\n                     python js_to_py.py script.js\n                 Convert using OpenAI API\n                     python js_to_py.py script.js --method openai --api-key YOUR_KEY\n                 Convert using simple rule-based method\n                     python js_to_py.py script.js --method simple\n                 Specify output file\n                     python js_to_py.py script.js -o output.py\n        ",
     )
-    parser.add_argument(
-        "input",
-        type=Path,
-        help="Input JavaScript file",
-    )
+    parser.add_argument("input", type=Path, help="Input JavaScript file")
     parser.add_argument(
         "-m",
         "--method",
@@ -240,102 +147,16 @@ def main():
         default="simple",
         help="Conversion method (default: js2py)",
     )
-    parser.add_argument(
-        "--api-key",
-        help="OpenAI API key (for openai method, or set OPENAI_API_KEY env var)",
-    )
+    parser.add_argument("--api-key", help="OpenAI API key (for openai method, or set OPENAI_API_KEY env var)")
     args = parser.parse_args()
     if not args.input.exists():
         print(f"❌ Error: File not found: {args.input}")
         sys.exit(1)
     outputfile = str(args.input).replace(".js", ".py")
-    success = convert_file(
-        args.input,
-        outputfile,
-        args.method,
-        args.api_key,
-    )
+    success = convert_file(args.input, outputfile, args.method, args.api_key)
     sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
     main()
-"""
-### **1. Basic Conversion (js2py method)**<span class="footnote-wrapper">[6](6)[8](8)</span>
-```bash
-python js_to_py.py script.js
-2. Using OpenAI API
-# Set API key as environment variable
-export OPENAI_API_KEY="your-api-key-here"
-python js_to_py.py script.js --method openai
-# Or pass directly
-python js_to_py.py script.js --method openai --api-key "your-key"
-3. Simple Rule-Based Conversion
-python js_to_py.py script.js --method simple
-4. Specify Output File
-python js_to_py.py input.js -o converted.py
-Conversion Methods Comparison
-1. js2py Method
-Pros:
-Full ECMAScript 5.1 support
-Handles complex JavaScript features
-No API costs
-Works offline
-Cons:
-Generated code may not be idiomatic Python
-Large files take time to translate
-Some edge cases may fail
-2. OpenAI Method
-Pros:
-Produces idiomatic Python code
-Handles modern JavaScript (ES6+)
-Better code quality and readability
-Understands context and intent
-Cons:
-Requires API key and internet connection
-Costs money per conversion
-Rate limits apply
-May not be 100% accurate
-3. Simple Method
-Pros:
-Fast and lightweight
-No dependencies
-Works offline
-Free
-Cons:
-Limited feature support
-Only handles basic syntax
-May produce incorrect code for complex cases
-Example Conversion
-JavaScript Input:
-function calculateSum(numbers) {
-    let total = 0;
-    for (let i = 0; i < numbers.length; i++) {
-        total += numbers[i];
-    }
-    console.log("Total:", total);
-    return total;
-}
-const nums = [1][2][3][4][5];
-let result = calculateSum(nums);
-Python Output (OpenAI method):
-def calculate_sum(numbers):
-    total = 0
-    for i in range(len(numbers)):
-        total += numbers[i]
-    print("Total:", total)
-    return total
-nums = [1][2][3][4][5]
-result = calculate_sum(nums)
-Installation Requirements
-# For js2py method
-pip install js2py
-# For OpenAI method
-pip install openai
-# Simple method requires no dependencies
-Limitations
-js2py: Doesn't support ES6+ features, some edge cases may fail
-OpenAI: Requires internet, costs money, may have rate limits
-Simple: Only handles basic syntax transformations
-For production use, consider using js2py for reliability or OpenAI for code quality.Fa
-"""
+'\n```bash\npython js_to_py.py script.js\n2. Using OpenAI API\nexport OPENAI_API_KEY="your-api-key-here"\npython js_to_py.py script.js --method openai\npython js_to_py.py script.js --method openai --api-key "your-key"\n3. Simple Rule-Based Conversion\npython js_to_py.py script.js --method simple\n4. Specify Output File\npython js_to_py.py input.js -o converted.py\nConversion Methods Comparison\n1. js2py Method\nPros:\nFull ECMAScript 5.1 support\nHandles complex JavaScript features\nNo API costs\nWorks offline\nCons:\nGenerated code may not be idiomatic Python\nLarge files take time to translate\nSome edge cases may fail\n2. OpenAI Method\nPros:\nProduces idiomatic Python code\nHandles modern JavaScript (ES6+)\nBetter code quality and readability\nUnderstands context and intent\nCons:\nRequires API key and internet connection\nCosts money per conversion\nRate limits apply\nMay not be 100% accurate\n3. Simple Method\nPros:\nFast and lightweight\nNo dependencies\nWorks offline\nFree\nCons:\nLimited feature support\nOnly handles basic syntax\nMay produce incorrect code for complex cases\nExample Conversion\nJavaScript Input:\nfunction calculateSum(numbers) {\n    let total = 0;\n    for (let i = 0; i < numbers.length; i++) {\n        total += numbers[i];\n    }\n    console.log("Total:", total);\n    return total;\n}\nconst nums = [1][2][3][4][5];\nlet result = calculateSum(nums);\nPython Output (OpenAI method):\ndef calculate_sum(numbers):\n    total = 0\n    for i in range(len(numbers)):\n        total += numbers[i]\n    print("Total:", total)\n    return total\nnums = [1][2][3][4][5]\nresult = calculate_sum(nums)\nInstallation Requirements\npip install js2py\npip install openai\nLimitations\njs2py: Doesn\'t support ES6+ features, some edge cases may fail\nOpenAI: Requires internet, costs money, may have rate limits\nSimple: Only handles basic syntax transformations\nFor production use, consider using js2py for reliability or OpenAI for code quality.Fa\n'

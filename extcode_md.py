@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
 
@@ -48,7 +49,7 @@ LANG_EXT = {
     "md": ".md",
     "markdown": ".md",
 }
-FENCE_RE = re.compile(r"```(?P<lang>[A-Za-z0-9_+\-\.]*)[ \t]*\n(?P<code>.*?)(?<=\n)```", re.DOTALL)
+FENCE_RE = re.compile("```(?P<lang>[A-Za-z0-9_+\\-\\.]*)[ \\t]*\\n(?P<code>.*?)(?<=\\n)```", re.DOTALL)
 
 
 def ext_for_lang(lang: str) -> str:
@@ -63,7 +64,7 @@ def ext_for_lang(lang: str) -> str:
 
 
 def safe_stem(s: str, max_len: int = 120) -> str:
-    s = re.sub(r"[^\w\-\.]+", "_", s)
+    s = re.sub("[^\\w\\-\\.]+", "_", s)
     return s[:max_len].rstrip("_") or "file"
 
 
@@ -91,7 +92,7 @@ def main():
     cwd = Path.cwd().resolve()
     out_dir = cwd / "output"
     out_dir.mkdir(parents=True, exist_ok=True)
-    md_files = sorted(p for p in cwd.rglob("*.md") if p.is_file())
+    md_files = sorted((p for p in cwd.rglob("*.md") if p.is_file()))
     total_blocks = 0
     for md in md_files:
         total_blocks += extract_code_blocks(md, out_dir)

@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-from __future__ import annotations
 
+from __future__ import annotations
 import argparse
 import shutil
 import sys
 import time
 import traceback
 from pathlib import Path
-
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -89,9 +88,9 @@ class ChangeHandler(FileSystemEventHandler):
             return Path(p.name)
 
     def _queue(self, src_path: Path, reason: str) -> None:
-        if src_path.exists() and not src_path.is_file():
+        if src_path.exists() and (not src_path.is_file()):
             return
-        if self.allowed_exts is not None and not file_matches_extensions(src_path, self.allowed_exts):
+        if self.allowed_exts is not None and (not file_matches_extensions(src_path, self.allowed_exts)):
             return
         if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
             return
@@ -119,12 +118,7 @@ class ChangeHandler(FileSystemEventHandler):
                 size_str = "deleted"
             print(f"-  /{rel_path.as_posix()} | {reason} | {size_str}")
             if self.copy_enabled and src_path.exists() and src_path.is_file():
-                safe_copy_file(
-                    src=src_path,
-                    dst_root=self.dest_dir,
-                    rel_path=rel_path,
-                    errors=self._errors,
-                )
+                safe_copy_file(src=src_path, dst_root=self.dest_dir, rel_path=rel_path, errors=self._errors)
         self._pending.clear()
         self._last_flush = time.time()
         if self._errors:
@@ -148,7 +142,7 @@ class ChangeHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         src_path = Path(event.src_path)
-        if self.allowed_exts is not None and not file_matches_extensions(src_path, self.allowed_exts):
+        if self.allowed_exts is not None and (not file_matches_extensions(src_path, self.allowed_exts)):
             return
         if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
             return
@@ -158,17 +152,9 @@ class ChangeHandler(FileSystemEventHandler):
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Watch a folder, print changes, and optionally copy changed/created files.")
     p.add_argument(
-        "folder",
-        nargs="?",
-        default=str(Path.cwd()),
-        help="Folder to watch (default: current working directory).",
+        "folder", nargs="?", default=str(Path.cwd()), help="Folder to watch (default: current working directory)."
     )
-    p.add_argument(
-        "-c",
-        "--copy",
-        action="store_true",
-        help="Copy changed/created files to destination.",
-    )
+    p.add_argument("-c", "--copy", action="store_true", help="Copy changed/created files to destination.")
     p.add_argument(
         "-d",
         "--dest",
@@ -179,8 +165,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-e",
         "--extensions",
         default=None,
-        help="Comma-separated allowlist of file extensions to copy, e.g. 'svg,png,txt'. "
-        "If omitted, copy all changed/created file types.",
+        help="Comma-separated allowlist of file extensions to copy, e.g. 'svg,png,txt'. If omitted, copy all changed/created file types.",
     )
     p.add_argument(
         "-x",

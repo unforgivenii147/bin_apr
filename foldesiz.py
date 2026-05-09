@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import os
 import shutil
 from pathlib import Path
-
 from dh import get_files, unique_path
 from loguru import logger
 
@@ -21,13 +21,10 @@ def calculate_optimal_folders(files):
     if len(files) < 2:
         return 1
     sizes = [size for _, size in files]
-    max_size, min_size = max(sizes), min(sizes)
+    max_size, min_size = (max(sizes), min(sizes))
     range_size = max_size - min_size
     target_range_per_folder = range_size / 100
-    num_folders = max(
-        1,
-        int(range_size / target_range_per_folder),
-    )
+    num_folders = max(1, int(range_size / target_range_per_folder))
     return min(num_folders, len(files))
 
 
@@ -41,16 +38,16 @@ def create_range_folders(cwd, files, num_folders):
         end_idx = start_idx + files_per_folder + (1 if i < remainder else 0)
         folder_files = sizes[start_idx:end_idx]
         if folder_files:
-            min_size, max_size = min(folder_files), max(folder_files)
+            min_size, max_size = (min(folder_files), max(folder_files))
 
             def fsz(size):
                 if size < 1000:
                     return f"{size}B"
-                if size < 1_000_000:
+                if size < 1000000:
                     return f"{size // 1000}k"
-                if size < 1_000_000_000:
-                    return f"{size // 1_000_000}M"
-                return f"{size // 1_000_000_000}G"
+                if size < 1000000000:
+                    return f"{size // 1000000}M"
+                return f"{size // 1000000000}G"
 
             folder_name = f"{fsz(min_size)}-{fsz(max_size)}"
             folder_ranges.append((min_size, max_size, folder_name))
@@ -62,24 +59,14 @@ def create_range_folders(cwd, files, num_folders):
 
 def distribute_files(files, folders, cwd):
     size_to_folder = {}
-    for (
-        min_size,
-        max_size,
-        folder_name,
-    ) in folders:
+    for min_size, max_size, folder_name in folders:
         size_to_folder[min_size, max_size] = folder_name
     moved_count = 0
     for filepath, size in files:
-        for (
-            min_size,
-            max_size,
-        ), folder_name in size_to_folder.items():
+        for (min_size, max_size), folder_name in size_to_folder.items():
             if min_size <= size <= max_size:
                 dest_folder = os.path.join(cwd, folder_name)
-                dest_path = os.path.join(
-                    dest_folder,
-                    Path(filepath).name,
-                )
+                dest_path = os.path.join(dest_folder, Path(filepath).name)
                 try:
                     dest_path = unique_path(dest_path)
                     shutil.move(filepath, dest_path)

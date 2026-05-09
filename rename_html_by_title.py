@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 import unicodedata
@@ -98,13 +99,11 @@ def slugify(text: str) -> str:
     temp = text
     text = text.lower()
     text = re.sub(
-        r"(\?|\\|\||\`|\<|\>|\~|\:|\;|\"|\'|\@|\$|\#|\%|\&|\^|\(|\)|\{|\}|\[|\])",
-        "",
-        text,
+        "(\\?|\\\\|\\||\\`|\\<|\\>|\\~|\\:|\\;|\\\"|\\'|\\@|\\$|\\#|\\%|\\&|\\^|\\(|\\)|\\{|\\}|\\[|\\])", "", text
     )
-    text = re.sub(r"( )+", "_", text)
-    text = re.sub(r"(/)+", "_", text)
-    text = re.sub(r"(__)+", "_", text)
+    text = re.sub("( )+", "_", text)
+    text = re.sub("(/)+", "_", text)
+    text = re.sub("(__)+", "_", text)
     if len(text) < 2:
         return temp.replace(":", "").replace("?", "").replace("=", "")
     return text

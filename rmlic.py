@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from dh import fsz, get_nobinary, gsz
 from termcolor import cprint
 
@@ -13,7 +13,7 @@ NUM_WORKERS = 8
 def load_patterns(lic_path: Path) -> list[str]:
     try:
         content = Path(lic_path).read_text(encoding="utf-8", errors="ignore")
-        pattern_separator = r"\n(?:\s*\n){" + str(MIN_BLANK_LINES) + r",}"
+        pattern_separator = "\\n(?:\\s*\\n){" + str(MIN_BLANK_LINES) + ",}"
         patterns = re.split(pattern_separator, content)
         patterns = [p.strip() for p in patterns if p.strip()]
         for pattern in patterns:
@@ -26,7 +26,7 @@ def load_patterns(lic_path: Path) -> list[str]:
 
 def escape_for_regex(text: str) -> str:
     escaped = re.escape(text)
-    return escaped.replace(r"\n", r"\s*\n\s*")
+    return escaped.replace("\\n", "\\s*\\n\\s*")
 
 
 def remove_patterns_from_content(content: str, patterns: list[str]) -> str:

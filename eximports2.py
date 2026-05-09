@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from collections import defaultdict
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from loguru import logger
 from tree_sitter import Language, Parser
@@ -10,10 +10,7 @@ parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
 OUT_DIR.mkdir(exist_ok=True)
-VALID = {
-    "import_statement",
-    "import_from_statement",
-}
+VALID = {"import_statement", "import_from_statement"}
 
 
 def extract_file(src: bytes, tree):
@@ -32,7 +29,7 @@ folder_imports = defaultdict(list)
 processed_files_count = 0
 folders_found = set()
 for py in Path().rglob("*.py"):
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
+    if any((part.startswith(".") for part in py.parts)) or "site-packages" in py.parts:
         continue
     if OUT_DIR in py.parents:
         continue
@@ -49,17 +46,13 @@ for py in Path().rglob("*.py"):
             processed_files_count += 1
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
-for (
-    folder,
-    imports_list,
-) in folder_imports.items():
+for folder, imports_list in folder_imports.items():
     if not imports_list:
         continue
     out_file = OUT_DIR / folder / "imports.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
     content = "\n\n".join(imports_list)
-    header = f"""# Auto-generated imports file for folder: {folder}
-"""
+    header = f"# Auto-generated imports file for folder: {folder}\n"
     out_file.write_text(header + content)
     print(f"✅ saved: {out_file} ({len(imports_list)} files)")
 print(f"\n✨ Done! Processed {processed_files_count} files in {len(folder_imports)} folder(s)")

@@ -1,16 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 def compare_files(file1, file2):
     try:
-        with (
-            Path(file1).open("r", encoding="utf-8") as f1,
-            Path(file2).open("r", encoding="utf-8") as f2,
-        ):
+        with Path(file1).open("r", encoding="utf-8") as f1, Path(file2).open("r", encoding="utf-8") as f2:
             lines1 = f1.readlines()
             lines2 = f2.readlines()
     except FileNotFoundError as e:

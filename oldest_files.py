@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from datetime import datetime
 from pathlib import Path
-
 from loguru import logger
 
 EXCLUDED_DIRS = {".git", "__pycache__"}
@@ -20,13 +20,13 @@ def main():
     N = int(sys.argv[2].strip()) if len(sys.argv) > 2 else 20
     if opt == "-g":
         for p in cwd.glob("*"):
-            if p.is_symlink() or any(part in EXCLUDED_DIRS for part in p.parts):
+            if p.is_symlink() or any((part in EXCLUDED_DIRS for part in p.parts)):
                 continue
             if p.is_file() or p.is_dir():
                 files.append(p)
     elif opt == "-r":
         for p in cwd.rglob("*"):
-            if p.is_symlink() or any(part in EXCLUDED_DIRS for part in p.parts):
+            if p.is_symlink() or any((part in EXCLUDED_DIRS for part in p.parts)):
                 continue
             if p.is_file():
                 files.append(p)

@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import string
 from collections import Counter
 from pathlib import Path
@@ -18,7 +19,7 @@ def cliner(fn):
 
 def levenshtein_distance(a: str, b: str) -> int:
     if len(a) < len(b):
-        a, b = b, a
+        a, b = (b, a)
     previous_row = list(range(len(b) + 1))
     for i, ca in enumerate(a, 1):
         current_row = [i]
@@ -26,13 +27,7 @@ def levenshtein_distance(a: str, b: str) -> int:
             insertions = previous_row[j] + 1
             deletions = current_row[j - 1] + 1
             substitutions = previous_row[j - 1] + (ca != cb)
-            current_row.append(
-                min(
-                    insertions,
-                    deletions,
-                    substitutions,
-                )
-            )
+            current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
     return previous_row[-1]
 
@@ -64,7 +59,7 @@ def group_similar(names: list[str], threshold: float = 0.8):
 
 def main():
     cwd = Path.cwd()
-    counter = Counter(cliner(p.name) for p in cwd.rglob("*") if p.is_file() and not p.is_symlink())
+    counter = Counter((cliner(p.name) for p in cwd.rglob("*") if p.is_file() and (not p.is_symlink())))
     for name, count in counter.most_common(100):
         if count > 2:
             print(f"{name}: {count}")

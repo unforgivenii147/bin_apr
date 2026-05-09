@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 from dh import get_files, get_random_name, mpf3
 from termcolor import cprint
@@ -28,10 +28,7 @@ def process_file(fp):
     soup = BeautifulSoup(html_content, "html.parser")
     scripts = soup.find_all("script")
     if scripts:
-        cprint(
-            f"{[fp.name]} : {len(scripts)} scripts found.",
-            "magenta",
-        )
+        cprint(f"{[fp.name]} : {len(scripts)} scripts found.", "magenta")
         for script in scripts:
             save_script(script.contents)
     return True

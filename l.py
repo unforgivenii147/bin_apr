@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import datetime
 from os import scandir as _scandir
 from pathlib import Path
@@ -39,17 +40,14 @@ def gsz(path: str | Path) -> int:
 EXCLUDED = {".mypy_cache", ".ruff_cache", ".git", "__pycache__"}
 if __name__ == "__main__":
     cwd = Path.cwd()
-    for path in sorted(
-        cwd.rglob("*"),
-        key=lambda e: e.stat().st_mtime,
-    ):
-        if any(pat in path.parts for pat in EXCLUDED):
+    for path in sorted(cwd.rglob("*"), key=lambda e: e.stat().st_mtime):
+        if any((pat in path.parts for pat in EXCLUDED)):
             continue
         mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
         if path.is_dir():
             continue
         elif path.is_symlink():
-            sz = " \033[05;95msymlink "
+            sz = " \x1b[05;95msymlink "
         else:
             sz = str(fsz(gsz(path)))
             match len(sz):
@@ -66,8 +64,8 @@ if __name__ == "__main__":
                 case 8:
                     sz = " " + sz
         if path.is_symlink():
-            print(f"\033[05;95m{path.name[:24]:25}\033[0m", end=" ")
+            print(f"\x1b[05;95m{path.name[:24]:25}\x1b[0m", end=" ")
         else:
-            print(f"\033[05;94m{path.name[:24]:25}\033[0m", end=" ")
-        print(f"\033[05;96m{sz}\033[0m", end=" ")
-        print(f"\033[05;93m{mtime}\033[0m")
+            print(f"\x1b[05;94m{path.name[:24]:25}\x1b[0m", end=" ")
+        print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
+        print(f"\x1b[05;93m{mtime}\x1b[0m")

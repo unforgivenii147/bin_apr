@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
 
+import os
 import matplotlib.pyplot as plt
 
 current_dir = os.getcwd()
@@ -27,7 +27,7 @@ for dirpath, dirnames, filenames in os.walk(current_dir):
 subdir_percentages = {}
 for subdir, size in subdir_sizes.items():
     if total_size > 0:
-        percentage = (size / total_size) * 100
+        percentage = size / total_size * 100
         subdir_percentages[os.path.basename(subdir)] = percentage
     else:
         subdir_percentages[os.path.basename(subdir)] = 0

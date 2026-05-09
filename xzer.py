@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import asyncio
 import shutil
 import sys
 import tempfile
 from pathlib import Path
-
 import lzma_mt
 
 _executor = asyncio.Semaphore(4)
@@ -36,13 +36,7 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
     try:
 
         def _create_temp():
-            with tempfile.NamedTemporaryFile(
-                mode="wb",
-                dir=temp_dir,
-                prefix=".tmp_",
-                suffix=".xz",
-                delete=False,
-            ) as f:
+            with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir, prefix=".tmp_", suffix=".xz", delete=False) as f:
                 f.write(data)
                 f.flush()
             return Path(f.name)
@@ -118,7 +112,7 @@ async def compress_file_async(path: Path) -> bool:
         if not await safe_delete_async(path):
             print(f"Failed to delete original after compression: {path}")
             return False
-        reduction = ((original_size - compressed_size) / original_size) * 100
+        reduction = (original_size - compressed_size) / original_size * 100
         print(f"{path.name}|{fsz(original_size)} → {fsz(compressed_size)} {reduction:.2f}% reduction")
         return True
     except Exception as e:
@@ -129,7 +123,7 @@ async def compress_file_async(path: Path) -> bool:
 async def get_files_async(directory: Path) -> list[Path]:
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(
-        None, lambda: [p for p in directory.glob("*") if p.is_file() and not p.is_symlink() and should_compress(p)]
+        None, lambda: [p for p in directory.glob("*") if p.is_file() and (not p.is_symlink()) and should_compress(p)]
     )
 
 
@@ -180,7 +174,7 @@ async def main_async() -> None:
             total_compressed += compressed_path.stat().st_size
     if successful > 0:
         savings = total_original - total_compressed
-        savings_percent = (savings / total_original) * 100
+        savings_percent = savings / total_original * 100
         print(f"Space saved: {fsz(savings)} {savings_percent:.1f}%")
 
 

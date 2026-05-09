@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
-
 from markdown2 import markdown_path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -13,20 +13,12 @@ class ValidationError(Exception):
     pass
 
 
-TOC_HTML = """
-<nav class="toc">
-<h1>Contents</h1>
-<ul></ul>
-</nav>
-"""
+TOC_HTML = '\n<nav class="toc">\n<h1>Contents</h1>\n<ul></ul>\n</nav>\n'
 
 
 def pygments_highlight(html: str) -> str:
     formatter = HtmlFormatter(cssclass="highlight")
-    code_block_re = re.compile(
-        r'<pre><code class="language-(\w+)">(.*?)</code></pre>',
-        re.DOTALL,
-    )
+    code_block_re = re.compile('<pre><code class="language-(\\w+)">(.*?)</code></pre>', re.DOTALL)
 
     def repl(match):
         lang = match.group(1)
@@ -41,18 +33,8 @@ def pygments_highlight(html: str) -> str:
     return code_block_re.sub(repl, html)
 
 
-def md2pdf(
-    pdf_file_path,
-    md_file_path,
-    css_file_path=None,
-    base_url=None,
-):
-    extras = [
-        "header-ids",
-        "fenced-code-blocks",
-        "tables",
-        "cuddled-lists",
-    ]
+def md2pdf(pdf_file_path, md_file_path, css_file_path=None, base_url=None):
+    extras = ["header-ids", "fenced-code-blocks", "tables", "cuddled-lists"]
     html = markdown_path(md_file_path, extras=extras)
     if not html.strip():
         msg = "Input markdown seems empty"
@@ -69,9 +51,4 @@ def md2pdf(
 if __name__ == "__main__":
     md_file = sys.argv[1]
     pdf_file = md_file.replace(".md", ".pdf")
-    md2pdf(
-        pdf_file_path=pdf_file,
-        md_file_path=md_file,
-        css_file_path="/sdcard/_static/css/book.css",
-        base_url=".",
-    )
+    md2pdf(pdf_file_path=pdf_file, md_file_path=md_file, css_file_path="/sdcard/_static/css/book.css", base_url=".")

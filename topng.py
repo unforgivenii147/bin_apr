@@ -1,20 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import cv2
 import numpy as np
 from loguru import logger
 
-SUPPORTED_FORMATS = {
-    ".png",
-    ".bmp",
-    ".tiff",
-    ".webp",
-    ".ico",
-    ".jpg",
-    ".jpeg",
-}
+SUPPORTED_FORMATS = {".png", ".bmp", ".tiff", ".webp", ".ico", ".jpg", ".jpeg"}
 
 
 def convert_to_png(file_path: str) -> bool:

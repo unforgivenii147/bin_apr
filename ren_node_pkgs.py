@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import json
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 def sanitize_pkg_name(name: str) -> str:
     name = name.lstrip("@")
     name = name.replace("/", "__")
-    return re.sub(r"[^\w.-]", "_", name)
+    return re.sub("[^\\w.-]", "_", name)
 
 
 def rename_package_dirs(root: Path, dry_run: bool = False) -> None:

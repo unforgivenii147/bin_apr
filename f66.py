@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import operator
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-
 from loguru import logger
 from termcolor import cprint
 
@@ -23,7 +23,7 @@ def main() -> None:
     minutes = parse_minutes()
     ctm = {}
     cwd = Path.cwd()
-    cutoff = time.time() - (minutes * 60)
+    cutoff = time.time() - minutes * 60
     for path in cwd.rglob("*"):
         if ".git" in path.parts:
             continue

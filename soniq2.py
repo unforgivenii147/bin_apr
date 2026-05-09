@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import os
 import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 from loguru import logger
 
 MB_5 = 5 * 1024 * 1024
@@ -19,14 +19,7 @@ def sort_and_uniq(file_path):
         get_size = Path(file_path).stat().st_size
         lines = []
         if get_size > MB_5:
-            with (
-                Path(file_path).open("r+b") as f,
-                mmap.mmap(
-                    f.fileno(),
-                    0,
-                    access=mmap.ACCESS_READ,
-                ) as mm,
-            ):
+            with Path(file_path).open("r+b") as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
                 lines = mm.read().decode("utf-8").splitlines()
         else:
             lines = file_path.read_text(encoding="utf-8").splitlines()

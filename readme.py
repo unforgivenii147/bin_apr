@@ -1,14 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import pydoc
 import sys
 from pathlib import Path
 
-README_CANDIDATES = [
-    "README.md",
-    "README.rst",
-    "README.txt",
-    "README",
-]
+README_CANDIDATES = ["README.md", "README.rst", "README.txt", "README"]
 
 
 def find_readme():
@@ -23,10 +19,7 @@ def find_readme():
 def main():
     readme = find_readme()
     if not readme:
-        print(
-            "No README file found in current directory.",
-            file=sys.stderr,
-        )
+        print("No README file found in current directory.", file=sys.stderr)
         sys.exit(1)
     try:
         text = readme.read_text(encoding="utf-8")

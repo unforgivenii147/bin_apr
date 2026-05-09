@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import datetime
 from os import scandir as _scandir
 from pathlib import Path
@@ -48,8 +49,8 @@ if __name__ == "__main__":
     for f in otherz:
         ctime = datetime.datetime.fromtimestamp(f.stat().st_ctime).strftime("%H:%M")
         if f.is_symlink():
-            sz = " \033[05;95msymlink "
-            print(f"\033[05;95m{f.name[:24]:25}\033[0m", end=" ")
+            sz = " \x1b[05;95msymlink "
+            print(f"\x1b[05;95m{f.name[:24]:25}\x1b[0m", end=" ")
         else:
             sz = str(fsz(gsz(f)))
             match len(sz):
@@ -65,9 +66,9 @@ if __name__ == "__main__":
                     sz = "  " + sz
                 case 8:
                     sz = " " + sz
-            print(f"\033[05;92m{f.name[:24]:25}\033[0m", end=" ")
-        print(f"\033[05;96m{sz}\033[0m", end=" ")
-        print(f"\033[05;93m{ctime}\033[0m")
+            print(f"\x1b[05;92m{f.name[:24]:25}\x1b[0m", end=" ")
+        print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
+        print(f"\x1b[05;93m{ctime}\x1b[0m")
     for dr in dirz:
         ctime = datetime.datetime.fromtimestamp(dr.stat().st_ctime).strftime("%H:%M")
         sz = str(fsz(gsz(dr)))
@@ -75,6 +76,6 @@ if __name__ == "__main__":
             sz = "  " + sz
         if len(sz) == 8:
             sz = " " + sz
-        print(f"\033[05;94m{dr.name[:24]:25}\033[0m", end=" ")
-        print(f"\033[05;96m{sz}\033[0m", end=" ")
-        print(f"\033[05;93m{ctime}\033[0m")
+        print(f"\x1b[05;94m{dr.name[:24]:25}\x1b[0m", end=" ")
+        print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
+        print(f"\x1b[05;93m{ctime}\x1b[0m")

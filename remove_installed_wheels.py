@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import subprocess
 import zipfile
 from pathlib import Path
-
 from loguru import logger
 
 VENV_PATH = Path("~/venv").expanduser()
@@ -12,13 +12,7 @@ VENV_PATH = Path("~/venv").expanduser()
 def get_installed_version(pkg_name):
     try:
         result = subprocess.run(
-            [
-                os.path.join(VENV_PATH, "bin", "pip"),
-                "show",
-                pkg_name,
-            ],
-            capture_output=True,
-            text=True,
+            [os.path.join(VENV_PATH, "bin", "pip"), "show", pkg_name], capture_output=True, text=True
         )
         if result.returncode == 0:
             for line in result.stdout.splitlines():
@@ -41,13 +35,10 @@ def get_wheel_package_info(wheel_file):
                                 pkg_name = line.split(":")[1].strip()
                             if line.startswith("Version:"):
                                 pkg_version = line.split(":")[1].strip()
-                        return (
-                            pkg_name,
-                            pkg_version,
-                        )
+                        return (pkg_name, pkg_version)
     except Exception as e:
         print(f"Error reading {wheel_file}: {e}")
-    return None, None
+    return (None, None)
 
 
 def remove_wheel_file(wheel_file):

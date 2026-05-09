@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import cprint
 
 TIMEOUT = 3
 
 
 def get_files(folder: Path):
-    return [p for p in folder.rglob("*") if p.is_file() and not p.is_symlink() and ".git" not in p.parts]
+    return [p for p in folder.rglob("*") if p.is_file() and (not p.is_symlink()) and (".git" not in p.parts)]
 
 
 def wait_for_keypress(timeout):

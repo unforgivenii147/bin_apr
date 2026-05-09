@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import sys
 from importlib import metadata
 from pathlib import Path
-
 from dh import cprint
 from loguru import logger
 from packaging.utils import parse_wheel_filename
@@ -68,10 +68,7 @@ def main():
             if norm_name in installed_pkgs:
                 installed_version = installed_pkgs[norm_name]
                 if installed_version == Version(str(version)):
-                    cprint(
-                        f"[MATCH] {dist_name}=={version} → removing",
-                        "cyan",
-                    )
+                    cprint(f"[MATCH] {dist_name}=={version} → removing", "cyan")
                     wheel.unlink()
                     moved += 1
                 else:

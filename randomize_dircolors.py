@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from pathlib import Path
 from random import choice as random_choice
 
@@ -1774,7 +1775,6 @@ extensions = [
     ".zsh",
     ".zst",
 ]
-
 colorz = [
     (240, 248, 255),
     (250, 235, 215),
@@ -1910,15 +1910,6 @@ colorz = [
 
 def color():
     return random_choice(colorz)
-
-
-#    r = randbelow(255)
-#    r = r if r > 50 else r + 35
-#    g = randbelow(255)
-#    g = g if g > 50 else g + 35
-#    b = randbelow(255)
-#    b = b if b > 50 else b + 35
-#    return (r, g, b)
 
 
 if __name__ == "__main__":

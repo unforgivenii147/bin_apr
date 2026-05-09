@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import sys
 import tarfile
 import tempfile
 from pathlib import Path
-
 import lzma_mt
 from dh import get_files
 from loguru import logger
@@ -16,11 +16,7 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
     temp_path = None
     try:
         with tempfile.NamedTemporaryFile(
-            mode="wb",
-            dir=temp_dir,
-            prefix=".tmp_",
-            suffix=".xz",
-            delete=False,
+            mode="wb", dir=temp_dir, prefix=".tmp_", suffix=".xz", delete=False
         ) as temp_file:
             temp_path = Path(temp_file.name)
             temp_file.write(data)

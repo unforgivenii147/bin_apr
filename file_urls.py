@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from pathlib import Path
 from dh import TXT_EXT, BIN_EXT
 
@@ -34,7 +35,7 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
     with open("urls.txt", "r", encoding="utf-8", errors="ignore") as f:
         for line in f:
             stripped = line.strip()
-            if any(stripped.endswith(p) for p in ALL_EXT):
+            if any((stripped.endswith(p) for p in ALL_EXT)):
                 if stripped.endswith((".html", ".htm")):
                     html_urls.append(stripped)
                     continue
@@ -55,7 +56,6 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
                     continue
                 if stripped not in extracted_urls:
                     extracted_urls.add(stripped)
-
     pdf_file = Path("pdf_urls.txt")
     html_file = Path("html_urls.txt")
     whl_file = Path("whl_urls.txt")
@@ -65,27 +65,21 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
     if pdf_urls:
         pdf_content = "\n".join(pdf_urls)
         pdf_file.write_text(pdf_content, encoding="utf8")
-
     if html_urls:
         html_content = "\n".join(html_urls)
         html_file.write_text(html_content, encoding="utf8")
-
     if whl_urls:
         whl_content = "\n".join(whl_urls)
         whl_file.write_text(whl_content, encoding="utf8")
-
     if font_urls:
         font_content = "\n".join(font_urls)
         font_file.write_text(font_content, encoding="utf8")
-
     if targz_urls:
         targz_content = "\n".join(targz_urls)
         targz_file.write_text(targz_content, encoding="utf8")
-
     if js_css_urls:
         js_css_content = "\n".join(js_css_urls)
         js_css_file.write_text(js_css_content, encoding="utf8")
-
     if extracted_urls:
         with open(output_filename, "w", encoding="utf-8") as outfile:
             for url in sorted(list(extracted_urls)):

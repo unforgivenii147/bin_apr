@@ -1,20 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import re
 import sys
 from pathlib import Path
-
 from dh import is_binary
 from loguru import logger
 
 
-def process_file(
-    file_path,
-    search_text,
-    replace_text=None,
-    dry_run=False,
-):
+def process_file(file_path, search_text, replace_text=None, dry_run=False):
     try:
         content = Path(file_path).read_text(encoding="utf-8")
         replacement = replace_text if replace_text is not None else ""
@@ -26,10 +21,7 @@ def process_file(
                 print(f"[DRY RUN] Found {len(matches)} match(es) in {file_path}")
                 for i, match in enumerate(matches[:3]):
                     start = max(0, match.start() - 20)
-                    end = min(
-                        len(content),
-                        match.end() + 20,
-                    )
+                    end = min(len(content), match.end() + 20)
                     context = content[start:end]
                     context = context.replace("\n", " ").strip()
                     print(f"  Match {i + 1}: ...{context}...")
@@ -41,52 +33,26 @@ def process_file(
                 print(f"Updated: {file_path}")
             return True
         return False
-    except (
-        UnicodeDecodeError,
-        PermissionError,
-        IsADirectoryError,
-    ):
+    except (UnicodeDecodeError, PermissionError, IsADirectoryError):
         return False
     except Exception as e:
-        print(
-            f"Error processing {file_path}: {e}",
-            file=sys.stderr,
-        )
+        print(f"Error processing {file_path}: {e}", file=sys.stderr)
         return False
 
 
-def replace_in_files(
-    search_text,
-    replace_text=None,
-    target_file=None,
-    dry_run=False,
-):
-    exclude_dirs = {
-        ".git",
-        "build",
-        "dist",
-        "__pycache__",
-        "node_modules",
-    }
+def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=False):
+    exclude_dirs = {".git", "build", "dist", "__pycache__", "node_modules"}
     files_processed = 0
     files_changed = 0
     if target_file:
-        if Path(target_file).is_file() and not Path(target_file).is_symlink():
+        if Path(target_file).is_file() and (not Path(target_file).is_symlink()):
             print(f"Processing file: {target_file}")
-            if process_file(
-                target_file,
-                search_text,
-                replace_text,
-                dry_run,
-            ):
+            if process_file(target_file, search_text, replace_text, dry_run):
                 files_changed += 1
             files_processed += 1
         else:
-            print(
-                f"Error: {target_file} is not a valid file",
-                file=sys.stderr,
-            )
-        return files_processed, files_changed
+            print(f"Error: {target_file} is not a valid file", file=sys.stderr)
+        return (files_processed, files_changed)
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
@@ -94,19 +60,11 @@ def replace_in_files(
             if Path(file_path).is_symlink() or is_binary(file_path):
                 continue
             files_processed += 1
-            if process_file(
-                file_path,
-                search_text,
-                replace_text,
-                dry_run,
-            ):
+            if process_file(file_path, search_text, replace_text, dry_run):
                 files_changed += 1
             if files_processed % 100 == 0:
-                print(
-                    f"Processed {files_processed} files...",
-                    end="\r",
-                )
-    return files_processed, files_changed
+                print(f"Processed {files_processed} files...", end="\r")
+    return (files_processed, files_changed)
 
 
 if __name__ == "__main__":
@@ -116,16 +74,8 @@ if __name__ == "__main__":
         nargs="+",
         help="Search text and optional replacement text. If only one string is provided, it will be removed.",
     )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show changes without applying them",
-    )
-    parser.add_argument(
-        "-f",
-        "--file",
-        help="Process only the specified file instead of recursive directory search",
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying them")
+    parser.add_argument("-f", "--file", help="Process only the specified file instead of recursive directory search")
     args = parser.parse_args()
     if len(args.strings) == 2:
         search_text, replace_text = args.strings
@@ -142,9 +92,6 @@ if __name__ == "__main__":
         print("--- RUNNING IN DRY RUN MODE (No files will be modified) ---")
     print(f"--- {action} ---")
     files_processed, files_changed = replace_in_files(
-        search_text,
-        replace_text,
-        target_file=args.file,
-        dry_run=args.dry_run,
+        search_text, replace_text, target_file=args.file, dry_run=args.dry_run
     )
     print(f"\n--- Complete: Processed {files_processed} files, modified {files_changed} files ---")

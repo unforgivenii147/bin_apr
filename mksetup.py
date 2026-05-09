@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import sys
 import tempfile
 import zipfile
 from email.parser import Parser
 from pathlib import Path
-
 from loguru import logger
 
 EXT_SUFFIXES = (".so", ".pyd", ".dll")
@@ -68,15 +68,10 @@ def find_extensions(root: Path) -> list[str]:
     return [".".join(f.relative_to(root).with_suffix("").parts) for f in root.rglob("*") if f.suffix in EXT_SUFFIXES]
 
 
-def generate_setup_py(
-    meta: dict,
-    extensions: list[str],
-    entry_points: dict[str, list[str]],
-) -> str:
+def generate_setup_py(meta: dict, extensions: list[str], entry_points: dict[str, list[str]]) -> str:
     ext_block = (
-        "from setuptools import Extension\n\n"
-        "ext_modules = [\n"
-        + "\n".join(f'    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),' for m in extensions)
+        "from setuptools import Extension\n\next_modules = [\n"
+        + "\n".join((f'''    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),''' for m in extensions))
         + "\n]\n"
         if extensions
         else "ext_modules = []\n"
@@ -84,36 +79,18 @@ def generate_setup_py(
     ep_block = ""
     if entry_points:
         formatted = "{\n"
-        for (
-            section,
-            values,
-        ) in entry_points.items():
+        for section, values in entry_points.items():
             formatted += f'        "{section}": [\n'
             for v in values:
                 formatted += f'            "{v}",\n'
             formatted += "        ],\n"
         formatted += "    }"
         ep_block = f"    entry_points={formatted},\n"
-    return f"""\
-from setuptools import setup, find_packages
-{ext_block}
-setup(
-    name="{meta["name"]}",
-    version="{meta["version"]}",
-    description="{meta["summary"]}",
-    packages=find_packages() or ["."],
-    install_requires={meta["install_requires"]},
-    ext_modules=ext_modules,
-{ep_block})
-"""
+    return f'''from setuptools import setup, find_packages\n{ext_block}\nsetup(\n    name="{meta["name"]}",\n    version="{meta["version"]}",\n    description="{meta["summary"]}",\n    packages=find_packages() or ["."],\n    install_requires={meta["install_requires"]},\n    ext_modules=ext_modules,\n{ep_block})\n'''
 
 
 def generate_pyproject_toml() -> str:
-    return """\
-[build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
-"""
+    return '[build-system]\nrequires = ["setuptools>=61", "wheel"]\nbuild-backend = "setuptools.build_meta"\n'
 
 
 def main() -> None:

@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -39,34 +39,21 @@ def fetch_trending(timeframe: str) -> list[Repo]:
         stars_tag = article.select_one("a[href$='stargazers']")
         stars = stars_tag.text.strip() if stars_tag else "0"
         repos.append(
-            Repo(
-                name=name,
-                url=repo_url,
-                description=description,
-                stars=stars,
-                language=language,
-                timeframe=timeframe,
-            )
+            Repo(name=name, url=repo_url, description=description, stars=stars, language=language, timeframe=timeframe)
         )
     return repos
 
 
 def save_csv(repos: list[Repo], path: Path) -> None:
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=Repo.__annotations__.keys(),
-        )
+        writer = csv.DictWriter(f, fieldnames=Repo.__annotations__.keys())
         writer.writeheader()
         for repo in repos:
             writer.writerow(asdict(repo))
 
 
 def save_json(repos: list[Repo], path: Path) -> None:
-    path.write_text(
-        json.dumps([asdict(r) for r in repos], indent=2),
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps([asdict(r) for r in repos], indent=2), encoding="utf-8")
 
 
 def main() -> None:
@@ -75,14 +62,8 @@ def main() -> None:
     for timeframe in TIMEFRAMES:
         repos = fetch_trending(timeframe)
         all_repos.extend(repos)
-        save_csv(
-            repos,
-            OUTPUT_DIR / f"python_trending_{timeframe}.csv",
-        )
-        save_json(
-            repos,
-            OUTPUT_DIR / f"python_trending_{timeframe}.json",
-        )
+        save_csv(repos, OUTPUT_DIR / f"python_trending_{timeframe}.csv")
+        save_json(repos, OUTPUT_DIR / f"python_trending_{timeframe}.json")
     print(f"Saved {len(all_repos)} repos to {OUTPUT_DIR.resolve()}")
 
 

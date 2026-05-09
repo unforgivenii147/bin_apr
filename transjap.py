@@ -1,21 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from loguru import logger
 
 
 def read_text_file(path: Path) -> str:
-    allowed = {
-        ".txt",
-        ".md",
-        ".csv",
-        ".json",
-        ".py",
-        "",
-    }
+    allowed = {".txt", ".md", ".csv", ".json", ".py", ""}
     if path.suffix.lower() not in allowed:
         msg = f"Unsupported file type: {path.suffix}"
         raise ValueError(msg)
@@ -37,25 +30,12 @@ def build_output_path(input_path: Path) -> Path:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Translate jap → English using deep-translator.")
-    parser.add_argument(
-        "input_path",
-        type=str,
-        help="Path to input text file.",
-    )
-    parser.add_argument(
-        "-g",
-        "--game",
-        type=str,
-        default=None,
-        help="Optional game argument.",
-    )
+    parser.add_argument("input_path", type=str, help="Path to input text file.")
+    parser.add_argument("-g", "--game", type=str, default=None, help="Optional game argument.")
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        print(
-            f"Error: File not found: {in_path}",
-            file=sys.stderr,
-        )
+        print(f"Error: File not found: {in_path}", file=sys.stderr)
         sys.exit(1)
     try:
         original_text = read_text_file(in_path)
@@ -65,10 +45,7 @@ def main() -> None:
     try:
         translated = translate_text(original_text)
     except Exception as exc:
-        print(
-            f"Translation error: {exc}",
-            file=sys.stderr,
-        )
+        print(f"Translation error: {exc}", file=sys.stderr)
         sys.exit(1)
     out_path = build_output_path(in_path)
     try:

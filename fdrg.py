@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import fnmatch
 import tarfile
@@ -7,27 +8,15 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from queue import Queue
-
 from fastwalk import walk_files
 from loguru import logger
 
 pause_event = threading.Event()
 pause_event.set()
 results_queue = Queue()
-DEFAULT_EXCLUDED_DIRS = {
-    ".git",
-}
+DEFAULT_EXCLUDED_DIRS = {".git"}
 DEFAULT_SKIPPED_EXTS = {".pyc", ".bak"}
-ARCHIVE_EXTENSIONS = (
-    ".tar.gz",
-    ".tar",
-    ".tar.xz",
-    ".tar.zst",
-    ".tar.bz2",
-    ".zip",
-    ".whl",
-    ".apk",
-)
+ARCHIVE_EXTENSIONS = (".tar.gz", ".tar", ".tar.xz", ".tar.zst", ".tar.bz2", ".zip", ".whl", ".apk")
 
 
 def setup_keyboard_listener():
@@ -38,7 +27,7 @@ def setup_keyboard_listener():
             if event.name in {"space", "p"} and pause_event.is_set():
                 pause_event.clear()
                 print("\n[PAUSED] Press 'c' to continue...")
-            elif event.name == "c" and not pause_event.is_set():
+            elif event.name == "c" and (not pause_event.is_set()):
                 pause_event.set()
                 print("\n[RESUMED] Searching...")
 
@@ -53,7 +42,7 @@ def is_excluded(path: Path, excluded_dirs, excluded_patterns):
     for part in path.parts:
         if part in excluded_dirs:
             return True
-    return any(fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns)
+    return any((fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns))
 
 
 def should_skip_file(path: Path):
@@ -99,17 +88,8 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                             results.append((ref, None))
                     else:
                         try:
-                            content = zf.read(member).decode(
-                                "utf-8",
-                                errors="ignore",
-                            )
-                            for (
-                                ln,
-                                line,
-                            ) in enumerate(
-                                content.splitlines(),
-                                1,
-                            ):
+                            content = zf.read(member).decode("utf-8", errors="ignore")
+                            for ln, line in enumerate(content.splitlines(), 1):
                                 if search_string in line:
                                     results.append((ref, ln))
                         except Exception:
@@ -128,24 +108,10 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                         try:
                             f = tf.extractfile(m)
                             if f:
-                                content = f.read().decode(
-                                    "utf-8",
-                                    errors="ignore",
-                                )
-                                for (
-                                    ln,
-                                    line,
-                                ) in enumerate(
-                                    content.splitlines(),
-                                    1,
-                                ):
+                                content = f.read().decode("utf-8", errors="ignore")
+                                for ln, line in enumerate(content.splitlines(), 1):
                                     if search_string in line:
-                                        results.append(
-                                            (
-                                                ref,
-                                                ln,
-                                            )
-                                        )
+                                        results.append((ref, ln))
                         except Exception:
                             pass
     except Exception:
@@ -168,19 +134,14 @@ def main():
     parser.add_argument("-c", "--content", action="store_true")
     parser.add_argument("-d", "--directory", default=".")
     parser.add_argument("-o", "--output", default="output")
-    parser.add_argument(
-        "--exclude",
-        action="append",
-        default=[],
-        help="Exclude dir or glob (repeatable)",
-    )
+    parser.add_argument("--exclude", action="append", default=[], help="Exclude dir or glob (repeatable)")
     args = parser.parse_args()
-    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {e for e in args.exclude if not any(ch in e for ch in "*?[]")}
-    excluded_patterns = {e for e in args.exclude if any(ch in e for ch in "*?[]")}
+    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {e for e in args.exclude if not any((ch in e for ch in "*?[]"))}
+    excluded_patterns = {e for e in args.exclude if any((ch in e for ch in "*?[]"))}
     setup_keyboard_listener()
     root = Path(args.directory).resolve()
     print(f"[INFO] Root: {root}")
-    print(f"[INFO] Mode: {'content' if args.content else 'filename'}")
+    print(f"[INFO] Mode: {('content' if args.content else 'filename')}")
     print(f"[INFO] Excluded dirs: {sorted(excluded_dirs)}")
     print(f"[INFO] Excluded patterns: {sorted(excluded_patterns)}")
     print("=" * 80)
@@ -191,24 +152,12 @@ def main():
             continue
         if should_skip_file(path):
             continue
-        if is_excluded(
-            path,
-            excluded_dirs,
-            excluded_patterns,
-        ):
+        if is_excluded(path, excluded_dirs, excluded_patterns):
             continue
         files.append(path)
     print(f"[INFO] Files queued: {len(files)}\n")
     with ThreadPoolExecutor(max_workers=8) as ex:
-        futures = [
-            ex.submit(
-                process_file,
-                p,
-                args.search_string,
-                args.content,
-            )
-            for p in files
-        ]
+        futures = [ex.submit(process_file, p, args.search_string, args.content) for p in files]
         for _f in as_completed(futures):
             pass
     print(f"[INFO] Total results: {results_queue.qsize()}")

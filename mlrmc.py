@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
@@ -30,6 +30,7 @@ def get_parser(lang):
 
 
 def _collect_python_docstrings(node, deletions):
+
     def first_named_child(block):
         for child in block.children:
             if child.is_named:
@@ -41,29 +42,15 @@ def _collect_python_docstrings(node, deletions):
         if first and first.type == "expression_statement":
             expr = first.child_by_field_name("expression")
             if expr and expr.type == "string":
-                deletions.append(
-                    (
-                        first.start_byte,
-                        first.end_byte,
-                    )
-                )
-    if node.type in {
-        "class_definition",
-        "function_definition",
-        "async_function_definition",
-    }:
+                deletions.append((first.start_byte, first.end_byte))
+    if node.type in {"class_definition", "function_definition", "async_function_definition"}:
         body = node.child_by_field_name("body")
         if body:
             first = first_named_child(body)
             if first and first.type == "expression_statement":
                 expr = first.child_by_field_name("expression")
                 if expr and expr.type == "string":
-                    deletions.append(
-                        (
-                            first.start_byte,
-                            first.end_byte,
-                        )
-                    )
+                    deletions.append((first.start_byte, first.end_byte))
     for child in node.children:
         _collect_python_docstrings(child, deletions)
 
@@ -84,12 +71,7 @@ def process_file(path: Path) -> None:
                 text = source[node.start_byte : node.end_byte]
                 if ext == ".py" and text.lstrip().startswith(EXCLUDE_PREFIXES):
                     return
-                deletions.append(
-                    (
-                        node.start_byte,
-                        node.end_byte,
-                    )
-                )
+                deletions.append((node.start_byte, node.end_byte))
             for child in node.children:
                 walk(child)
 

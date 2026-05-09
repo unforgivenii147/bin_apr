@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
 from loguru import logger
@@ -10,10 +10,7 @@ from tree_sitter import Language, Parser
 
 parser = Parser()
 parser.language = Language(tsp.language())
-VALID = {
-    "import_statement",
-    "import_from_statement",
-}
+VALID = {"import_statement", "import_from_statement"}
 
 
 def extract_file(src: bytes, tree):
@@ -61,7 +58,7 @@ def main():
             if "." in line:
                 indx = line.index(".")
                 line = line[:indx]
-            if line not in impoz and not line.startswith("_"):
+            if line not in impoz and (not line.startswith("_")):
                 impoz.append(line + "\n")
         elif line.startswith("from "):
             line = line.replace("from ", "")
@@ -76,7 +73,7 @@ def main():
             if " import" in line:
                 indx = line.index(" import")
                 line = line[:indx]
-            if line not in impoz and not line.startswith("_"):
+            if line not in impoz and (not line.startswith("_")):
                 impoz.append(line + "\n")
     impoz = sorted(set(impoz))
     stdlib_plus_installed = list(STDLIB)

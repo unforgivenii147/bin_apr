@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 import cairosvg
 from dh import fsz, get_files, gsz
 from termcolor import cprint

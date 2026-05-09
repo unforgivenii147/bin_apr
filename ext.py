@@ -1,18 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import multiprocessing as mp
 import os
 from pathlib import Path
-
 from loguru import logger
 
 OUTPUT_DIR = "output"
-EXCLUDE_DIRS = {
-    "test",
-    "tests",
-    "examples",
-    "output",
-}
+EXCLUDE_DIRS = {"test", "tests", "examples", "output"}
 
 
 def is_python_script(path: str) -> bool:
@@ -49,22 +44,15 @@ def is_constant_name(name: str) -> bool:
 
 def extract_from_file(
     path: str,
-) -> tuple[
-    str,
-    dict[str, str],
-    dict[str, str],
-    dict[str, str],
-    dict[str, str],
-    dict[str, str],
-]:
+) -> tuple[str, dict[str, str], dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
     try:
         source = Path(path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(source)
     except Exception:
-        return path, {}, {}, {}, {}, {}
+        return (path, {}, {}, {}, {}, {})
     mark_parents(tree)
-    tl_classes, tl_funcs = {}, {}
-    nested_classes, nested_funcs = {}, {}
+    tl_classes, tl_funcs = ({}, {})
+    nested_classes, nested_funcs = ({}, {})
     consts = {}
     for node in ast.walk(tree):
         if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
@@ -98,19 +86,12 @@ def extract_from_file(
             src = ast.get_source_segment(source, node)
             if src:
                 consts[name] = src
-    return (
-        path,
-        tl_classes,
-        tl_funcs,
-        nested_classes,
-        nested_funcs,
-        consts,
-    )
+    return (path, tl_classes, tl_funcs, nested_classes, nested_funcs, consts)
 
 
 def write_output(path: str, data: dict[str, str]) -> None:
     with Path(path).open("w", encoding="utf-8") as f:
-        f.writelines(src.rstrip() + "\n\n" for _name, src in sorted(data.items()))
+        f.writelines((src.rstrip() + "\n\n" for _name, src in sorted(data.items())))
 
 
 def main():
@@ -121,8 +102,8 @@ def main():
         return
     with mp.Pool(mp.cpu_count()) as pool:
         results = pool.map(extract_from_file, files)
-    tl_classes, tl_funcs = {}, {}
-    nested_classes, nested_funcs = {}, {}
+    tl_classes, tl_funcs = ({}, {})
+    nested_classes, nested_funcs = ({}, {})
     const_map = {}
     for _, c, f, nc, nf, consts in results:
         tl_classes.update(c)
@@ -130,26 +111,11 @@ def main():
         nested_classes.update(nc)
         nested_funcs.update(nf)
         const_map.update(consts)
-    write_output(
-        os.path.join(OUTPUT_DIR, "classes.py"),
-        tl_classes,
-    )
-    write_output(
-        os.path.join(OUTPUT_DIR, "functions.py"),
-        tl_funcs,
-    )
-    write_output(
-        os.path.join(OUTPUT_DIR, "nested_classes.py"),
-        nested_classes,
-    )
-    write_output(
-        os.path.join(OUTPUT_DIR, "nested_functions.py"),
-        nested_funcs,
-    )
-    write_output(
-        os.path.join(OUTPUT_DIR, "const.py"),
-        const_map,
-    )
+    write_output(os.path.join(OUTPUT_DIR, "classes.py"), tl_classes)
+    write_output(os.path.join(OUTPUT_DIR, "functions.py"), tl_funcs)
+    write_output(os.path.join(OUTPUT_DIR, "nested_classes.py"), nested_classes)
+    write_output(os.path.join(OUTPUT_DIR, "nested_functions.py"), nested_funcs)
+    write_output(os.path.join(OUTPUT_DIR, "const.py"), const_map)
     print("\n=== Top-Level Classes ===")
     for n in sorted(tl_classes):
         print(" -", n)

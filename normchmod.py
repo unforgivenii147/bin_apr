@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import stat
 from pathlib import Path
 
@@ -8,8 +9,8 @@ def get_mode(path: Path) -> int:
 
 
 def normalize_permissions(homedir) -> None:
-    DIR_PERM = 0o775
-    FILE_PERM = 0o664
+    DIR_PERM = 509
+    FILE_PERM = 436
     for path in homedir.rglob("*"):
         try:
             current_perm = get_mode(path)
@@ -25,10 +26,7 @@ def normalize_permissions(homedir) -> None:
                         path.chmod(FILE_PERM)
                     print(f"{path.relative_to(cwd)}: {oct(current_perm)} --> {oct(FILE_PERM)}")
                 try:
-                    for encod in [
-                        "utf-8",
-                        "windows-1251",
-                    ]:
+                    for encod in ["utf-8", "windows-1251"]:
                         with Path(path).open(errors="ignore", encoding=encod) as f:
                             f.read()
                 except:

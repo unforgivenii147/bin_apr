@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 
 LANG_TO_EXT = {
@@ -47,7 +47,9 @@ LANG_TO_EXT = {
     "txt": ".txt",
     "plain": ".txt",
 }
-CODE_BLOCK_RE = re.compile(r"```(?P<lang>[A-Za-z0-9_+\-.]*)[ \t]*\n(?P<code>.*?)(?<=\n)```", re.DOTALL | re.IGNORECASE)
+CODE_BLOCK_RE = re.compile(
+    "```(?P<lang>[A-Za-z0-9_+\\-.]*)[ \\t]*\\n(?P<code>.*?)(?<=\\n)```", re.DOTALL | re.IGNORECASE
+)
 
 
 def get_extension(lang: str) -> str:
@@ -62,7 +64,7 @@ def get_extension(lang: str) -> str:
 
 
 def sanitize_filename(name: str, max_len: int = 200) -> str:
-    safe = re.sub(r"[^\w\-.]", "_", name)
+    safe = re.sub("[^\\w\\-.]", "_", name)
     return safe[:max_len].rstrip("_") or "code_block"
 
 
@@ -96,7 +98,7 @@ def main():
     cwd = Path.cwd().resolve()
     out_dir = cwd / "output"
     out_dir.mkdir(parents=True, exist_ok=True)
-    md_files = sorted(p for p in cwd.rglob("*.md") if p.is_file())
+    md_files = sorted((p for p in cwd.rglob("*.md") if p.is_file()))
     total_blocks = 0
     all_extracted = []
     for md_file in md_files:

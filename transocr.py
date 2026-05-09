@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 import pytesseract
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
@@ -72,11 +72,7 @@ def build_raw_ocr_path(input_path: Path) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Translate text or image to English.")
     parser.add_argument("input_path")
-    parser.add_argument(
-        "--lang",
-        default="auto",
-        help="Source language code or 'auto'",
-    )
+    parser.add_argument("--lang", default="auto", help="Source language code or 'auto'")
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():

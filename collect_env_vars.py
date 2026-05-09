@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
 
 env_vars = set()
-env_var_pattern = re.compile(r"^([A-Z_0-9]+)=")
+env_var_pattern = re.compile("^([A-Z_0-9]+)=")
 for filepath in Path(".").rglob("*"):
     if filepath.is_file():
         try:

@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import os
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from loguru import logger
 from tqdm import tqdm
 
@@ -48,20 +48,13 @@ def collect_lines_for_extension(ext, files):
     global_counter = Counter()
     with ThreadPoolExecutor() as executor:
         futures = {executor.submit(process_file, f): f for f in files}
-        for future in tqdm(
-            as_completed(futures),
-            total=len(futures),
-            desc=f"Processing .{ext}  files",
-        ):
+        for future in tqdm(as_completed(futures), total=len(futures), desc=f"Processing .{ext}  files"):
             global_counter.update(future.result())
     output_file = f"{ext}.csv"
     with Path(output_file).open("w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["number_of_appearance", "line"])
-        for (
-            line,
-            count,
-        ) in global_counter.most_common():
+        for line, count in global_counter.most_common():
             if count >= 2:
                 writer.writerow([count, line])
     print(f"Saved results to {output_file}")

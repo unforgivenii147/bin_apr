@@ -1,17 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
-IMG_TAG_RE = re.compile(
-    r'<img\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\'][^>]*>',
-    re.IGNORECASE,
-)
+IMG_TAG_RE = re.compile("<img\\b[^>]*\\bsrc\\s*=\\s*[\"\\']([^\"\\']+)[\"\\'][^>]*>", re.IGNORECASE)
 
 
 def remove_remote_html_images(text: str) -> str:
+
     def repl(match):
         src = match.group(1)
         if src.startswith(REMOTE_PREFIXES):
@@ -21,16 +19,14 @@ def remove_remote_html_images(text: str) -> str:
     return IMG_TAG_RE.sub(repl, text)
 
 
-MD_INLINE_IMG_RE = re.compile(r"!\[.*?\]\((.*?)\)", re.IGNORECASE)
-MD_REF_IMG_RE = re.compile(r"!\[.*?\]\[(.*?)\]", re.IGNORECASE)
-MD_REF_DEF_RE = re.compile(r"^\s*\[(.*?)\]:\s*(\S+)", re.MULTILINE)
-RST_IMG_RE = re.compile(
-    r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$",
-    re.MULTILINE,
-)
+MD_INLINE_IMG_RE = re.compile("!\\[.*?\\]\\((.*?)\\)", re.IGNORECASE)
+MD_REF_IMG_RE = re.compile("!\\[.*?\\]\\[(.*?)\\]", re.IGNORECASE)
+MD_REF_DEF_RE = re.compile("^\\s*\\[(.*?)\\]:\\s*(\\S+)", re.MULTILINE)
+RST_IMG_RE = re.compile("^\\s*\\.\\. \\|[^|]+\\| image:: https?://[^\\s]+.*$", re.MULTILINE)
 
 
 def remove_remote_md_images(text: str) -> str:
+
     def inline_repl(match):
         url = match.group(1)
         if url.startswith(REMOTE_PREFIXES):
@@ -81,13 +77,7 @@ def process_file(path: Path):
 
 
 def main():
-    extensions = {
-        ".html",
-        ".htm",
-        ".md",
-        ".rst",
-        ".txt",
-    }
+    extensions = {".html", ".htm", ".md", ".rst", ".txt"}
     for file in Path().rglob("*"):
         if file.is_file() and file.suffix.lower() in extensions:
             process_file(file)

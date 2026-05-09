@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import io
 import os
 import sqlite3
 import sys
 from pathlib import Path
-
 import py7zr
 from loguru import logger
 
@@ -23,24 +23,14 @@ def get_user_folder_name(default_name):
 
 
 def folder_exists_in_db(cursor, folder_name):
-    cursor.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name,),
-    )
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (folder_name,))
     return cursor.fetchone() is not None
 
 
 def create_folder_table(cursor, folder_name):
-    cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS "{folder_name}" (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
-            file_contents BLOB,
-            compressed BOOLEAN DEFAULT 0,
-            original_size INTEGER DEFAULT 0,
-            compressed_size INTEGER DEFAULT 0
-        )
-    """)
+    cursor.execute(
+        f'\n        CREATE TABLE IF NOT EXISTS "{folder_name}" (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            filename TEXT NOT NULL,\n            file_contents BLOB,\n            compressed BOOLEAN DEFAULT 0,\n            original_size INTEGER DEFAULT 0,\n            compressed_size INTEGER DEFAULT 0\n        )\n    '
+    )
 
 
 def compress_data(data_bytes):
@@ -59,12 +49,7 @@ def compress_data(data_bytes):
 
 def read_file_contents(filepath):
     try:
-        encodings = [
-            "utf-8",
-            "latin-1",
-            "cp1252",
-            "iso-8859-1",
-        ]
+        encodings = ["utf-8", "latin-1", "cp1252", "iso-8859-1"]
         get_size = Path(filepath).stat().st_size
         if get_size > 10 * 1024 * 1024:
             print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
@@ -75,39 +60,19 @@ def read_file_contents(filepath):
                     return {
                         "content": content,
                         "is_binary": False,
-                        "original_size": len(
-                            content.encode(
-                                "utf-8",
-                                errors="replace",
-                            )
-                        ),
+                        "original_size": len(content.encode("utf-8", errors="replace")),
                     }
-            except (
-                UnicodeDecodeError,
-                UnicodeError,
-            ):
+            except (UnicodeDecodeError, UnicodeError):
                 continue
         with Path(filepath).open("rb") as f:
             content = f.read()
-            return {
-                "content": content,
-                "is_binary": True,
-                "original_size": len(content),
-            }
+            return {"content": content, "is_binary": True, "original_size": len(content)}
     except PermissionError:
         error_msg = "[Permission denied - cannot read file]"
-        return {
-            "content": error_msg,
-            "is_binary": False,
-            "original_size": len(error_msg),
-        }
+        return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
     except Exception as e:
         error_msg = f"[Error reading file: {e!s}]"
-        return {
-            "content": error_msg,
-            "is_binary": False,
-            "original_size": len(error_msg),
-        }
+        return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
 
 
 def get_files_in_current_dir():
@@ -165,10 +130,7 @@ def get_files_in_current_dir():
 def insert_files(cursor, folder_name, files):
     for file_info in files:
         cursor.execute(
-            f"""
-            INSERT INTO "{folder_name}" (filename, file_contents, compressed, original_size, compressed_size)
-            VALUES (?, ?, ?, ?, ?)
-        """,
+            f'\n            INSERT INTO "{folder_name}" (filename, file_contents, compressed, original_size, compressed_size)\n            VALUES (?, ?, ?, ?, ?)\n        ',
             (
                 file_info["filename"],
                 file_info["contents"],
@@ -212,8 +174,8 @@ def main():
     else:
         insert_files(cursor, folder_name, files)
         conn.commit()
-        total_original = sum(f.get("original_size", 0) for f in files)
-        total_compressed = sum(f.get("compressed_size", 0) for f in files)
+        total_original = sum((f.get("original_size", 0) for f in files))
+        total_compressed = sum((f.get("compressed_size", 0) for f in files))
         print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
         if total_compressed > 0:
             ratio = (1 - total_compressed / total_original) * 100 if total_original > 0 else 0

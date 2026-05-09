@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz, mpf, run_command
 from termcolor import cprint
 
@@ -23,17 +23,11 @@ def process_file(fp):
         if diffsize == 0:
             cprint("[NO CHANGE]", "white")
         elif diffsize < 0:
-            ratio = ((before - after) / before) * 100
-            cprint(
-                f"[OK] + {fsz(diffsize)} {abs(ratio)}%",
-                "yellow",
-            )
+            ratio = (before - after) / before * 100
+            cprint(f"[OK] + {fsz(diffsize)} {abs(ratio)}%", "yellow")
         elif diffsize > 0:
-            ratio = ((before - after) / before) * 100
-            cprint(
-                f"[OK] - {fsz(diffsize)} {ratio}%",
-                "cyan",
-            )
+            ratio = (before - after) / before * 100
+            cprint(f"[OK] - {fsz(diffsize)} {ratio}%", "cyan")
         return True
     cprint(f"[ERROR] {err}", "magenta")
     return False

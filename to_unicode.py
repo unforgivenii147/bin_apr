@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -21,7 +21,7 @@ def convert_to_readable(filename):
             except ValueError:
                 return m.group(0)
 
-        readable_content = re.sub(r"\\x([0-9a-fA-F]{2})", replace_hex, decoded_content)
+        readable_content = re.sub("\\\\x([0-9a-fA-F]{2})", replace_hex, decoded_content)
         outfile.write_text(readable_content, encoding="utf-8")
     except FileNotFoundError:
         print(f"Error: File '{filename}' not found.")

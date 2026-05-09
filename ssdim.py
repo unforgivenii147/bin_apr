@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import csv
 import json
 import os
 import shutil
 import sys
 from pathlib import Path
-
 import ssdeep
 from loguru import logger
 
@@ -106,12 +106,7 @@ def colorize_score(score, threshold):
     return Fore.RED + str(score) + Style.RESET_ALL
 
 
-def write_matrix(
-    hashes,
-    threshold,
-    output_dir="output",
-    pretty=False,
-) -> None:
+def write_matrix(hashes, threshold, output_dir="output", pretty=False) -> None:
     Path(output_dir).mkdir(exist_ok=True, parents=True)
     files = list(hashes.keys())
     matrix_file = os.path.join(output_dir, "similarity_matrix.csv")
@@ -137,20 +132,14 @@ def write_matrix(
             for row in table[1:]:
                 colored_row = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
                 colored_table.append(colored_row)
-            print(
-                tabulate(
-                    colored_table,
-                    headers=table[0],
-                    tablefmt="grid",
-                )
-            )
+            print(tabulate(colored_table, headers=table[0], tablefmt="grid"))
         else:
             header = " | ".join(table[0])
             print(header)
             print("-" * len(header))
             for row in table[1:]:
                 formatted = [row[0]] + [colorize_score(cell, threshold) for cell in row[1:]]
-                print(" | ".join(str(x) if x else "." for x in formatted))
+                print(" | ".join((str(x) if x else "." for x in formatted)))
 
 
 def main() -> None:

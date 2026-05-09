@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import multiprocessing as mp
 import os
 import tarfile
 import zipfile
 from pathlib import Path
-
 from dh import PKG_MAPPING, STDLIB
 
 STD_LIB = STDLIB
@@ -21,14 +21,10 @@ def is_python_file(file_path):
     return file_path.suffix == ".py" or (
         not file_path.suffix
         and any(
-            line.startswith(
-                (
-                    "import ",
-                    "from ",
-                    "#!/usr/bin/env python",
-                )
+            (
+                line.startswith(("import ", "from ", "#!/usr/bin/env python"))
+                for line in Path(file_path).open(encoding="utf-8", errors="ignore")
             )
-            for line in Path(file_path).open(encoding="utf-8", errors="ignore")
         )
     )
 
@@ -37,11 +33,7 @@ def extract_compressed(file_path, extract_to) -> None:
     if file_path.suffix == ".zip":
         with zipfile.ZipFile(file_path, "r") as z:
             z.extractall(extract_to)
-    elif file_path.suffix in {
-        ".tar.gz",
-        ".tar.xz",
-        ".tar.zst",
-    }:
+    elif file_path.suffix in {".tar.gz", ".tar.xz", ".tar.zst"}:
         with tarfile.open(file_path, "r:*") as tar:
             tar.extractall(extract_to)
     elif file_path.suffix == ".whl":
@@ -60,15 +52,19 @@ def get_imports(file_path):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 module = alias.name.split(".")[0]
-                if module not in STD_LIB and not module.startswith(".") and not file_path.parent.match(f"*{module}*"):
+                if (
+                    module not in STD_LIB
+                    and (not module.startswith("."))
+                    and (not file_path.parent.match(f"*{module}*"))
+                ):
                     imports.add(MAPPING.get(module, module))
         elif isinstance(node, ast.ImportFrom):
             module = node.module.split(".")[0] if node.module else ""
             if (
                 module
                 and module not in STD_LIB
-                and not module.startswith(".")
-                and not file_path.parent.match(f"*{module}*")
+                and (not module.startswith("."))
+                and (not file_path.parent.match(f"*{module}*"))
             ):
                 imports.add(MAPPING.get(module, module))
     return imports
@@ -77,13 +73,7 @@ def get_imports(file_path):
 def process_file(file_path):
     if file_path.is_dir():
         return set()
-    if file_path.suffix in {
-        ".zip",
-        ".whl",
-        ".tar.gz",
-        ".tar.xz",
-        ".tar.zst",
-    }:
+    if file_path.suffix in {".zip", ".whl", ".tar.gz", ".tar.xz", ".tar.zst"}:
         extract_dir = file_path.parent / f"extracted_{file_path.stem}"
         extract_compressed(file_path, extract_dir)
         imports = set()
@@ -108,7 +98,7 @@ def main() -> None:
     all_imports = set().union(*results)
     requirements = sorted(all_imports & PIP_PACKAGES)
     with Path("requirements.txt").open("w", encoding="utf-8") as f:
-        f.writelines(f"{req}\n" for req in requirements)
+        f.writelines((f"{req}\n" for req in requirements))
 
 
 if __name__ == "__main__":

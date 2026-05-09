@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import os
 import sys
 from pathlib import Path
 from typing import List
-
 from loguru import logger
 
 MMAP_THRESHOLD = 50 * 1024 * 1024
@@ -35,7 +35,7 @@ def sort_by_length(lines: list[str]) -> list[str]:
 
 def write_lines(path: Path, lines: list[str]) -> None:
     with Path(path).open("wb") as f:
-        f.writelines(line.encode("utf-8") for line in lines)
+        f.writelines((line.encode("utf-8") for line in lines))
 
 
 def fsz(size: int) -> str:

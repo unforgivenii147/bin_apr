@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 import tree_sitter_python as tsp
 from loguru import logger
 from tree_sitter import Language, Parser
@@ -40,7 +40,7 @@ def extract_from_file(py_file: Path):
 
 def process_directory():
     for py_file in ROOT_DIR.rglob("*.py"):
-        if any(part.startswith(".") for part in py_file.parts):
+        if any((part.startswith(".") for part in py_file.parts)):
             continue
         if OUTPUT_DIR in py_file.parents:
             continue

@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 
 DIRS = [Path()]
-ver_pattern = re.compile(r"\?[a-zA-Z0-9_-]+=[^\"\'\s>]+", re.IGNORECASE)
+ver_pattern = re.compile("\\?[a-zA-Z0-9_-]+=[^\\\"\\'\\s>]+", re.IGNORECASE)
 
 
 def strip_ver_suffix(filename: str) -> str:

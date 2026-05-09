@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 import traceback
 from importlib import import_module
 from importlib.metadata import distributions
-
 from loguru import logger
 
 logger.add("/sdcard/allimport.log", diagnose=True)
@@ -12,7 +12,7 @@ logger.add("/sdcard/allimport.log", diagnose=True)
 def tryimport(package):
     try:
         import_module(package)
-        print(f"\u2713 {package}")
+        print(f"✓ {package}")
         return True
     except Exception:
         logger.debug(f"X {package}")
@@ -24,7 +24,7 @@ def tryallimport():
         pkn = pkg.metadata["name"]
         try:
             import_module(pkn)
-            print(f"\u2713 {pkn}")
+            print(f"✓ {pkn}")
         except Exception:
             logger.debug(f"X {pkn}")
 

@@ -1,25 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import os
 import sys
 import textwrap
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2
 
 
 def format_python_file(filepath):
-
     if not filepath.exists():
         print(f"Error: File not found at {filepath}", file=sys.stderr)
         return
     content = ""
     backup_filepath = filepath.with_name(filepath.name + ".bak")
     try:
-        with (
-            filepath.open("r", encoding="utf-8") as f_in,
-            backup_filepath.open("w", encoding="utf-8") as f_bak,
-        ):
+        with filepath.open("r", encoding="utf-8") as f_in, backup_filepath.open("w", encoding="utf-8") as f_bak:
             content = f_in.read()
             f_bak.write(content)
     except OSError as e:

@@ -1,19 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator, single_detection
 from loguru import logger
 
 CHUNK_SIZE = 2000
-ALLOWED_EXT = {
-    ".txt",
-    ".md",
-    ".csv",
-    ".json",
-    ".py",
-}
+ALLOWED_EXT = {".txt", ".md", ".csv", ".json", ".py"}
 
 
 def translator():
@@ -34,7 +28,7 @@ def translate_python_file(content: str) -> str:
     doc_delim = None
     for line in lines:
         stripped = line.strip()
-        if not in_docstring and (stripped.startswith(('"""', "'''"))):
+        if not in_docstring and stripped.startswith(('"""', "'''")):
             in_docstring = True
             doc_delim = stripped[:3]
             inside = stripped[3:]
@@ -76,11 +70,7 @@ def translate_text_file(content: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Translate zh-CNpanese → English safely.")
     parser.add_argument("input_path")
-    parser.add_argument(
-        "--lang",
-        default="zh-CN",
-        help="Source language or 'auto'",
-    )
+    parser.add_argument("--lang", default="zh-CN", help="Source language or 'auto'")
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():

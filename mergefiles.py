@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 from pathlib import Path
-
 from loguru import logger
 
 EXCLUDE_DIRS = {".git"}
@@ -46,10 +46,6 @@ if __name__ == "__main__":
     import argparse
 
     ap = argparse.ArgumentParser(description="Merge files recursively into merged.txt")
-    ap.add_argument(
-        "--path",
-        default=".",
-        help="Directory to scan",
-    )
+    ap.add_argument("--path", default=".", help="Directory to scan")
     args = ap.parse_args()
     merge_files(args.path)

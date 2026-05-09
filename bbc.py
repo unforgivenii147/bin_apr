@@ -1,14 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 from pathlib import Path
 
 L1 = "[egg_info]"
 L2 = "tag_build = "
 L3 = "tag_date = 0"
-SETUPCFG = """[egg_info]
-tag_build = 
-tag_date = 0
-"""
+SETUPCFG = "[egg_info]\ntag_build =\ntag_date = 0\n"
 
 
 def is_setupcfg(fn):
@@ -16,7 +14,7 @@ def is_setupcfg(fn):
     if content == SETUPCFG:
         return True
     lines = content.splitlines(keepends=False)
-    if lines[0] == L1 and lines[1] == L2 and lines[2] == L3:
+    if lines[0] == L1 and lines[1] == L2 and (lines[2] == L3):
         return True
     return False
 

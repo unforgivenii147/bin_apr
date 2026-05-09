@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 
+from pathlib import Path
 import htmlmin
 from dh import mpf3
 
@@ -25,7 +25,7 @@ def main() -> None:
     files = []
     cwd = Path.cwd()
     for path in cwd.rglob("*"):
-        if path.is_file() and (path.suffix in {".html", ".htm"}):
+        if path.is_file() and path.suffix in {".html", ".htm"}:
             files.append(path)
     if not files:
         print("No html files detected.")

@@ -1,16 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from collections import Counter, deque
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import get_nobinary
 from loguru import logger
 
 
 def extract_words(text):
-    return re.findall(r"[a-z]{3,}", text.lower())
+    return re.findall("[a-z]{3,}", text.lower())
 
 
 def process_file(path: Path):

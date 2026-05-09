@@ -1,28 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import re
 from pathlib import Path
-
 from loguru import logger
 
 INDENT = " " * 4
-DEF_CLASS = re.compile(r"^\s*(def|class)\s+")
-MAIN_GUARD = re.compile(r"""^\s*if\s+__name__\s*==\s*['"]__main__['"]\s*:""")
+DEF_CLASS = re.compile("^\\s*(def|class)\\s+")
+MAIN_GUARD = re.compile("^\\s*if\\s+__name__\\s*==\\s*['\"]__main__['\"]\\s*:")
 BLOCK_START = re.compile(
-    r"""
-    ^\s*
-    (
-        if\s+|
-        elif\s+|
-        else\s*:|
-        for\s+|
-        while\s+|
-        try\s*:|
-        except\s+|
-        finally\s*:|
-        with\s+
-    )
-    """,
+    "\n    ^\\s*\n    (\n        if\\s+|\n        elif\\s+|\n        else\\s*:|\n        for\\s+|\n        while\\s+|\n        try\\s*:|\n        except\\s+|\n        finally\\s*:|\n        with\\s+\n    )\n    ",
     re.VERBOSE,
 )
 
@@ -69,7 +56,7 @@ def clean_text(text: str) -> str:
             continue
         if DEF_CLASS.match(line):
             in_code = True
-        if not in_code and not is_code_line(line):
+        if not in_code and (not is_code_line(line)):
             out.append("# " + line.strip())
             continue
         stripped = line.strip()
@@ -82,15 +69,7 @@ def clean_text(text: str) -> str:
             indent_level = 1
             out.append('if __name__ == "__main__":')
             continue
-        if stripped.startswith(
-            (
-                "return",
-                "pass",
-                "break",
-                "continue",
-                "raise",
-            )
-        ):
+        if stripped.startswith(("return", "pass", "break", "continue", "raise")):
             out.append(INDENT * indent_level + stripped)
             indent_level = max(indent_level - 1, 0)
             continue
@@ -105,12 +84,9 @@ def clean_text(text: str) -> str:
 def ast_validate(code: str) -> tuple[bool, str | None]:
     try:
         ast.parse(code)
-        return True, None
+        return (True, None)
     except SyntaxError as e:
-        return (
-            False,
-            f"{e.msg} (line {e.lineno}, col {e.offset})",
-        )
+        return (False, f"{e.msg} (line {e.lineno}, col {e.offset})")
 
 
 def main():

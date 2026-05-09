@@ -1,19 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator, single_detection
 from loguru import logger
 
 CHUNK_SIZE = 2000
-ALLOWED_EXT = {
-    ".txt",
-    ".md",
-    ".csv",
-    ".json",
-    ".py",
-}
+ALLOWED_EXT = {".txt", ".md", ".csv", ".json", ".py"}
 
 
 def read_text_file(path: Path) -> str:
@@ -51,18 +45,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Translate text to English.")
     parser.add_argument("input_path")
     parser.add_argument("-g", "--game", default=None)
-    parser.add_argument(
-        "--lang",
-        default="auto",
-        help="Source lang code or 'auto'",
-    )
+    parser.add_argument("--lang", default="auto", help="Source lang code or 'auto'")
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():
-        print(
-            f"File not found: {in_path}",
-            file=sys.stderr,
-        )
+        print(f"File not found: {in_path}", file=sys.stderr)
         sys.exit(1)
     try:
         text = read_text_file(in_path)
@@ -75,18 +62,12 @@ def main() -> None:
         try:
             src_lang = detect_lang(text)
         except Exception as exc:
-            print(
-                f"Language detection error: {exc}",
-                file=sys.stderr,
-            )
+            print(f"Language detection error: {exc}", file=sys.stderr)
             sys.exit(1)
     try:
         translated = translate_chunks(chunks, src_lang)
     except Exception as exc:
-        print(
-            f"Translation error: {exc}",
-            file=sys.stderr,
-        )
+        print(f"Translation error: {exc}", file=sys.stderr)
         sys.exit(1)
     out_path = build_output_path(in_path)
     try:

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import get_files
 from loguru import logger
@@ -11,10 +11,7 @@ from tree_sitter import Language, Parser
 OUTPUT_DIR = Path("output")
 parser = Parser()
 parser.language = Language(tsp.language())
-VALID = {
-    "import_statement",
-    "import_from_statement",
-}
+VALID = {"import_statement", "import_from_statement"}
 
 
 def process_file(fp):
@@ -34,7 +31,7 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=8) as ex:
         futures = [ex.submit(process_file, f) for f in files]
-        results.extend(future.result() for future in as_completed(futures))
+        results.extend((future.result() for future in as_completed(futures)))
     for imports in results:
         if imports:
             for k in imports:

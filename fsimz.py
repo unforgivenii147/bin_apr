@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
 from collections import defaultdict
-
 from dh import get_files
 from loguru import logger
 from ppdeep import hash_from_file
@@ -24,16 +24,10 @@ def find_dups(cwd):
             except Exception as e:
                 print(f"Error processing file {path}: {e}")
                 continue
-    for (
-        file_hash,
-        paths,
-    ) in files_by_hash.items():
+    for file_hash, paths in files_by_hash.items():
         if len(paths) > 1:
             duplicate_count += len(paths) - 1
-            paths.sort(
-                key=lambda x: x.stat().st_mtime,
-                reverse=True,
-            )
+            paths.sort(key=lambda x: x.stat().st_mtime, reverse=True)
             for dup_found in paths:
                 print(os.path.relpath(dup_found))
             for filetodel in paths[1:]:
@@ -45,11 +39,7 @@ def find_dups(cwd):
                     print(f"Error deleting file {filetodel}: {e}")
         else:
             continue
-    return (
-        duplicate_count,
-        deleted_count,
-        total_deleted_size,
-    )
+    return (duplicate_count, deleted_count, total_deleted_size)
 
 
 if __name__ == "__main__":

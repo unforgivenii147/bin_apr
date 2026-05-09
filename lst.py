@@ -1,16 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import datetime
 from pathlib import Path
-
 from dh import fsz, gsz
 from termcolor import cprint
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    for path in sorted(
-        cwd.glob("*"),
-        key=lambda e: e.stat().st_mtime,
-    ):
+    for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_mtime):
         mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
         if path.is_symlink():
             sz = " symlink "

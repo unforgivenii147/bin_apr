@@ -1,26 +1,20 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 import sys
 import time
 from pathlib import Path
-
 from loguru import logger
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 TEMPDIR = Path("/data/data/com.termux/files/usr/tmp")
 DEST_DIR = Path("~/tmp/tgz").expanduser()
-ALLOWED_EXTENSIONS = (
-    ".tar.gz",
-    ".whl",
-    ".tar.xz",
-    ".zip",
-    ".tar.bz2",
-)
+ALLOWED_EXTENSIONS = (".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.bz2")
 
 
 def copy_if_match(src: Path) -> None:
-    if src.suffix in ALLOWED_EXTENSIONS or any(str(src).endswith(ext) for ext in ALLOWED_EXTENSIONS):
+    if src.suffix in ALLOWED_EXTENSIONS or any((str(src).endswith(ext) for ext in ALLOWED_EXTENSIONS)):
         try:
             DEST_DIR.mkdir(parents=True, exist_ok=True)
             dest = DEST_DIR / src.name

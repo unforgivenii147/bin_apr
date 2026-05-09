@@ -1,17 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import sys
 import tarfile
 import tempfile
 import time
 from pathlib import Path
-
 import zstandard as zstd
 from loguru import logger
 
 
 def get_dir_size(path):
-    return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
+    return sum((f.stat().st_size for f in path.rglob("*") if f.is_file()))
 
 
 def gsz(path):
@@ -45,32 +45,27 @@ def extract_tar_xz(archive_path, extract_path):
         tar.extractall(path=extract_path)
 
 
-def process_archive(
-    archive_path,
-    dry_run=False,
-    keep_original=False,
-    quiet=False,
-):
+def process_archive(archive_path, dry_run=False, keep_original=False, quiet=False):
     if not archive_path.exists():
         if not quiet:
             print(f"Error: File {archive_path} does not exist")
-        return False, 0, 0
+        return (False, 0, 0)
     archive_size = archive_path.stat().st_size
     extract_path = archive_path.parent
     archive_name = archive_path.name
     extracted_files = []
     is_tar_zst = archive_name.endswith(".tar.zst")
     is_tar_xz = archive_name.endswith(".tar.xz")
-    is_standalone_zst = archive_name.endswith(".zst") and not is_tar_zst
+    is_standalone_zst = archive_name.endswith(".zst") and (not is_tar_zst)
     if not (is_tar_zst or is_tar_xz or is_standalone_zst):
         if not quiet:
             print(f"Skipping unsupported file: {archive_path} (not .zst, .tar.zst, or .tar.xz)")
-        return False, 0, 0
+        return (False, 0, 0)
     try:
         if dry_run:
             if not quiet:
                 print(f"[DRY RUN] Would extract: {archive_path}")
-            return True, archive_size, 0
+            return (True, archive_size, 0)
         if not quiet:
             print(f"Extracting: {archive_path}")
         if is_standalone_zst:
@@ -90,7 +85,7 @@ def process_archive(
         else:
             current_time = time.time()
             for item in extract_path.rglob("*"):
-                if item.is_file() and item != archive_path and current_time - item.stat().st_ctime < 60:
+                if item.is_file() and item != archive_path and (current_time - item.stat().st_ctime < 60):
                     extracted_size += item.stat().st_size
         if not keep_original:
             archive_path.unlink()
@@ -98,11 +93,11 @@ def process_archive(
                 print(f"  ✓ Extracted and removed original: {archive_name}")
         elif not quiet:
             print(f"  ✓ Extracted (kept original): {archive_name}")
-        return True, archive_size, extracted_size
+        return (True, archive_size, extracted_size)
     except Exception as e:
         if not quiet:
             print(f"  ✗ Error processing {archive_path}: {e}")
-        return False, 0, 0
+        return (False, 0, 0)
 
 
 def find_archives(directory):
@@ -115,35 +110,19 @@ def find_archives(directory):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Extract .zst, .tar.zst, and .tar.xz archives.\n"
-        "If a filename is provided, process only that file.\n"
-        "If no argument, recursively search current directory.",
+        description="Extract .zst, .tar.zst, and .tar.xz archives.\nIf a filename is provided, process only that file.\nIf no argument, recursively search current directory.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "target",
-        nargs="?",
-        default=None,
-        help="File to extract or directory to search (default: current directory)",
+        "target", nargs="?", default=None, help="File to extract or directory to search (default: current directory)"
     )
     parser.add_argument(
-        "--dry-run",
-        "-n",
-        action="store_true",
-        help="Show what would be done without actually extracting",
+        "--dry-run", "-n", action="store_true", help="Show what would be done without actually extracting"
     )
     parser.add_argument(
-        "--keep-original",
-        "-k",
-        action="store_true",
-        help="Keep original archive files after extraction",
+        "--keep-original", "-k", action="store_true", help="Keep original archive files after extraction"
     )
-    parser.add_argument(
-        "--quiet",
-        "-q",
-        action="store_true",
-        help="Suppress progress output",
-    )
+    parser.add_argument("--quiet", "-q", action="store_true", help="Suppress progress output")
     args = parser.parse_args()
     if args.target:
         target_path = Path(args.target).resolve()
@@ -159,12 +138,7 @@ def main():
             print(f"Processing single file: {target_path}")
         parent_dir = target_path.parent
         before = get_dir_size(parent_dir)
-        success, arch_size, ext_size = process_archive(
-            target_path,
-            args.dry_run,
-            args.keep_original,
-            args.quiet,
-        )
+        success, arch_size, ext_size = process_archive(target_path, args.dry_run, args.keep_original, args.quiet)
         if not args.dry_run and success:
             after = get_dir_size(parent_dir)
             size_change = after - before
@@ -188,9 +162,9 @@ def main():
         return 0
     if not args.quiet:
         print(f"Found {len(archives)} archives to process")
-        zst_count = sum(1 for a in archives if a.suffix == ".zst" and not a.name.endswith(".tar.zst"))
-        tar_zst_count = sum(1 for a in archives if a.name.endswith(".tar.zst"))
-        tar_xz_count = sum(1 for a in archives if a.name.endswith(".tar.xz"))
+        zst_count = sum((1 for a in archives if a.suffix == ".zst" and (not a.name.endswith(".tar.zst"))))
+        tar_zst_count = sum((1 for a in archives if a.name.endswith(".tar.zst")))
+        tar_xz_count = sum((1 for a in archives if a.name.endswith(".tar.xz")))
         if zst_count:
             print(f"  - Standalone .zst: {zst_count}")
         if tar_zst_count:
@@ -203,12 +177,7 @@ def main():
     total_archive_size = 0
     total_extracted_size = 0
     for archive in archives:
-        success, arch_size, ext_size = process_archive(
-            archive,
-            args.dry_run,
-            args.keep_original,
-            args.quiet,
-        )
+        success, arch_size, ext_size = process_archive(archive, args.dry_run, args.keep_original, args.quiet)
         if success:
             processed_count += 1
             total_archive_size += arch_size

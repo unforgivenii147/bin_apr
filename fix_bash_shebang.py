@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 from pathlib import Path
 
@@ -21,7 +22,7 @@ def process_file(path):
         f.truncate()
         print(f"{path.relativeto(cwd)}")
     if "bin" in path.parts:
-        path.chmod(0o755)
+        path.chmod(493)
 
 
 if __name__ == "__main__":

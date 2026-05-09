@@ -1,23 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 from pathlib import Path
-
 from loguru import logger
 
 LOG_EXT = ".log"
 PATTERNS = [
-    r"\^\[",
-    r"\[[\dA-Z;]+m",
-    r"\[\d+[A-Z]",
-    r"\[[\dA-Z;]+",
-    r"\^M",
-    r"\(B",
-    r"\(0",
-    r"\x1b\[[0-9;]*[A-Za-z]",
-    r"\x1b\([0-9AB]",
-    r"\r",
-    r"\x0f",
-    r"\x0e",
+    "\\^\\[",
+    "\\[[\\dA-Z;]+m",
+    "\\[\\d+[A-Z]",
+    "\\[[\\dA-Z;]+",
+    "\\^M",
+    "\\(B",
+    "\\(0",
+    "\\x1b\\[[0-9;]*[A-Za-z]",
+    "\\x1b\\([0-9AB]",
+    "\\r",
+    "\\x0f",
+    "\\x0e",
 ]
 
 
@@ -25,7 +25,7 @@ def clean_line(line: str) -> str:
     cleaned = line
     for pattern in PATTERNS:
         cleaned = re.sub(pattern, "", cleaned)
-    return re.sub(r" {2,}", " ", cleaned)
+    return re.sub(" {2,}", " ", cleaned)
 
 
 def clean_file(file_path: Path) -> None:

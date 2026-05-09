@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import base64
 import sys
 from pathlib import Path
-
 from dh import get_random_name
 
 cleanup = False
@@ -67,7 +67,7 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
         print(f"Unexpected error: {e}")
     if cleanup:
         with Path(input_path).open("w", encoding="utf-8") as fo:
-            fo.writelines(f"{k}\n" for k in remained)
+            fo.writelines((f"{k}\n" for k in remained))
 
 
 if __name__ == "__main__":

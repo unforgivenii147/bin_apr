@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import mmap
 import sys
 from pathlib import Path
-
 import brotlicffi
 from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
@@ -24,14 +24,11 @@ def parallel_compress(in_path, out_path):
         if not file_size:
             return False
         chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
-        with (
-            out_path.open("wb", buffering=1024 * 1024) as fout,
-            in_path.open("rb") as fin,
-        ):
+        with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
             chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
             compressed_chunks = Parallel(n_jobs=N_JOBS, backend="loky")(
-                delayed(compress_chunk)(chunk) for chunk in chunks
+                (delayed(compress_chunk)(chunk) for chunk in chunks)
             )
             for block in compressed_chunks:
                 fout.write(len(block).to_bytes(4, "big"))
@@ -53,7 +50,7 @@ def process_file(fp):
     elif outfile.exists():
         outfile.unlink()
     after = gsz(outfile)
-    ratio = (after / before) * 100
+    ratio = after / before * 100
     cprint(f"{outfile.name}", "green", end=" | ")
     cprint(f"{ratio:.3f}", "cyan")
     del before, after, ratio

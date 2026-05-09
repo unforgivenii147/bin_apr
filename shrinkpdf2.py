@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import runcmd
 
 
@@ -16,21 +16,12 @@ def human_size(num_bytes: int) -> str:
 
 def process_file(input_path):
     if not input_path.exists():
-        print(
-            "Input file not found.",
-            file=sys.stderr,
-        )
+        print("Input file not found.", file=sys.stderr)
         sys.exit(1)
     temp_qpdf = input_path.with_name(f"temp_qpdf_{input_path.name}")
     size_before = input_path.stat().st_size
     print(f"Before : {human_size(size_before)}")
-    qpdf_cmd = [
-        "qpdf",
-        "--linearize",
-        "--object-streams=generate",
-        str(input_path),
-        str(temp_qpdf),
-    ]
+    qpdf_cmd = ["qpdf", "--linearize", "--object-streams=generate", str(input_path), str(temp_qpdf)]
     runcmd(qpdf_cmd, show_output=True)
     if temp_qpdf.exists():
         size_after = temp_qpdf.stat().st_size

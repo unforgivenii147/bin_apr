@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import multiprocessing as mp
 import os
 import sys
 from pathlib import Path
-
 import tree_sitter_python
 from loguru import logger
 from tree_sitter import Node, Parser
@@ -27,7 +27,7 @@ def is_preserved_comment(source_bytes: bytes, node: Node) -> bool:
 
 def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
     to_remove = []
-    if node.type == "comment" and not is_preserved_comment(source_bytes, node):
+    if node.type == "comment" and (not is_preserved_comment(source_bytes, node)):
         to_remove.append(node)
     if node.type == "string":
         parent = node.parent
@@ -52,29 +52,23 @@ def process_file(filepath: str) -> tuple[str, bool]:
         root = tree.root_node
         to_delete = collect_nodes_to_remove(source_bytes, root)
         if not to_delete:
-            return filepath, True
-        to_delete.sort(
-            key=lambda n: n.start_byte,
-            reverse=True,
-        )
+            return (filepath, True)
+        to_delete.sort(key=lambda n: n.start_byte, reverse=True)
         new_source = bytearray(source_bytes)
         for node in to_delete:
             del new_source[node.start_byte : node.end_byte]
         Path(filepath).write_bytes(new_source)
-        return filepath, True
+        return (filepath, True)
     except Exception as e:
-        print(
-            f"Error processing {filepath}: {e}",
-            file=sys.stderr,
-        )
-        return filepath, False
+        print(f"Error processing {filepath}: {e}", file=sys.stderr)
+        return (filepath, False)
 
 
 def main():
     py_files = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
-        py_files.extend(os.path.join(root, file) for file in files if file.endswith(".py"))
+        py_files.extend((os.path.join(root, file) for file in files if file.endswith(".py")))
     if not py_files:
         print("No Python files found.")
         return

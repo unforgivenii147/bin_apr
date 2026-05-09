@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 from collections import defaultdict
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from loguru import logger
 from tree_sitter import Language, Parser
@@ -10,10 +10,7 @@ parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
 OUT_DIR.mkdir(exist_ok=True)
-VALID = {
-    "function_definition",
-    "class_definition",
-}
+VALID = {"function_definition", "class_definition"}
 
 
 def get_node_text(src: bytes, node):
@@ -69,7 +66,7 @@ processed_files_count = 0
 folders_found = set()
 total_definitions = 0
 for py in Path().rglob("*.py"):
-    if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
+    if any((part.startswith(".") for part in py.parts)) or "site-packages" in py.parts:
         continue
     if OUT_DIR in py.parents:
         continue
@@ -81,18 +78,12 @@ for py in Path().rglob("*.py"):
             folder_path = py.parent
             relative_folder = get_relative_path(folder_path, Path())
             folders_found.add(str(relative_folder))
-            folder_definitions[relative_folder][py.name] = {
-                "definitions": definitions,
-                "path": py,
-            }
+            folder_definitions[relative_folder][py.name] = {"definitions": definitions, "path": py}
             processed_files_count += 1
             total_definitions += len(definitions)
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
-for (
-    folder,
-    files_dict,
-) in folder_definitions.items():
+for folder, files_dict in folder_definitions.items():
     if not files_dict:
         continue
     out_file = OUT_DIR / folder / "definitions.py"
@@ -112,12 +103,7 @@ for (
     content_parts.extend(("#" + "=" * 78, "# DEFINITIONS", "#" + "=" * 78, ""))
     for file_name, file_data in sorted(files_dict.items()):
         content_parts.extend(
-            (
-                f"\n# {'=' * 76}",
-                f"# File: {file_name}",
-                f"# Path: {file_data['path']}",
-                f"# {'=' * 76}\n",
-            )
+            (f"\n# {'=' * 76}", f"# File: {file_name}", f"# Path: {file_data['path']}", f"# {'=' * 76}\n")
         )
         classes = [d for d in file_data["definitions"] if d["type"] == "class"]
         functions = [d for d in file_data["definitions"] if d["type"] == "function"]
@@ -145,10 +131,9 @@ for (
                 content_parts.append(func["text"])
         content_parts.append("\n" + "#" + "=" * 78 + "\n")
     content = "\n".join(content_parts)
-    header = """#!/usr/bin/env python
-"""
+    header = "#!/usr/bin/env python\n"
     out_file.write_text(header + content)
-    total_defs_in_folder = sum(len(f["definitions"]) for f in files_dict.values())
+    total_defs_in_folder = sum((len(f["definitions"]) for f in files_dict.values()))
     print(f"✅ saved: {out_file}")
     print(f"   📊 {len(files_dict)} files, {total_defs_in_folder} definitions")
     print(f"   📁 {folder}")
@@ -158,6 +143,6 @@ print(
 if folders_found:
     print("📁 Folders:")
     for folder in sorted(folders_found):
-        def_count = sum(len(f["definitions"]) for f in folder_definitions[Path(folder)].values())
+        def_count = sum((len(f["definitions"]) for f in folder_definitions[Path(folder)].values()))
         file_count = len(folder_definitions[Path(folder)])
         print(f"   • {folder}: {file_count} files, {def_count} definitions")

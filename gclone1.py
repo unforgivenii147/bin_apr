@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-
 import requests
 from dh import runcmd
 from loguru import logger
@@ -14,20 +14,20 @@ GITHUB_TOKEN = None
 
 
 def parse_repo_url(url_or_path):
-    if "/" in url_or_path and not url_or_path.startswith("http"):
+    if "/" in url_or_path and (not url_or_path.startswith("http")):
         parts = url_or_path.strip().split("/")
         if len(parts) == 2 and parts[0] and parts[1]:
-            return parts[0], parts[1]
-        return None, None
+            return (parts[0], parts[1])
+        return (None, None)
     try:
         parsed = urlparse(url_or_path.strip())
         if parsed.netloc.lower() in {"github.com", "www.github.com"}:
             path_parts = [p for p in parsed.path.split("/") if p]
             if len(path_parts) == 2:
-                return path_parts[0], path_parts[1]
+                return (path_parts[0], path_parts[1])
     except Exception:
         pass
-    return None, None
+    return (None, None)
 
 
 def get_repo_size_mb(user, repo):
@@ -71,10 +71,7 @@ def clone_repo_shallow(user, repo):
     print(f"\n🚀 Cloning {repo_name} (shallow clone)...")
     command = ["git", "clone", repo_url, clone_path]
     try:
-        process = runcmd(
-            command,
-            show_output=True,
-        )
+        process = runcmd(command, show_output=True)
         print("✅ Successfully cloned repository.")
         print(f"   Cloned into: {clone_path}")
         return True
@@ -104,24 +101,7 @@ def process_repo(url):
     remained.append(url)
 
 
-"""
-    if repo_size is not None and repo_size > 2.0:
-        cprint(f"ℹ️ size: {repo_size} MB", "cyan")
-        confirm = input(f"clone '{user}/{repo}'? (y/N): ").strip().lower()
-        if confirm == "y" or confirm == "yes":
-            if clone_repo_shallow(user, repo):
-                print("\n🎉 Done!")
-                return
-            else:
-                print("\nScript finished with errors during cloning.")
-                return
-        else:
-            print("Aborted cloning.")
-    else:
-        print("\nCould not proceed with cloning due to previous errors.")
-        return
-    return
-"""
+'\n    if repo_size is not None and repo_size > 2.0:\n        cprint(f"ℹ️ size: {repo_size} MB", "cyan")\n        confirm = input(f"clone \'{user}/{repo}\'? (y/N): ").strip().lower()\n        if confirm == "y" or confirm == "yes":\n            if clone_repo_shallow(user, repo):\n                print("\n🎉 Done!")\n                return\n            else:\n                print("\nScript finished with errors during cloning.")\n                return\n        else:\n            print("Aborted cloning.")\n    else:\n        print("\nCould not proceed with cloning due to previous errors.")\n        return\n    return\n'
 if __name__ == "__main__":
     repo_file = Path("repos.txt")
     content = repo_file.read_text(encoding="utf-8")

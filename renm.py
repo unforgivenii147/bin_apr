@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import unique_path
 from fastwalk import walk_files
@@ -11,7 +11,7 @@ from loguru import logger
 from tqdm import tqdm
 
 DIRECTORY = "."
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def is_english(text):
@@ -24,15 +24,15 @@ translation_cache = {}
 def translate_name(name):
     base, ext = os.path.splitext(name)
     if is_english(base):
-        return name, name
+        return (name, name)
     if base in translation_cache:
-        return name, translation_cache[base] + ext
+        return (name, translation_cache[base] + ext)
     try:
         translated = GoogleTranslator(source="auto", target="en").translate(base)
         translation_cache[base] = translated
-        return name, translated + ext
+        return (name, translated + ext)
     except Exception:
-        return name, name
+        return (name, name)
 
 
 def rename_files(directory):
@@ -41,18 +41,10 @@ def rename_files(directory):
     translation_map = {}
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(translate_name, name) for name in unique_names_to_translate]
-        for future in tqdm(
-            as_completed(futures),
-            total=len(unique_names_to_translate),
-            desc="Translating filenames",
-        ):
+        for future in tqdm(as_completed(futures), total=len(unique_names_to_translate), desc="Translating filenames"):
             original, translated = future.result()
             translation_map[original] = translated
-    for fp in sorted(
-        paths,
-        key=lambda x: len(x.parts),
-        reverse=True,
-    ):
+    for fp in sorted(paths, key=lambda x: len(x.parts), reverse=True):
         if fp.name not in translation_map:
             continue
         new_name = translation_map[fp.name]

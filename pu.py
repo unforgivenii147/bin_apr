@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 from pip._internal.cli.main import main as pip_main
 
@@ -11,10 +11,7 @@ def uninstall(packages: list[str]):
     return pip_main(args)
 
 
-def display_packages(
-    packages: dict[str, str],
-    title: str = "Packages",
-):
+def display_packages(packages: dict[str, str], title: str = "Packages"):
     if not packages:
         return
     print(f"\n{title}:")

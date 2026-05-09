@@ -1,14 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from loguru import logger
 from termcolor import cprint
 
-MAINBLOCK = r'if __name__ == "__main__":'
+MAINBLOCK = 'if __name__ == "__main__":'
 MAX_QUEUE = 16
 
 
@@ -21,19 +21,7 @@ def process_file(filepath):
         print(f"{filepath.name} dont have main block")
 
 
-"""
-        initial_indent = ""
-        lines_to_write = []
-        if content_lines and not content_lines[-1].endswith("\n"):
-            lines_to_write.append("\n")
-        lines_to_write.append(f"{initial_indent}if __name__ == '__main__':\n")
-        lines_to_write.append(f"{initial_indent}    # Placeholder for main execution logic\n")
-        lines_to_write.append(f"{initial_indent}    pass\n")
-        with open(filepath, "a", encoding="utf-8") as f:
-            f.writelines(lines_to_write)
-    else:
-        print(f"__main__ block already present in: {filepath.name}")
-"""
+'\n        initial_indent = ""\n        lines_to_write = []\n        if content_lines and not content_lines[-1].endswith("\n"):\n            lines_to_write.append("\n")\n        lines_to_write.append(f"{initial_indent}if __name__ == \'__main__\':\n")\n        lines_to_write.append(f"{initial_indent}    # Placeholder for main execution logic\n")\n        lines_to_write.append(f"{initial_indent}    pass\n")\n        with open(filepath, "a", encoding="utf-8") as f:\n            f.writelines(lines_to_write)\n    else:\n        print(f"__main__ block already present in: {filepath.name}")\n'
 
 
 def main():

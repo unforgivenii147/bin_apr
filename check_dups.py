@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import ast
 import copy
 import hashlib
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-
 from dh import cprint, fsz, get_pyfiles, gsz, mpf3
 
 N_JOBS = -1
@@ -87,12 +87,7 @@ def build_decl_for_assign(node, lines):
     for name in names:
         decls.append(
             Decl(
-                kind="assign",
-                name=name,
-                lineno=node.lineno,
-                end_lineno=node.end_lineno,
-                source=source,
-                content_hash=h,
+                kind="assign", name=name, lineno=node.lineno, end_lineno=node.end_lineno, source=source, content_hash=h
             )
         )
     return decls

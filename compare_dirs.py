@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import os
 import shlex
@@ -6,7 +7,6 @@ import stat
 import sys
 from hashlib import sha256
 from pathlib import Path
-
 from dh import expand_arg
 
 CHUNK_SIZE = 32768

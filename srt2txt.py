@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
-TIMESTAMP_RE = re.compile(r"\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}")
-TAG_RE = re.compile(r"<[^>]+>|{\w+}")
+TIMESTAMP_RE = re.compile("\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}")
+TAG_RE = re.compile("<[^>]+>|{\\w+}")
 
 
 def srt_to_text(srt_path: Path) -> str:

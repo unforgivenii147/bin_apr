@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -9,7 +9,7 @@ def is_repeated_char_line(line: str) -> bool:
     stripped = line.rstrip("\n")
     if len(stripped) <= 1:
         return False
-    return all(ch == stripped[0] for ch in stripped)
+    return all((ch == stripped[0] for ch in stripped))
 
 
 def main() -> None:

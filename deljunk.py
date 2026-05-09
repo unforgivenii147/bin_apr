@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from pathlib import Path
 
@@ -11,7 +12,7 @@ def empty_it(pth) -> None:
 
 
 def remove_it(fp) -> None:
-    if fp.exists() and not fp.is_dir():
+    if fp.exists() and (not fp.is_dir()):
         fp.unlink()
 
 
@@ -27,7 +28,7 @@ def main():
         if path.name in {".travis.yml", ".gitkeep", ".dirinfo", ".pyformat_cache.json", "simz.json"}:
             path.unlink()
             continue
-        if any(path.name.lower() == junk for junk in junk_files) and path.exists():
+        if any((path.name.lower() == junk for junk in junk_files)) and path.exists():
             if RMIT:
                 remove_it(path)
                 print(path.relative_to(cwd))

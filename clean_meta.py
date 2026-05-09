@@ -1,13 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from dh import fsz, get_files, gsz
 from loguru import logger
 
 blank_line = "\n"
-IMAGE_RE = re.compile(r"^\s*(\.\.\s+image::|:target:|:alt:)", re.IGNORECASE)
+IMAGE_RE = re.compile("^\\s*(\\.\\.\\s+image::|:target:|:alt:)", re.IGNORECASE)
 
 
 def process_file(path: Path):
@@ -17,7 +17,7 @@ def process_file(path: Path):
     except Exception as e:
         print(f"⚠️  Skipping {path}: {e}")
         return
-    lines = content.splitlines(keepends=True)  # ke modified_lines = []
+    lines = content.splitlines(keepends=True)
     replaced_count = 0
     for line in lines:
         stripped = line.rstrip("\r\n")
@@ -64,15 +64,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = (
-        [Path(f) for f in args]
-        if args
-        else get_files(
-            cwd,
-            recursive=True,
-            extensions=[".metadata", ".md"],
-        )
-    )
+    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".metadata", ".md"])
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)

@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from multiprocessing import Process, Queue, cpu_count
 from pathlib import Path
-
 import cv2
 import pytesseract
 from PIL import Image
@@ -18,31 +18,15 @@ def ocr_worker(q_in: Queue, q_out: Queue):
         if item is None:
             break
         frame_id, frame = item
-        frame = cv2.resize(
-            frame,
-            None,
-            fx=1.5,
-            fy=1.5,
-            interpolation=cv2.INTER_CUBIC,
-        )
+        frame = cv2.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = 255 - gray
-        text = pytesseract.image_to_string(
-            Image.fromarray(gray),
-            lang="eng",
-            config="--oem 3 --psm 6",
-        )
+        text = pytesseract.image_to_string(Image.fromarray(gray), lang="eng", config="--oem 3 --psm 6")
         if text and len(text.strip()) > 5:
-            cprint(
-                f"frame {frame_id} --> {text}",
-                "cyan",
-            )
+            cprint(f"frame {frame_id} --> {text}", "cyan")
             txtfile.open("a", encoding="utf-8").write(text + "\n")
         else:
-            cprint(
-                f"frame {frame_id} --> no text",
-                "blue",
-            )
+            cprint(f"frame {frame_id} --> no text", "blue")
         q_out.put((frame_id, text))
 
 

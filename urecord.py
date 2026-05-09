@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import argparse
 import csv
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -31,11 +31,7 @@ def update_record_file(record_path):
             file_path = row[0] if row else ""
             if (
                 file_path.endswith(".pyc")
-                or file_path
-                in {
-                    "direct_url.json",
-                    "INSTALLER",
-                }
+                or file_path in {"direct_url.json", "INSTALLER"}
                 or file_path.startswith("LICENSE")
             ):
                 continue
@@ -48,10 +44,7 @@ def update_record_file(record_path):
         print(f"  Updated: {record_path} (removed {original_count - len(filtered_lines)} entries)")
         return True
     except Exception as e:
-        print(
-            f"  Error processing {record_path}: {e}",
-            file=sys.stderr,
-        )
+        print(f"  Error processing {record_path}: {e}", file=sys.stderr)
         return False
 
 
@@ -66,7 +59,7 @@ def scan_and_update(site_packages_dirs):
         for path in Path(site_dir).rglob("*"):
             if path.name == "RECORD" and update_record_file(path):
                 total_updated += 1
-    return total_files, total_updated
+    return (total_files, total_updated)
 
 
 def main():
@@ -79,19 +72,11 @@ def main():
         action="append",
         help="Specific site-packages directory to scan (can be used multiple times)",
     )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Print more detailed information",
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Print more detailed information")
     args = parser.parse_args()
     site_dirs = args.site_dir or find_site_packages()
     if not site_dirs:
-        print(
-            "Error: Could not find site-packages directory",
-            file=sys.stderr,
-        )
+        print("Error: Could not find site-packages directory", file=sys.stderr)
         sys.exit(1)
     print(f"Python version: {sys.version}")
     print(f"Site packages directories: {', '.join(site_dirs)}")

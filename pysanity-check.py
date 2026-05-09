@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import importlib
 import subprocess
 import sys
-
 import pkg_resources
 from loguru import logger
 
@@ -14,32 +14,22 @@ def get_installed_python_packages() -> list[tuple[str, str]]:
 def check_package_importable(package_name: str) -> tuple[bool, str]:
     try:
         importlib.import_module(package_name)
-        return True, "OK"
+        return (True, "OK")
     except ImportError as e:
-        return False, f"ImportError: {e}"
+        return (False, f"ImportError: {e}")
     except Exception as e:
-        return False, f"Unexpected error: {e}"
+        return (False, f"Unexpected error: {e}")
 
 
 def get_latest_version(package_name: str) -> str:
     try:
         result = subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                f"{package_name}==",
-                "--dry-run",
-            ],
+            [sys.executable, "-m", "pip", "install", f"{package_name}==", "--dry-run"],
             capture_output=True,
             text=True,
             check=True,
         )
-        match = re.search(
-            r"would be installed \(([^)]+)\)",
-            result.stdout,
-        )
+        match = re.search("would be installed \\(([^)]+)\\)", result.stdout)
         if match:
             return match.group(1)
     except subprocess.CalledProcessError:
@@ -62,24 +52,11 @@ def main():
     outdated_pkgs = []
     for pkg_name, pkg_version in installed_pkgs:
         latest_version = get_latest_version(pkg_name)
-        if latest_version not in {
-            "Unknown",
-            pkg_version,
-        }:
-            outdated_pkgs.append(
-                (
-                    pkg_name,
-                    pkg_version,
-                    latest_version,
-                )
-            )
+        if latest_version not in {"Unknown", pkg_version}:
+            outdated_pkgs.append((pkg_name, pkg_version, latest_version))
     if outdated_pkgs:
         print("Outdated packages found:")
-        for (
-            pkg_name,
-            pkg_version,
-            latest_version,
-        ) in outdated_pkgs:
+        for pkg_name, pkg_version, latest_version in outdated_pkgs:
             print(f"- {pkg_name}: {pkg_version} (latest: {latest_version})")
     else:
         print("All packages are up to date.")

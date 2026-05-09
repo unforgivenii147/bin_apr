@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import sys
 from collections import deque
 from collections.abc import Callable, Iterable
@@ -31,10 +32,7 @@ def fsz(sz: float) -> str:
 
 
 def get_files(
-    path: str | Path,
-    include_hidden: bool = True,
-    recursive: bool = True,
-    extensions: list[str] | None = None,
+    path: str | Path, include_hidden: bool = True, recursive: bool = True, extensions: list[str] | None = None
 ) -> list[Path]:
     path = Path(path)
     out = []
@@ -52,7 +50,7 @@ def get_files(
                             if name not in SKIP_DIRS:
                                 stack.append(Path(entry.path))
                             continue
-                        if extensions is not None and not any(entry.name.endswith(ext) for ext in extensions):
+                        if extensions is not None and (not any((entry.name.endswith(ext) for ext in extensions))):
                             continue
                         out.append(Path(entry.path))
             except (PermissionError, FileNotFoundError):
@@ -108,14 +106,9 @@ def runcmd(
     try:
         if run_silently:
             result = subprocess_run(cmd, stdout=subprocess_DEVNULL, stderr=subprocess_DEVNULL, timeout=timeout)
-            return result.returncode, "", ""
-        result = subprocess_run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-        stdout, stderr = result.stdout, result.stderr
+            return (result.returncode, "", "")
+        result = subprocess_run(cmd, capture_output=True, text=True, timeout=timeout)
+        stdout, stderr = (result.stdout, result.stderr)
         if show_output:
             if stdout:
                 sys.stdout.write(stdout)
@@ -123,27 +116,27 @@ def runcmd(
             if stderr:
                 sys.stderr.write(stderr)
                 sys.stderr.flush()
-        return result.returncode, stdout, stderr
+        return (result.returncode, stdout, stderr)
     except FileNotFoundError:
         msg = f"Command not found: '{cmd[0]}'"
-        if show_output and not run_silently:
+        if show_output and (not run_silently):
             print(msg, file=sys.stderr)
-        return 127, "", msg
+        return (127, "", msg)
     except PermissionError:
         msg = f"Permission denied: '{cmd[0]}'"
-        if show_output and not run_silently:
+        if show_output and (not run_silently):
             print(msg, file=sys.stderr)
-        return 126, "", msg
+        return (126, "", msg)
     except subprocess_TimeoutExpired:
         msg = f"Command timed out after {timeout}s: {' '.join(cmd)}"
-        if show_output and not run_silently:
+        if show_output and (not run_silently):
             print(msg, file=sys.stderr)
-        return 124, "", msg
+        return (124, "", msg)
     except Exception as e:
         msg = f"Unexpected error running '{cmd[0]}': {e}"
-        if show_output and not run_silently:
+        if show_output and (not run_silently):
             print(msg, file=sys.stderr)
-        return 1, "", msg
+        return (1, "", msg)
 
 
 def process_file(fp):
@@ -154,30 +147,16 @@ def process_file(fp):
         after = fp.stat().st_size
         diffsize = before - after
         if diffsize:
-            ratio = ((before - after) / before) * 100
+            ratio = (before - after) / before * 100
         if not diffsize:
             cprint("[NO CHANGE] ", "green", end="")
             cprint(f"{fp.name}", "white")
         elif diffsize < 0:
-            cprint(
-                f"[OK] {fp.name} ",
-                "white",
-                end="",
-            )
-            cprint(
-                f" + {fsz(diffsize)}",
-                "green",
-            )
+            cprint(f"[OK] {fp.name} ", "white", end="")
+            cprint(f" + {fsz(diffsize)}", "green")
         elif diffsize > 0:
-            cprint(
-                f"[OK] {fp.name} ",
-                "white",
-                end="",
-            )
-            cprint(
-                f" - {fsz(diffsize)} {ratio:.1f}%",
-                "cyan",
-            )
+            cprint(f"[OK] {fp.name} ", "white", end="")
+            cprint(f" - {fsz(diffsize)} {ratio:.1f}%", "cyan")
         return True
     cprint(f"[ERROR] {fp.name}", "red")
     return False

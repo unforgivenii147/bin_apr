@@ -1,19 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import re
 import sys
 from pathlib import Path
-
 from loguru import logger
 
 
 class RegexCommentRemover:
     def __init__(self) -> None:
         self.pattern = re.compile(
-            r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-            re.DOTALL | re.MULTILINE,
+            "//.*?$|/\\*.*?\\*/|\\'(?:\\\\.|[^\\\\\\'])*\\'|\"(?:\\\\.|[^\\\\\"])*\"", re.DOTALL | re.MULTILINE
         )
 
     def remove_comments(self, source: str):
+
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):
@@ -24,7 +24,7 @@ class RegexCommentRemover:
         comment_count = source.count("//") + source.count("/*")
         result_count = result.count("//") + result.count("/*")
         removed = comment_count - result_count
-        return result, removed
+        return (result, removed)
 
 
 def process_file(file_path, remover):
@@ -45,11 +45,7 @@ def process_file(file_path, remover):
         try:
             Path(file_path).write_text(result, encoding="utf-8")
             print(f"[OK] {file_path.name}: ~{comments} comment markers removed")
-            return (
-                "changed",
-                file_path,
-                comments,
-            )
+            return ("changed", file_path, comments)
         except Exception as e:
             print(f"[ERROR] {file_path.name} write: {e}")
             return ("error", file_path, comments)
@@ -63,36 +59,24 @@ if __name__ == "__main__":
     files = [
         p
         for p in dir_path.rglob("*")
-        if p.suffix
-        in {
-            ".c",
-            ".cpp",
-            ".cc",
-            ".cxx",
-            ".h",
-            ".hpp",
-            ".hxx",
-            ".C",
-            ".H",
-        }
-        and p.is_file()
+        if p.suffix in {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".C", ".H"} and p.is_file()
     ]
     if not files:
         print("No C/C++ files found")
         sys.exit(0)
     print(f"Found {len(files)} C/C++ files")
-    before = sum(f.stat().st_size for f in files)
+    before = sum((f.stat().st_size for f in files))
     remover = RegexCommentRemover()
     results = []
     for i, fp in enumerate(files, 1):
         print(f"[{i}/{len(files)}] Processing {fp.name}...")
         result = process_file(fp, remover)
         results.append(result)
-    after = sum(f.stat().st_size for f in files if f.exists())
-    changed = sum(1 for r in results if r[0] == "changed")
+    after = sum((f.stat().st_size for f in files if f.exists()))
+    changed = sum((1 for r in results if r[0] == "changed"))
     errors = [r for r in results if r[0] == "error"]
-    nochg = sum(1 for r in results if r[0] == "nochange")
-    total_comments = sum(r[2] for r in results if r[0] == "changed")
+    nochg = sum((1 for r in results if r[0] == "nochange"))
+    total_comments = sum((r[2] for r in results if r[0] == "changed"))
 
     def fsz(size):
         for unit in ["B", "KB", "MB", "GB"]:

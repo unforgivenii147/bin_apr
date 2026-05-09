@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import os
 import re
 from pathlib import Path
-
 from loguru import logger
 
 OUTPUT_DIR = Path("output")
@@ -34,7 +34,7 @@ def extract_code_snippets_with_details(markdown_content):
             else:
                 in_code_block = True
                 start_line_num = i + 1
-                match = re.match(r"```(\w*)", line.strip())
+                match = re.match("```(\\w*)", line.strip())
                 if match and match.group(1):
                     language = match.group(1).lower()
                 else:

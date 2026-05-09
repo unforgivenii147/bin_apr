@@ -1,10 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import multiprocessing
 import os
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import runcmd
 
 SEARCH_DIR = Path.cwd()
@@ -22,7 +22,7 @@ def check_app():
 
 def convert_ttf_to_woff2(ttf_path: Path) -> tuple[str, bool, str]:
     if not ttf_path.is_file():
-        return str(ttf_path), False, "Path is not a file."
+        return (str(ttf_path), False, "Path is not a file.")
     success = False
     message = ""
     woff2_path = ttf_path.with_suffix(".woff2")
@@ -55,7 +55,7 @@ def convert_ttf_to_woff2(ttf_path: Path) -> tuple[str, bool, str]:
         message += f"\nStdout: {e.stdout.strip()}"
     except Exception as e:
         message = f"An unexpected error occurred for {ttf_path.name}: {e}"
-    return str(ttf_path), success, message
+    return (str(ttf_path), success, message)
 
 
 def find_ttf_files(directory: str) -> list[Path]:

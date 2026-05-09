@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import shutil
 from pathlib import Path
-
 import dh
 from loguru import logger
 from PIL import Image
@@ -16,11 +16,7 @@ OUT_PREFIX = "group_"
 def compute_hashes(path: Path):
     try:
         with Image.open(path) as img:
-            return {
-                "phash": dh.phash(img),
-                "dhash": dh.dhash(img),
-                "ahash": dh.average_hash(img),
-            }
+            return {"phash": dh.phash(img), "dhash": dh.dhash(img), "ahash": dh.average_hash(img)}
     except Exception as e:
         print(f"[SKIP] {path.name}: {e}")
         return None

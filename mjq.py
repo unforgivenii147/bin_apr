@@ -1,55 +1,34 @@
 #!/data/data/com.termux/files/usr/bin/python
+
 import contextlib
 import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
-
 from loguru import logger
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 
 
 def should_skip(path: Path) -> bool:
-    return any(part in EXCLUDE_DIRS for part in path.parts)
+    return any((part in EXCLUDE_DIRS for part in path.parts))
 
 
 def minify_with_jq(path: Path):
     tmp_path = path.with_suffix(path.suffix + ".tmp")
     try:
         size_before = path.stat().st_size
-        result = subprocess.run(
-            ["jq", "-c", ".", str(path)],
-            capture_output=True,
-        )
+        result = subprocess.run(["jq", "-c", ".", str(path)], capture_output=True)
         if result.returncode != 0:
-            return (
-                str(path),
-                False,
-                0,
-                0,
-                result.stderr.decode().strip(),
-            )
+            return (str(path), False, 0, 0, result.stderr.decode().strip())
         minified_bytes = result.stdout.strip()
         size_after = len(minified_bytes)
         if size_before == size_after:
-            return (
-                str(path),
-                False,
-                size_before,
-                size_after,
-                None,
-            )
+            return (str(path), False, size_before, size_after, None)
         Path(tmp_path).write_bytes(minified_bytes)
         Path(tmp_path).replace(path)
-        return (
-            str(path),
-            True,
-            size_before,
-            size_after,
-            None,
-        )
+        return (str(path), True, size_before, size_after, None)
     except Exception as e:
-        return str(path), False, 0, 0, str(e)
+        return (str(path), False, 0, 0, str(e))
     finally:
         if tmp_path.exists():
             with contextlib.suppress(Exception):
@@ -58,7 +37,7 @@ def minify_with_jq(path: Path):
 
 def collect_json_files(root: Path):
     for path in root.rglob("*.json"):
-        if path.is_file() and not should_skip(path):
+        if path.is_file() and (not should_skip(path)):
             yield path
 
 
@@ -83,13 +62,7 @@ def main():
     total_before = 0
     total_after = 0
     with Pool(processes=workers) as pool:
-        for (
-            filepath,
-            changed,
-            before,
-            after,
-            err,
-        ) in pool.imap_unordered(minify_with_jq, files):
+        for filepath, changed, before, after, err in pool.imap_unordered(minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")
                 errors += 1
@@ -100,7 +73,7 @@ def main():
                 print(f"[OK] {filepath}")
                 modified += 1
     reduced = total_before - total_after
-    percent = (reduced / total_before * 100) if total_before else 0
+    percent = reduced / total_before * 100 if total_before else 0
     print("\n--- Summary ---")
     print(f"Total files     : {len(files)}")
     print(f"Modified        : {modified}")

@@ -8,3 +8,4 @@ credential.json
 *.txt
 *.json
 *.toml
+*.pyc

@@ -2,11 +2,9 @@
 import sys
 from pathlib import Path
 
-from fastwalk import walk_files
-from loguru import logger
-
 
 def main() -> None:
+    cwd = Path.cwd()
     ext1 = input("ext 1 :").strip()
     ext2 = input("ext 2 :").strip()
     choice = input("remove which one: 1 or 2: ").strip()
@@ -15,8 +13,7 @@ def main() -> None:
     if not ext2.startswith("."):
         ext2 = "." + ext2
     todel = ext1 if choice == "1" else ext2
-    for pth in walk_files("."):
-        path = Path(pth)
+    for path in cwd.rglob(f"*{ext1}"):
         if path.is_file() and path.suffix == ext1:
             twin = path.with_suffix(ext2)
             if twin.exists():

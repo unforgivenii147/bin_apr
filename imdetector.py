@@ -2,6 +2,7 @@
 import ast
 import os
 from pathlib import Path
+
 from loguru import logger
 
 OUTPUT_FILE = "found.txt"

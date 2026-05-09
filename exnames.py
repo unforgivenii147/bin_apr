@@ -2,6 +2,7 @@
 import re
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -79,7 +80,7 @@ def find_names_in_files(names_db_path="names.txt"):
 
 
 if __name__ == "__main__":
-    names_database_path = "/sdcard/names.txt"
+    names_database_path = "/sdcard/data/male_names"
     if len(sys.argv) > 1:
         names_database_path = sys.argv[1]
     find_names_in_files(names_database_path)

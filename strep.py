@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
-from dh import runcmd, fsz, get_files, mpf3
 from pathlib import Path
+
+from dh import fsz, get_files, mpf3, runcmd
 
 
 def process_file(fp):

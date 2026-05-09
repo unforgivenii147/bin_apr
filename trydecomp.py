@@ -2,12 +2,13 @@
 import bz2
 import gzip
 import lzma
-from pathlib import Path
 import pickle
 import sys
 import tarfile
 import zipfile
 import zlib
+from pathlib import Path
+
 from loguru import logger
 
 try:

@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
+
 import ssdeep
 from loguru import logger
 

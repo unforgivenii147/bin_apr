@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
+from dh import fsz, gsz, mpf3, run_command
 from fastwalk import walk_files
 from loguru import logger
-from dh import fsz, gsz, mpf3, run_command
 
 
 def process_file(fp):

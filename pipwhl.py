@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from urllib.parse import urlparse
+
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger

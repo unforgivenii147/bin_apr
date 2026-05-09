@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import argparse
 import operator
 import os
 import sys
 from collections import defaultdict
 from pathlib import Path
-import argparse
+
 import matplotlib.pyplot as plt
 
 

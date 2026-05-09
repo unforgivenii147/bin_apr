@@ -4,6 +4,7 @@ import hashlib
 import os
 import re
 from pathlib import Path
+
 from loguru import logger
 
 BASE64_IMG_REGEX = re.compile(r"data:image/(?P<ext>[a-zA-Z0-9+]+);base64,(?P<data>[A-Za-z0-9+/=\n\r]+)")

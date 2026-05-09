@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import is_binary
+
+from dh import get_files, is_binary, run_command
 from pbar import Pbar
-from dh import get_files, run_command
 
 cwd = Path.cwd()
 outfile = cwd / "all_strings.txt"

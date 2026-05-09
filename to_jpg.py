@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import argparse
+import sys
 from pathlib import Path
+
 from dh import fsz, gsz, is_image, mpf3, unique_path
 from loguru import logger
 

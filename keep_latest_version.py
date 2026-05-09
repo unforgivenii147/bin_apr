@@ -3,8 +3,9 @@ import operator
 import os
 import re
 from pathlib import Path
-from packaging.version import Version
+
 from dh import get_files
+from packaging.version import Version
 
 
 def cdeb(fp):

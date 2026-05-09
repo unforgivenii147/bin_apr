@@ -16,7 +16,7 @@ def remove_it(fp) -> None:
 
 
 def load_junk():
-    with Path("/sdcard/junk").open(encoding="utf-8") as f:
+    with Path("/sdcard/data/junk").open(encoding="utf-8") as f:
         return [line.strip().lower() for line in f if line.strip()]
 
 

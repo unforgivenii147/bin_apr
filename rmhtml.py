@@ -4,8 +4,9 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-from termcolor import cprint
+
 from dh import fsz, get_files, gsz, mpf3
+from termcolor import cprint
 
 MAX_QUEUE = 16
 

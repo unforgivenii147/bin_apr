@@ -4,24 +4,26 @@ import os
 import sys
 import textwrap
 from pathlib import Path
+
 from dh import DOC_TH1, DOC_TH2
-from loguru import logger
 
 
 def format_python_file(filepath):
-    if not Path(filepath).exists():
-        logger.info(f"Error: File not found at {filepath}", file=sys.stderr)
+
+    if not filepath.exists():
+        print(f"Error: File not found at {filepath}", file=sys.stderr)
         return
-    backup_filepath = filepath + ".bak"
+    content=""
+    backup_filepath = filepath.with_name(filepath.name + ".bak")
     try:
         with (
-            Path(filepath).open("r", encoding="utf-8") as f_in,
-            Path(backup_filepath).open("w", encoding="utf-8") as f_bak,
+            filepath.open("r", encoding="utf-8") as f_in,
+            backup_filepath.open("w", encoding="utf-8") as f_bak,
         ):
             content = f_in.read()
             f_bak.write(content)
     except OSError as e:
-        logger.info(f"Error creating backup file {backup_filepath}: {e}", file=sys.stderr)
+        print(f"Error creating backup file {backup_filepath.name}: {e}", file=sys.stderr)
         return
     formatted_lines = []
     lines = content.splitlines()
@@ -106,23 +108,23 @@ def format_python_file(filepath):
         ast.parse(final_formatted_content)
         try:
             Path(filepath).write_text(final_formatted_content, encoding="utf-8")
-            logger.info(f"Successfully formatted {filepath}. Backup created at {backup_filepath}")
+            print(f"Successfully formatted {filepath}. Backup created at {backup_filepath}")
         except OSError as e:
-            logger.info(f"Error writing formatted content to {filepath}: {e}", file=sys.stderr)
+            print(f"Error writing formatted content to {filepath}: {e}", file=sys.stderr)
     except SyntaxError as e:
         temp_file = Path("temporary.py")
         temp_file.write_text(final_formatted_content, encoding="utf-8")
-        logger.info(
+        print(
             f"Error: Formatted code is not parsable by AST. Aborting write operation for {filepath}.", file=sys.stderr
         )
-        logger.info(f"AST Syntax Error: {e}", file=sys.stderr)
+        print(f"AST Syntax Error: {e}", file=sys.stderr)
         Path(backup_filepath).replace(filepath)
-        logger.info(f"Restored {filepath} from backup.")
+        print(f"Restored {filepath} from backup.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        logger.info("Usage: python format_python.py <file_path>")
+        print("Usage: python format_python.py <file_path>")
         sys.exit(1)
-    file_to_format = sys.argv[1]
+    file_to_format = Path(sys.argv[1])
     format_python_file(file_to_format)

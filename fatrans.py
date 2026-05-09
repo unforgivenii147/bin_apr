@@ -5,6 +5,7 @@ import readline
 import sys
 from difflib import get_close_matches
 from pathlib import Path
+
 from loguru import logger
 
 DICT_FILE = "/sdcard/isaac/dic.json"

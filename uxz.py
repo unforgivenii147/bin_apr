@@ -4,9 +4,10 @@ import sys
 import tarfile
 import tempfile
 from pathlib import Path
+
 import lzma_mt
-from loguru import logger
 from dh import get_files
+from loguru import logger
 
 
 def atomic_write(data: bytes, final_path: Path) -> bool:

@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 import tree_sitter_python as tsp
+from dh import get_pyfiles
 from loguru import logger
 from tree_sitter import Language, Parser
-from dh import get_pyfiles
 
 PY_LANGUAGE = Language(tsp.language())
 parser = Parser(PY_LANGUAGE)

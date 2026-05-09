@@ -2,9 +2,10 @@
 import subprocess
 import sys
 from pathlib import Path
+
+from dh import fsz, get_files, gsz, mpf3
 from loguru import logger
 from termcolor import cprint
-from dh import fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
 EXT = [

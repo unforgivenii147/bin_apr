@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import json
-from pathlib import Path
 import re
 import time
+from pathlib import Path
+
 import requests
 from dh import get_installed_packages
 from loguru import logger

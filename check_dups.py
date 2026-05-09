@@ -5,7 +5,8 @@ import hashlib
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from dh import gsz, get_pyfiles, fsz, mpf3, cprint
+
+from dh import cprint, fsz, get_pyfiles, gsz, mpf3
 
 N_JOBS = -1
 

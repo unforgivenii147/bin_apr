@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import contextlib
 import os
-from pathlib import Path
 from io import BytesIO
+from pathlib import Path
+
 import pycurl
 from loguru import logger
 

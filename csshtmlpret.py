@@ -9,6 +9,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import getoutput
 from time import sleep
+
 from loguru import logger
 
 try:

@@ -2,6 +2,7 @@
 import re
 from pathlib import Path
 from urllib.parse import urlparse
+
 from loguru import logger
 
 INPUT_FILE = Path("urls.txt")

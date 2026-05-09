@@ -5,6 +5,7 @@ import re
 import sys
 from collections.abc import Iterable
 from pathlib import Path
+
 from dh import get_nobinary
 from loguru import logger
 

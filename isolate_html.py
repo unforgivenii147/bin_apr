@@ -4,6 +4,7 @@ import os
 import re
 import sys
 from pathlib import Path
+
 from bs4 import BeautifulSoup
 from loguru import logger
 

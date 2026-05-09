@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import mmap
-from pathlib import Path
+import sys
 from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
 THRESHOLD = 1024 * 1024
 

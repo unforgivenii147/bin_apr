@@ -1,13 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
-import sys
-import time
+
 import argparse
 import shutil
+import sys
+import time
 import traceback
 from pathlib import Path
-from watchdog.observers import Observer
+
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 
 def parse_csv_exts(s: str | None) -> set[str] | None:

@@ -2,8 +2,9 @@
 import re
 import sys
 from pathlib import Path
-from loguru import logger
+
 from dh import fsz, get_files, gsz
+from loguru import logger
 
 blank_line = "\n"
 IMAGE_RE = re.compile(r"^\s*(\.\.\s+image::|:target:|:alt:)", re.IGNORECASE)

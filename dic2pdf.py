@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
-from weasyprint import HTML, CSS
+
+from weasyprint import CSS, HTML
 
 # --------------------------------------------------------
 # CONFIG

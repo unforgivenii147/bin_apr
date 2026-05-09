@@ -4,6 +4,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
 from loguru import logger
 from termcolor import cprint
 

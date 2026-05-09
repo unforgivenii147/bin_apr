@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import io
 import os
-from pathlib import Path
 import re
 import tokenize
+from pathlib import Path
+
 from loguru import logger
 
 

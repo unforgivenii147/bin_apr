@@ -3,6 +3,7 @@ import csv
 import os
 import site
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -42,7 +43,7 @@ def get_pure():
         if ispure:
             logger.info(ispure)
             purz.append(ispure)
-    with Path("/sdcard/okpure").open("w", encoding="utf-8") as f:
+    with Path("/sdcard/data/pure").open("w", encoding="utf-8") as f:
         f.writelines(f"{k}\n" for k in purz)
     logger.info(len(purz))
 

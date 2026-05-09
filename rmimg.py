@@ -3,10 +3,11 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 from bs4 import BeautifulSoup
+from dh import fsz, get_files, gsz
 from loguru import logger
 from termcolor import cprint
-from dh import fsz, get_files, gsz
 
 
 def process_file(file_path: Path) -> None:

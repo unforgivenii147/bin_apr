@@ -2,11 +2,12 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
+from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
 from loguru import logger
 from termcolor import cprint
-from dh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32 * 1024 * 1024
 QUALITY = 5

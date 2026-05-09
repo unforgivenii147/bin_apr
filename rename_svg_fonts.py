@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-import re
-from pathlib import Path
 import os
+import re
+import sys
+from pathlib import Path
 
 
 def extract_font_id(svg_text):

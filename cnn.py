@@ -3,6 +3,7 @@ import os
 import shutil
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+
 from loguru import logger
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]

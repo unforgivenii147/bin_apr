@@ -4,6 +4,7 @@ import sys
 from collections import Counter, deque
 from multiprocessing import Pool
 from pathlib import Path
+
 from dh import get_nobinary
 from loguru import logger
 

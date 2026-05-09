@@ -1,38 +1,36 @@
 #!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
+
 import htmlmin
-from dh import mpf
-from fastwalk import walk_files
-from loguru import logger
+from dh import mpf3
 
 
 def process_file(file: Path) -> bool:
     try:
         orig = file.read_text(encoding="utf-8")
-        logger.info(len(orig))
+        print(len(orig))
         code = orig
         code = htmlmin.minify(orig, remove_comments=True)
-        logger.info(len(code))
+        print(len(code))
         if len(code) != len(orig):
             Path(file).write_text(code, encoding="utf-8")
-            logger.info(f"[OK] {file.name}")
+            print(f"[OK] {file.name}")
             return True
     except Exception:
-        logger.info(f"[ERR] {file.name}")
+        print(f"[ERR] {file.name}")
         return False
 
 
 def main() -> None:
     files = []
-    dir = Path().cwd().resolve()
-    for pth in walk_files(str(dir)):
-        path = Path(pth)
+    cwd = Path.cwd()
+    for path in cwd.rglob("*"):
         if path.is_file() and (path.suffix in {".html", ".htm"}):
             files.append(path)
     if not files:
-        logger.info("No html files detected.")
+        print("No html files detected.")
         return
-    mpf(process_file, files)
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

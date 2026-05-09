@@ -4,8 +4,9 @@ import os
 import sys
 from pathlib import Path
 from runpy import run_module
-from rapidfuzz import fuzz
+
 from pip._internal.cli.main import main as pip_main
+from rapidfuzz import fuzz
 
 whl_dir = "/sdcard/whl"
 cwd = Path(whl_dir)

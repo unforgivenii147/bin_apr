@@ -2,6 +2,7 @@
 import subprocess
 import tempfile
 from pathlib import Path
+
 from loguru import logger
 
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"

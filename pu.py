@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from loguru import logger
 from pip._internal.cli.main import main as pip_main
 
@@ -30,7 +31,7 @@ def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, 
 
 
 def get_pkgs():
-    pkgfile = Path("/sdcard/pip.freeze")
+    pkgfile = Path("/sdcard/data/pip.freeze")
     pkgfile_content = pkgfile.read_text(encoding="utf-8")
     packages = {}
     for line in pkgfile_content.splitlines():

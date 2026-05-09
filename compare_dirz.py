@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import hashlib
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def file_hash(path, block_size=65536):

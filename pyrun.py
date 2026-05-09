@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import io
 import os
-from pathlib import Path
 import runpy
 from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 
 
 def find_python_files(root_dir="."):

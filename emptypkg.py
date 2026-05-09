@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import csv
-import sysconfig
-from pathlib import Path
 import os
 import sys
+import sysconfig
+from pathlib import Path
 
 
 def is_empty_package(dist_info_path) -> bool:

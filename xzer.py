@@ -4,6 +4,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+
 import lzma_mt
 
 _executor = asyncio.Semaphore(4)
@@ -56,7 +57,8 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
             try:
                 temp_path.unlink()
             except Exception:
-                pass  #        return False
+                pass
+    return False
 
 
 async def safe_delete_async(path: Path, max_retries: int = 3) -> bool:
@@ -64,16 +66,20 @@ async def safe_delete_async(path: Path, max_retries: int = 3) -> bool:
     for attempt in range(max_retries):
         try:
             if not path.exists():
-                return True  #            def _delete():
-                if path.is_dir():
-                    shutil.rmtree(str(path))
+                return True
+
+            def _delete(p):
+                if p.is_dir():
+                    shutil.rmtree(str(p))
                 else:
-                    path.unlink()
+                    p.unlink()
+
             await loop.run_in_executor(None, _delete)
             return True
         except PermissionError:
             if attempt < max_retries - 1:
-                await asyncio.sleep(0.1 * (attempt + 1))  #                continue
+                await asyncio.sleep(0.001 * (attempt + 1))
+                continue
             print(f"Cannot delete {path} after {max_retries} attempts due to PermissionError")
             return False
         except FileNotFoundError:

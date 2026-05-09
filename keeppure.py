@@ -4,6 +4,7 @@ import os
 import site
 from multiprocessing import cpu_count
 from pathlib import Path
+
 from loguru import logger
 
 
@@ -53,7 +54,7 @@ def clean_requirements_txt(requirements_file="requirements.txt"):
         logger.info(f"Error: {requirements_file} not found")
         return
     binary_packages = get_binary_packages_parallel()
-    with Path("/sdcard/binary_pkgs").open("w", encoding="utf-8") as fbin:
+    with Path("/sdcard/data/binary").open("w", encoding="utf-8") as fbin:
         fbin.write("\n".join(binary_packages))
         logger.info("binary_pkgs created.")
     with Path(requirements_file).open(encoding="utf-8") as f:

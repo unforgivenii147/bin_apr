@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import json
-from pathlib import Path
 from importlib.metadata import distributions
+from pathlib import Path
+
 import requests
-from loguru import logger
 from dh import cprint
+from loguru import logger
 
 logger.remove()
 logger.add("/sdcard/updatable.log")

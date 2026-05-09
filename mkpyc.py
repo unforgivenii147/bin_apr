@@ -4,8 +4,9 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-from loguru import logger
+
 from dh import fsz, get_files, gsz
+from loguru import logger
 
 MAX_QUEUE = 16
 

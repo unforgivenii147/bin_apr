@@ -2,6 +2,7 @@
 import argparse
 from os import scandir as _scandir
 from pathlib import Path
+
 from autoflake import fix_code as fix_with_autoflake
 from autopep8 import fix_code as fix_with_autopep
 from black import Mode as _Mode

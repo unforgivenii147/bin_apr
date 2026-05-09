@@ -2,9 +2,9 @@
 import ast
 import logging
 import multiprocessing
-from pathlib import Path
 import shutil
 from functools import partial
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 

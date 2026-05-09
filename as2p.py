@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import re
+from pathlib import Path
+
 from loguru import logger
 
 

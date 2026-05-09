@@ -8,6 +8,7 @@ import zipfile
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
+
 from loguru import logger
 
 OUTPUT_DIR = Path("output")

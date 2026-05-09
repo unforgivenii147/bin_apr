@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-from dh import get_nobinary, fsz, gsz
+
+from dh import fsz, get_nobinary, gsz
 from termcolor import cprint
 
 LIC_FILE = Path("/sdcard/lic")

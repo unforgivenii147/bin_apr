@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
+
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def remove_tag_from_html_file(file_path, tag_name):
@@ -13,22 +13,22 @@ def remove_tag_from_html_file(file_path, tag_name):
         for tag in soup.find_all(tag_name):
             tag.decompose()
         Path(file_path).write_text(str(soup), encoding="utf-8")
-        logger.info(f"✅ Removed <{tag_name}> from {file_path}")
+        print(f"✅ Removed <{tag_name}> from {file_path}")
     except Exception as e:
-        logger.info(f"❌ Error processing {file_path}: {e}")
+        print(f"❌ Error processing {file_path}: {e}")
 
 
 def process_directory(root_dir, tag_name):
     for dirpath, _, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.lower().endswith(".html"):
+            if filename.lower().endswith((".html",".txt")):
                 full_path = os.path.join(dirpath, filename)
                 remove_tag_from_html_file(full_path, tag_name)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        logger.info("Usage: python remove_tag.py tagname")
+        print("Usage: python remove_tag.py tagname")
         sys.exit(1)
     tag_name = sys.argv[1]
-    process_directory(pathlib.Path.cwd(), tag_name)
+    process_directory(Path.cwd(), tag_name)

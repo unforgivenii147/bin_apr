@@ -10,8 +10,8 @@ Checks HTML files recursively for unbalanced tags and optionally fixes them in-p
 
 import argparse
 import sys
-from pathlib import Path
 from html.parser import HTMLParser
+from pathlib import Path
 
 # Standard self-closing (void) elements per HTML5 spec
 VOID_ELEMENTS = frozenset(

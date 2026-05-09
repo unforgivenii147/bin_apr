@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
+
 from loguru import logger
 
 REMOTE_PREFIXES = ("http://", "https://", "//")

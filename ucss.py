@@ -5,6 +5,7 @@ import mimetypes
 import re
 import sys
 from pathlib import Path
+
 from dh import MIME_TO_EXT
 from loguru import logger
 

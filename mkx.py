@@ -1,11 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import stat
 from pathlib import Path
-from dh import is_binary
 
-
-def should_skip(fp):
-    return bool(not fp.is_file() or ".git" in fp.parts)
+from dh import is_binary, should_skip
 
 
 def has_shebang(path: Path) -> bool:
@@ -17,14 +14,28 @@ def has_shebang(path: Path) -> bool:
         return False
 
 
-def make_exec(path: Path) -> None:
-    current_mode = path.stat().st_mode
-    executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-    new_mode = current_mode | executable_bits
-    path.chmod(new_mode)
+def make_exec(filename: Path) -> None:
+    original_mode = filename.stat().st_mode
+    levels = [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH]
+    for at in range(len(levels), 0, -1):
+        try:
+            mode = original_mode
+            for level in levels[:at]:
+                mode |= level
+            filename.chmod(mode)
+            break
+        except OSError:
+            continue
 
 
-def is_exec(path: Path) -> None:
+# def make_exec(path: Path) -> None:
+#    current_mode = path.stat().st_mode
+#    executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+#    new_mode = current_mode | executable_bits
+#    path.chmod(new_mode)
+
+
+def is_exec(path: Path) -> bool:
     return bool(path.stat().st_mode & stat.S_IXUSR)
 
 

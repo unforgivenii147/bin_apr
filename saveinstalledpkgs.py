@@ -2,6 +2,7 @@
 import subprocess
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 OUTPUT_FILE = Path("/sdcard/installed_packages.txt")

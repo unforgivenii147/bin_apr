@@ -4,6 +4,7 @@ import json
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
+
 import xxhash
 from loguru import logger
 
@@ -12,6 +13,8 @@ MIN_FILE_SIZE = 8
 
 
 def calculate_file_hash(filepath, chunk_size=8192):
+    if not filepath.is_file():
+        return None
     hasher = xxhash.xxh64()
     try:
         with Path(filepath).open("rb") as f:
@@ -30,7 +33,7 @@ def find_duplicates(directory="."):
     skipped_count = 0
     cwd = Path.cwd()
     for path in cwd.rglob("*"):
-        if path.is_symlink():
+        if path.is_symlink() or path.is_dir():
             continue
         if ".git" in path.parts:
             continue
@@ -73,8 +76,8 @@ def create_symlinks(duplicates, dry_run=False):
             if not dry_run:
                 backup_data["operations"].append(
                     {
-                        "symlink": duplicate_abs,
-                        "target": keeper_abs,
+                        "symlink": str(duplicate_abs),
+                        "target": str(keeper_abs),
                         "original_existed": True,
                         "size": get_size,
                     }

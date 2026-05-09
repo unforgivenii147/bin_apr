@@ -2,10 +2,11 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
+from dh import fsz, get_files, gsz
 from loguru import logger
 from termcolor import cprint
-from dh import fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 N_JOBS = -1

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import os
+import sys
 
 
 def sort_and_dedup(file_name):

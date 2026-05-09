@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import hashlib
 import os
 import sys
 from pathlib import Path
+
+from dh import cprint, get_sha256, runcmd
 from loguru import logger
-import hashlib
-from dh import cprint, runcmd, get_sha256
 
 
 def get_path_dirs() -> list[Path]:
@@ -24,8 +25,8 @@ def get_executables_in_dir(d: Path) -> list[Path]:
 
 
 def main():
-    from collections import defaultdict
     import os
+    from collections import defaultdict
 
     logger.remove()
     logger.add("/sdcard/dup_apps")

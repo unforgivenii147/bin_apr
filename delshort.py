@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import is_binary, get_files
+
+from dh import get_files, is_binary
 
 
 def process_file(fp) -> None:

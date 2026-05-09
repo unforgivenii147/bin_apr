@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import gsz, get_files, fsz, mpf3, cprint, runcmd
+
+from dh import cprint, fsz, get_files, gsz, mpf3, runcmd
 
 START_DIR = Path.cwd()
 NUM_PROCESSES = 4

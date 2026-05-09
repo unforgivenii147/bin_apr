@@ -2,11 +2,12 @@
 import subprocess
 import sys
 from pathlib import Path
+
 from dh import get_file_age, get_ipkgs
 from loguru import logger
 from rapidfuzz import fuzz
 
-PIP_LIST_FILE = "/sdcard/pip.list"
+PIP_LIST_FILE = "/sdcard/data/pip.list"
 
 
 def create_pip_list_again():

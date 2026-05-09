@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from termcolor import cprint
+
 from dh import fsz, get_files, gsz, mpf, run_command
+from termcolor import cprint
 
 
 def process_file(fp):

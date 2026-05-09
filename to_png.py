@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from dh import IMG_EXT, is_image
+
+from dh import IMG_EXT, fsz, gsz, is_image
 from loguru import logger
-from dh import fsz, gsz
 
 try:
     import cv2

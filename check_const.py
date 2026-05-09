@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import re
-from pathlib import Path
+import sys
 from collections import defaultdict
+from pathlib import Path
 
 
 def main():

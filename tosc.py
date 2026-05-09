@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
+import shutil
 import sys
 from pathlib import Path
 
-dest = Path.home() / "isaac" / "apr" / "scripts"
+dest = Path.home() / "isaac" / "may" / "scripts"
 
 
 def unique_path(path: Path | str) -> Path:
@@ -32,7 +33,8 @@ def main():
     dest_path = dest / fn.name
     if dest_path.exists():
         dest_path = unique_path(dest_path)
-    fn.rename(dest_path)
+    shutil.move(str(fn), str(dest_path))
+    print(f"{fn.name} --> {dest_path.name}")
 
 
 if __name__ == "__main__":

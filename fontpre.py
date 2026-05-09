@@ -2,6 +2,7 @@
 import html
 import os
 from pathlib import Path
+
 from loguru import logger
 
 FONT_EXTENSIONS = (".ttf", ".otf", ".woff", ".woff2", ".eot")

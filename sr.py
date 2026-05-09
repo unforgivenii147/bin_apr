@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import argparse
 import base64
 import hashlib
@@ -9,6 +10,7 @@ import sysconfig
 import zipfile
 from email.parser import Parser
 from pathlib import Path
+
 from loguru import logger
 
 

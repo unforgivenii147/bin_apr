@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 from pprint import pformat
+
 import jmespath
 from jmespath import exceptions
 

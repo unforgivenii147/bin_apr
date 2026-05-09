@@ -2,10 +2,10 @@
 import ast
 import sys
 from pathlib import Path
-from dh import SOURCE_CODE_EXT, clean_blank_lines, get_nobinary, is_binary
+
+from dh import SOURCE_CODE_EXT, clean_blank_lines, fsz, get_nobinary, gsz, is_binary, mpf3
 from loguru import logger
 from termcolor import cprint
-from dh import fsz, gsz, mpf3
 
 
 def process_file(fp):

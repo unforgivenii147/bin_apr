@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-import re
-import os
 import builtins
+import os
+import re
 from pathlib import Path
+
 from dh import is_binary
 
 env_vars = set()

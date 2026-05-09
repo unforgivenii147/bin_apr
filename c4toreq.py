@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import re
+from pathlib import Path
+
 from loguru import logger
 from packaging.version import Version
 

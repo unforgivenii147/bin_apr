@@ -2,6 +2,7 @@
 import sys
 from multiprocessing import get_context
 from pathlib import Path
+
 from dh import get_files
 from loguru import logger
 from PIL import Image

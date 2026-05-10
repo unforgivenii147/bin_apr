@@ -20,7 +20,7 @@ def install(packages: list[str]):
 def pkg_name(txt):
     indx = txt.index("-")
     slash = txt.rfind("/")
-    return txt[slash + 1 : indx]
+    return txt[slash + 1:indx]
 
 
 def install_whl_by_wildcard(pkg):

@@ -43,7 +43,8 @@ def process_file(fp):
             _ = ast.parse(code)
             fp.write_text(code, encoding="utf-8")
             diffsize = before - gsz(fp)
-            cprint(f"{fsz(diffsize)}|removed :{removed}|inline :{inline}", "yellow")
+            cprint(f"{fsz(diffsize)}|removed :{removed}|inline :{inline}",
+                   "yellow")
         except:
             cprint("result code invalid.", "magenta")
             return

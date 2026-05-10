@@ -13,7 +13,8 @@ def main():
     with Path(new_fn).open("w", encoding="utf-8") as fo:
         fo.write("{")
         for line in lines:
-            str1 = '"' + str(line.strip()) + '", ' if '"' not in line else "'" + str(line.strip()) + "', "
+            str1 = '"' + str(line.strip(
+            )) + '", ' if '"' not in line else "'" + str(line.strip()) + "', "
             fo.write(str1)
         fo.write("}")
 

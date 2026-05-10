@@ -6,7 +6,6 @@ import time
 import zipfile
 from pathlib import Path
 from print_persian import print_persian as _print
-
 '\ndef attempt_password2(args):\n    zip_file_path, password_candidate = args\n    try:\n        with AESZipFile(zip_file_path, "r") as zf:\n            zf.setpassword(password_candidate.encode("utf-8"))\n            zf.testzip()\n            return password_candidate\n    except RuntimeError as e:\n        if "Bad password" in str(e) or "Incorrect password" in str(e):\n            return None\n        _print(f"خطای ناشناخته در حین تلاش با \'{password_candidate}\': {e}")\n        return None\n    except Exception as e:\n        _print(f"خطای کلی در حین تلاش با \'{password_candidate}\': {e}")\n        return None\n'
 
 
@@ -25,20 +24,25 @@ def attempt_password(args):
         return None
 
 
-def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_dir="extracted_files"):
+def crack_zip_password_multiprocess(zip_file_path,
+                                    password_list_path,
+                                    extract_dir="extracted_files"):
     if not Path(zip_file_path).exists():
         return None
     if not Path(password_list_path).exists():
         return None
     try:
-        with Path(password_list_path).open(encoding="utf-8", errors="ignore") as p_list:
+        with Path(password_list_path).open(encoding="utf-8",
+                                           errors="ignore") as p_list:
             passwords = [p.strip() for p in p_list if p.strip()]
         total_passwords = len(passwords)
         start_time = time.time()
         tasks = [(zip_file_path, p) for p in passwords]
         num_processes = mp.cpu_count()
         with mp.Pool(num_processes) as pool:
-            results = pool.imap_unordered(attempt_password, tasks, chunksize=100)
+            results = pool.imap_unordered(attempt_password,
+                                          tasks,
+                                          chunksize=100)
             found_password = None
             for i, result in enumerate(results):
                 if result:
@@ -53,7 +57,8 @@ def crack_zip_password_multiprocess(zip_file_path, password_list_path, extract_d
             try:
                 Path(extract_dir).mkdir(exist_ok=True, parents=True)
                 with zipfile.ZipFile(zip_file_path, "r") as zf_final:
-                    zf_final.extractall(path=extract_dir, pwd=found_password.encode("utf-8"))
+                    zf_final.extractall(path=extract_dir,
+                                        pwd=found_password.encode("utf-8"))
             except Exception as e:
                 pass
             return found_password

@@ -19,7 +19,7 @@ def read_text_file(path: Path) -> str:
 
 
 def chunk_text(text: str, size: int = CHUNK_SIZE) -> list[str]:
-    return [text[i : i + size] for i in range(0, len(text), size)]
+    return [text[i:i + size] for i in range(0, len(text), size)]
 
 
 def translate_chunks(chunks: list[str]) -> str:
@@ -37,9 +37,14 @@ def build_output_path(input_path: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Translate Korean → English using chunked deep-translator.")
+    parser = argparse.ArgumentParser(
+        description="Translate Korean → English using chunked deep-translator.")
     parser.add_argument("input_path", type=str, help="Path to input file.")
-    parser.add_argument("-g", "--game", type=str, default=None, help="Optional game argument.")
+    parser.add_argument("-g",
+                        "--game",
+                        type=str,
+                        default=None,
+                        help="Optional game argument.")
     args = parser.parse_args()
     in_path = Path(args.input_path)
     if not in_path.exists():

@@ -10,7 +10,9 @@ from dh import get_nobinary
 from loguru import logger
 
 OUTPUT_DIR = Path("extracted_base64")
-DATA_URL_RE = re.compile("data:(?P<mime>[-\\w.+/]+);base64,(?P<data>[A-Za-z0-9+/=\\s]+)", re.IGNORECASE)
+DATA_URL_RE = re.compile(
+    "data:(?P<mime>[-\\w.+/]+);base64,(?P<data>[A-Za-z0-9+/=\\s]+)",
+    re.IGNORECASE)
 MIME_EXTENSION_MAP: dict[str, str] = {
     "image/png": "png",
     "image/jpeg": "jpg",
@@ -34,7 +36,8 @@ MIME_EXTENSION_MAP: dict[str, str] = {
 
 
 def infer_extension(mime: str) -> str:
-    return MIME_EXTENSION_MAP.get(mime.lower(), mime.rsplit("/", maxsplit=1)[-1])
+    return MIME_EXTENSION_MAP.get(mime.lower(),
+                                  mime.rsplit("/", maxsplit=1)[-1])
 
 
 def decode_base64(data: str) -> bytes:

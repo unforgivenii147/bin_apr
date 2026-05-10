@@ -16,7 +16,8 @@ pause_event.set()
 results_queue = Queue()
 DEFAULT_EXCLUDED_DIRS = {".git"}
 DEFAULT_SKIPPED_EXTS = {".pyc", ".bak"}
-ARCHIVE_EXTENSIONS = (".tar.gz", ".tar", ".tar.xz", ".tar.zst", ".tar.bz2", ".zip", ".whl", ".apk")
+ARCHIVE_EXTENSIONS = (".tar.gz", ".tar", ".tar.xz", ".tar.zst", ".tar.bz2",
+                      ".zip", ".whl", ".apk")
 
 
 def setup_keyboard_listener():
@@ -42,7 +43,8 @@ def is_excluded(path: Path, excluded_dirs, excluded_patterns):
     for part in path.parts:
         if part in excluded_dirs:
             return True
-    return any((fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns))
+    return any(
+        (fnmatch.fnmatch(path.name, pattern) for pattern in excluded_patterns))
 
 
 def should_skip_file(path: Path):
@@ -78,7 +80,8 @@ def search_in_file(file_path, search_string, search_content):
 def extract_and_search_archive(archive_path, search_string, search_content):
     results = []
     try:
-        if archive_path.suffix == ".zip" or archive_path.name.endswith((".whl", ".apk")):
+        if archive_path.suffix == ".zip" or archive_path.name.endswith(
+            (".whl", ".apk")):
             with zipfile.ZipFile(archive_path) as zf:
                 for member in zf.namelist():
                     pause_event.wait()
@@ -88,7 +91,8 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                             results.append((ref, None))
                     else:
                         try:
-                            content = zf.read(member).decode("utf-8", errors="ignore")
+                            content = zf.read(member).decode("utf-8",
+                                                             errors="ignore")
                             for ln, line in enumerate(content.splitlines(), 1):
                                 if search_string in line:
                                     results.append((ref, ln))
@@ -108,8 +112,10 @@ def extract_and_search_archive(archive_path, search_string, search_content):
                         try:
                             f = tf.extractfile(m)
                             if f:
-                                content = f.read().decode("utf-8", errors="ignore")
-                                for ln, line in enumerate(content.splitlines(), 1):
+                                content = f.read().decode("utf-8",
+                                                          errors="ignore")
+                                for ln, line in enumerate(
+                                        content.splitlines(), 1):
                                     if search_string in line:
                                         results.append((ref, ln))
                         except Exception:
@@ -121,7 +127,8 @@ def extract_and_search_archive(archive_path, search_string, search_content):
 
 def process_file(path: Path, search_string, search_content):
     if path.name.endswith(ARCHIVE_EXTENSIONS):
-        results = extract_and_search_archive(path, search_string, search_content)
+        results = extract_and_search_archive(path, search_string,
+                                             search_content)
     else:
         results = search_in_file(path, search_string, search_content)
     for r in results:
@@ -134,10 +141,17 @@ def main():
     parser.add_argument("-c", "--content", action="store_true")
     parser.add_argument("-d", "--directory", default=".")
     parser.add_argument("-o", "--output", default="output")
-    parser.add_argument("--exclude", action="append", default=[], help="Exclude dir or glob (repeatable)")
+    parser.add_argument("--exclude",
+                        action="append",
+                        default=[],
+                        help="Exclude dir or glob (repeatable)")
     args = parser.parse_args()
-    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {e for e in args.exclude if not any((ch in e for ch in "*?[]"))}
-    excluded_patterns = {e for e in args.exclude if any((ch in e for ch in "*?[]"))}
+    excluded_dirs = DEFAULT_EXCLUDED_DIRS | {
+        e for e in args.exclude if not any((ch in e for ch in "*?[]"))
+    }
+    excluded_patterns = {
+        e for e in args.exclude if any((ch in e for ch in "*?[]"))
+    }
     setup_keyboard_listener()
     root = Path(args.directory).resolve()
     print(f"[INFO] Root: {root}")
@@ -157,7 +171,10 @@ def main():
         files.append(path)
     print(f"[INFO] Files queued: {len(files)}\n")
     with ThreadPoolExecutor(max_workers=8) as ex:
-        futures = [ex.submit(process_file, p, args.search_string, args.content) for p in files]
+        futures = [
+            ex.submit(process_file, p, args.search_string, args.content)
+            for p in files
+        ]
         for _f in as_completed(futures):
             pass
     print(f"[INFO] Total results: {results_queue.qsize()}")

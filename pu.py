@@ -20,10 +20,13 @@ def display_packages(packages: dict[str, str], title: str = "Packages"):
     print(f"\nTotal: {len(packages)} package(s)")
 
 
-def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
+def find_matching_packages(pattern: str, packages: dict[str,
+                                                        str]) -> dict[str, str]:
     pattern_lower = pattern.lower()
     return {
-        package_name: version for package_name, version in packages.items() if pattern_lower in package_name.lower()
+        package_name: version
+        for package_name, version in packages.items()
+        if pattern_lower in package_name.lower()
     }
 
 

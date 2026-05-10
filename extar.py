@@ -26,7 +26,8 @@ def extract_zst_file(archive_path, extract_path):
 def extract_tar_zst(archive_path, extract_path):
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
-        with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as temp_tar:
+        with tempfile.NamedTemporaryFile(suffix=".tar",
+                                         delete=False) as temp_tar:
             dctx.copy_stream(compressed_file, temp_tar)
             temp_tar_path = temp_tar.name
     try:
@@ -71,14 +72,16 @@ def process_archive(archive_path, dry_run=False, quiet=False):
             extract_tar_xz(archive_path, extract_path)
             extracted_files = ["multiple files (tar contents)"]
         extracted_size = 0
-        if extracted_files and extracted_files[0] != "multiple files (tar contents)":
+        if extracted_files and extracted_files[
+                0] != "multiple files (tar contents)":
             for file_path in extracted_files:
                 if file_path.exists():
                     extracted_size += file_path.stat().st_size
         else:
             current_time = time.time()
             for item in extract_path.rglob("*"):
-                if item.is_file() and item != archive_path and (current_time - item.stat().st_ctime < 60):
+                if item.is_file() and item != archive_path and (
+                        current_time - item.stat().st_ctime < 60):
                     extracted_size += item.stat().st_size
         archive_path.unlink()
         if not quiet:
@@ -92,7 +95,10 @@ def process_archive(archive_path, dry_run=False, quiet=False):
 
 def find_archives(directory):
     directory = Path(directory).resolve()
-    archives = [zst_file for zst_file in directory.rglob("*.zst") if not zst_file.name.endswith(".tar.zst")]
+    archives = [
+        zst_file for zst_file in directory.rglob("*.zst")
+        if not zst_file.name.endswith(".tar.zst")
+    ]
     archives.extend(directory.rglob("*.tar.zst"))
     archives.extend(directory.rglob("*.tar.xz"))
     return sorted(set(archives))
@@ -100,18 +106,26 @@ def find_archives(directory):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Extract .zst, .tar.zst, and .tar.xz archives.\nIf a filename is provided, process only that file.\nIf no argument, recursively search current directory.\nOriginal archives are automatically removed after successful extraction.",
+        description=
+        "Extract .zst, .tar.zst, and .tar.xz archives.\nIf a filename is provided, process only that file.\nIf no argument, recursively search current directory.\nOriginal archives are automatically removed after successful extraction.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "target", nargs="?", default=None, help="File to extract or directory to search (default: current directory)"
-    )
+        "target",
+        nargs="?",
+        default=None,
+        help=
+        "File to extract or directory to search (default: current directory)")
     parser.add_argument(
-        "--dry-run", "-n", action="store_true", help="Show what would be done without actually extracting"
-    )
+        "--dry-run",
+        "-n",
+        action="store_true",
+        help="Show what would be done without actually extracting")
     parser.add_argument(
-        "--quiet", "-q", action="store_true", help="Suppress all output except errors and final summary"
-    )
+        "--quiet",
+        "-q",
+        action="store_true",
+        help="Suppress all output except errors and final summary")
     args = parser.parse_args()
     if args.target:
         target_path = Path(args.target).resolve()
@@ -127,7 +141,8 @@ def main():
             print(f"Processing: {target_path.name}")
         parent_dir = target_path.parent
         before = get_dir_size(parent_dir)
-        success, arch_size, ext_size = process_archive(target_path, args.dry_run, args.quiet)
+        success, arch_size, ext_size = process_archive(target_path,
+                                                       args.dry_run, args.quiet)
         if success and (not args.dry_run):
             after = get_dir_size(parent_dir)
             size_change = after - before
@@ -153,7 +168,8 @@ def main():
     total_archive_size = 0
     total_extracted_size = 0
     for archive in archives:
-        success, arch_size, ext_size = process_archive(archive, args.dry_run, args.quiet)
+        success, arch_size, ext_size = process_archive(archive, args.dry_run,
+                                                       args.quiet)
         if success:
             processed_count += 1
             total_archive_size += arch_size

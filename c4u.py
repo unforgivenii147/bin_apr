@@ -21,7 +21,9 @@ def parse_version_obj(s):
 
 
 def extract_links(html_text):
-    pattern = re.compile("<a\\s+[^>]*href=([\"\\'])(?P<href>.*?)\\1[^>]*>(?P<text>.*?)</a>", re.IGNORECASE | re.DOTALL)
+    pattern = re.compile(
+        "<a\\s+[^>]*href=([\"\\'])(?P<href>.*?)\\1[^>]*>(?P<text>.*?)</a>",
+        re.IGNORECASE | re.DOTALL)
     for m in pattern.finditer(html_text):
         href = _html.unescape(m.group("href")).strip()
         text = _html.unescape(re.sub("<[^>]+>", "", m.group("text"))).strip()
@@ -89,8 +91,8 @@ def get_latest_pkg_version(pkg_name):
     except:
         return None
     wheel_pattern = re.compile(
-        f"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\\.\\-_]*)\\.(?:whl|tar\\.gz|zip)", re.IGNORECASE
-    )
+        f"{re.escape(pkg_name)}-([0-9][A-Za-z0-9\\.\\-_]*)\\.(?:whl|tar\\.gz|zip)",
+        re.IGNORECASE)
     versions = []
     for match in wheel_pattern.finditer(html):
         version_str = match.group(1)

@@ -22,7 +22,8 @@ def calculate_fuzzy_hash(filepath: Path) -> str:
         return ""
 
 
-def find_similar_files(search_dir: Path, output_dir: Path, similarity_threshold: int, min_group_size: int) -> None:
+def find_similar_files(search_dir: Path, output_dir: Path,
+                       similarity_threshold: int, min_group_size: int) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     file_hashes: dict[Path, str] = {}
     for filepath in search_dir.rglob("*"):
@@ -51,24 +52,34 @@ def find_similar_files(search_dir: Path, output_dir: Path, similarity_threshold:
             try:
                 similarity = ssdeep.compare(current_hash, other_hash)
                 if similarity >= similarity_threshold:
-                    print(f"  - Found similarity ({similarity}/{current_hash} vs {other_hash} -> {other_file})")
+                    print(
+                        f"  - Found similarity ({similarity}/{current_hash} vs {other_hash} -> {other_file})"
+                    )
                     current_group.append(other_file)
             except ssdeep.Error as e:
-                print(f"Error comparing hashes for {current_file} and {other_file}: {e}")
+                print(
+                    f"Error comparing hashes for {current_file} and {other_file}: {e}"
+                )
             except Exception as e:
-                print(f"Unexpected error comparing hashes for {current_file} and {other_file}: {e}")
+                print(
+                    f"Unexpected error comparing hashes for {current_file} and {other_file}: {e}"
+                )
         if len(current_group) >= min_group_size:
             processed_files.update(current_group)
             representative_file = current_group[0]
             similar_groups[representative_file] = current_group
-            print(f"  -> Added group (starting with {representative_file.name}) with {len(current_group)} files.")
+            print(
+                f"  -> Added group (starting with {representative_file.name}) with {len(current_group)} files."
+            )
     print("\n--- Moving Similar Files ---")
     moved_files_count = 0
     group_counter = 0
     files_to_move = set()
     final_groups_to_move = []
     for rep_file, group in similar_groups.items():
-        valid_group = [f for f in group if f not in processed_files or f == rep_file]
+        valid_group = [
+            f for f in group if f not in processed_files or f == rep_file
+        ]
         if len(valid_group) >= min_group_size:
             final_groups_to_move.append(valid_group)
             files_to_move.update(valid_group)
@@ -82,10 +93,14 @@ def find_similar_files(search_dir: Path, output_dir: Path, similarity_threshold:
             try:
                 dest_path = group_output_subdir / file_to_move.name
                 if dest_path.exists():
-                    print(f"  - Warning: Destination file already exists, skipping: {dest_path}")
+                    print(
+                        f"  - Warning: Destination file already exists, skipping: {dest_path}"
+                    )
                     continue
                 shutil.move(str(file_to_move), str(dest_path))
-                print(f"  - Moved: {file_to_move.name} to {group_output_subdir.name}/")
+                print(
+                    f"  - Moved: {file_to_move.name} to {group_output_subdir.name}/"
+                )
                 moved_files_count += 1
             except FileNotFoundError:
                 print(
@@ -107,7 +122,9 @@ if __name__ == "__main__":
     else:
         print(f"INFO: Processing files in: {SEARCH_DIR}")
     if SEARCH_DIR.resolve() == OUTPUT_DIR.resolve():
-        print("ERROR: SEARCH_DIR and OUTPUT_DIR cannot be the same. Please configure them differently.")
+        print(
+            "ERROR: SEARCH_DIR and OUTPUT_DIR cannot be the same. Please configure them differently."
+        )
     else:
         find_similar_files(
             search_dir=SEARCH_DIR,

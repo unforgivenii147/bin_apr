@@ -17,7 +17,8 @@ def find_scripts_without_extension(directory):
             try:
                 with item.open("r", encoding="utf-8") as f:
                     first_line = f.readline()
-                    if first_line.strip().startswith("#!") and "python" in first_line:
+                    if first_line.strip().startswith(
+                            "#!") and "python" in first_line:
                         scripts_without_extension.append(item)
             except Exception as e:
                 print(f"Could not read {item}: {e}")
@@ -32,4 +33,6 @@ if __name__ == "__main__":
         for script_path in found_scripts:
             print(script_path.relative_to(cwd))
     else:
-        print("No Python scripts without extension found in the current directory or its subdirectories.")
+        print(
+            "No Python scripts without extension found in the current directory or its subdirectories."
+        )

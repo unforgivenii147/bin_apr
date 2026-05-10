@@ -79,8 +79,18 @@ def count_lines_of_code(file_path, lang):
 
 def scan_directory(directory="."):
     stats = {
-        "total": {"code": 0, "comments": 0, "blank": 0},
-        "languages": {lang: {"code": 0, "comments": 0, "blank": 0} for lang in LANG_EXTENSIONS},
+        "total": {
+            "code": 0,
+            "comments": 0,
+            "blank": 0
+        },
+        "languages": {
+            lang: {
+                "code": 0,
+                "comments": 0,
+                "blank": 0
+            } for lang in LANG_EXTENSIONS
+        },
     }
     for root, _, files in os.walk(directory):
         for file in files:
@@ -89,7 +99,8 @@ def scan_directory(directory="."):
             if not file_extension:
                 lang = get_language_from_shebang(file_path)
                 if lang:
-                    code, comments, blanks = count_lines_of_code(file_path, lang)
+                    code, comments, blanks = count_lines_of_code(
+                        file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks
@@ -99,7 +110,8 @@ def scan_directory(directory="."):
                     continue
             for lang, extensions in LANG_EXTENSIONS.items():
                 if file_extension in extensions:
-                    code, comments, blanks = count_lines_of_code(file_path, lang)
+                    code, comments, blanks = count_lines_of_code(
+                        file_path, lang)
                     stats["languages"][lang]["code"] += code
                     stats["languages"][lang]["comments"] += comments
                     stats["languages"][lang]["blank"] += blanks

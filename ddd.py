@@ -35,7 +35,8 @@ def du_sort_python(target_dir="."):
     results.append((get_dir_size(current_path), str(current_path)))
     for entry in current_path.iterdir():
         if entry.is_dir() or entry.is_file():
-            size = get_dir_size(entry) if entry.is_dir() else entry.stat().st_size
+            size = get_dir_size(
+                entry) if entry.is_dir() else entry.stat().st_size
             results.append((size, str(entry)))
     sorted_results = sorted(results, key=operator.itemgetter(0), reverse=False)
     print(f"{target_dir}:")

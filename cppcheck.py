@@ -24,11 +24,12 @@ def validate_cpp(path: Path) -> tuple[bool, str]:
 if __name__ == "__main__":
     args = sys.argv[1:]
     cwd = Path.cwd()
-    files = (
-        [Path(p) for p in args]
-        if args
-        else get_files(cwd, extensions=[".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx", ".inc", "hpp11"])
-    )
+    files = ([Path(p) for p in args]
+             if args else get_files(cwd,
+                                    extensions=[
+                                        ".c", ".cc", ".cpp", ".cxx", ".h",
+                                        ".hh", ".hpp", ".hxx", ".inc", "hpp11"
+                                    ]))
     results = []
     with get_context("spawn").Pool(8) as pool:
         pending = deque()

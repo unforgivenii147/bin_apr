@@ -5,12 +5,14 @@ import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
-VOID_ELEMENTS = frozenset(
-    {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
-)
+VOID_ELEMENTS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
+    "param", "source", "track", "wbr"
+})
 
 
 class TagBalanceChecker(HTMLParser):
+
     def __init__(self):
         super().__init__()
         self.stack = []
@@ -36,7 +38,8 @@ class TagBalanceChecker(HTMLParser):
                 if idx >= 0:
                     self.stack.pop(idx)
                 else:
-                    self.errors.append(("unexpected_closing", tag, self.getpos()))
+                    self.errors.append(
+                        ("unexpected_closing", tag, self.getpos()))
                     self.fix_needed = True
             except Exception:
                 self.errors.append(("unexpected_closing", tag, self.getpos()))
@@ -59,8 +62,14 @@ def check_html_file(path: Path) -> tuple[bool, list[str]]:
         parser.feed(source)
     except Exception as e:
         return (False, [f"⚠️  Parsing error: {e}"])
-    missing_closings = [f"Missing </{tag}> (opened at line {pos[0]}, col {pos[1]})" for tag, pos in parser.stack]
-    unexpected_closings = [f"Unexpected </{tag}> at line {pos[0]}, col {pos[1]}" for _, tag, pos in parser.errors]
+    missing_closings = [
+        f"Missing </{tag}> (opened at line {pos[0]}, col {pos[1]})"
+        for tag, pos in parser.stack
+    ]
+    unexpected_closings = [
+        f"Unexpected </{tag}> at line {pos[0]}, col {pos[1]}"
+        for _, tag, pos in parser.errors
+    ]
     issues = missing_closings + unexpected_closings
     is_balanced = len(issues) == 0
     return (is_balanced, issues)
@@ -86,6 +95,7 @@ def fix_html_file(path: Path) -> bool:
     from html.parser import HTMLParseError
 
     class TagScanner(HTMLParser):
+
         def __init__(self, source):
             super().__init__()
             self.source = source
@@ -108,7 +118,8 @@ def fix_html_file(path: Path) -> bool:
                 if end != -1:
                     self.tokens.append(("start", tag, start, end + 1))
                 else:
-                    self.tokens.append(("start", tag, start, start + len(f"<{tag}")))
+                    self.tokens.append(
+                        ("start", tag, start, start + len(f"<{tag}")))
 
         def handle_endtag(self, tag):
             pos = self.getpos()
@@ -179,7 +190,8 @@ def fix_html_file(path: Path) -> bool:
             break
     if missing_tags:
         closing_html = "".join((f"</{tag}>" for tag in missing_tags))
-        new_source = new_source[:insert_pos] + closing_html + new_source[insert_pos:]
+        new_source = new_source[:insert_pos] + closing_html + new_source[
+            insert_pos:]
     try:
         path.write_text(new_source, encoding="utf-8")
         return True
@@ -190,18 +202,21 @@ def fix_html_file(path: Path) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Check and optionally fix HTML tag balance in files recursively.",
+        description=
+        "Check and optionally fix HTML tag balance in files recursively.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "-a",
         "--autofix",
         action="store_true",
-        help="Fix files in-place (append missing closing tags, remove unexpected ones)",
+        help=
+        "Fix files in-place (append missing closing tags, remove unexpected ones)",
     )
     args = parser.parse_args()
     current_dir = Path(".")
-    html_files = list(current_dir.rglob("*.html")) + list(current_dir.rglob("*.htm"))
+    html_files = list(current_dir.rglob("*.html")) + list(
+        current_dir.rglob("*.htm"))
     html_files = sorted(set(html_files))
     if not html_files:
         print("ℹ️  No HTML files found in current directory (recursively).")
@@ -225,7 +240,9 @@ def main():
                 else:
                     print(f"   ⚠️  Fix failed.")
     print()
-    print(f"Summary: {len(html_files) - problem_count} OK, {problem_count} with issues")
+    print(
+        f"Summary: {len(html_files) - problem_count} OK, {problem_count} with issues"
+    )
     if args.autofix:
         print(f"   → Fixed {fixed_count} file(s) in-place.")
 

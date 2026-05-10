@@ -10,7 +10,12 @@ import sys
 from pathlib import Path
 from loguru import logger
 
-COLORS = {"dir": "\x1b[34m", "link": "\x1b[36m", "exec": "\x1b[32m", "reset": "\x1b[0m"}
+COLORS = {
+    "dir": "\x1b[34m",
+    "link": "\x1b[36m",
+    "exec": "\x1b[32m",
+    "reset": "\x1b[0m"
+}
 
 
 def use_color(mode: str) -> bool:
@@ -90,7 +95,10 @@ def scan_dir(path, args):
         return []
     if not args.a:
         if args.A:
-            entries = [e for e in entries if e.name not in {".", ".."} and (not e.name.startswith("."))]
+            entries = [
+                e for e in entries
+                if e.name not in {".", ".."} and (not e.name.startswith("."))
+            ]
         else:
             entries = [e for e in entries if not e.name.startswith(".")]
 

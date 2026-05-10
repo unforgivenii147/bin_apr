@@ -11,7 +11,10 @@ from loguru import logger
 def process_file(fp):
     if not fp.exists():
         return (False, fp)
-    ret = subprocess.run(["prettier", "-w", str(fp).replace("/storage/emulated/0", "/sdcard")], check=True)
+    ret = subprocess.run(
+        ["prettier", "-w",
+         str(fp).replace("/storage/emulated/0", "/sdcard")],
+        check=True)
     if ret:
         return (True, fp)
     return (False, fp)
@@ -20,11 +23,12 @@ def process_file(fp):
 def main():
     cwd = str(Path.cwd())
     args = sys.argv[1:]
-    files = (
-        [Path(f) for f in args]
-        if args
-        else get_filez(cwd, exts=[".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".css", ".md", ".jsm", ".scss"])
-    )
+    files = ([Path(f) for f in args]
+             if args else get_filez(cwd,
+                                    exts=[
+                                        ".html", ".htm", ".js", ".jsx", ".ts",
+                                        ".tsx", ".css", ".md", ".jsm", ".scss"
+                                    ]))
     with ThreadPoolExecutor(8) as executor:
         futures = [executor.submit(process_file, fp) for fp in files]
     for future in as_completed(futures):

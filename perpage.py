@@ -46,7 +46,8 @@ def process_file(pdf_path: Path):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".pdf", ".PDF"])
+    files = [Path(p) for p in args] if args else get_files(
+        cwd, extensions=[".pdf", ".PDF"])
     with Pbar("...") as pbar:
         for f in pbar.wrap(files):
             process_file(f)

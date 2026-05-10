@@ -15,6 +15,7 @@ ALLOWED_PYTHON_EXTENSIONS = (".py", "")
 
 
 class EntityExtractor(ast.NodeVisitor):
+
     def __init__(self, source_content: str, original_path: Path) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
@@ -26,28 +27,26 @@ class EntityExtractor(ast.NodeVisitor):
         end_line = node.end_lineno or node.lineno
         code_slice = self.source_lines[start_line:end_line]
         if node.col_offset is not None:
-            code_slice[0] = code_slice[0][node.col_offset :]
+            code_slice[0] = code_slice[0][node.col_offset:]
         if node.end_col_offset is not None and node.end_col_offset > 0:
             last_line = code_slice[-1]
-            code_slice[-1] = last_line[: node.end_col_offset]
+            code_slice[-1] = last_line[:node.end_col_offset]
         return "".join(code_slice)
 
     def _extract_and_save(self, node: ast.AST, entity_type: str, name: str):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
         full_name = f"{scope_prefix}_{name}" if scope_prefix else name
-        self.entities.append(
-            {
-                "name": name,
-                "full_name": full_name,
-                "type": entity_type,
-                "code": entity_code,
-                "path": str(self.original_path),
-                "is_constant": entity_type == "constant",
-                "is_class": entity_type == "class",
-                "is_function": entity_type in {"function", "method"},
-            }
-        )
+        self.entities.append({
+            "name": name,
+            "full_name": full_name,
+            "type": entity_type,
+            "code": entity_code,
+            "path": str(self.original_path),
+            "is_constant": entity_type == "constant",
+            "is_class": entity_type == "class",
+            "is_function": entity_type in {"function", "method"},
+        })
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         if not self.scope_stack:
@@ -60,7 +59,8 @@ class EntityExtractor(ast.NodeVisitor):
         self.scope_stack.pop()
 
     def visit_Assign(self, node: ast.Assign):
-        if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+        if not self.scope_stack and len(node.targets) == 1 and isinstance(
+                node.targets[0], ast.Name):
             target_name = node.targets[0].id
             if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
                 self._extract_and_save(node, "constant", target_name)
@@ -70,6 +70,7 @@ class EntityExtractor(ast.NodeVisitor):
 
 
 class EntityExtractor(ast.NodeVisitor):
+
     def __init__(self, source_content: str, original_path: Path) -> None:
         self.entities = []
         self.source_lines = source_content.splitlines(keepends=True)
@@ -81,38 +82,38 @@ class EntityExtractor(ast.NodeVisitor):
         end_line = node.end_lineno or node.lineno
         code_slice = self.source_lines[start_line:end_line]
         if node.col_offset is not None:
-            code_slice[0] = code_slice[0][node.col_offset :]
+            code_slice[0] = code_slice[0][node.col_offset:]
         if node.end_col_offset is not None and node.end_col_offset > 0:
             last_line = code_slice[-1]
-            code_slice[-1] = last_line[: node.end_col_offset]
+            code_slice[-1] = last_line[:node.end_col_offset]
         return "".join(code_slice)
 
     def _extract_and_save(self, node: ast.AST, entity_type: str, name: str):
         entity_code = self._get_source_slice(node)
         scope_prefix = "_".join(self.scope_stack)
         full_name = f"{scope_prefix}_{name}" if scope_prefix else name
-        self.entities.append(
-            {
-                "name": name,
-                "full_name": full_name,
-                "type": entity_type,
-                "code": entity_code,
-                "path": str(self.original_path),
-                "is_constant": entity_type == "constant",
-                "is_class": entity_type == "class",
-                "is_function": entity_type in {"function", "method"},
-            }
-        )
+        self.entities.append({
+            "name": name,
+            "full_name": full_name,
+            "type": entity_type,
+            "code": entity_code,
+            "path": str(self.original_path),
+            "is_constant": entity_type == "constant",
+            "is_class": entity_type == "class",
+            "is_function": entity_type in {"function", "method"},
+        })
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
-        entity_type = "method" if self.scope_stack and self.scope_stack[-1].startswith("class_") else "function"
+        entity_type = "method" if self.scope_stack and self.scope_stack[
+            -1].startswith("class_") else "function"
         self._extract_and_save(node, entity_type, node.name)
         self.scope_stack.append(f"func_{node.name}")
         self.generic_visit(node)
         self.scope_stack.pop()
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        entity_type = "method" if self.scope_stack and self.scope_stack[-1].startswith("class_") else "function"
+        entity_type = "method" if self.scope_stack and self.scope_stack[
+            -1].startswith("class_") else "function"
         self._extract_and_save(node, entity_type, node.name)
         self.scope_stack.append(f"async_func_{node.name}")
         self.generic_visit(node)
@@ -125,7 +126,8 @@ class EntityExtractor(ast.NodeVisitor):
         self.scope_stack.pop()
 
     def visit_Assign(self, node: ast.Assign):
-        if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+        if not self.scope_stack and len(node.targets) == 1 and isinstance(
+                node.targets[0], ast.Name):
             target_name = node.targets[0].id
             if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
                 self._extract_and_save(node, "constant", target_name)
@@ -164,7 +166,8 @@ def save_entity_to_db(entity: dict[str, Any]):
     conn.close()
 
 
-def extract_entities_from_content(content: str, path: Path) -> list[dict[str, Any]]:
+def extract_entities_from_content(content: str,
+                                  path: Path) -> list[dict[str, Any]]:
     try:
         tree = ast.parse(content)
         extractor = EntityExtractor(content, path)
@@ -184,9 +187,9 @@ def is_python_file_no_extension(path: Path) -> bool:
         with Path(path).open(encoding="utf-8", errors="ignore") as f:
             first_lines = "".join(f.readlines(1024))
             return bool(
-                re.match("#!\\s*/.*python", first_lines)
-                or ("def " in first_lines or "class " in first_lines or "import " in first_lines)
-            )
+                re.match("#!\\s*/.*python", first_lines) or
+                ("def " in first_lines or "class " in first_lines or
+                 "import " in first_lines))
     except:
         return False
 
@@ -203,8 +206,12 @@ def process_single_file(path: Path) -> list[dict[str, Any]]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract Python entities and save to database.")
-    parser.add_argument("-db", "--database", action="store_true", help="Save extracted entities to the database")
+    parser = argparse.ArgumentParser(
+        description="Extract Python entities and save to database.")
+    parser.add_argument("-db",
+                        "--database",
+                        action="store_true",
+                        help="Save extracted entities to the database")
     args = parser.parse_args()
     print(f"Starting analysis in {Path.cwd()}...")
     create_database()
@@ -215,7 +222,8 @@ def main():
             path = Path(root) / name
             if path.is_relative_to(OUTPUT_DIR):
                 continue
-            if path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path):
+            if path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(
+                    path):
                 files_to_process.append(path)
     if not files_to_process:
         print("No Python files found to process.")

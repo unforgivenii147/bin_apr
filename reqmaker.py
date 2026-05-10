@@ -7,7 +7,8 @@ from pathlib import Path
 from loguru import logger
 
 REQUIREMENTS_FILE = Path("requirements.txt")
-MISSING_PATTERN = re.compile("requires ([A-Za-z0-9_\\-]+), which is not installed\\.")
+MISSING_PATTERN = re.compile(
+    "requires ([A-Za-z0-9_\\-]+), which is not installed\\.")
 BLACKLIST = {
     "audioread",
     "av",
@@ -50,7 +51,10 @@ BLACKLIST = {
 
 
 def run_pip_check() -> str:
-    result = subprocess.run(["pip", "check"], capture_output=True, text=True, check=False)
+    result = subprocess.run(["pip", "check"],
+                            capture_output=True,
+                            text=True,
+                            check=False)
     return result.stdout.strip()
 
 
@@ -77,7 +81,9 @@ def save_to_requirements(packages: Iterable[str]) -> None:
     existing = read_existing_requirements()
     merged = sorted(existing | set(packages))
     REQUIREMENTS_FILE.write_text("\n".join(merged) + "\n", encoding="utf-8")
-    print(f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt")
+    print(
+        f"✔️ Saved {len(packages)} new package(s). Total: {len(merged)} in requirements.txt"
+    )
 
 
 def main() -> None:

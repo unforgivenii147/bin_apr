@@ -13,7 +13,9 @@ def detect_and_save_faces(input_video_path, output_video_path="out.mp4"):
         sys.exit(1)
     cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
     if not Path(cascade_path).exists():
-        print(f"Error: Haar Cascade classifier file not found at '{cascade_path}'")
+        print(
+            f"Error: Haar Cascade classifier file not found at '{cascade_path}'"
+        )
         print("Please download it or ensure OpenCV is correctly installed.")
         sys.exit(1)
     face_cascade = cv2.CascadeClassifier(cascade_path)
@@ -25,7 +27,8 @@ def detect_and_save_faces(input_video_path, output_video_path="out.mp4"):
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-    out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
+    out = cv2.VideoWriter(output_video_path, fourcc, fps,
+                          (frame_width, frame_height))
     if not out.isOpened():
         print(f"Error: Could not open video writer for '{output_video_path}'")
         cap.release()
@@ -39,7 +42,10 @@ def detect_and_save_faces(input_video_path, output_video_path="out.mp4"):
             break
         frame_count += 1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        faces = face_cascade.detectMultiScale(gray,
+                                              scaleFactor=1.1,
+                                              minNeighbors=5,
+                                              minSize=(30, 30))
         for x, y, w, h in faces:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         out.write(frame)
@@ -52,7 +58,9 @@ def detect_and_save_faces(input_video_path, output_video_path="out.mp4"):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python detect_faces.py <input_video_path> [output_video_path]")
+        print(
+            "Usage: python detect_faces.py <input_video_path> [output_video_path]"
+        )
         sys.exit(1)
     input_file = sys.argv[1]
     output_file = "out.mp4"

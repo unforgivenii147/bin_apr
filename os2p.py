@@ -14,14 +14,14 @@ def process_file(fp):
         tree = ast.parse(content)
 
         class OsPathTransformer(ast.NodeTransformer):
+
             def visit_Call(self, node):
-                if (
-                    isinstance(node.func, ast.Attribute)
-                    and isinstance(node.func.value, ast.Name)
-                    and (node.func.value.id == "os")
-                    and (node.func.attr == "path")
-                ):
-                    if isinstance(node.func.value, ast.Attribute) and node.func.attr == "join":
+                if (isinstance(node.func, ast.Attribute) and
+                        isinstance(node.func.value, ast.Name) and
+                    (node.func.value.id == "os") and
+                    (node.func.attr == "path")):
+                    if isinstance(node.func.value,
+                                  ast.Attribute) and node.func.attr == "join":
                         print(
                             f"Warning: os.path.join found in {file_path}. Requires manual review for Path division operator. Node: {ast.dump(node)}"
                         )
@@ -36,7 +36,9 @@ def process_file(fp):
                             f"Info: os.remove found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                         )
                         new_node = ast.Call(
-                            func=ast.Attribute(value=ast.Name(id="Path"), attr="unlink", ctx=ast.Load()),
+                            func=ast.Attribute(value=ast.Name(id="Path"),
+                                               attr="unlink",
+                                               ctx=ast.Load()),
                             args=node.args,
                             keywords=node.keywords,
                         )
@@ -46,13 +48,10 @@ def process_file(fp):
                             f"Info: os.path.splitext found in {file_path}. Replacing with Path.stem/suffix. Node: {ast.dump(node)}"
                         )
                         return node
-                elif (
-                    isinstance(node.func, ast.Name)
-                    and node.func.id == "os"
-                    and node.args
-                    and isinstance(node.args[0], ast.Constant)
-                    and ("remove" in node.args[0].value)
-                ):
+                elif (isinstance(node.func, ast.Name) and
+                      node.func.id == "os" and node.args and
+                      isinstance(node.args[0], ast.Constant) and
+                      ("remove" in node.args[0].value)):
                     print(
                         f"Warning: Direct os.remove(string) call found in {file_path}. Consider using Path.unlink(). Node: {ast.dump(node)}"
                     )
@@ -60,24 +59,26 @@ def process_file(fp):
                 return self.generic_visit(node)
 
             def visit_Attribute(self, node):
-                if isinstance(node.value, ast.Name) and node.value.id == "os" and (node.attr == "remove"):
+                if isinstance(
+                        node.value,
+                        ast.Name) and node.value.id == "os" and (node.attr
+                                                                 == "remove"):
                     print(
                         f"Info: os.remove attribute found in {file_path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                     )
-                    new_node = ast.Attribute(value=ast.Name(id="Path"), attr="unlink", ctx=ast.Load())
+                    new_node = ast.Attribute(value=ast.Name(id="Path"),
+                                             attr="unlink",
+                                             ctx=ast.Load())
                     return ast.copy_location(new_node, node)
                 return self.generic_visit(node)
 
         transformer = OsPathTransformer()
         new_tree = transformer.visit(tree)
         has_pathlib_import = any(
-            (
-                isinstance(node, ast.Import)
-                and any((alias.name == "pathlib" for alias in node.names))
-                or (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
-                for node in ast.walk(new_tree)
-            )
-        )
+            (isinstance(node, ast.Import) and any((alias.name == "pathlib"
+                                                   for alias in node.names)) or
+             (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
+             for node in ast.walk(new_tree)))
         if not has_pathlib_import:
             import_pathlib = ast.Import(names=[ast.alias(name="Path")])
             ast.fix_missing_locations(import_pathlib)

@@ -25,13 +25,15 @@ def parse_csv_exts(s: str | None) -> set[str] | None:
     return norm
 
 
-def file_matches_extensions(file_path: Path, allowed_exts: set[str] | None) -> bool:
+def file_matches_extensions(file_path: Path,
+                            allowed_exts: set[str] | None) -> bool:
     if allowed_exts is None:
         return True
     return file_path.suffix.lower() in allowed_exts
 
 
-def file_matches_exclude(file_path: Path, excluded_exts: set[str] | None) -> bool:
+def file_matches_exclude(file_path: Path,
+                         excluded_exts: set[str] | None) -> bool:
     if excluded_exts is None:
         return False
     return file_path.suffix.lower() in excluded_exts
@@ -49,7 +51,8 @@ def human_size(nbytes: int) -> str:
     return f"{nbytes} B"
 
 
-def safe_copy_file(src: Path, dst_root: Path, rel_path: Path, errors: list[str]) -> None:
+def safe_copy_file(src: Path, dst_root: Path, rel_path: Path,
+                   errors: list[str]) -> None:
     try:
         dst_path = dst_root / rel_path
         dst_path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,6 +63,7 @@ def safe_copy_file(src: Path, dst_root: Path, rel_path: Path, errors: list[str])
 
 
 class ChangeHandler(FileSystemEventHandler):
+
     def __init__(
         self,
         root_dir: Path,
@@ -90,9 +94,11 @@ class ChangeHandler(FileSystemEventHandler):
     def _queue(self, src_path: Path, reason: str) -> None:
         if src_path.exists() and (not src_path.is_file()):
             return
-        if self.allowed_exts is not None and (not file_matches_extensions(src_path, self.allowed_exts)):
+        if self.allowed_exts is not None and (not file_matches_extensions(
+                src_path, self.allowed_exts)):
             return
-        if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
+        if self.excluded_exts is not None and file_matches_exclude(
+                src_path, self.excluded_exts):
             return
         self._pending[src_path] = reason
         self._maybe_flush()
@@ -118,7 +124,10 @@ class ChangeHandler(FileSystemEventHandler):
                 size_str = "deleted"
             print(f"-  /{rel_path.as_posix()} | {reason} | {size_str}")
             if self.copy_enabled and src_path.exists() and src_path.is_file():
-                safe_copy_file(src=src_path, dst_root=self.dest_dir, rel_path=rel_path, errors=self._errors)
+                safe_copy_file(src=src_path,
+                               dst_root=self.dest_dir,
+                               rel_path=rel_path,
+                               errors=self._errors)
         self._pending.clear()
         self._last_flush = time.time()
         if self._errors:
@@ -142,19 +151,28 @@ class ChangeHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         src_path = Path(event.src_path)
-        if self.allowed_exts is not None and (not file_matches_extensions(src_path, self.allowed_exts)):
+        if self.allowed_exts is not None and (not file_matches_extensions(
+                src_path, self.allowed_exts)):
             return
-        if self.excluded_exts is not None and file_matches_exclude(src_path, self.excluded_exts):
+        if self.excluded_exts is not None and file_matches_exclude(
+                src_path, self.excluded_exts):
             return
         self._queue(src_path, "delete")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Watch a folder, print changes, and optionally copy changed/created files.")
-    p.add_argument(
-        "folder", nargs="?", default=str(Path.cwd()), help="Folder to watch (default: current working directory)."
+    p = argparse.ArgumentParser(
+        description=
+        "Watch a folder, print changes, and optionally copy changed/created files."
     )
-    p.add_argument("-c", "--copy", action="store_true", help="Copy changed/created files to destination.")
+    p.add_argument("folder",
+                   nargs="?",
+                   default=str(Path.cwd()),
+                   help="Folder to watch (default: current working directory).")
+    p.add_argument("-c",
+                   "--copy",
+                   action="store_true",
+                   help="Copy changed/created files to destination.")
     p.add_argument(
         "-d",
         "--dest",
@@ -165,20 +183,23 @@ def build_parser() -> argparse.ArgumentParser:
         "-e",
         "--extensions",
         default=None,
-        help="Comma-separated allowlist of file extensions to copy, e.g. 'svg,png,txt'. If omitted, copy all changed/created file types.",
+        help=
+        "Comma-separated allowlist of file extensions to copy, e.g. 'svg,png,txt'. If omitted, copy all changed/created file types.",
     )
     p.add_argument(
         "-x",
         "--exclude",
         default=None,
-        help="Comma-separated list of file extensions to exclude from copying, e.g. 'log,tmp'.",
+        help=
+        "Comma-separated list of file extensions to exclude from copying, e.g. 'log,tmp'.",
     )
     p.add_argument(
         "-i",
         "--interval",
         type=float,
         default=1.0,
-        help="Watch interval (seconds) for batching/printing and copying (default: 1.0).",
+        help=
+        "Watch interval (seconds) for batching/printing and copying (default: 1.0).",
     )
     return p
 

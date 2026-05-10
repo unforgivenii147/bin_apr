@@ -17,7 +17,8 @@ def is_empty_package(dist_info_path) -> bool:
             if not row:
                 continue
             rel_path = row[0]
-            abs_path = Path(os.path.join(Path(dist_info_path).parent, rel_path)).resolve()
+            abs_path = Path(os.path.join(Path(dist_info_path).parent,
+                                         rel_path)).resolve()
             if not abs_path.startswith(Path(dist_info_path).resolve() + os.sep):
                 return False
     return True

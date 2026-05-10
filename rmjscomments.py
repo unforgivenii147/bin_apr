@@ -19,7 +19,9 @@ def process_file(fp):
     code = fp.read_text(encoding="utf-8")
     new_code = re.sub(multi_line_comment_re, "", code, flags=re.DOTALL)
     lines = new_code.splitlines()
-    processed_lines = [re.sub(single_line_comment_re, "", line) for line in lines]
+    processed_lines = [
+        re.sub(single_line_comment_re, "", line) for line in lines
+    ]
     final_code = "\n".join(processed_lines)
     final_code = re.sub("\\n\\s*\\n", "\n\n", final_code)
     final_code = "\n".join((line.rstrip() for line in final_code.splitlines()))
@@ -59,7 +61,8 @@ def main():
                 ".mm",
             ],
         )
-    Parallel(n_jobs=N_JOBS, backend="loky")((delayed(process_file)(f) for f in files))
+    Parallel(n_jobs=N_JOBS,
+             backend="loky")((delayed(process_file)(f) for f in files))
     diffsize = before - gsz(root_dir)
     cprint(f"space change : {fsz(diffsize)}", "cyan")
 

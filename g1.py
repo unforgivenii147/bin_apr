@@ -32,9 +32,15 @@ def get_repo_size(repo_url):
 
 def clone_repo(repo, branch="main"):
     print(f"[INFO] Cloning repository: {repo} (branch: {branch})")
-    cmd = ["git", "clone", "--depth", "1", "--single-branch", "--branch", branch, repo, "--progress"]
+    cmd = [
+        "git", "clone", "--depth", "1", "--single-branch", "--branch", branch,
+        repo, "--progress"
+    ]
     try:
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        process = subprocess.Popen(cmd,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   universal_newlines=True)
         for line in process.stderr:
             line = line.strip()
             if "Receiving objects:" in line:
@@ -80,7 +86,10 @@ def main():
         print("[INFO] Submodules found. Initialize and update? (y/n)")
         if input().lower() == "y":
             print("[INFO] Initializing and updating submodules...")
-            subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True, capture_output=True)
+            subprocess.run(
+                ["git", "submodule", "update", "--init", "--recursive"],
+                check=True,
+                capture_output=True)
             print("[INFO] Submodules updated.")
 
 

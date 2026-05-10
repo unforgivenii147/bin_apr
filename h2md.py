@@ -11,7 +11,8 @@ def convert_html_to_markdown(cwd):
         for file in files:
             if file.endswith(".html"):
                 html_file_path = os.path.join(root, file)
-                md_file_path = os.path.join(root, f"{os.path.splitext(file)[0]}.md")
+                md_file_path = os.path.join(root,
+                                            f"{os.path.splitext(file)[0]}.md")
                 with Path(html_file_path).open(encoding="utf-8") as html_file:
                     html_content = html_file.read()
                     md_content = markdownify(html_content)

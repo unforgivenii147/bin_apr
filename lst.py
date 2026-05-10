@@ -8,7 +8,8 @@ from termcolor import cprint
 if __name__ == "__main__":
     cwd = Path.cwd()
     for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_mtime):
-        mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
+        mtime = datetime.datetime.fromtimestamp(
+            path.stat().st_mtime).strftime("%H:%M")
         if path.is_symlink():
             sz = " symlink "
         elif path.is_file() or path.is_dir():

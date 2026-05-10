@@ -21,7 +21,8 @@ _thread_local = threading.local()
 
 def get_translator():
     if not hasattr(_thread_local, "translator"):
-        _thread_local.translator = GoogleTranslator(source=SRC_LANG, target=TARGET_LANG)
+        _thread_local.translator = GoogleTranslator(source=SRC_LANG,
+                                                    target=TARGET_LANG)
     return _thread_local.translator
 
 
@@ -79,29 +80,36 @@ def process_file(filepath):
     new_lines = list(lines)
     offset_map = {}
     for node in ast.walk(parsed):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Module)):
+        if isinstance(
+                node,
+            (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Module)):
             docstring = ast.get_docstring(node, clean=False)
             if docstring:
                 doc_start = node.body[0].lineno - 1 if node.body else None
                 for lookback in range(3):
                     possible = doc_start - lookback
                     if possible >= 0 and (
-                        lines[possible].lstrip().startswith(DOC_TH1) or lines[possible].lstrip().startswith(DOC_TH2)
-                    ):
+                            lines[possible].lstrip().startswith(DOC_TH1) or
+                            lines[possible].lstrip().startswith(DOC_TH2)):
                         docstring_line = possible
                         break
                 else:
                     continue
                 doc_lines = []
                 line_idx = docstring_line
-                quote_type = DOC_TH1 if lines[line_idx].lstrip().startswith(DOC_TH1) else DOC_TH2
+                quote_type = DOC_TH1 if lines[line_idx].lstrip().startswith(
+                    DOC_TH1) else DOC_TH2
                 while True:
                     doc_lines.append(lines[line_idx])
-                    if lines[line_idx].rstrip().endswith(quote_type) and line_idx != docstring_line:
+                    if lines[line_idx].rstrip().endswith(
+                            quote_type) and line_idx != docstring_line:
                         break
                     line_idx += 1
                 doc_block = "\n".join(doc_lines)
-                doc_body = re.sub(f"^{quote_type}|{quote_type}$", "", doc_block.strip(), flags=re.MULTILINE).strip()
+                doc_body = re.sub(f"^{quote_type}|{quote_type}$",
+                                  "",
+                                  doc_block.strip(),
+                                  flags=re.MULTILINE).strip()
                 translated_doc_body = translate_docstring(doc_body)
                 translated_doc_block = f"{quote_type}\n{translated_doc_body}\n{quote_type}"
                 start = docstring_line + offset_map.get(docstring_line, 0)

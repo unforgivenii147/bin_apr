@@ -65,17 +65,20 @@ def read_metadata(root: Path) -> dict:
 
 
 def find_extensions(root: Path) -> list[str]:
-    return [".".join(f.relative_to(root).with_suffix("").parts) for f in root.rglob("*") if f.suffix in EXT_SUFFIXES]
+    return [
+        ".".join(f.relative_to(root).with_suffix("").parts)
+        for f in root.rglob("*")
+        if f.suffix in EXT_SUFFIXES
+    ]
 
 
-def generate_setup_py(meta: dict, extensions: list[str], entry_points: dict[str, list[str]]) -> str:
+def generate_setup_py(meta: dict, extensions: list[str],
+                      entry_points: dict[str, list[str]]) -> str:
     ext_block = (
-        "from setuptools import Extension\n\next_modules = [\n"
-        + "\n".join((f'''    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),''' for m in extensions))
-        + "\n]\n"
-        if extensions
-        else "ext_modules = []\n"
-    )
+        "from setuptools import Extension\n\next_modules = [\n" + "\n".join(
+            (f'''    Extension("{m}", sources=["{m.replace(".", "/")}.*"]),'''
+             for m in extensions)) +
+        "\n]\n" if extensions else "ext_modules = []\n")
     ep_block = ""
     if entry_points:
         formatted = "{\n"
@@ -105,10 +108,12 @@ def main() -> None:
     out_dir = Path("output") / meta["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(root, out_dir, dirs_exist_ok=True)
-    (out_dir / "setup.py").write_text(generate_setup_py(meta, extensions, entry_points))
+    (out_dir / "setup.py").write_text(
+        generate_setup_py(meta, extensions, entry_points))
     (out_dir / "pyproject.toml").write_text(generate_pyproject_toml())
     print(f"✔ setup.py generated for {meta['name']}")
-    print("✔ binary extensions detected" if extensions else "✔ pure Python package")
+    print("✔ binary extensions detected"
+          if extensions else "✔ pure Python package")
 
 
 if __name__ == "__main__":

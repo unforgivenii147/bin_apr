@@ -11,6 +11,7 @@ from loguru import logger
 
 
 class ImportVisitor(ast.NodeVisitor):
+
     def __init__(self) -> None:
         self.imports = set()
 
@@ -39,9 +40,11 @@ def find_imports(start_path):
         except (SyntaxError, UnicodeDecodeError):
             continue
     local_files = {p.stem for p in start_path.glob("*.py")}
-    return sorted(
-        [imp for imp in all_imports if imp not in std_libs and imp not in local_files and (imp != "__future__")]
-    )
+    return sorted([
+        imp for imp in all_imports
+        if imp not in std_libs and imp not in local_files and
+        (imp != "__future__")
+    ])
 
 
 def get_version(module_name):
@@ -55,7 +58,8 @@ def get_version(module_name):
             return "Not Installed"
         mod = importlib.import_module(module_name)
         for k, v in mod.__dict__.items():
-            if ("version" in k.lower() or "ver" in k.lower()) and isinstance(v, (str, numbers.Number)):
+            if ("version" in k.lower() or "ver" in k.lower()) and isinstance(
+                    v, (str, numbers.Number)):
                 return str(v)
     except Exception:
         return "Not Installed(unknown)"
@@ -82,16 +86,9 @@ def main():
     cleaned = []
     with Path(output_file).open(encoding="utf-8") as fin:
         lines = fin.readlines()
-        cleaned.extend(
-            (
-                line.rstrip()
-                .replace("Not Installed", "")
-                .replace("==(NA)", "")
-                .replace("==(unknown)", "")
-                .replace("==", "")
-                for line in lines
-            )
-        )
+        cleaned.extend((line.rstrip().replace("Not Installed", "").replace(
+            "==(NA)", "").replace("==(unknown)", "").replace("==", "")
+                        for line in lines))
     pkgz = get_installed_pkgs()
     cleaned = [p for p in cleaned if p not in pkgz and (not p.startswith("_"))]
     if cleaned:

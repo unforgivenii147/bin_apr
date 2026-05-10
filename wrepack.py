@@ -11,7 +11,10 @@ WHEELS_OUTPUT_DIR = None
 
 
 def find_dist_info_dir(pkg_dir: Path) -> Path | None:
-    candidates = [p for p in pkg_dir.iterdir() if p.is_dir() and p.name.endswith(".dist-info")]
+    candidates = [
+        p for p in pkg_dir.iterdir()
+        if p.is_dir() and p.name.endswith(".dist-info")
+    ]
     if not candidates:
         return None
     if len(candidates) > 1:
@@ -34,12 +37,14 @@ def create_wheel_for_dir(pkg_dir: Path, dest_dir: Path | None = None):
         print(f"Error loading metadata from {dist_info}: {e}")
         print("Skipping this directory.")
         return
-    output_path = dest_dir / wheel_filename if dest_dir else Path(wheel_filename)
+    output_path = dest_dir / wheel_filename if dest_dir else Path(
+        wheel_filename)
     if dest_dir:
         dest_dir.mkdir(parents=True, exist_ok=True)
     print(f"Packing {pkg_dir} -> {output_path}")
     try:
-        with WheelFile(str(output_path), "w", compression=zipfile.ZIP_DEFLATED) as wf:
+        with WheelFile(str(output_path), "w",
+                       compression=zipfile.ZIP_DEFLATED) as wf:
             for item in pkg_dir.rglob("*"):
                 if item.is_file():
                     arcname = item.relative_to(pkg_dir).as_posix()
@@ -66,7 +71,8 @@ def main():
                     create_wheel_for_dir(entry, dest_dir=WHEELS_OUTPUT_DIR)
                     processed_count += 1
                 except Exception as e:
-                    print(f"Critical error while processing {entry}: {e}", file=sys.stderr)
+                    print(f"Critical error while processing {entry}: {e}",
+                          file=sys.stderr)
     print(f"\nDone. Processed {processed_count} directories.")
 
 

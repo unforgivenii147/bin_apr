@@ -59,7 +59,9 @@ def group_similar(names: list[str], threshold: float = 0.8):
 
 def main():
     cwd = Path.cwd()
-    counter = Counter((cliner(p.name) for p in cwd.rglob("*") if p.is_file() and (not p.is_symlink())))
+    counter = Counter((cliner(p.name)
+                       for p in cwd.rglob("*")
+                       if p.is_file() and (not p.is_symlink())))
     for name, count in counter.most_common(100):
         if count > 2:
             print(f"{name}: {count}")

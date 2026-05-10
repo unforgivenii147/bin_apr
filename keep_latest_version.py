@@ -19,7 +19,8 @@ def cdeb(fp):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    wheel_pattern = re.compile("(?P<name>.+)-(?P<version>\\d+(\\.\\d+)+).*\\.whl")
+    wheel_pattern = re.compile(
+        "(?P<name>.+)-(?P<version>\\d+(\\.\\d+)+).*\\.whl")
     deb_pattern = re.compile("(?P<name>.+)_(?P<version>\\d+(\\.\\d+)+).*\\.deb")
     files = get_files(cwd, extensions=[".metadata", ".whl", ".deb"])
     print(f"{len(files)} files found.")

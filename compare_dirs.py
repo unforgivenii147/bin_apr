@@ -21,7 +21,8 @@ def get_sha256(path: str | Path) -> str:
     return h.hexdigest()
 
 
-def write_shell_copy(script_path: Path, src_root: Path, dst_root: Path, only_dirs, only_files):
+def write_shell_copy(script_path: Path, src_root: Path, dst_root: Path,
+                     only_dirs, only_files):
     with script_path.open("w", encoding="utf-8") as sh:
         sh.write("#!/bin/sh\n")
         for d in sorted(only_dirs):
@@ -49,7 +50,11 @@ def main():
     s_files = [p.name for p in second if p.is_file()]
     s_dirs = [p.name for p in second if p.is_dir()]
     common1 = [Path(dir1).resolve() / p for p in f_files if p in s_files]
-    common2 = {str(Path(dir1).resolve() / p): str(Path(dir2).resolve() / p) for p in f_files if p in s_files}
+    common2 = {
+        str(Path(dir1).resolve() / p): str(Path(dir2).resolve() / p)
+        for p in f_files
+        if p in s_files
+    }
     if common1:
         for k in common1:
             print(f"  - {k}")

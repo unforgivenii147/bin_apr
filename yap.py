@@ -34,7 +34,11 @@ def is_binary(path: Path | str) -> bool:
 
 
 def get_lines(fp):
-    return [p.strip() for p in fp.read_text(encoding="utf-8").splitlines() if p.strip()]
+    return [
+        p.strip()
+        for p in fp.read_text(encoding="utf-8").splitlines()
+        if p.strip()
+    ]
 
 
 def is_python_file(path: str | Path) -> bool:
@@ -94,13 +98,16 @@ def format_single_file(file_path, args) -> bool:
     try:
         original_code: str = file_path.read_text(encoding="utf-8")
         if args.raui:
-            code = fix_with_autoflake(original_code, remove_all_unused_imports=True)
+            code = fix_with_autoflake(original_code,
+                                      remove_all_unused_imports=True)
             file_path.write_text(code, encoding="utf-8")
         if args.isort:
             code = fix_with_isort(original_code)
             file_path.write_text(code, encoding="utf-8")
         if args.black:
-            code = format_str(original_code, mode=_Mode(target_versions={_tv.PY310, _tv.PY313}, line_length=120))
+            code = format_str(original_code,
+                              mode=_Mode(target_versions={_tv.PY310, _tv.PY313},
+                                         line_length=120))
             file_path.write_text(code, encoding="utf-8")
         elif args.autopep:
             code = fix_with_autopep(original_code, options={"aggressive": 2})
@@ -119,11 +126,18 @@ def format_single_file(file_path, args) -> bool:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Fast Python API-based formatter (Lazy Loading)")
+    p = argparse.ArgumentParser(
+        description="Fast Python API-based formatter (Lazy Loading)")
     p.add_argument("-b", "--black", action="store_true", help="Use black style")
-    p.add_argument("-a", "--autopep", action="store_true", help="Use autopep8 style")
+    p.add_argument("-a",
+                   "--autopep",
+                   action="store_true",
+                   help="Use autopep8 style")
     p.add_argument("-i", "--isort", action="store_true", help="Sort imports")
-    p.add_argument("-r", "--raui", action="store_true", help="Autoflake cleanup")
+    p.add_argument("-r",
+                   "--raui",
+                   action="store_true",
+                   help="Autoflake cleanup")
     args = p.parse_args()
     cwd = Path.cwd()
     before = gsz(cwd)

@@ -99,13 +99,17 @@ def run_file_command(filepath: Path) -> str | None:
         )
         return result.stdout.strip()
     except FileNotFoundError:
-        print("Error: 'file' command not found. Please ensure it's installed and in your PATH.")
+        print(
+            "Error: 'file' command not found. Please ensure it's installed and in your PATH."
+        )
         return None
     except subprocess.CalledProcessError as e:
         print(f"Error running 'file' command on {filepath}: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred while running 'file' command on {filepath}: {e}")
+        print(
+            f"An unexpected error occurred while running 'file' command on {filepath}: {e}"
+        )
         return None
 
 
@@ -122,11 +126,14 @@ def get_current_extension(filepath: Path) -> str | None:
     return filepath.suffix.lower()
 
 
-def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = None, follow_symlinks: bool = False):
+def find_files_recursively(directory: Path,
+                           ignored_dirs: list[str] | None = None,
+                           follow_symlinks: bool = False):
     if ignored_dirs is None:
         ignored_dirs = [".git", "__pycache__", "node_modules", ".venv", "venv"]
     for item in directory.rglob("*"):
-        if item.is_dir() and any((ignored_dir == item.name for ignored_dir in ignored_dirs)):
+        if item.is_dir() and any(
+            (ignored_dir == item.name for ignored_dir in ignored_dirs)):
             continue
         if item.is_symlink() and (not follow_symlinks):
             continue
@@ -134,13 +141,17 @@ def find_files_recursively(directory: Path, ignored_dirs: list[str] | None = Non
             yield item
 
 
-def detect_and_fix_mismatches(start_directory: Path = Path(), similarity_threshold: int = 70, dry_run: bool = True):
+def detect_and_fix_mismatches(start_directory: Path = Path(),
+                              similarity_threshold: int = 70,
+                              dry_run: bool = True):
     print("--- Starting File Type Mismatch Detection ---")
     print(f"Scanning directory: {start_directory.resolve()}")
     if dry_run:
         print("--- Running in DRY-RUN mode. No files will be renamed. ---")
     else:
-        print("--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---")
+        print(
+            "--- WARNING: Running in LIVE mode. Files WILL be renamed. Ensure you have backups! ---"
+        )
     mismatched_files_found = []
     rename_operations = []
     files_to_process = list(find_files_recursively(start_directory))
@@ -153,32 +164,34 @@ def detect_and_fix_mismatches(start_directory: Path = Path(), similarity_thresho
         if not file_type_desc:
             continue
         detected_ext = get_file_extension_from_type(file_type_desc)
-        is_generic_text = any(
-            (
-                text_type in file_type_desc.lower()
-                for text_type in ["ascii text", "utf-8 unicode text", "iso-8859 text", "plain text"]
-            )
-        )
-        if is_generic_text and current_ext in {".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"}:
+        is_generic_text = any((
+            text_type in file_type_desc.lower() for text_type in
+            ["ascii text", "utf-8 unicode text", "iso-8859 text", "plain text"]
+        ))
+        if is_generic_text and current_ext in {
+                ".txt", ".log", ".csv", ".md", ".ini", ".cfg", ".yml", ".yaml"
+        }:
             continue
         if not detected_ext:
             continue
         if detected_ext.lower() != current_ext.lower():
-            mismatched_files_found.append(
-                {
-                    "filepath": filepath,
-                    "current_extension": current_ext,
-                    "detected_type": file_type_desc,
-                    "detected_extension": detected_ext,
-                }
-            )
+            mismatched_files_found.append({
+                "filepath": filepath,
+                "current_extension": current_ext,
+                "detected_type": file_type_desc,
+                "detected_extension": detected_ext,
+            })
             new_filepath = filepath.with_suffix(detected_ext)
             if new_filepath.exists():
-                print(f"  SKIP RENAME: Target file '{new_filepath}' already exists. Cannot rename '{filepath}'.")
-            else:
-                rename_operations.append(
-                    {"source": filepath, "destination": new_filepath, "type_description": file_type_desc}
+                print(
+                    f"  SKIP RENAME: Target file '{new_filepath}' already exists. Cannot rename '{filepath}'."
                 )
+            else:
+                rename_operations.append({
+                    "source": filepath,
+                    "destination": new_filepath,
+                    "type_description": file_type_desc
+                })
                 print(
                     f"  MISMATCH FOUND: '{filepath}' detected as '{file_type_desc}' (suggested extension: {detected_ext})."
                 )
@@ -186,31 +199,50 @@ def detect_and_fix_mismatches(start_directory: Path = Path(), similarity_thresho
     if not mismatched_files_found:
         print("No file extension mismatches detected.")
         return
-    print(f"Found {len(mismatched_files_found)} files with potential extension mismatches.")
+    print(
+        f"Found {len(mismatched_files_found)} files with potential extension mismatches."
+    )
     if not rename_operations:
-        print("No safe rename operations could be planned (e.g., due to existing files or no clear extension mapping).")
+        print(
+            "No safe rename operations could be planned (e.g., due to existing files or no clear extension mapping)."
+        )
         return
-    print(f"\nIdentified {len(rename_operations)} files that can be safely renamed:")
+    print(
+        f"\nIdentified {len(rename_operations)} files that can be safely renamed:"
+    )
     for op in rename_operations:
-        print(f"  - '{op['source']}' -> '{op['destination']}' (Detected as: {op['type_description']})")
+        print(
+            f"  - '{op['source']}' -> '{op['destination']}' (Detected as: {op['type_description']})"
+        )
     if dry_run:
         print("\n--- DRY-RUN MODE ACTIVE ---")
-        print("No files were renamed. To perform renames, set 'dry_run=False' in the script.")
+        print(
+            "No files were renamed. To perform renames, set 'dry_run=False' in the script."
+        )
     else:
         print("\n--- LIVE RENAME MODE ACTIVE ---")
-        confirm = input("Are you sure you want to proceed with renaming these files? (yes/no): ")
+        confirm = input(
+            "Are you sure you want to proceed with renaming these files? (yes/no): "
+        )
         if confirm.lower() == "yes":
             renamed_count = 0
             for op in rename_operations:
                 try:
                     op["source"].rename(op["destination"])
-                    print(f"  Renamed '{op['source']}' to '{op['destination']}'")
+                    print(
+                        f"  Renamed '{op['source']}' to '{op['destination']}'")
                     renamed_count += 1
                 except OSError as e:
-                    print(f"  ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
+                    print(
+                        f"  ERROR renaming '{op['source']}' to '{op['destination']}': {e}"
+                    )
                 except Exception as e:
-                    print(f"  UNEXPECTED ERROR renaming '{op['source']}' to '{op['destination']}': {e}")
-            print(f"\nSuccessfully renamed {renamed_count} out of {len(rename_operations)} planned operations.")
+                    print(
+                        f"  UNEXPECTED ERROR renaming '{op['source']}' to '{op['destination']}': {e}"
+                    )
+            print(
+                f"\nSuccessfully renamed {renamed_count} out of {len(rename_operations)} planned operations."
+            )
         else:
             print("Rename operation cancelled by user.")
     print("\n--- Script Finished ---")

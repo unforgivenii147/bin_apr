@@ -18,7 +18,8 @@ def restructure_text_file(filepath: Path):
         return
     bak_filepath = filepath.with_suffix(filepath.suffix + ".bak")
     try:
-        with filepath.open("r", encoding="utf-8") as src, bak_filepath.open("w", encoding="utf-8") as dst:
+        with filepath.open("r", encoding="utf-8") as src, bak_filepath.open(
+                "w", encoding="utf-8") as dst:
             dst.write(src.read())
         print(f"Backup created at: {bak_filepath}")
     except Exception as e:
@@ -30,7 +31,8 @@ def restructure_text_file(filepath: Path):
         if not paragraph.strip():
             restructured_lines.append("")
             continue
-        sentences = re.split("(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|!)\\s+", paragraph)
+        sentences = re.split(
+            "(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|!)\\s+", paragraph)
         for sentence in sentences:
             if not sentence.strip():
                 continue
@@ -39,18 +41,22 @@ def restructure_text_file(filepath: Path):
             words = sentence.split()
             current_line_words = []
             for word in words:
-                potential_line_length = current_line_length + len(word) + (1 if current_line_words else 0)
+                potential_line_length = current_line_length + len(word) + (
+                    1 if current_line_words else 0)
                 if potential_line_length > 120 and current_line_length > 0:
                     break_point = -1
                     for i, w in enumerate(current_line_words):
                         if w.endswith(","):
                             break_point = i
                     if break_point != -1:
-                        processed_sentence_parts.append(" ".join(current_line_words[: break_point + 1]))
-                        current_line_words = current_line_words[break_point + 1 :]
+                        processed_sentence_parts.append(" ".join(
+                            current_line_words[:break_point + 1]))
+                        current_line_words = current_line_words[break_point +
+                                                                1:]
                         current_line_length = len(" ".join(current_line_words))
                     else:
-                        processed_sentence_parts.append(" ".join(current_line_words))
+                        processed_sentence_parts.append(
+                            " ".join(current_line_words))
                         current_line_words = [word]
                         current_line_length = len(word)
                 else:

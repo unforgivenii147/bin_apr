@@ -15,11 +15,13 @@ def format_python_file(filepath):
     content = ""
     backup_filepath = filepath.with_name(filepath.name + ".bak")
     try:
-        with filepath.open("r", encoding="utf-8") as f_in, backup_filepath.open("w", encoding="utf-8") as f_bak:
+        with filepath.open("r", encoding="utf-8") as f_in, backup_filepath.open(
+                "w", encoding="utf-8") as f_bak:
             content = f_in.read()
             f_bak.write(content)
     except OSError as e:
-        print(f"Error creating backup file {backup_filepath.name}: {e}", file=sys.stderr)
+        print(f"Error creating backup file {backup_filepath.name}: {e}",
+              file=sys.stderr)
         return
     formatted_lines = []
     lines = content.splitlines()
@@ -39,15 +41,18 @@ def format_python_file(filepath):
                 current_multiline_string_lines = [line]
             else:
                 current_multiline_string_lines.append(line)
-                if line.strip().endswith(string_type) and len(line.strip()) > len(string_type):
+                if line.strip().endswith(string_type) and len(
+                        line.strip()) > len(string_type):
                     in_multiline_string = False
                     processed_string = "\n".join(current_multiline_string_lines)
-                    content_to_wrap = processed_string[len(string_type) : -len(string_type)]
+                    content_to_wrap = processed_string[len(string_type
+                                                          ):-len(string_type)]
                     wrapped_content = textwrap.fill(
                         content_to_wrap,
                         width=35,
                         initial_indent=string_type,
-                        subsequent_indent=string_type + " " * (len(string_type) - 1),
+                        subsequent_indent=string_type + " " *
+                        (len(string_type) - 1),
                         break_long_words=False,
                         break_on_hyphens=False,
                     )
@@ -59,15 +64,18 @@ def format_python_file(filepath):
             continue
         if in_multiline_string:
             current_multiline_string_lines.append(line)
-            if line.strip().endswith(string_type) and len(line.strip()) > len(string_type):
+            if line.strip().endswith(string_type) and len(
+                    line.strip()) > len(string_type):
                 in_multiline_string = False
                 processed_string = "\n".join(current_multiline_string_lines)
-                content_to_wrap = processed_string[len(string_type) : -len(string_type)]
+                content_to_wrap = processed_string[len(string_type
+                                                      ):-len(string_type)]
                 wrapped_content = textwrap.fill(
                     content_to_wrap,
                     width=35,
                     initial_indent=string_type,
-                    subsequent_indent=string_type + " " * (len(string_type) - 1),
+                    subsequent_indent=string_type + " " *
+                    (len(string_type) - 1),
                     break_long_words=False,
                     break_on_hyphens=False,
                 )
@@ -92,7 +100,9 @@ def format_python_file(filepath):
                     break_long_words=False,
                     break_on_hyphens=False,
                 )
-                formatted_lines.append(code_part + wrapped_comment[len(comment_indent + "# ") :])
+                formatted_lines.append(code_part +
+                                       wrapped_comment[len(comment_indent +
+                                                           "# "):])
             else:
                 formatted_lines.append(line)
         else:
@@ -104,15 +114,18 @@ def format_python_file(filepath):
         ast.parse(final_formatted_content)
         try:
             Path(filepath).write_text(final_formatted_content, encoding="utf-8")
-            print(f"Successfully formatted {filepath}. Backup created at {backup_filepath}")
+            print(
+                f"Successfully formatted {filepath}. Backup created at {backup_filepath}"
+            )
         except OSError as e:
-            print(f"Error writing formatted content to {filepath}: {e}", file=sys.stderr)
+            print(f"Error writing formatted content to {filepath}: {e}",
+                  file=sys.stderr)
     except SyntaxError as e:
         temp_file = Path("temporary.py")
         temp_file.write_text(final_formatted_content, encoding="utf-8")
         print(
-            f"Error: Formatted code is not parsable by AST. Aborting write operation for {filepath}.", file=sys.stderr
-        )
+            f"Error: Formatted code is not parsable by AST. Aborting write operation for {filepath}.",
+            file=sys.stderr)
         print(f"AST Syntax Error: {e}", file=sys.stderr)
         Path(backup_filepath).replace(filepath)
         print(f"Restored {filepath} from backup.")

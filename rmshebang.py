@@ -30,7 +30,8 @@ def main() -> None:
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        cwd, extensions=[".py"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

@@ -83,7 +83,8 @@ def download_one(url, session, output_dir, resume_from=None):
     if offset > 0:
         headers["Range"] = f"bytes={offset}-"
     try:
-        with session.get(url, timeout=TIMEOUT, headers=headers, stream=True) as r:
+        with session.get(url, timeout=TIMEOUT, headers=headers,
+                         stream=True) as r:
             r.raise_for_status()
             content_length = int(r.headers.get("Content-Length", 0))
             total_size = content_length + offset if content_length else None
@@ -110,11 +111,16 @@ def download_urls(urls, output_dir=OUTPUT_DIR):
         return
     print(f"🚀 Starting download of {len(safe_urls)} URLs...\n")
     session = requests.Session()
-    session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; ResumableDownloader/1.0)"})
+    session.headers.update(
+        {"User-Agent": "Mozilla/5.0 (compatible; ResumableDownloader/1.0)"})
     results = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        future_to_url = {executor.submit(download_one, url, session, output_dir): url for url in safe_urls}
-        with tqdm(total=len(safe_urls), desc="Downloading", unit="file") as pbar:
+        future_to_url = {
+            executor.submit(download_one, url, session, output_dir): url
+            for url in safe_urls
+        }
+        with tqdm(total=len(safe_urls), desc="Downloading",
+                  unit="file") as pbar:
             for future in as_completed(future_to_url):
                 url = future_to_url[future]
                 try:
@@ -132,7 +138,11 @@ def download_urls(urls, output_dir=OUTPUT_DIR):
 if __name__ == "__main__":
     try:
         with Path(URLS_FILE).open("r", encoding="utf-8") as f:
-            urls = [line.strip() for line in f if line.strip() and (not line.startswith("#"))]
+            urls = [
+                line.strip()
+                for line in f
+                if line.strip() and (not line.startswith("#"))
+            ]
     except FileNotFoundError:
         print(f"❌ Error: {URLS_FILE} not found.")
         sys.exit(1)

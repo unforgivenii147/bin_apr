@@ -21,12 +21,15 @@ def compress_chunk(data, quality=QUALITY):
 def parallel_compress(in_path, out_path):
     file_size = in_path.stat().st_size
     chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
-    with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
+    with out_path.open("wb", buffering=1024 *
+                       1024) as fout, in_path.open("rb") as fin:
         mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
-        chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
+        chunks = [
+            mm[i * CHUNK_SIZE:min((i + 1) * CHUNK_SIZE, file_size)]
+            for i in range(chunk_count)
+        ]
         compressed_chunks = Parallel(n_jobs=N_JOBS, backend="loky")(
-            (delayed(compress_chunk)(chunk) for chunk in chunks)
-        )
+            (delayed(compress_chunk)(chunk) for chunk in chunks))
         for block in compressed_chunks:
             fout.write(len(block).to_bytes(4, "big"))
             fout.write(block)
@@ -53,7 +56,8 @@ def main():
     root_dir = Path.cwd()
     before = gsz(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir,
+                                                               recursive=True)
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)

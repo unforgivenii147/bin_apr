@@ -93,9 +93,12 @@ def translate_file(input_file, source_lang="auto"):
     pbar = tqdm(total=total_chunks, desc="Translating", unit="chunk")
     try:
         for i, chunk in enumerate(chunks):
-            print(f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)...")
+            print(
+                f"\n[INFO] Translating chunk {i + 1}/{total_chunks} ({len(chunk)} chars)..."
+            )
             try:
-                translated_chunk, detected_lang = translate_chunk(chunk, source_lang)
+                translated_chunk, detected_lang = translate_chunk(
+                    chunk, source_lang)
                 translated_chunks.append(translated_chunk)
                 pbar.update(1)
             except Exception as e:
@@ -116,7 +119,9 @@ def main():
         print(f"  {sys.argv[0]} document.txt")
         print(f"  {sys.argv[0]} file.txt de")
         print(f"  {sys.argv[0]}document.txt en")
-        print("\nSupported languages:  auto, en ,fa , fr, de, es, it, pt, ru, zh, ja, ko, ar, etc.")
+        print(
+            "\nSupported languages:  auto, en ,fa , fr, de, es, it, pt, ru, zh, ja, ko, ar, etc."
+        )
         sys.exit(1)
     input_file = sys.argv[1]
     source_lang = sys.argv[2] if len(sys.argv) > 2 else "auto"
@@ -126,7 +131,9 @@ def main():
     output_file = get_output_filename(input_file)
     if Path(output_file).exists():
         print(f"[INFO] Output file already exists: {output_file}")
-        print(f"[INFO] Skipping translation (delete {output_file} to re-translate)")
+        print(
+            f"[INFO] Skipping translation (delete {output_file} to re-translate)"
+        )
         sys.exit(0)
     print(f"[INFO] Input:   {input_file}")
     print(f"[INFO] Output: {output_file}")

@@ -18,7 +18,8 @@ def is_english(text):
 def translate_filename(filename):
     name, ext = os.path.splitext(filename)
     try:
-        translated = GoogleTranslator(source="auto", target="en").translate(name)
+        translated = GoogleTranslator(source="auto",
+                                      target="en").translate(name)
         return translated + ext
     except Exception as e:
         print(f"Translation error for {filename}: {e}")

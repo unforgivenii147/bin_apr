@@ -109,7 +109,8 @@ def open_tar_from_zst_path(path):
         return (None, None)
 
 
-def process_zipfile_zipped(zipf, max_bytes, exts, found, recursion_depth, max_recursion):
+def process_zipfile_zipped(zipf, max_bytes, exts, found, recursion_depth,
+                           max_recursion):
     for zi in zipf.infolist():
         if zi.is_dir():
             continue
@@ -122,12 +123,15 @@ def process_zipfile_zipped(zipf, max_bytes, exts, found, recursion_depth, max_re
         except Exception:
             continue
         if recursion_depth < max_recursion and is_archive_name(name):
-            process_bytes_as_archive(b, name, max_bytes, exts, found, recursion_depth + 1, max_recursion)
+            process_bytes_as_archive(b, name, max_bytes, exts, found,
+                                     recursion_depth + 1, max_recursion)
         else:
-            found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+            found.update(scan_bytes_for_urls(b, max_bytes, exts,
+                                             name_hint=name))
 
 
-def process_tarfile_obj(tarf, max_bytes, exts, found, recursion_depth, max_recursion):
+def process_tarfile_obj(tarf, max_bytes, exts, found, recursion_depth,
+                        max_recursion):
     for member in tarf.getmembers():
         if not member.isfile():
             continue
@@ -142,37 +146,53 @@ def process_tarfile_obj(tarf, max_bytes, exts, found, recursion_depth, max_recur
         except Exception:
             continue
         if recursion_depth < max_recursion and is_archive_name(name):
-            process_bytes_as_archive(b, name, max_bytes, exts, found, recursion_depth + 1, max_recursion)
+            process_bytes_as_archive(b, name, max_bytes, exts, found,
+                                     recursion_depth + 1, max_recursion)
         else:
-            found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+            found.update(scan_bytes_for_urls(b, max_bytes, exts,
+                                             name_hint=name))
 
 
-def process_bytes_as_archive(b, name, max_bytes, exts, found, recursion_depth=0, max_recursion=3):
+def process_bytes_as_archive(b,
+                             name,
+                             max_bytes,
+                             exts,
+                             found,
+                             recursion_depth=0,
+                             max_recursion=3):
     lname = name.lower()
     bio = io.BytesIO(b)
     try:
         if lname.endswith((".zip", ".whl")):
             try:
                 with zipfile.ZipFile(bio) as zf:
-                    process_zipfile_zipped(zf, max_bytes, exts, found, recursion_depth, max_recursion)
+                    process_zipfile_zipped(zf, max_bytes, exts, found,
+                                           recursion_depth, max_recursion)
             except zipfile.BadZipFile:
-                found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+                found.update(
+                    scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
             return
-        if any((lname.endswith(suf) for suf in (".tar", ".tar.gz", ".tgz", ".tar.xz", ".txz", ".tar.bz2", ".tbz2"))):
+        if any((lname.endswith(suf)
+                for suf in (".tar", ".tar.gz", ".tgz", ".tar.xz", ".txz",
+                            ".tar.bz2", ".tbz2"))):
             try:
                 bio.seek(0)
                 with tarfile.open(fileobj=bio, mode="r:*") as tf:
-                    process_tarfile_obj(tf, max_bytes, exts, found, recursion_depth, max_recursion)
+                    process_tarfile_obj(tf, max_bytes, exts, found,
+                                        recursion_depth, max_recursion)
             except tarfile.ReadError:
-                found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+                found.update(
+                    scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
             return
         if lname.endswith(".tar.zst"):
             if zstd is None:
-                found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+                found.update(
+                    scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
                 return
             try:
                 dctx = zstd.ZstdDecompressor()
-                with dctx.stream_reader(io.BytesIO(b)) as reader, tempfile.TemporaryFile() as tmpf:
+                with dctx.stream_reader(io.BytesIO(
+                        b)) as reader, tempfile.TemporaryFile() as tmpf:
                     while True:
                         chunk = reader.read(16384)
                         if not chunk:
@@ -181,12 +201,18 @@ def process_bytes_as_archive(b, name, max_bytes, exts, found, recursion_depth=0,
                     tmpf.seek(0)
                     try:
                         with tarfile.open(fileobj=tmpf, mode="r:*") as tf:
-                            process_tarfile_obj(tf, max_bytes, exts, found, recursion_depth, max_recursion)
+                            process_tarfile_obj(tf, max_bytes, exts, found,
+                                                recursion_depth, max_recursion)
                     except tarfile.ReadError:
-                        found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+                        found.update(
+                            scan_bytes_for_urls(b,
+                                                max_bytes,
+                                                exts,
+                                                name_hint=name))
                 return
             except Exception:
-                found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
+                found.update(
+                    scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
                 return
         found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=name))
     except Exception:
@@ -205,14 +231,18 @@ def process_path(path, max_bytes, exts, found, recursion_limit=999):
         if any((lname.endswith(suf) for suf in (".zip", ".whl"))):
             try:
                 with zipfile.ZipFile(path) as zf:
-                    process_zipfile_zipped(zf, max_bytes, exts, found, 0, recursion_limit)
+                    process_zipfile_zipped(zf, max_bytes, exts, found, 0,
+                                           recursion_limit)
                 return
             except zipfile.BadZipFile:
                 pass
-        if any((lname.endswith(suf) for suf in (".tar", ".tar.gz", ".tgz", ".tar.xz", ".txz", ".tar.bz2", ".tbz2"))):
+        if any((lname.endswith(suf)
+                for suf in (".tar", ".tar.gz", ".tgz", ".tar.xz", ".txz",
+                            ".tar.bz2", ".tbz2"))):
             try:
                 with tarfile.open(path, mode="r:*") as tf:
-                    process_tarfile_obj(tf, max_bytes, exts, found, 0, recursion_limit)
+                    process_tarfile_obj(tf, max_bytes, exts, found, 0,
+                                        recursion_limit)
                 return
             except (tarfile.ReadError, EOFError):
                 pass
@@ -221,7 +251,11 @@ def process_path(path, max_bytes, exts, found, recursion_limit=999):
                 try:
                     with Path(path).open("rb") as fh:
                         b = fh.read(max_bytes + 1)
-                        found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=path))
+                        found.update(
+                            scan_bytes_for_urls(b,
+                                                max_bytes,
+                                                exts,
+                                                name_hint=path))
                 except Exception:
                     pass
                 return
@@ -229,7 +263,8 @@ def process_path(path, max_bytes, exts, found, recursion_limit=999):
             if tf is None:
                 return
             try:
-                process_tarfile_obj(tf, max_bytes, exts, found, 0, recursion_limit)
+                process_tarfile_obj(tf, max_bytes, exts, found, 0,
+                                    recursion_limit)
             finally:
                 with contextlib.suppress(Exception):
                     tf.close()
@@ -238,7 +273,8 @@ def process_path(path, max_bytes, exts, found, recursion_limit=999):
             return
         with Path(path).open("rb") as fh:
             b = fh.read(max_bytes + 1)
-            found.update(scan_bytes_for_urls(b, max_bytes, exts, name_hint=path))
+            found.update(scan_bytes_for_urls(b, max_bytes, exts,
+                                             name_hint=path))
     except Exception:
         return
 
@@ -253,7 +289,8 @@ def is_github_url(url):
 
 def extract_git_repos(urls):
     repo_urls = []
-    github_regex = re.compile("https?://github\\.com/([^/]+)/([^/]+?)(?:/|$|\\.git|\\?|#)")
+    github_regex = re.compile(
+        "https?://github\\.com/([^/]+)/([^/]+?)(?:/|$|\\.git|\\?|#)")
     for url in urls:
         matchz = github_regex.search(url)
         if matchz:
@@ -283,9 +320,13 @@ def extract_and_save_gitlinks(urllist) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Find URLs in files and supported archives recursively and save them to a file."
+        description=
+        "Find URLs in files and supported archives recursively and save them to a file."
     )
-    parser.add_argument("-o", "--output", default="urls.txt", help="Output file (one URL per line).")
+    parser.add_argument("-o",
+                        "--output",
+                        default="urls.txt",
+                        help="Output file (one URL per line).")
     parser.add_argument(
         "-m",
         "--max-mb",
@@ -297,14 +338,18 @@ def main():
         "-e",
         "--extensions",
         default="",
-        help="Comma-separated list of file extensions to scan (e.g. .py,.md). If empty, all files are scanned. Applies to archive members too.",
+        help=
+        "Comma-separated list of file extensions to scan (e.g. .py,.md). If empty, all files are scanned. Applies to archive members too.",
     )
     parser.add_argument(
-        "--max-recursion", type=int, default=999, help="Max nested-archive recursion depth (default 999)."
-    )
+        "--max-recursion",
+        type=int,
+        default=999,
+        help="Max nested-archive recursion depth (default 999).")
     args = parser.parse_args()
     max_bytes = int(args.max_mb * 1024 * 1024)
-    exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()} if args.extensions else None
+    exts = {e.strip().lower() for e in args.extensions.split(",") if e.strip()
+           } if args.extensions else None
     found = set()
     for root, dirs, files in os.walk(".", topdown=True, followlinks=False):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
@@ -313,7 +358,11 @@ def main():
         for fname in files:
             path = os.path.join(root, fname)
             print(f"processing {os.path.relpath(path)}")
-            process_path(path, max_bytes, exts, found, recursion_limit=args.max_recursion)
+            process_path(path,
+                         max_bytes,
+                         exts,
+                         found,
+                         recursion_limit=args.max_recursion)
     if not found:
         print("no url found")
         sys.exit(0)

@@ -30,7 +30,8 @@ def process_file(fn):
 def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd,
+                                                           extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

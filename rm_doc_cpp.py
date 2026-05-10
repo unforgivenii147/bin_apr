@@ -7,10 +7,11 @@ from loguru import logger
 
 
 class RegexCommentRemover:
+
     def __init__(self) -> None:
         self.pattern = re.compile(
-            "//.*?$|/\\*.*?\\*/|\\'(?:\\\\.|[^\\\\\\'])*\\'|\"(?:\\\\.|[^\\\\\"])*\"", re.DOTALL | re.MULTILINE
-        )
+            "//.*?$|/\\*.*?\\*/|\\'(?:\\\\.|[^\\\\\\'])*\\'|\"(?:\\\\.|[^\\\\\"])*\"",
+            re.DOTALL | re.MULTILINE)
 
     def remove_comments(self, source: str):
 
@@ -57,9 +58,9 @@ def process_file(file_path, remover):
 if __name__ == "__main__":
     dir_path = Path.cwd()
     files = [
-        p
-        for p in dir_path.rglob("*")
-        if p.suffix in {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".C", ".H"} and p.is_file()
+        p for p in dir_path.rglob("*") if p.suffix in
+        {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".C", ".H"} and
+        p.is_file()
     ]
     if not files:
         print("No C/C++ files found")
@@ -86,7 +87,9 @@ if __name__ == "__main__":
         return f"{size:.2f} TB"
 
     print(f"\n{'=' * 60}")
-    print(f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}")
+    print(
+        f"Files: {len(files)} | Changed: {changed} | Unchanged: {nochg} | Errors: {len(errors)}"
+    )
     print(f"Total comment markers removed: ~{total_comments}")
     if errors:
         print("\nErrors in:")

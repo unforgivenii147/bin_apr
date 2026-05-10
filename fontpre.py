@@ -15,7 +15,9 @@ HTML_END = "</body></html>"
 def find_fonts(root="."):
     font_files = []
     for dirpath, _, filenames in os.walk(root):
-        font_files.extend((os.path.join(dirpath, file) for file in filenames if file.lower().endswith(FONT_EXTENSIONS)))
+        font_files.extend((os.path.join(dirpath, file)
+                           for file in filenames
+                           if file.lower().endswith(FONT_EXTENSIONS)))
     return sorted(font_files)
 
 
@@ -33,7 +35,8 @@ def generate_preview(fonts):
         styles += create_font_face(font_path, font_id) + "\n"
         escaped_sample = html.escape(SAMPLE_TEXT)
         sections += f"""\n<section>\n  <h1>{html.escape(font_name)}</h1>\n  <textarea style="font-family: 'f_{font_id}', sans-serif;">{escaped_sample}</textarea>\n  <p class="note">{html.escape(font_path)}</p>\n</section>\n"""
-    return HTML_START.replace("</style>", styles + "\n</style>") + sections + HTML_END
+    return HTML_START.replace("</style>",
+                              styles + "\n</style>") + sections + HTML_END
 
 
 def main():

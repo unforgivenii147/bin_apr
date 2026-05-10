@@ -44,7 +44,8 @@ def format_size(size_in_bytes):
 
 
 def write_summary(filename: Path | None = None) -> None:
-    total_size, file_count, folder_count, extensions, size_by_ext = scan_directory()
+    total_size, file_count, folder_count, extensions, size_by_ext = scan_directory(
+    )
     summary_lines = []
     summary_lines.append(f"Total size: {format_size(total_size)}\n")
     summary_lines.append("File extensions:\n")
@@ -54,7 +55,9 @@ def write_summary(filename: Path | None = None) -> None:
     summary_lines.append(f"Number of files: {file_count}\n")
     summary_lines.append(f"Number of folders: {folder_count}\n")
     summary_lines.append("Size by extension:\n")
-    sorted_size_by_ext = sorted(size_by_ext.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_size_by_ext = sorted(size_by_ext.items(),
+                                key=operator.itemgetter(1),
+                                reverse=True)
     for ext, size in sorted_size_by_ext:
         summary_lines.append(f"  {ext}: {format_size(size)}\n")
         if filename is None or filename == sys.stderr:
@@ -71,11 +74,13 @@ def write_summary(filename: Path | None = None) -> None:
         print(summary_string)
 
 
-def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> None:
+def create_bar_chart(chart_type: str,
+                     output_filename: str = "dirinfo.png") -> None:
     _, _, _, _, size_by_ext = scan_directory()
     sorted_items = sorted(
-        [(ext, size) for ext, size in size_by_ext.items() if size > 0], key=operator.itemgetter(1), reverse=True
-    )
+        [(ext, size) for ext, size in size_by_ext.items() if size > 0],
+        key=operator.itemgetter(1),
+        reverse=True)
     if not sorted_items:
         print("No data to plot.", file=sys.stderr)
         return
@@ -97,23 +102,29 @@ def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> N
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Analyze directory information.")
+    parser = argparse.ArgumentParser(
+        description="Analyze directory information.")
     parser.add_argument(
-        "-s", "--save", action="store_true", help="Save the report to a file named .dirinfo in the current directory."
+        "-s",
+        "--save",
+        action="store_true",
+        help="Save the report to a file named .dirinfo in the current directory."
     )
     parser.add_argument(
         "-i",
         "--image",
         metavar="FILENAME",
         type=str,
-        help="Save a Matplotlib bar chart of file types and sizes to the specified image file (e.g., chart.png).",
+        help=
+        "Save a Matplotlib bar chart of file types and sizes to the specified image file (e.g., chart.png).",
     )
     parser.add_argument(
         "-t",
         "--type",
         choices=["persian", "english"],
         default="english",
-        help="Specify the language/type of the Matplotlib chart title and labels (default: english).",
+        help=
+        "Specify the language/type of the Matplotlib chart title and labels (default: english).",
     )
     parser.add_argument(
         "path",

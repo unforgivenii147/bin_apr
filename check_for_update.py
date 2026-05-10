@@ -27,7 +27,8 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         output_dir = "output"
         if not Path(output_dir).exists():
             Path(output_dir).mkdir(parents=True)
-        Path(os.path.join(output_dir, f"{pkg_name}_debug.html")).write_text(response.text, encoding="utf-8")
+        Path(os.path.join(output_dir, f"{pkg_name}_debug.html")).write_text(
+            response.text, encoding="utf-8")
         soup = BeautifulSoup(response.text, "html.parser")
         links = soup.find_all("a")
         if not links:
@@ -36,7 +37,8 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
         latest_link_tag = links[-1]
         latest_url = latest_link_tag.get("href")
         if not latest_url:
-            output_data["error"] = "Could not extract URL from the last link tag."
+            output_data[
+                "error"] = "Could not extract URL from the last link tag."
             return output_data
         full_latest_url = urljoin(mirror_url, latest_url)
         preferred_url = None
@@ -54,20 +56,26 @@ def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:
                 if href.endswith(".tar.gz"):
                     preferred_url = urljoin(mirror_url, href)
                     break
-                if href.endswith(".zip") or (href.endswith(".whl") and (not preferred_url)):
+                if href.endswith(".zip") or (href.endswith(".whl") and
+                                             (not preferred_url)):
                     preferred_url = urljoin(mirror_url, href)
         if not preferred_url:
-            output_data["error"] = "Could not find a preferred file type (.tar.gz, .zip, or .whl)."
+            output_data[
+                "error"] = "Could not find a preferred file type (.tar.gz, .zip, or .whl)."
             return output_data
-        version_match = re.search("([\\w.-]+?)-(\\d+\\.\\d+(\\.\\d+)?(-\\w+)?).*\\.(tar\\.gz|zip|whl)", preferred_url)
+        version_match = re.search(
+            "([\\w.-]+?)-(\\d+\\.\\d+(\\.\\d+)?(-\\w+)?).*\\.(tar\\.gz|zip|whl)",
+            preferred_url)
         if version_match:
             output_data["latest_version"] = version_match.group(2)
         else:
-            version_match_fallback = re.search("-(\\d+\\.\\d+(\\.\\d+)?(-\\w+)?)\\.", latest_url)
+            version_match_fallback = re.search(
+                "-(\\d+\\.\\d+(\\.\\d+)?(-\\w+)?)\\.", latest_url)
             if version_match_fallback:
                 output_data["latest_version"] = version_match_fallback.group(1)
             else:
-                output_data["error"] = "Could not extract version number from URL."
+                output_data[
+                    "error"] = "Could not extract version number from URL."
                 return output_data
         output_data["url_of_latest_version"] = preferred_url
     except requests.exceptions.RequestException as e:

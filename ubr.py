@@ -25,7 +25,7 @@ def parallel_decompress(in_path, out_path):
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
             offset = 0
             while offset < file_size:
-                block_size_bytes = mm[offset : offset + 4]
+                block_size_bytes = mm[offset:offset + 4]
                 if len(block_size_bytes) != 4:
                     break
                 block_size = int.from_bytes(block_size_bytes, "big")
@@ -74,7 +74,8 @@ def main():
     root_dir = Path.cwd()
     before = gsz(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir,
+                                                               recursive=True)
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)

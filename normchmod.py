@@ -24,10 +24,13 @@ def normalize_permissions(homedir) -> None:
                 if current_perm != FILE_PERM:
                     if path.parent.name != "bin" and path.suffix != ".sh":
                         path.chmod(FILE_PERM)
-                    print(f"{path.relative_to(cwd)}: {oct(current_perm)} --> {oct(FILE_PERM)}")
+                    print(
+                        f"{path.relative_to(cwd)}: {oct(current_perm)} --> {oct(FILE_PERM)}"
+                    )
                 try:
                     for encod in ["utf-8", "windows-1251"]:
-                        with Path(path).open(errors="ignore", encoding=encod) as f:
+                        with Path(path).open(errors="ignore",
+                                             encoding=encod) as f:
                             f.read()
                 except:
                     print(f"error reading {path.name}")

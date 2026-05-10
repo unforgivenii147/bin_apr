@@ -10,6 +10,7 @@ MAX_BYTE_INDEX = 19
 
 
 class QuickXorHash:
+
     def __init__(self) -> None:
         self._hash = [0] * 20
         self._length = 0
@@ -74,7 +75,10 @@ def find_dups_optimized(root: Path):
         if len(paths) > 1:
             paths_to_hash.extend(paths)
     with ThreadPoolExecutor(max_workers=8) as executor:
-        future_to_path = {executor.submit(calculate_xorhash, path): path for path in paths_to_hash}
+        future_to_path = {
+            executor.submit(calculate_xorhash, path): path
+            for path in paths_to_hash
+        }
         for future in as_completed(future_to_path):
             hash_result, path = future.result()
             if hash_result is not None:

@@ -19,7 +19,8 @@ def process_file(fp: Path):
         for tag in tags:
             idx = line.rfind(tag)
             if idx != -1:
-                last_tag_pos = sum((len(content[j]) for j in range(i))) + idx + len(tag)
+                last_tag_pos = sum(
+                    (len(content[j]) for j in range(i))) + idx + len(tag)
                 break
         if last_tag_pos != -1:
             break

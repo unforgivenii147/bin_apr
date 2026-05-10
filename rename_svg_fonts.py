@@ -24,21 +24,28 @@ def rename_svg_font(file_path_obj):
         return
     font_id = extract_font_id(text)
     if not font_id:
-        print(f'Skipping {file_path_obj.name}: Could not find <font id="..."> tag.')
+        print(
+            f'Skipping {file_path_obj.name}: Could not find <font id="..."> tag.'
+        )
         return
     sanitized_font_id = re.sub('[<>:"/\\\\|?*]', "_", font_id)
     if sanitized_font_id != font_id:
-        print(f"Warning: Sanitized font ID for '{font_id}' in '{file_path_obj.name}' to '{sanitized_font_id}'.")
+        print(
+            f"Warning: Sanitized font ID for '{font_id}' in '{file_path_obj.name}' to '{sanitized_font_id}'."
+        )
         font_id = sanitized_font_id
     new_name_obj = file_path_obj.with_name(font_id + ".svg")
     if new_name_obj == file_path_obj:
-        print(f"No rename needed for {file_path_obj.name}: already correct name.")
+        print(
+            f"No rename needed for {file_path_obj.name}: already correct name.")
         return
     try:
         file_path_obj.rename(new_name_obj)
         print(f"Renamed '{file_path_obj.name}' to '{new_name_obj.name}'")
     except FileExistsError:
-        print(f"Error renaming '{file_path_obj.name}' to '{new_name_obj.name}': Target file already exists.")
+        print(
+            f"Error renaming '{file_path_obj.name}' to '{new_name_obj.name}': Target file already exists."
+        )
     except Exception as e:
         print(f"Error renaming '{file_path_obj.name}': {e}")
 
@@ -53,11 +60,15 @@ if __name__ == "__main__":
         elif input_path.is_file() and input_path.suffix.lower() == ".svg":
             rename_svg_font(input_path)
         else:
-            print(f"Error: Invalid path provided. Must be an SVG file or a directory. Path: {input_path}")
+            print(
+                f"Error: Invalid path provided. Must be an SVG file or a directory. Path: {input_path}"
+            )
             sys.exit(1)
     else:
         current_dir = Path(".")
-        print(f"No file specified. Processing current directory: {current_dir.resolve()}")
+        print(
+            f"No file specified. Processing current directory: {current_dir.resolve()}"
+        )
         processed_count = 0
         for item in current_dir.rglob("*.svg"):
             rename_svg_font(item)

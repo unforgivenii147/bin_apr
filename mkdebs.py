@@ -30,7 +30,13 @@ def get_package_files(pkg):
 def get_package_metadata(pkg):
     fmt = "${Package}\n${Version}\n${Architecture}\n${Maintainer}\n${Description}\n"
     out = run(f"dpkg-query -W -f='{fmt}' {pkg}").splitlines()
-    return {"Package": out[0], "Version": out[1], "Architecture": out[2], "Maintainer": out[3], "Description": out[4]}
+    return {
+        "Package": out[0],
+        "Version": out[1],
+        "Architecture": out[2],
+        "Maintainer": out[3],
+        "Description": out[4]
+    }
 
 
 def create_control_file(path, meta) -> None:
@@ -58,7 +64,10 @@ def build_deb(pkg_dir, output_deb) -> None:
     data_tar = pkg_dir / "data.tar.xz"
     build_tar_xz(pkg_dir / "DEBIAN", control_tar)
     build_tar_xz(pkg_dir / "files", data_tar)
-    subprocess.run(f"ar r {output_deb} {debian_binary} {control_tar} {data_tar}", shell=True, check=True)
+    subprocess.run(
+        f"ar r {output_deb} {debian_binary} {control_tar} {data_tar}",
+        shell=True,
+        check=True)
 
 
 def process_package(pkg) -> str | None:
@@ -84,7 +93,10 @@ def process_package(pkg) -> str | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--workers", type=int, default=multiprocessing.cpu_count(), help="Number of parallel workers")
+    parser.add_argument("--workers",
+                        type=int,
+                        default=multiprocessing.cpu_count(),
+                        help="Number of parallel workers")
     args = parser.parse_args()
     pkgs = ["tor"]
     print(f"[+] Building {len(pkgs)} packages using {args.workers} workers…\n")

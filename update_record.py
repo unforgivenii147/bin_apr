@@ -26,7 +26,8 @@ def calculate_file_hash(filepath: Path) -> str:
             for chunk in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(chunk)
         hash_bytes = sha256_hash.digest()
-        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip("=")
+        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode("ascii").rstrip(
+            "=")
         return f"sha256={hash_b64}"
     except Exception as e:
         logger.exception("Error calculating hash for %s: %s", filepath, e)
@@ -93,16 +94,20 @@ def update_record_file(record_path: Path, dist_info_dir) -> bool:
         if new_hash:
             new_lines.append(f"{relative_path},{new_hash},{new_size}")
         else:
-            logger.warning("Failed to calculate hash for %s, keeping original", relative_path)
+            logger.warning("Failed to calculate hash for %s, keeping original",
+                           relative_path)
             new_lines.append(line)
     record_relative = str(record_path.relative_to(dist_info_dir.parent))
     new_lines.append(f"{record_relative},,")
     if missing_files:
-        print(f"Found {len(missing_files)} missing files in {dist_info_dir.name}:")
+        print(
+            f"Found {len(missing_files)} missing files in {dist_info_dir.name}:"
+        )
         for missing in missing_files:
             print("  - %s", missing)
     try:
-        Path(record_path).write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        Path(record_path).write_text("\n".join(new_lines) + "\n",
+                                     encoding="utf-8")
         print("Successfully updated %s", record_path)
         update_record_self_hash(record_path, dist_info_dir)
         return True
@@ -147,7 +152,8 @@ def scan_and_update():
             updated_count += 1
         else:
             failed_count += 1
-    print("Summary: %s RECORD files updated, %s failed", updated_count, failed_count)
+    print("Summary: %s RECORD files updated, %s failed", updated_count,
+          failed_count)
 
 
 def main():

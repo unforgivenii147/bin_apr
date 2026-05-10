@@ -21,7 +21,11 @@ def process_file(input_path):
     temp_qpdf = input_path.with_name(f"temp_qpdf_{input_path.name}")
     size_before = input_path.stat().st_size
     print(f"Before : {human_size(size_before)}")
-    qpdf_cmd = ["qpdf", "--linearize", "--object-streams=generate", str(input_path), str(temp_qpdf)]
+    qpdf_cmd = [
+        "qpdf", "--linearize", "--object-streams=generate",
+        str(input_path),
+        str(temp_qpdf)
+    ]
     runcmd(qpdf_cmd, show_output=True)
     if temp_qpdf.exists():
         size_after = temp_qpdf.stat().st_size

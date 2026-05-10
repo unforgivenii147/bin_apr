@@ -6,7 +6,8 @@ from datetime import UTC, datetime
 
 
 class StatxTimestamp(ctypes.Structure):
-    _fields_ = [("tv_sec", ctypes.c_int64), ("tv_nsec", ctypes.c_uint32), ("__reserved", ctypes.c_int32)]
+    _fields_ = [("tv_sec", ctypes.c_int64), ("tv_nsec", ctypes.c_uint32),
+                ("__reserved", ctypes.c_int32)]
 
 
 class Statx(ctypes.Structure):
@@ -42,7 +43,8 @@ STATX_BTIME = 2048
 
 def get_creation_time_statx(path):
     statx_buf = Statx()
-    result = libc.statx(AT_FDCWD, path.encode(), 0, STATX_BTIME, ctypes.byref(statx_buf))
+    result = libc.statx(AT_FDCWD, path.encode(), 0, STATX_BTIME,
+                        ctypes.byref(statx_buf))
     if result == 0 and statx_buf.stx_mask & STATX_BTIME:
         timestamp = statx_buf.stx_btime.tv_sec
         return datetime.fromtimestamp(timestamp, tz=UTC)

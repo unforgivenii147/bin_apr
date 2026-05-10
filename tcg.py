@@ -25,7 +25,8 @@ def detect_shebang(content: str) -> str | None:
         return TERMUX_PYTHON
     if stripped.startswith(("import ", "def ", "class ", "!python", "from ")):
         return TERMUX_PYTHON
-    if stripped.startswith(("echo ", "cd ", "export ", "set ", "if ", "for ", "#!/bin/sh")):
+    if stripped.startswith(
+        ("echo ", "cd ", "export ", "set ", "if ", "for ", "#!/bin/sh")):
         return TERMUX_BASH
     return None
 

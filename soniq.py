@@ -26,8 +26,8 @@ def read_lines(path: Path):
     sz = path.stat().st_size
     if sz > THRESHOLD:
         with (
-            path.open("r", encoding="utf-8", errors="ignore") as f,
-            mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm,
+                path.open("r", encoding="utf-8", errors="ignore") as f,
+                mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm,
         ):
             data = mm.read().decode("utf-8", "ignore")
             return data.splitlines()
@@ -43,7 +43,9 @@ def sort_uniq(path: Path, show_diff: bool = False):
     if original_count > 1000:
         num_workers = max(1, cpu_count() - 1)
         chunk_size = len(lines) // num_workers + 1
-        chunks = [lines[i : i + chunk_size] for i in range(0, len(lines), chunk_size)]
+        chunks = [
+            lines[i:i + chunk_size] for i in range(0, len(lines), chunk_size)
+        ]
         with Pool(num_workers) as pool:
             processed = pool.map(_process_chunk, chunks)
         all_lines = [line for group in processed for line in group]
@@ -67,7 +69,8 @@ if __name__ == "__main__":
         print("Usage: python sort_uniq_mp.py <filename> [--diff]")
         sys.exit(1)
     show_diff = True
-    filename_arg = next((a for a in sys.argv[1:] if not a.startswith("--")), None)
+    filename_arg = next((a for a in sys.argv[1:] if not a.startswith("--")),
+                        None)
     if not filename_arg:
         print("Error: missing filename argument.")
         sys.exit(1)

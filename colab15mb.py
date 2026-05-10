@@ -32,7 +32,8 @@ def compress_small_site_packages(max_size_mb=15):
                         for f in files_list:
                             if not f.endswith(".pyc"):
                                 full_path = os.path.join(root, f)
-                                arcname = os.path.relpath(full_path, site_packages_dir)
+                                arcname = os.path.relpath(
+                                    full_path, site_packages_dir)
                                 tar.add(full_path, arcname=arcname)
             elif Path(item_path).is_file():
                 get_size_mb = Path(item_path).stat().st_size / (1024 * 1024)

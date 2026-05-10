@@ -79,7 +79,9 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
     raise PDFTypeError(obj)
 
 
-def dumptrailers(out: TextIO, doc: PDFDocument, show_fallback_xref: bool = False) -> None:
+def dumptrailers(out: TextIO,
+                 doc: PDFDocument,
+                 show_fallback_xref: bool = False) -> None:
     for xref in doc.xrefs:
         if not isinstance(xref, PDFXRefFallback) or show_fallback_xref:
             out.write("<trailer>\n")
@@ -91,7 +93,10 @@ def dumptrailers(out: TextIO, doc: PDFDocument, show_fallback_xref: bool = False
         logger.warning(msg)
 
 
-def dumpallobjs(out: TextIO, doc: PDFDocument, codec: str | None = None, show_fallback_xref: bool = False) -> None:
+def dumpallobjs(out: TextIO,
+                doc: PDFDocument,
+                codec: str | None = None,
+                show_fallback_xref: bool = False) -> None:
     visited = set()
     out.write("<pdf>")
     for xref in doc.xrefs:
@@ -125,7 +130,10 @@ def dumpoutline(
     with Path(fname).open("rb") as fp:
         parser = PDFParser(fp)
         doc = PDFDocument(parser, password)
-        pages = {page.pageid: pageno for pageno, page in enumerate(PDFPage.create_pages(doc), 1)}
+        pages = {
+            page.pageid: pageno
+            for pageno, page in enumerate(PDFPage.create_pages(doc), 1)
+        }
 
         def resolve_dest(dest: object) -> Any:
             if isinstance(dest, (str, bytes)):
@@ -150,7 +158,8 @@ def dumpoutline(
                     action = a
                     if isinstance(action, dict):
                         subtype = action.get("S")
-                        if subtype and repr(subtype) == "/'GoTo'" and action.get("D"):
+                        if subtype and repr(
+                                subtype) == "/'GoTo'" and action.get("D"):
                             dest = resolve_dest(action["D"])
                             pageno = pages[dest[0].objid]
                 s = escape(title)
@@ -175,7 +184,8 @@ LITERAL_EMBEDDEDFILE = LIT("EmbeddedFile")
 def extractembedded(fname: str, password: str, extractdir: str) -> None:
 
     def extract1(objid: int, obj: dict[str, Any]) -> None:
-        filename = Path(obj.get("UF") or cast("bytes", obj.get("F")).decode()).name
+        filename = Path(obj.get("UF") or
+                        cast("bytes", obj.get("F")).decode()).name
         fileref = obj["EF"].get("UF") or obj["EF"].get("F")
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
@@ -199,7 +209,8 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
         for xref in doc.xrefs:
             for objid in xref.get_objids():
                 obj = doc.getobj(objid)
-                if objid not in extracted_objids and isinstance(obj, dict) and (obj.get("Type") is LITERAL_FILESPEC):
+                if objid not in extracted_objids and isinstance(
+                        obj, dict) and (obj.get("Type") is LITERAL_FILESPEC):
                     extracted_objids.add(objid)
                     extract1(objid, obj)
 
@@ -241,54 +252,94 @@ def dumppdf(
 
 def create_parser() -> ArgumentParser:
     parser = ArgumentParser(description=__doc__, add_help=True)
-    parser.add_argument("files", type=str, default=None, nargs="+", help="One or more paths to PDF files.")
-    parser.add_argument("--version", "-v", action="version", version=f"pdfminer.six v{pdfminer.__version__}")
-    parser.add_argument("--debug", "-d", default=False, action="store_true", help="Use debug logging level.")
+    parser.add_argument("files",
+                        type=str,
+                        default=None,
+                        nargs="+",
+                        help="One or more paths to PDF files.")
+    parser.add_argument("--version",
+                        "-v",
+                        action="version",
+                        version=f"pdfminer.six v{pdfminer.__version__}")
+    parser.add_argument("--debug",
+                        "-d",
+                        default=False,
+                        action="store_true",
+                        help="Use debug logging level.")
     procedure_parser = parser.add_mutually_exclusive_group()
-    procedure_parser.add_argument(
-        "--extract-toc", "-T", default=False, action="store_true", help="Extract structure of outline"
-    )
-    procedure_parser.add_argument("--extract-embedded", "-E", type=str, help="Extract embedded files")
-    parse_params = parser.add_argument_group("Parser", description="Used during PDF parsing")
+    procedure_parser.add_argument("--extract-toc",
+                                  "-T",
+                                  default=False,
+                                  action="store_true",
+                                  help="Extract structure of outline")
+    procedure_parser.add_argument("--extract-embedded",
+                                  "-E",
+                                  type=str,
+                                  help="Extract embedded files")
+    parse_params = parser.add_argument_group(
+        "Parser", description="Used during PDF parsing")
     parse_params.add_argument(
-        "--page-numbers", type=int, default=None, nargs="+", help="A space-seperated list of page numbers to parse."
-    )
+        "--page-numbers",
+        type=int,
+        default=None,
+        nargs="+",
+        help="A space-seperated list of page numbers to parse.")
     parse_params.add_argument(
         "--pagenos",
         "-p",
         type=str,
-        help="A comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.",
+        help=
+        "A comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.",
     )
-    parse_params.add_argument("--objects", "-i", type=str, help="Comma separated list of object numbers to extract")
     parse_params.add_argument(
-        "--all", "-a", default=False, action="store_true", help="If the structure of all objects should be extracted"
-    )
+        "--objects",
+        "-i",
+        type=str,
+        help="Comma separated list of object numbers to extract")
+    parse_params.add_argument(
+        "--all",
+        "-a",
+        default=False,
+        action="store_true",
+        help="If the structure of all objects should be extracted")
     parse_params.add_argument(
         "--show-fallback-xref",
         action="store_true",
-        help="Additionally show the fallback xref. Use this if the PDF has zero or only invalid xref's. This setting is ignored if --extract-toc or --extract-embedded is used.",
+        help=
+        "Additionally show the fallback xref. Use this if the PDF has zero or only invalid xref's. This setting is ignored if --extract-toc or --extract-embedded is used.",
     )
     parse_params.add_argument(
-        "--password", "-P", type=str, default="", help="The password to use for decrypting PDF file."
-    )
-    output_params = parser.add_argument_group("Output", description="Used during output generation.")
+        "--password",
+        "-P",
+        type=str,
+        default="",
+        help="The password to use for decrypting PDF file.")
+    output_params = parser.add_argument_group(
+        "Output", description="Used during output generation.")
     output_params.add_argument(
         "--outfile",
         "-o",
         type=str,
         default="-",
-        help='Path to file where output is written. Or "-" (default) to write to stdout.',
+        help=
+        'Path to file where output is written. Or "-" (default) to write to stdout.',
     )
     codec_parser = output_params.add_mutually_exclusive_group()
-    codec_parser.add_argument(
-        "--raw-stream", "-r", default=False, action="store_true", help="Write stream objects without encoding"
-    )
-    codec_parser.add_argument(
-        "--binary-stream", "-b", default=False, action="store_true", help="Write stream objects with binary encoding"
-    )
-    codec_parser.add_argument(
-        "--text-stream", "-t", default=False, action="store_true", help="Write stream objects as plain text"
-    )
+    codec_parser.add_argument("--raw-stream",
+                              "-r",
+                              default=False,
+                              action="store_true",
+                              help="Write stream objects without encoding")
+    codec_parser.add_argument("--binary-stream",
+                              "-b",
+                              default=False,
+                              action="store_true",
+                              help="Write stream objects with binary encoding")
+    codec_parser.add_argument("--text-stream",
+                              "-t",
+                              default=False,
+                              action="store_true",
+                              help="Write stream objects as plain text")
     return parser
 
 
@@ -313,14 +364,22 @@ def main(argv: list[str] | None = None) -> None:
         codec = "text"
     else:
         codec = None
-    with sys.stdout if args.outfile == "-" else Path(args.outfile).open("w", encoding="utf-8") as outfp:
+    with sys.stdout if args.outfile == "-" else Path(args.outfile).open(
+            "w", encoding="utf-8") as outfp:
         for fname in args.files:
             if args.extract_toc:
-                dumpoutline(
-                    outfp, fname, objids, pagenos, password=password, dumpall=args.all, codec=codec, extractdir=None
-                )
+                dumpoutline(outfp,
+                            fname,
+                            objids,
+                            pagenos,
+                            password=password,
+                            dumpall=args.all,
+                            codec=codec,
+                            extractdir=None)
             elif args.extract_embedded:
-                extractembedded(fname, password=password, extractdir=args.extract_embedded)
+                extractembedded(fname,
+                                password=password,
+                                extractdir=args.extract_embedded)
             else:
                 dumppdf(
                     outfp,

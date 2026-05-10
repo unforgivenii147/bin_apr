@@ -13,7 +13,8 @@ from typing import List, Optional, Tuple
 try:
     import brotli
 except ImportError:
-    print("❌ Error: brotlicffi not installed. Run: pip install brotlicffi", file=sys.stderr)
+    print("❌ Error: brotlicffi not installed. Run: pip install brotlicffi",
+          file=sys.stderr)
     sys.exit(1)
 CHUNK_SIZE = 1024 * 1024
 LARGE_FILE_THRESHOLD = 5 * 1024 * 1024
@@ -26,30 +27,52 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-c", "--compress", action="store_true", help="Compress files (default if no op specified)")
-    group.add_argument("-d", "--decompress", action="store_true", help="Decompress .br files")
+    group.add_argument("-c",
+                       "--compress",
+                       action="store_true",
+                       help="Compress files (default if no op specified)")
+    group.add_argument("-d",
+                       "--decompress",
+                       action="store_true",
+                       help="Decompress .br files")
     parser.add_argument(
-        "-f", "--files", nargs="+", metavar="FILE", help="Files to process (default: recursive current dir)"
-    )
-    parser.add_argument("-k", "--keep", action="store_true", help="Keep original files (default: remove after success)")
+        "-f",
+        "--files",
+        nargs="+",
+        metavar="FILE",
+        help="Files to process (default: recursive current dir)")
     parser.add_argument(
-        "--no-tar", action="store_true", help="Disable tar-based subdir compression (process files individually)"
+        "-k",
+        "--keep",
+        action="store_true",
+        help="Keep original files (default: remove after success)")
+    parser.add_argument(
+        "--no-tar",
+        action="store_true",
+        help="Disable tar-based subdir compression (process files individually)"
     )
-    parser.add_argument("-v", "--verbose", action="store_true", help="Show detailed progress")
+    parser.add_argument("-v",
+                        "--verbose",
+                        action="store_true",
+                        help="Show detailed progress")
     return parser.parse_args()
 
 
-def find_files_to_process(base_dir: pathlib.Path, recursive: bool = True) -> List[pathlib.Path]:
+def find_files_to_process(base_dir: pathlib.Path,
+                          recursive: bool = True) -> List[pathlib.Path]:
     files = []
     for p in base_dir.iterdir():
-        if p.is_file() and (not p.name.endswith(".br")) and (not p.name.startswith(".")):
+        if p.is_file() and (not p.name.endswith(".br")) and (
+                not p.name.startswith(".")):
             files.append(p)
         elif p.is_dir() and recursive and (p.name != "__pycache__"):
             files.extend(find_files_to_process(p, recursive))
     return sorted(files)
 
 
-def compress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = False) -> bool:
+def compress_file_chunked(src: pathlib.Path,
+                          dst: pathlib.Path,
+                          verbose: bool = False) -> bool:
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
         with open(src, "rb") as f_in:
@@ -75,7 +98,9 @@ def compress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = 
         return False
 
 
-def decompress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = False) -> bool:
+def decompress_file_chunked(src: pathlib.Path,
+                            dst: pathlib.Path,
+                            verbose: bool = False) -> bool:
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
         with open(src, "rb") as f_in:
@@ -103,7 +128,9 @@ def decompress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool 
 
 
 @contextmanager
-def temp_tar_compression(files: List[pathlib.Path], out_dir: pathlib.Path, verbose: bool = False):
+def temp_tar_compression(files: List[pathlib.Path],
+                         out_dir: pathlib.Path,
+                         verbose: bool = False):
     tar_path = None
     br_path = None
     try:
@@ -127,7 +154,11 @@ def temp_tar_compression(files: List[pathlib.Path], out_dir: pathlib.Path, verbo
                     pass
 
 
-def process_directory(base_dir: pathlib.Path, compress: bool, keep: bool, no_tar: bool, verbose: bool = False) -> int:
+def process_directory(base_dir: pathlib.Path,
+                      compress: bool,
+                      keep: bool,
+                      no_tar: bool,
+                      verbose: bool = False) -> int:
     success_count = 0
     total_files = 0
     files = find_files_to_process(base_dir)
@@ -135,13 +166,17 @@ def process_directory(base_dir: pathlib.Path, compress: bool, keep: bool, no_tar
         if verbose:
             print("ℹ️  No files to process in current directory")
         return 0
-    subdirs = [d for d in base_dir.iterdir() if d.is_dir() and (not d.name.startswith("."))]
+    subdirs = [
+        d for d in base_dir.iterdir()
+        if d.is_dir() and (not d.name.startswith("."))
+    ]
     if subdirs and (not no_tar):
         for subdir in subdirs:
             subdir_files = find_files_to_process(subdir, recursive=False)
             if subdir_files:
                 total_files += len(subdir_files)
-                with temp_tar_compression(subdir_files, base_dir, verbose) as br_file:
+                with temp_tar_compression(subdir_files, base_dir,
+                                          verbose) as br_file:
                     if br_file and br_file.exists():
                         success_count += 1
                         if not keep:
@@ -149,9 +184,13 @@ def process_directory(base_dir: pathlib.Path, compress: bool, keep: bool, no_tar
                                 if f.exists():
                                     f.unlink()
                             if verbose:
-                                print(f"✅ Compressed subdir '{subdir.name}' → {br_file.name}")
+                                print(
+                                    f"✅ Compressed subdir '{subdir.name}' → {br_file.name}"
+                                )
                     elif verbose:
-                        print(f"⚠️  Skipping subdir '{subdir.name}' (compression failed)")
+                        print(
+                            f"⚠️  Skipping subdir '{subdir.name}' (compression failed)"
+                        )
     for f in files:
         total_files += 1
         if compress:
@@ -200,16 +239,20 @@ def main():
             if compress:
                 dst = f.with_suffix(f.suffix + ".br")
                 if f.stat().st_size > LARGE_FILE_THRESHOLD:
-                    print(f"📦 Compressing large file: {f.name} ({f.stat().st_size / (1024 * 1024):.1f} MB)")
+                    print(
+                        f"📦 Compressing large file: {f.name} ({f.stat().st_size / (1024 * 1024):.1f} MB)"
+                    )
                 if compress_file_chunked(f, dst, args.verbose):
                     success += 1
                     if not args.keep:
                         f.unlink()
                 else:
-                    print(f"⚠️  Compression failed for {f.name}", file=sys.stderr)
+                    print(f"⚠️  Compression failed for {f.name}",
+                          file=sys.stderr)
             else:
                 if not f.name.endswith(".br"):
-                    print(f"⚠️  Skipping non-.br file: {f.name}", file=sys.stderr)
+                    print(f"⚠️  Skipping non-.br file: {f.name}",
+                          file=sys.stderr)
                     continue
                 dst = f.with_suffix("")
                 if decompress_file_chunked(f, dst, args.verbose):
@@ -217,13 +260,15 @@ def main():
                     if not args.keep:
                         f.unlink()
                 else:
-                    print(f"⚠️  Decompression failed for {f.name}", file=sys.stderr)
+                    print(f"⚠️  Decompression failed for {f.name}",
+                          file=sys.stderr)
         if args.verbose:
             print(f"\n✅ Processed {len(files)} files, {success} successful")
         sys.exit(0 if success == len(files) else 1)
     else:
         base_dir = pathlib.Path(".")
-        success = process_directory(base_dir, compress, args.keep, args.no_tar, args.verbose)
+        success = process_directory(base_dir, compress, args.keep, args.no_tar,
+                                    args.verbose)
         if args.verbose:
             print(f"\n✅ Completed directory processing")
         sys.exit(0 if success >= 0 else 1)

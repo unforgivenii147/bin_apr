@@ -39,7 +39,8 @@ def main():
         outpath.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        cwd, recursive=True, extensions=[".html", ".htm"])
     mpf3(process_file, files)
 
 

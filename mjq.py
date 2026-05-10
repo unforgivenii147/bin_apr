@@ -17,7 +17,8 @@ def minify_with_jq(path: Path):
     tmp_path = path.with_suffix(path.suffix + ".tmp")
     try:
         size_before = path.stat().st_size
-        result = subprocess.run(["jq", "-c", ".", str(path)], capture_output=True)
+        result = subprocess.run(["jq", "-c", ".", str(path)],
+                                capture_output=True)
         if result.returncode != 0:
             return (str(path), False, 0, 0, result.stderr.decode().strip())
         minified_bytes = result.stdout.strip()
@@ -62,7 +63,8 @@ def main():
     total_before = 0
     total_after = 0
     with Pool(processes=workers) as pool:
-        for filepath, changed, before, after, err in pool.imap_unordered(minify_with_jq, files):
+        for filepath, changed, before, after, err in pool.imap_unordered(
+                minify_with_jq, files):
             if err:
                 print(f"[ERROR] {filepath} -> {err}")
                 errors += 1

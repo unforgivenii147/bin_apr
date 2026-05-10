@@ -9,13 +9,11 @@ cwd = Path.cwd()
 
 
 class DocstringRemover(ast.NodeTransformer):
+
     def _remove_docstring(self, node):
-        if (
-            node.body
-            and isinstance(node.body[0], ast.Expr)
-            and isinstance(node.body[0].value, ast.Constant)
-            and isinstance(node.body[0].value.value, str)
-        ):
+        if (node.body and isinstance(node.body[0], ast.Expr) and
+                isinstance(node.body[0].value, ast.Constant) and
+                isinstance(node.body[0].value.value, str)):
             node.body = node.body[1:]
         return node
 
@@ -63,7 +61,8 @@ def main():
         print("No Python files found.")
         return
     print(f"Discovered {len(python_files)} python-like files...")
-    Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(p) for p in python_files))
+    Parallel(n_jobs=-1, prefer="processes")(
+        (delayed(process_file)(p) for p in python_files))
 
 
 if __name__ == "__main__":

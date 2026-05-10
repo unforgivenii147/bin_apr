@@ -11,6 +11,7 @@ from tree_sitter import Language, Parser
 
 
 class TSRemover:
+
     def __init__(self) -> None:
         self.parser = Parser()
         self.parser.language = Language(tspython.language())
@@ -64,7 +65,8 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd,
+                                                           extensions=[".py"])
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass

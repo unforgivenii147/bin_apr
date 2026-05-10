@@ -41,13 +41,16 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     dirz = []
     otherz = []
-    for path in sorted(cwd.glob("*"), key=lambda e: e.stat().st_ctime, reverse=True):
+    for path in sorted(cwd.glob("*"),
+                       key=lambda e: e.stat().st_ctime,
+                       reverse=True):
         if path.is_dir():
             dirz.append(path)
         else:
             otherz.append(path)
     for f in otherz:
-        ctime = datetime.datetime.fromtimestamp(f.stat().st_ctime).strftime("%D-%H:%M")
+        ctime = datetime.datetime.fromtimestamp(
+            f.stat().st_ctime).strftime("%D-%H:%M")
         if f.is_symlink():
             sz = " \x1b[05;95msymlink "
             print(f"\x1b[05;95m{f.name[:24]:25}\x1b[0m", end=" ")
@@ -70,7 +73,8 @@ if __name__ == "__main__":
         print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
         print(f"\x1b[05;93m{ctime}\x1b[0m")
     for dr in dirz:
-        ctime = datetime.datetime.fromtimestamp(dr.stat().st_ctime).strftime("%D-%H:%M")
+        ctime = datetime.datetime.fromtimestamp(
+            dr.stat().st_ctime).strftime("%D-%H:%M")
         sz = str(fsz(gsz(dr)))
         if len(sz) == 7:
             sz = "  " + sz

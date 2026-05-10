@@ -9,8 +9,8 @@ from packaging import tags
 
 def is_pure_python(requires_python):
     return requires_python is None or all(
-        (tag.interpreter == "py" and tag.abi == "none" and (tag.platform == "any") for tag in tags.sys_tags())
-    )
+        (tag.interpreter == "py" and tag.abi == "none" and
+         (tag.platform == "any") for tag in tags.sys_tags()))
 
 
 def get_package_urls(pkg_name):
@@ -29,7 +29,9 @@ def get_package_urls(pkg_name):
 
 def download_package(pkg_name):
     release_files, _version = get_package_urls(pkg_name)
-    wheel_files = [f for f in release_files if f["packagetype"] == "bdist_wheel"]
+    wheel_files = [
+        f for f in release_files if f["packagetype"] == "bdist_wheel"
+    ]
     sdist_files = [f for f in release_files if f["packagetype"] == "sdist"]
     pure_python_wheel = None
     for wheel in wheel_files:
@@ -52,7 +54,8 @@ def download_package(pkg_name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Download a Python package from PyPI.")
+    parser = argparse.ArgumentParser(
+        description="Download a Python package from PyPI.")
     parser.add_argument("pkg_name", help="Name of the package to download")
     args = parser.parse_args()
     download_package(args.pkg_name)

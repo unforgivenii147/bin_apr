@@ -7,7 +7,9 @@ from io import StringIO
 from pathlib import Path
 from loguru import logger
 
-python_keywords = {"def", "class", "import", "from", "lambda", "yield", "async", "await"}
+python_keywords = {
+    "def", "class", "import", "from", "lambda", "yield", "async", "await"
+}
 
 
 def is_probably_python(lines):
@@ -31,7 +33,8 @@ def looks_like_python(code_block) -> bool | None:
 
 
 def is_python_like(line) -> bool:
-    if re.match("\\s*(def|class|if|elif|else|for|while|try|except|with)\\b.*:", line):
+    if re.match("\\s*(def|class|if|elif|else|for|while|try|except|with)\\b.*:",
+                line):
         return True
     if re.match("\\s*@[A-Za-z_]\\w*", line):
         return True
@@ -47,7 +50,8 @@ if __name__ == "__main__":
         with Path(fname).open(encoding="utf-8") as f:
             lines = f.readlines()
         filtered = [
-            line for line in lines if is_python_like(line) or looks_like_python(line) or is_probably_python(line)
+            line for line in lines if is_python_like(line) or
+            looks_like_python(line) or is_probably_python(line)
         ]
         print(filtered)
         with Path("out.py").open("w", encoding="utf-8") as f:

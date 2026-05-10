@@ -31,7 +31,8 @@ def process_file(path) -> str:
             return None
         if diff_size < 0:
             expantion = (after - before) / after * 100
-            cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%", "yellow")
+            cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%",
+                   "yellow")
             return None
     except Exception as e:
         return f"{path}: {e}"

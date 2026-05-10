@@ -37,7 +37,8 @@ async def fetch_pkg(session: aiohttp.ClientSession, pkg_name: str):
             for a in links:
                 href = a["href"]
                 filename = href.split("/")[-1].split("#")[0]
-                if any((ext in filename for ext in [".tar.gz", ".whl", ".zip"])):
+                if any(
+                    (ext in filename for ext in [".tar.gz", ".whl", ".zip"])):
                     candidates.append((href, filename))
             if not candidates:
                 return {"pkg_name": pkg_name, "error": "No downloadable files"}
@@ -48,7 +49,11 @@ async def fetch_pkg(session: aiohttp.ClientSession, pkg_name: str):
             else:
                 href, filename = others[-1]
                 version = extract_version(filename)
-            return {"pkg_name": pkg_name, "latest_version": version, "url_of_latest_version": href}
+            return {
+                "pkg_name": pkg_name,
+                "latest_version": version,
+                "url_of_latest_version": href
+            }
     except Exception as e:
         return {"pkg_name": pkg_name, "error": str(e)}
 
@@ -62,7 +67,11 @@ async def main():
         print(f"Error: File '{pkg_file}' not found.")
         sys.exit(1)
     with Path(pkg_file).open("r", encoding="utf-8") as f:
-        packages = [line.strip() for line in f if line.strip() and (not line.startswith("#"))]
+        packages = [
+            line.strip()
+            for line in f
+            if line.strip() and (not line.startswith("#"))
+        ]
     if not packages:
         print("No packages found in input file.")
         return
@@ -77,11 +86,14 @@ async def main():
             if "error" in res:
                 print(f"❌ {pkg}: {res['error']}")
             else:
-                print(f"✅ {pkg}: {res['latest_version']} — {res['url_of_latest_version']}")
+                print(
+                    f"✅ {pkg}: {res['latest_version']} — {res['url_of_latest_version']}"
+                )
     results.sort(key=operator.itemgetter("pkg_name"))
     with Path("results.json").open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    print("\n✅ Done. Results saved to `results.json`. HTML saved to `./output/`.")
+    print(
+        "\n✅ Done. Results saved to `results.json`. HTML saved to `./output/`.")
 
 
 if __name__ == "__main__":

@@ -17,7 +17,8 @@ def process_file(fp) -> None:
     pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
     if out != src:
-        code = out.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+        code = out.replace("&lt;", "<").replace("&gt;",
+                                                ">").replace("&amp;", "&")
         fp.write_text(code, encoding="utf-8")
     after = gsz(fp)
     print(f"[OK] {fp.name} ", end="")
@@ -29,7 +30,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm", ".xml"])
+    files = [Path(f) for f in args] if args else get_files(
+        cwd, recursive=True, extensions=[".html", ".htm", ".xml"])
     mpf3(process_file, files)
     diff_size = before - gsz(cwd)
     print(f"space saved : {fsz(diff_size)}")

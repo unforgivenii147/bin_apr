@@ -46,7 +46,8 @@ def main():
     if not found_files:
         print("No other files found created on the same day.")
     else:
-        print(f"Found {len(found_files)} other file(s) created on the same day:")
+        print(
+            f"Found {len(found_files)} other file(s) created on the same day:")
         for file_time, file in found_files:
             print(f"{file_time.strftime('%H:%M:%S')} - {file}")
 

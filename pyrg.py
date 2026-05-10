@@ -11,7 +11,10 @@ from pathlib import Path
 from dh import get_files, is_binary
 
 cwd = Path.cwd()
-IGNORED_DIRS = {".git", ".hg", ".svn", "node_modules", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache"}
+IGNORED_DIRS = {
+    ".git", ".hg", ".svn", "node_modules", "__pycache__", ".ruff_cache",
+    ".pytest_cache", ".mypy_cache"
+}
 BINARY_CHUNK = 32768
 DEFAULT_THREADS = 4
 ANSI_BOLD = "\x1b[1m"
@@ -22,12 +25,14 @@ ANSI_HIGHLIGHT = "\x1b[31m"
 def colorize(text: str, start: int, end: int, enable: bool = True) -> str:
     if not enable:
         return text
-    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[start:end] + ANSI_RESET + text[end:]
+    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[
+        start:end] + ANSI_RESET + text[end:]
 
 
 def matches_any_glob(path: Path, patterns: Iterable[str]) -> bool:
     basename = path.name
-    return any((fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns))
+    return any((fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p)
+                for p in patterns))
 
 
 def search_file_text_mode(
@@ -46,7 +51,8 @@ def search_file_text_mode(
                 line = raw_line.rstrip("\n")
                 spans: list[tuple[int, int]] = []
                 if regex:
-                    spans.extend(((m.start(), m.end()) for m in regex.finditer(line)))
+                    spans.extend(
+                        ((m.start(), m.end()) for m in regex.finditer(line)))
                 else:
                     hay = line.lower() if ignore_case else line
                     needle = fixed.lower() if ignore_case else fixed
@@ -67,22 +73,73 @@ def search_file_text_mode(
 
 
 def build_argparser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="ripgrep-like recursive search in Python")
-    p.add_argument("pattern", nargs="?", help="Regex pattern (positional) or use -e")
-    p.add_argument("-e", "--regexp", dest="pattern_e", help="Pattern (alternative to positional)")
-    p.add_argument("-i", "--ignore-case", action="store_true", help="Case-insensitive search")
-    p.add_argument("--fixed-strings", action="store_true", default=True, help="Fixed string search (no regex)")
-    p.add_argument("-n", "--line-number", default=True, action="store_true", help="Show line numbers")
-    p.add_argument("-l", "--files-with-matches", action="store_true", help="Only print filenames that match")
-    p.add_argument("-c", "--count", action="store_true", help="Print count of matches per file")
-    p.add_argument("-t", "--threads", type=int, default=DEFAULT_THREADS, help="Number of worker threads")
-    p.add_argument("-H", "--hidden", action="store_true", default=True, help="Search hidden files and directories")
-    p.add_argument("-g", "--glob", action="append", help="Include glob (fnmatch); can be repeated")
-    p.add_argument("-x", "--exclude", action="append", help="Exclude glob (fnmatch); can be repeated")
-    p.add_argument("-C", "--no-color", default=False, action="store_true", help="Disable colorized output")
-    p.add_argument("-m", "--max-filesize", type=int, default=10000000, help="Skip files larger than size (bytes)")
-    p.add_argument("-F", "--follow", default=False, action="store_true", help="Follow symlinks")
-    p.add_argument("paths", nargs="*", default=["."], help="Files or directories to search (default: .)")
+    p = argparse.ArgumentParser(
+        description="ripgrep-like recursive search in Python")
+    p.add_argument("pattern",
+                   nargs="?",
+                   help="Regex pattern (positional) or use -e")
+    p.add_argument("-e",
+                   "--regexp",
+                   dest="pattern_e",
+                   help="Pattern (alternative to positional)")
+    p.add_argument("-i",
+                   "--ignore-case",
+                   action="store_true",
+                   help="Case-insensitive search")
+    p.add_argument("--fixed-strings",
+                   action="store_true",
+                   default=True,
+                   help="Fixed string search (no regex)")
+    p.add_argument("-n",
+                   "--line-number",
+                   default=True,
+                   action="store_true",
+                   help="Show line numbers")
+    p.add_argument("-l",
+                   "--files-with-matches",
+                   action="store_true",
+                   help="Only print filenames that match")
+    p.add_argument("-c",
+                   "--count",
+                   action="store_true",
+                   help="Print count of matches per file")
+    p.add_argument("-t",
+                   "--threads",
+                   type=int,
+                   default=DEFAULT_THREADS,
+                   help="Number of worker threads")
+    p.add_argument("-H",
+                   "--hidden",
+                   action="store_true",
+                   default=True,
+                   help="Search hidden files and directories")
+    p.add_argument("-g",
+                   "--glob",
+                   action="append",
+                   help="Include glob (fnmatch); can be repeated")
+    p.add_argument("-x",
+                   "--exclude",
+                   action="append",
+                   help="Exclude glob (fnmatch); can be repeated")
+    p.add_argument("-C",
+                   "--no-color",
+                   default=False,
+                   action="store_true",
+                   help="Disable colorized output")
+    p.add_argument("-m",
+                   "--max-filesize",
+                   type=int,
+                   default=10000000,
+                   help="Skip files larger than size (bytes)")
+    p.add_argument("-F",
+                   "--follow",
+                   default=False,
+                   action="store_true",
+                   help="Follow symlinks")
+    p.add_argument("paths",
+                   nargs="*",
+                   default=["."],
+                   help="Files or directories to search (default: .)")
     return p
 
 
@@ -91,7 +148,8 @@ def main(argv: list[str] | None = None) -> int:
     args = build_argparser().parse_args(argv)
     pattern = args.pattern_e or args.pattern
     if not pattern:
-        print("No pattern provided. Use positional PATTERN or -e PATTERN.", file=sys.stderr)
+        print("No pattern provided. Use positional PATTERN or -e PATTERN.",
+              file=sys.stderr)
         return 2
     ignore_case = args.ignore_case
     fixed = args.fixed_strings
@@ -143,7 +201,9 @@ def main(argv: list[str] | None = None) -> int:
                     for lineno, line, spans in matches:
                         out_line = line
                         if color and spans:
-                            for s, e in sorted(spans, key=operator.itemgetter(0), reverse=True):
+                            for s, e in sorted(spans,
+                                               key=operator.itemgetter(0),
+                                               reverse=True):
                                 out_line = colorize(out_line, s, e, enable=True)
                         if args.line_number:
                             print(f"{path}:{lineno}:{out_line}")

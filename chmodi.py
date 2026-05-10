@@ -27,10 +27,13 @@ def denormalize_permissions(root_dir: str) -> None:
             elif path.is_file():
                 if current_perm != FILE_PERM:
                     Path(path).chmod(FILE_PERM)
-                    print(f"Set permissions for file: {path} from {oct(current_perm)} to {oct(FILE_PERM)}")
+                    print(
+                        f"Set permissions for file: {path} from {oct(current_perm)} to {oct(FILE_PERM)}"
+                    )
                 try:
                     for encod in ["utf-8", "windows-1251"]:
-                        with Path(path).open(errors="ignore", encoding=encod) as f:
+                        with Path(path).open(errors="ignore",
+                                             encoding=encod) as f:
                             f.read()
                 except:
                     print(f"error reading {path.name}")

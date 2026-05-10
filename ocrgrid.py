@@ -24,7 +24,8 @@ def to_grayscale(img: np.ndarray) -> np.ndarray:
 
 def rescale(img: np.ndarray, scale: float = 2.0) -> np.ndarray:
     h, w = img.shape[:2]
-    return cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_CUBIC)
+    return cv2.resize(img, (int(w * scale), int(h * scale)),
+                      interpolation=cv2.INTER_CUBIC)
 
 
 def deskew(img: np.ndarray) -> np.ndarray:
@@ -35,7 +36,10 @@ def deskew(img: np.ndarray) -> np.ndarray:
     h, w = img.shape[:2]
     center = (w // 2, h // 2)
     m = cv2.getRotationMatrix2D(center, angle, 1.0)
-    return cv2.warpAffine(img, m, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return cv2.warpAffine(img,
+                          m, (w, h),
+                          flags=cv2.INTER_CUBIC,
+                          borderMode=cv2.BORDER_REPLICATE)
 
 
 def rotate(img: np.ndarray, angle: int) -> np.ndarray:
@@ -45,7 +49,8 @@ def rotate(img: np.ndarray, angle: int) -> np.ndarray:
     return cv2.warpAffine(img, m, (w, h), flags=cv2.INTER_CUBIC)
 
 
-def run_tesseract(img: Image.Image, psm: int, oem: int, dpi: int) -> dict[str, str]:
+def run_tesseract(img: Image.Image, psm: int, oem: int,
+                  dpi: int) -> dict[str, str]:
     config = f"--psm {psm} --oem {oem} -c user_defined_dpi={dpi}"
     text = pytesseract.image_to_string(img, config=config)
     return {"psm": psm, "oem": oem, "dpi": dpi, "config": config, "text": text}
@@ -83,15 +88,24 @@ def main() -> None:
                     txt_path.write_text(result["text"], encoding="utf-8")
                     meta_path.write_text(
                         json.dumps(
-                            {"image_variant": variant_name, "source_file": str(args.fname), "tesseract": result},
+                            {
+                                "image_variant": variant_name,
+                                "source_file": str(args.fname),
+                                "tesseract": result
+                            },
                             indent=2,
                         ),
                         encoding="utf-8",
                     )
-                    report_index.append(
-                        {"variant": variant_name, "psm": psm, "oem": oem, "dpi": dpi, "text_file": str(txt_path)}
-                    )
-    (args.out / "index.json").write_text(json.dumps(report_index, indent=2), encoding="utf-8")
+                    report_index.append({
+                        "variant": variant_name,
+                        "psm": psm,
+                        "oem": oem,
+                        "dpi": dpi,
+                        "text_file": str(txt_path)
+                    })
+    (args.out / "index.json").write_text(json.dumps(report_index, indent=2),
+                                         encoding="utf-8")
 
 
 if __name__ == "__main__":

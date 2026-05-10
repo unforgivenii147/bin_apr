@@ -7,7 +7,10 @@ from loguru import logger
 
 
 def get_all_files(root: Path) -> list[Path]:
-    return [p for p in root.rglob("*") if p.is_file() and (not p.name.startswith(".")) and (p.name != "folderize.py")]
+    return [
+        p for p in root.rglob("*") if p.is_file() and
+        (not p.name.startswith(".")) and (p.name != "folderize.py")
+    ]
 
 
 def safe_rename(src: Path, dest_dir: Path) -> Path:
@@ -48,8 +51,10 @@ def main():
     avg_file_size = total_size / num_files if num_files else 1
     target_files_per_dir = max(1000, int(num_files / 10))
     target_size_per_dir = max(1000000, total_size // 10)
-    n_dirs_by_count = (num_files + target_files_per_dir - 1) // target_files_per_dir
-    n_dirs_by_size = (total_size + target_size_per_dir - 1) // target_size_per_dir
+    n_dirs_by_count = (num_files + target_files_per_dir -
+                       1) // target_files_per_dir
+    n_dirs_by_size = (total_size + target_size_per_dir -
+                      1) // target_size_per_dir
     n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))
     print(f"Targeting ~{n_dirs} directories")
     files_sorted = sorted(files, key=lambda p: p.stat().st_size, reverse=True)
@@ -76,7 +81,9 @@ def main():
         dir_path.mkdir(exist_ok=True)
         created_dirs.append((dir_name, len(d["files"]), d["size"]))
         existing_dir_names.add(dir_name)
-        print(f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes")
+        print(
+            f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes"
+        )
         for f in d["files"]:
             dest = safe_rename(f, dir_path)
             shutil.move(str(f), str(dest))

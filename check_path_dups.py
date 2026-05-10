@@ -49,7 +49,9 @@ def main():
         cprint(f"Duplicate: {name}")
         for path, hash_ in sorted(items, key=lambda x: str(x[0])):
             path = Path(path)
-            print(f"  {path.name} in {path.parent.parent.name}/{path.parent.name}")
+            print(
+                f"  {path.name} in {path.parent.parent.name}/{path.parent.name}"
+            )
             print(f"  {path.name}  {hash_}")
 
 

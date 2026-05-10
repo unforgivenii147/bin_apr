@@ -15,10 +15,14 @@ def clean_single_svg(in_file, svgcleaner_path=SVGCPATH):
     before_size = Path(in_file).stat().st_size
     tmp_out_path = None
     try:
-        with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_out:
+        with tempfile.NamedTemporaryFile(suffix=".svg",
+                                         delete=False) as tmp_out:
             tmp_out_path = tmp_out.name
         subprocess.run(
-            [svgcleaner_path, "--copy-on-error", "--remove-comments=yes", in_file, tmp_out_path],
+            [
+                svgcleaner_path, "--copy-on-error", "--remove-comments=yes",
+                in_file, tmp_out_path
+            ],
             check=True,
             capture_output=True,
         )
@@ -50,10 +54,13 @@ def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
     total_after = 0
     total_saved = 0
     for in_file in svg_files:
-        success, f, before, after, size_change = clean_single_svg(in_file, svgcleaner_path)
+        success, f, before, after, size_change = clean_single_svg(
+            in_file, svgcleaner_path)
         if success:
             print(f"Cleaned: {f}")
-            print(f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes")
+            print(
+                f"  Before: {before} bytes, After: {after} bytes, Saved: {size_change} bytes"
+            )
             total_before += before
             total_after += after
             total_saved += size_change

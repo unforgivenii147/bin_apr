@@ -10,15 +10,20 @@ def refactor_file(file_path):
     try:
         content = Path(file_path).read_text(encoding="utf-8")
         original_content = content
-        content = re.sub("os\\.path\\.join\\(([^,]+),\\s*([^)]+)\\)", "(Path(\\g<1>) / \\g<2>)", content)
-        content = re.sub("os\\.listdir\\(([^)]+)\\)", "[f.name for f in Path(\\g<1>).iterdir()]", content)
-        content = re.sub("os\\.remove\\(([^)]+)\\)", "Path(\\g<1>).unlink()", content)
-        content = re.sub("os\\.path\\.splitext\\(([^)]+)\\)", "(\\1.stem, \\1.suffix)", content)
+        content = re.sub("os\\.path\\.join\\(([^,]+),\\s*([^)]+)\\)",
+                         "(Path(\\g<1>) / \\g<2>)", content)
+        content = re.sub("os\\.listdir\\(([^)]+)\\)",
+                         "[f.name for f in Path(\\g<1>).iterdir()]", content)
+        content = re.sub("os\\.remove\\(([^)]+)\\)", "Path(\\g<1>).unlink()",
+                         content)
+        content = re.sub("os\\.path\\.splitext\\(([^)]+)\\)",
+                         "(\\1.stem, \\1.suffix)", content)
         if "import os" in content and "from pathlib import Path" not in content:
             lines = content.splitlines()
             import_path = -1
             for i, line in enumerate(lines):
-                if line.strip().startswith("import ") or line.strip().startswith("from "):
+                if line.strip().startswith(
+                        "import ") or line.strip().startswith("from "):
                     import_path = i
             if import_path != -1:
                 lines.insert(import_path + 1, "from pathlib import Path")

@@ -7,16 +7,23 @@ from pathlib import Path
 
 def send_to_process(txt):
     try:
-        process = subprocess.Popen(["termux-clipboard-set"], stdin=subprocess.PIPE, text=True, stderr=subprocess.PIPE)
+        process = subprocess.Popen(["termux-clipboard-set"],
+                                   stdin=subprocess.PIPE,
+                                   text=True,
+                                   stderr=subprocess.PIPE)
         _stdout, stderr = process.communicate(input=txt)
         if process.returncode != 0:
-            print(f"Error: Failed to copy to clipboard. STDERR: {stderr}", file=sys.stderr)
+            print(f"Error: Failed to copy to clipboard. STDERR: {stderr}",
+                  file=sys.stderr)
             sys.exit(1)
     except FileNotFoundError:
-        print("Error: 'termux-clipboard-set' command not found. Is Termux:API installed?", file=sys.stderr)
+        print(
+            "Error: 'termux-clipboard-set' command not found. Is Termux:API installed?",
+            file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        print(f"An unexpected error occurred while copying to clipboard: {e}", file=sys.stderr)
+        print(f"An unexpected error occurred while copying to clipboard: {e}",
+              file=sys.stderr)
         sys.exit(1)
 
 
@@ -32,7 +39,9 @@ def selective_copy(fp, lines):
     send_to_process(content)
 
 
-def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: int | None = None):
+def copy_lines_to_clipboard(path: str,
+                            start_line: int | None = None,
+                            end_line: int | None = None):
     content = ""
     path = Path(path)
     if not path.is_file():
@@ -68,7 +77,8 @@ def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: 
 
 def main():
     if len(sys.argv) < 2 or len(sys.argv) > 5:
-        print(f"Usage: {sys.argv[0]} <path> [start_line] [end_line]", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <path> [start_line] [end_line]",
+              file=sys.stderr)
         print("  <path>: Path to the input file.", file=sys.stderr)
         print(
             "  [start_line]: The first line number to copy (1-based index). If omitted, copies the entire file.",
@@ -104,11 +114,12 @@ def main():
                 total_lines = len(f.readlines())
             if not 1 <= start_line <= total_lines:
                 print(
-                    f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.", file=sys.stderr
-                )
+                    f"Error: Start line ({start_line}) is out of bounds. File has {total_lines} lines.",
+                    file=sys.stderr)
                 sys.exit(1)
         except OSError as e:
-            print(f"Error reading file '{path}' for validation: {e}", file=sys.stderr)
+            print(f"Error reading file '{path}' for validation: {e}",
+                  file=sys.stderr)
             sys.exit(1)
     if not selective:
         copy_lines_to_clipboard(path, start_line, end_line)

@@ -17,6 +17,7 @@ def find_unused_functions(source):
     called = set()
 
     class Visitor(ast.NodeVisitor):
+
         def visit_FunctionDef(self, node):
             defined.add(node.name)
             self.generic_visit(node)
@@ -74,9 +75,15 @@ def worker(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove unused functions recursively.")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would change without modifying files.")
-    parser.add_argument("--workers", type=int, default=mp.cpu_count(), help="Number of processes")
+    parser = argparse.ArgumentParser(
+        description="Remove unused functions recursively.")
+    parser.add_argument("--dry-run",
+                        action="store_true",
+                        help="Show what would change without modifying files.")
+    parser.add_argument("--workers",
+                        type=int,
+                        default=mp.cpu_count(),
+                        help="Number of processes")
     args = parser.parse_args()
     root = Path()
     py_files = gather_python_files(root)

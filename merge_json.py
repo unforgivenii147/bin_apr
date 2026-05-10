@@ -40,7 +40,8 @@ def main():
         sys.exit(1)
     args = sys.argv[1:]
     cwd = Path.cwd()
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".json"])
+    files = [Path(p) for p in args] if args else get_files(cwd,
+                                                           extensions=[".json"])
     if len(files) == 1:
         print("provide more than file.")
         sys.exit(0)

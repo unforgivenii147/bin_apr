@@ -25,12 +25,12 @@ def process_file(path: Path):
             modified_lines.append("\n")
             replaced_count += 1
             continue
-        if stripped.startswith("[![") or stripped.lower().startswith("project-url"):
+        if stripped.startswith("[![") or stripped.lower().startswith(
+                "project-url"):
             modified_lines.append("\n")
             replaced_count += 1
             continue
-        if stripped.startswith(
-            (
+        if stripped.startswith((
                 "Metadata-Version",
                 "Home-page",
                 "Author",
@@ -40,8 +40,7 @@ def process_file(path: Path):
                 "Requires-Python",
                 "Description-Content-Type",
                 "Provides-Extra",
-            )
-        ):
+        )):
             modified_lines.append("\n")
             replaced_count += 1
             continue
@@ -64,7 +63,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".metadata", ".md"])
+    files = [Path(f) for f in args] if args else get_files(
+        cwd, recursive=True, extensions=[".metadata", ".md"])
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)

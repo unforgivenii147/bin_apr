@@ -12,21 +12,19 @@ STD_LIB = STDLIB
 MAPPING = PKG_MAPPING
 try:
     with Path("/sdcard/pip.txt").open("r", encoding="utf-8") as f:
-        PIP_PACKAGES = {line.strip().split("==")[0].split("[")[0] for line in f if line.strip()}
+        PIP_PACKAGES = {
+            line.strip().split("==")[0].split("[")[0]
+            for line in f
+            if line.strip()
+        }
 except FileNotFoundError:
     PIP_PACKAGES = set()
 
 
 def is_python_file(file_path):
-    return file_path.suffix == ".py" or (
-        not file_path.suffix
-        and any(
-            (
-                line.startswith(("import ", "from ", "#!/usr/bin/env python"))
-                for line in Path(file_path).open(encoding="utf-8", errors="ignore")
-            )
-        )
-    )
+    return file_path.suffix == ".py" or (not file_path.suffix and any(
+        (line.startswith(("import ", "from ", "#!/usr/bin/env python"))
+         for line in Path(file_path).open(encoding="utf-8", errors="ignore"))))
 
 
 def extract_compressed(file_path, extract_to) -> None:
@@ -52,20 +50,14 @@ def get_imports(file_path):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 module = alias.name.split(".")[0]
-                if (
-                    module not in STD_LIB
-                    and (not module.startswith("."))
-                    and (not file_path.parent.match(f"*{module}*"))
-                ):
+                if (module not in STD_LIB and (not module.startswith(".")) and
+                    (not file_path.parent.match(f"*{module}*"))):
                     imports.add(MAPPING.get(module, module))
         elif isinstance(node, ast.ImportFrom):
             module = node.module.split(".")[0] if node.module else ""
-            if (
-                module
-                and module not in STD_LIB
-                and (not module.startswith("."))
-                and (not file_path.parent.match(f"*{module}*"))
-            ):
+            if (module and module not in STD_LIB and
+                (not module.startswith(".")) and
+                (not file_path.parent.match(f"*{module}*"))):
                 imports.add(MAPPING.get(module, module))
     return imports
 

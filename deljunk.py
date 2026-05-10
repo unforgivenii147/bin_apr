@@ -25,10 +25,14 @@ def main():
     cwd = Path.cwd()
     junk_files = load_junk()
     for path in cwd.rglob("*"):
-        if path.name in {".travis.yml", ".gitkeep", ".dirinfo", ".pyformat_cache.json", "simz.json"}:
+        if path.name in {
+                ".travis.yml", ".gitkeep", ".dirinfo", ".pyformat_cache.json",
+                "simz.json"
+        }:
             path.unlink()
             continue
-        if any((path.name.lower() == junk for junk in junk_files)) and path.exists():
+        if any((path.name.lower() == junk
+                for junk in junk_files)) and path.exists():
             if RMIT:
                 remove_it(path)
                 print(path.relative_to(cwd))

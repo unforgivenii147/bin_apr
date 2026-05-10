@@ -39,8 +39,12 @@ def fetch_trending(timeframe: str) -> list[Repo]:
         stars_tag = article.select_one("a[href$='stargazers']")
         stars = stars_tag.text.strip() if stars_tag else "0"
         repos.append(
-            Repo(name=name, url=repo_url, description=description, stars=stars, language=language, timeframe=timeframe)
-        )
+            Repo(name=name,
+                 url=repo_url,
+                 description=description,
+                 stars=stars,
+                 language=language,
+                 timeframe=timeframe))
     return repos
 
 
@@ -53,7 +57,8 @@ def save_csv(repos: list[Repo], path: Path) -> None:
 
 
 def save_json(repos: list[Repo], path: Path) -> None:
-    path.write_text(json.dumps([asdict(r) for r in repos], indent=2), encoding="utf-8")
+    path.write_text(json.dumps([asdict(r) for r in repos], indent=2),
+                    encoding="utf-8")
 
 
 def main() -> None:

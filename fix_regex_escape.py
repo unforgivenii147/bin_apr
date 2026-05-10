@@ -4,20 +4,23 @@ import ast
 from pathlib import Path
 from loguru import logger
 
-TARGET_FUNCS = {"compile", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn"}
+TARGET_FUNCS = {
+    "compile", "search", "match", "fullmatch", "findall", "finditer", "split",
+    "sub", "subn"
+}
 
 
 class RegexFixer(ast.NodeTransformer):
+
     def visit_Call(self, node: ast.Call):
         self.generic_visit(node)
         if isinstance(node.func, ast.Attribute) and (
-            isinstance(node.func.value, ast.Name)
-            and node.func.value.id == "re"
-            and (node.func.attr in TARGET_FUNCS)
-            and node.args
-        ):
+                isinstance(node.func.value, ast.Name) and
+                node.func.value.id == "re" and
+            (node.func.attr in TARGET_FUNCS) and node.args):
             first_arg = node.args[0]
-            if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+            if isinstance(first_arg, ast.Constant) and isinstance(
+                    first_arg.value, str):
                 original = first_arg.value
                 fixed = original.encode("unicode_escape").decode("ascii")
                 fixed = fixed.replace("\\\\n", "\\n")

@@ -10,7 +10,9 @@ total = 0
 def gsz(path: Path) -> int:
     if path.is_file():
         return path.stat().st_size
-    return sum((f.stat().st_size for f in path.rglob("*") if f.is_file() and (not f.is_symlink())))
+    return sum((f.stat().st_size
+                for f in path.rglob("*")
+                if f.is_file() and (not f.is_symlink())))
 
 
 def fsz(sz: float) -> str:

@@ -9,8 +9,8 @@ from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 WHEEL_PATTERN = re.compile(
-    "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\\.whl$", re.IGNORECASE
-)
+    "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\\.whl$",
+    re.IGNORECASE)
 
 
 def is_valid2(path):
@@ -35,7 +35,8 @@ def is_valid(path):
         if not build_tag[0].isdigit():
             return False
         try:
-            parse_tag(py_tag + "-" + abi_platform + "-" + abi_platform.split("-")[-1])
+            parse_tag(py_tag + "-" + abi_platform + "-" +
+                      abi_platform.split("-")[-1])
         except Exception:
             return False
         return True

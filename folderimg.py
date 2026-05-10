@@ -16,18 +16,20 @@ OUT_PREFIX = "group_"
 def compute_hashes(path: Path):
     try:
         with Image.open(path) as img:
-            return {"phash": dh.phash(img), "dhash": dh.dhash(img), "ahash": dh.average_hash(img)}
+            return {
+                "phash": dh.phash(img),
+                "dhash": dh.dhash(img),
+                "ahash": dh.average_hash(img)
+            }
     except Exception as e:
         print(f"[SKIP] {path.name}: {e}")
         return None
 
 
 def similarity_score(h1, h2) -> float:
-    return (
-        (h1["phash"] - h2["phash"]) * PHASH_W
-        + (h1["dhash"] - h2["dhash"]) * DHASH_W
-        + (h1["ahash"] - h2["ahash"]) * AHASH_W
-    )
+    return ((h1["phash"] - h2["phash"]) * PHASH_W +
+            (h1["dhash"] - h2["dhash"]) * DHASH_W +
+            (h1["ahash"] - h2["ahash"]) * AHASH_W)
 
 
 def main():

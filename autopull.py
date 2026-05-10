@@ -12,7 +12,8 @@ def is_git_repo(path: Path) -> bool:
 def git_pull(repo_path: Path):
     print(f"\n==> Pulling in repo: {repo_path}")
     try:
-        subprocess.run(["git", "-C", str(repo_path), "pull", "--ff-only"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo_path), "pull", "--ff-only"], check=True)
     except subprocess.CalledProcessError:
         print(f"⚠️  git pull failed in: {repo_path}")
 

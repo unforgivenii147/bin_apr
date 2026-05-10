@@ -17,7 +17,9 @@ def find_dist_info_dir(site_packages: Path, pkg_name: str) -> Path:
         msg = f"Could not find any dist-info directory for package '{pkg_name}' in {site_packages}"
         raise FileNotFoundError(msg)
     if len(candidates) > 1:
-        logger.warning("Multiple dist-info directories found for '{}', using: {}", pkg_name, candidates[0])
+        logger.warning(
+            "Multiple dist-info directories found for '{}', using: {}",
+            pkg_name, candidates[0])
     return candidates[0]
 
 
@@ -44,7 +46,8 @@ def copy_package_files(pkg_name: str, site_packages: Path):
                     missing_count += 1
                     continue
                 if not src_path.exists() and src_path.suffix != ".pyc":
-                    logger.warning("Missing file listed in RECORD: {}", src_path)
+                    logger.warning("Missing file listed in RECORD: {}",
+                                   src_path)
                     missing_count += 1
                     continue
                 if not src_path.exists():
@@ -54,27 +57,35 @@ def copy_package_files(pkg_name: str, site_packages: Path):
                 shutil.move(src_path, dest_path)
                 copied_count += 1
             except Exception as e:
-                logger.exception("Error while processing RECORD entry {}: {}", row, e)
+                logger.exception("Error while processing RECORD entry {}: {}",
+                                 row, e)
                 error_count += 1
     print("Missing files (warned): {}", missing_count)
     print("Copied: {} | Errors: {}", copied_count, error_count)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Copy (or move) package files based on RECORD metadata.")
+    parser = argparse.ArgumentParser(
+        description="Copy (or move) package files based on RECORD metadata.")
     parser.add_argument("pkg", nargs="?", help="Package name to process")
-    parser.add_argument("-a", "--all", action="store_true", help="Process all packages in current directory")
+    parser.add_argument("-a",
+                        "--all",
+                        action="store_true",
+                        help="Process all packages in current directory")
     args = parser.parse_args()
     if not args.pkg and (not args.all):
         parser.error("You must specify a package name or use --all")
     logger.remove()
-    logger.add(sys.stderr, level="INFO", format="<green>{level}</green>|{message}")
+    logger.add(sys.stderr,
+               level="INFO",
+               format="<green>{level}</green>|{message}")
     site_packages = Path.cwd()
     try:
         if args.all:
             dist_infos = list(site_packages.glob("*.dist-info"))
             if not dist_infos:
-                logger.error("No .dist-info directories found in {}", site_packages)
+                logger.error("No .dist-info directories found in {}",
+                             site_packages)
                 sys.exit(1)
             for dist_dir in dist_infos:
                 pkg_name = dist_dir.stem.split("-")[0]

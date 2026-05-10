@@ -21,7 +21,8 @@ def collect_files(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
         for fname in filenames:
             full = os.path.join(dirpath, fname)
-            if Path(full).resolve() == Path(OUTPUT_FILE).resolve() or fname == Path(__file__).name:
+            if Path(full).resolve() == Path(
+                    OUTPUT_FILE).resolve() or fname == Path(__file__).name:
                 continue
             yield full
 
@@ -45,7 +46,8 @@ def merge_files(root):
 if __name__ == "__main__":
     import argparse
 
-    ap = argparse.ArgumentParser(description="Merge files recursively into merged.txt")
+    ap = argparse.ArgumentParser(
+        description="Merge files recursively into merged.txt")
     ap.add_argument("--path", default=".", help="Directory to scan")
     args = ap.parse_args()
     merge_files(args.path)

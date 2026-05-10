@@ -15,7 +15,11 @@ VALID = {"import_statement", "import_from_statement"}
 
 def extract_file(src: bytes, tree):
     root = tree.root_node
-    return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
+    return [
+        src[node.start_byte:node.end_byte].decode()
+        for node in root.children
+        if node.type in VALID
+    ]
 
 
 def process_file(fp):

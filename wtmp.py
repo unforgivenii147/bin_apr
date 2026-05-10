@@ -14,7 +14,8 @@ ALLOWED_EXTENSIONS = (".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.bz2")
 
 
 def copy_if_match(src: Path) -> None:
-    if src.suffix in ALLOWED_EXTENSIONS or any((str(src).endswith(ext) for ext in ALLOWED_EXTENSIONS)):
+    if src.suffix in ALLOWED_EXTENSIONS or any(
+        (str(src).endswith(ext) for ext in ALLOWED_EXTENSIONS)):
         try:
             DEST_DIR.mkdir(parents=True, exist_ok=True)
             dest = DEST_DIR / src.name
@@ -31,6 +32,7 @@ def startup_scan(root: Path) -> None:
 
 
 class CopyEventHandler(FileSystemEventHandler):
+
     def on_created(self, event) -> None:
         if not event.is_directory:
             copy_if_match(Path(event.src_path))
@@ -41,7 +43,8 @@ class CopyEventHandler(FileSystemEventHandler):
 
 
 if __name__ == "__main__":
-    watch_path = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else TEMPDIR
+    watch_path = Path(sys.argv[1]).expanduser() if len(
+        sys.argv) > 1 else TEMPDIR
     startup_scan(watch_path)
     event_handler = CopyEventHandler()
     observer = Observer()

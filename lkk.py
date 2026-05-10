@@ -7,7 +7,10 @@ from pathlib import Path
 def main():
     cwd = Path.cwd()
     req = sys.argv[1].strip()
-    found = [path for path in cwd.glob("*") if req in path.name and (not path.is_symlink())]
+    found = [
+        path for path in cwd.glob("*")
+        if req in path.name and (not path.is_symlink())
+    ]
     for k in found:
         print(f"  - {k.name}")
 

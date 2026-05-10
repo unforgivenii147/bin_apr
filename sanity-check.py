@@ -8,8 +8,10 @@ from loguru import logger
 def get_installed_packages():
     try:
         result = subprocess.run(
-            ["dpkg-query", "-W", "-f='${Package}\t${Status}\t${Version}\n'"], capture_output=True, text=True, check=True
-        )
+            ["dpkg-query", "-W", "-f='${Package}\t${Status}\t${Version}\n'"],
+            capture_output=True,
+            text=True,
+            check=True)
         return result.stdout.splitlines()
     except subprocess.CalledProcessError as e:
         print(f"Error listing installed packages: {e.stderr}")
@@ -18,7 +20,10 @@ def get_installed_packages():
 
 def check_package_health(package_name):
     try:
-        result = subprocess.run(["dpkg", "-l", package_name], capture_output=True, text=True, check=True)
+        result = subprocess.run(["dpkg", "-l", package_name],
+                                capture_output=True,
+                                text=True,
+                                check=True)
         lines = result.stdout.splitlines()
         for line in lines:
             if package_name in line:
@@ -32,7 +37,10 @@ def check_package_health(package_name):
 
 def check_for_updates():
     try:
-        result = subprocess.run(["apt-get", "-s", "upgrade"], capture_output=True, text=True, check=True)
+        result = subprocess.run(["apt-get", "-s", "upgrade"],
+                                capture_output=True,
+                                text=True,
+                                check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error checking for updates: {e.stderr}"

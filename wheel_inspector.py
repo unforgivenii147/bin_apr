@@ -8,6 +8,7 @@ from loguru import logger
 
 
 class WheelInspector:
+
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
 
@@ -30,9 +31,12 @@ class WheelInspector:
                     "metadata": {},
                     "file_types": {},
                 }
-                metadata_files = [f for f in zf.namelist() if f.endswith("/METADATA")]
+                metadata_files = [
+                    f for f in zf.namelist() if f.endswith("/METADATA")
+                ]
                 if metadata_files:
-                    metadata_content = zf.read(metadata_files[0]).decode("utf-8")
+                    metadata_content = zf.read(
+                        metadata_files[0]).decode("utf-8")
                     for line in metadata_content.split("\n"):
                         if ":" in line:
                             key, value = line.split(":", 1)
@@ -42,10 +46,14 @@ class WheelInspector:
                     wheel_content = zf.read(wheel_files[0]).decode("utf-8")
                     info["wheel_metadata"] = wheel_content
                 info["file_types"] = {
-                    ".py": len([f for f in zf.namelist() if f.endswith(".py")]),
-                    ".so": len([f for f in zf.namelist() if f.endswith(".so")]),
-                    ".pyd": len([f for f in zf.namelist() if f.endswith(".pyd")]),
-                    ".c": len([f for f in zf.namelist() if f.endswith(".c")]),
+                    ".py":
+                        len([f for f in zf.namelist() if f.endswith(".py")]),
+                    ".so":
+                        len([f for f in zf.namelist() if f.endswith(".so")]),
+                    ".pyd":
+                        len([f for f in zf.namelist() if f.endswith(".pyd")]),
+                    ".c":
+                        len([f for f in zf.namelist() if f.endswith(".c")]),
                 }
                 return info
         except Exception as e:
@@ -127,9 +135,15 @@ class WheelInspector:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Inspect and validate .whl files")
-    parser.add_argument("wheel", nargs="?", help="Path to .whl file or directory")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    parser = argparse.ArgumentParser(
+        description="Inspect and validate .whl files")
+    parser.add_argument("wheel",
+                        nargs="?",
+                        help="Path to .whl file or directory")
+    parser.add_argument("-v",
+                        "--verbose",
+                        action="store_true",
+                        help="Verbose output")
     args = parser.parse_args()
     if not args.wheel:
         args.wheel = Path("/sdcard/whl")

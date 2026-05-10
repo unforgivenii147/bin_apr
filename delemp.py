@@ -12,11 +12,14 @@ def process_file(path: Path) -> int:
     removed_count = 0
     try:
         temp_file_path = None
-        with tempfile.NamedTemporaryFile(
-            mode="w+", encoding="utf-8", delete=False, dir=path.parent, suffix=".tmp"
-        ) as temp_f:
+        with tempfile.NamedTemporaryFile(mode="w+",
+                                         encoding="utf-8",
+                                         delete=False,
+                                         dir=path.parent,
+                                         suffix=".tmp") as temp_f:
             temp_file_path = Path(temp_f.name)
-            with path.open("r", encoding="utf-8", errors="replace") as original_f:
+            with path.open("r", encoding="utf-8",
+                           errors="replace") as original_f:
                 for line in original_f:
                     if line.strip():
                         temp_f.write(line)

@@ -7,7 +7,9 @@ from pathlib import Path
 from loguru import logger
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
-DIR_NAMES = ["__pycache__", ".ruff_cache", ".mypy_cache", "dist", "build", "target"]
+DIR_NAMES = [
+    "__pycache__", ".ruff_cache", ".mypy_cache", "dist", "build", "target"
+]
 
 
 def remove_path(path) -> None:

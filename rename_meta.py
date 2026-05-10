@@ -48,7 +48,8 @@ def process_file(fp) -> bool | None:
 def main() -> None:
     cwd = Path.cwd()
     for path in get_files(cwd):
-        if path.is_file() and (path.name == "METADATA" or path.suffix == ".metadata"):
+        if path.is_file() and (path.name == "METADATA" or
+                               path.suffix == ".metadata"):
             process_file(path)
 
 

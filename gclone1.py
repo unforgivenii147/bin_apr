@@ -43,7 +43,8 @@ def get_repo_size_mb(user, repo):
         if size_bytes is not None:
             size_mb = size_bytes / 1024.0
             return round(size_mb, 2)
-        print(f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
+        print(
+            f"⚠️ Warning: Could not retrieve size for {user}/{repo} from API.")
         return None
     except requests.exceptions.HTTPError as e:
         print(f"❌ API Error: {e.response.status_code} for {user}/{repo}")
@@ -76,7 +77,9 @@ def clone_repo_shallow(user, repo):
         print(f"   Cloned into: {clone_path}")
         return True
     except FileNotFoundError:
-        print("❌ Error: 'git' command not found. Please ensure Git is installed and in your PATH.")
+        print(
+            "❌ Error: 'git' command not found. Please ensure Git is installed and in your PATH."
+        )
         return False
     except Exception as e:
         print(f"❌ An unexpected error occurred during cloning: {e}")

@@ -7,4 +7,5 @@ from pathlib import Path
 if __name__ == "__main__":
     target_dir = Path(Path.cwd())
     os.chdir(target_dir.parent)
-    subprocess.run(["wheel", "pack", str(target_dir), "-d", "/sdcard/whl"], check=False)
+    subprocess.run(
+        ["wheel", "pack", str(target_dir), "-d", "/sdcard/whl"], check=False)

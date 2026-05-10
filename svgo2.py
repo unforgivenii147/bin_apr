@@ -19,7 +19,11 @@ def process_file(in_file):
     with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_file:
         tmp_file_path = tmp_file.name
     try:
-        subprocess.run(["svgcleaner", "--multipass", str(in_file), tmp_file_path], check=True, capture_output=True)
+        subprocess.run(
+            ["svgcleaner", "--multipass",
+             str(in_file), tmp_file_path],
+            check=True,
+            capture_output=True)
         move_file(tmp_file_path, in_file, overwrite=True)
         print(f"{in_file.name} updated")
     except subprocess.CalledProcessError as e:
@@ -37,7 +41,8 @@ def main() -> None:
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".svg"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        cwd, extensions=[".svg"])
     if not files:
         print("no files found")
         return

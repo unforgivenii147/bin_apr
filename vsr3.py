@@ -36,7 +36,8 @@ def get_package_name_version(dist_dir: Path) -> tuple:
     return (parts[0], "0.0.0")
 
 
-def read_record_file(dist_dir: Path, site_packages: Path) -> tuple[list[Path], set[Path]]:
+def read_record_file(dist_dir: Path,
+                     site_packages: Path) -> tuple[list[Path], set[Path]]:
     record_file = dist_dir / "RECORD"
     if not record_file.exists():
         return ([], set())
@@ -48,7 +49,8 @@ def read_record_file(dist_dir: Path, site_packages: Path) -> tuple[list[Path], s
             if not row or not row[0]:
                 continue
             file_path = row[0]
-            full_path = Path(file_path) if Path(file_path).is_absolute() else site_packages / file_path
+            full_path = Path(file_path) if Path(
+                file_path).is_absolute() else site_packages / file_path
             if full_path.suffix == ".pyc":
                 continue
             if full_path.exists():
@@ -83,7 +85,8 @@ def copy_files_to_temp(files: list[Path], site_packages: Path, temp_dir: Path):
             shutil.copytree(file_path, dest_path, dirs_exist_ok=True)
 
 
-def create_wheel(pkg_name: str, pkg_version: str, temp_dir: Path, output_dir: Path, wheel_tag: str | None) -> bool:
+def create_wheel(pkg_name: str, pkg_version: str, temp_dir: Path,
+                 output_dir: Path, wheel_tag: str | None) -> bool:
     try:
         wheel_name = f"{pkg_name}-{pkg_version}"
         if wheel_tag:
@@ -91,8 +94,15 @@ def create_wheel(pkg_name: str, pkg_version: str, temp_dir: Path, output_dir: Pa
         else:
             wheel_name += "-py3-none-any"
         wheel_file = output_dir / f"{wheel_name}.whl"
-        cmd = [sys.executable, "-m", "wheel", "pack", str(temp_dir), "-d", str(output_dir)]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+        cmd = [
+            sys.executable, "-m", "wheel", "pack",
+            str(temp_dir), "-d",
+            str(output_dir)
+        ]
+        result = subprocess.run(cmd,
+                                check=False,
+                                capture_output=True,
+                                text=True)
         if result.returncode == 0:
             return True
         import zipfile
@@ -109,12 +119,14 @@ def create_wheel(pkg_name: str, pkg_version: str, temp_dir: Path, output_dir: Pa
         return False
 
 
-def repack_package(dist_dir: Path, site_packages: Path, output_dir: Path, not_repacked_dir: Path) -> bool:
+def repack_package(dist_dir: Path, site_packages: Path, output_dir: Path,
+                   not_repacked_dir: Path) -> bool:
     pkg_name, pkg_version = get_package_name_version(dist_dir)
     existing_files, missing_files = read_record_file(dist_dir, site_packages)
     if not existing_files:
         return False
-    has_missing_critical = any((f.suffix in {".py", ""} or f.is_dir() for f in missing_files))
+    has_missing_critical = any(
+        (f.suffix in {".py", ""} or f.is_dir() for f in missing_files))
     if has_missing_critical:
         pkg_not_repacked = not_repacked_dir / pkg_name
         pkg_not_repacked.mkdir(parents=True, exist_ok=True)
@@ -133,13 +145,18 @@ def repack_package(dist_dir: Path, site_packages: Path, output_dir: Path, not_re
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         copy_files_to_temp(existing_files, site_packages, temp_path)
-        return create_wheel(pkg_name, pkg_version, temp_path, output_dir, wheel_tag)
+        return create_wheel(pkg_name, pkg_version, temp_path, output_dir,
+                            wheel_tag)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Repack installed Python packages as wheels")
+    parser = argparse.ArgumentParser(
+        description="Repack installed Python packages as wheels")
     parser.add_argument("packages", nargs="*", help="Package names to repack")
-    parser.add_argument("-a", "--all", action="store_true", help="Repack all installed packages")
+    parser.add_argument("-a",
+                        "--all",
+                        action="store_true",
+                        help="Repack all installed packages")
     args = parser.parse_args()
     if not args.all and (not args.packages):
         parser.error("Specify package names or use -a/--all")
@@ -152,14 +169,18 @@ def main():
     all_dist_dirs = find_dist_info_dirs(site_packages)
     if not args.all:
         pkg_set = set(args.packages)
-        all_dist_dirs = [d for d in all_dist_dirs if get_package_name_version(d)[0] in pkg_set]
+        all_dist_dirs = [
+            d for d in all_dist_dirs
+            if get_package_name_version(d)[0] in pkg_set
+        ]
     success_count = 0
     failed_count = 0
     with tqdm(total=len(all_dist_dirs), desc="Repacking packages") as pbar:
         for dist_dir in all_dist_dirs:
             pkg_name, _ = get_package_name_version(dist_dir)
             pbar.set_description(f"Repacking {pkg_name}")
-            if repack_package(dist_dir, site_packages, output_dir, not_repacked_dir):
+            if repack_package(dist_dir, site_packages, output_dir,
+                              not_repacked_dir):
                 success_count += 1
             else:
                 failed_count += 1

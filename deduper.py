@@ -26,7 +26,8 @@ def is_simple_constant(node: ast.Assign) -> bool:
         return True
     elif isinstance(value, ast.Name):
         return True
-    elif isinstance(value, ast.UnaryOp) and isinstance(value.operand, (ast.Constant, ast.Name)):
+    elif isinstance(value, ast.UnaryOp) and isinstance(
+            value.operand, (ast.Constant, ast.Name)):
         return True
     return False
 
@@ -44,7 +45,8 @@ def get_name(node: ast.AST) -> str:
 
 def node_to_source(node: ast.AST, source_lines: List[str]) -> str:
     start_line = node.lineno - 1
-    end_line = node.end_lineno if hasattr(node, "end_lineno") and node.end_lineno else start_line + 1
+    end_line = node.end_lineno if hasattr(
+        node, "end_lineno") and node.end_lineno else start_line + 1
     if end_line <= start_line:
         end_line = start_line + 1
     return "\n".join(source_lines[start_line:end_line])
@@ -86,11 +88,13 @@ def collect_definitions(file_path: Path) -> List[Tuple[str, str, ast.AST]]:
 
 def ensure_utils_file():
     if not UTILS_FILE.exists():
-        UTILS_FILE.write_text("# Auto-generated utilities from deduplication\n\n")
+        UTILS_FILE.write_text(
+            "# Auto-generated utilities from deduplication\n\n")
         return True
     content = UTILS_FILE.read_text()
     if "# Auto-generated" not in content:
-        UTILS_FILE.write_text("# Auto-generated utilities from deduplication\n\n" + content)
+        UTILS_FILE.write_text(
+            "# Auto-generated utilities from deduplication\n\n" + content)
     return False
 
 
@@ -131,9 +135,11 @@ def add_import_to_file(file_path: Path, new_import: str):
         f.writelines(lines)
 
 
-def remove_definition_from_file(file_path: Path, node: ast.AST, source_lines: List[str]):
+def remove_definition_from_file(file_path: Path, node: ast.AST,
+                                source_lines: List[str]):
     start_line = node.lineno - 1
-    end_line = node.end_lineno if hasattr(node, "end_lineno") and node.end_lineno else start_line + 1
+    end_line = node.end_lineno if hasattr(
+        node, "end_lineno") and node.end_lineno else start_line + 1
     new_lines = source_lines[:start_line] + source_lines[end_line:]
     if start_line > 0 and new_lines[start_line - 1].strip() == "":
         pass
@@ -153,8 +159,11 @@ def remove_definition_from_file(file_path: Path, node: ast.AST, source_lines: Li
 
 def main():
     py_files = list(CURRENT_DIR.rglob("*.py"))
-    py_files = [f for f in py_files if f.name != "utils.py" and f.name != "dedupe.py"]
-    hash_to_defs: Dict[str, List[Tuple[Path, str, ast.AST, List[str]]]] = defaultdict(list)
+    py_files = [
+        f for f in py_files if f.name != "utils.py" and f.name != "dedupe.py"
+    ]
+    hash_to_defs: Dict[str, List[Tuple[Path, str, ast.AST,
+                                       List[str]]]] = defaultdict(list)
     for fpath in py_files:
         defs = collect_definitions(fpath)
         for name, h, node in defs:

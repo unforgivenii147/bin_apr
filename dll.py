@@ -15,7 +15,7 @@ def delete_lines_from_file():
     if len(sys.argv) == 3:
         fromline = int(sys.argv[2])
         toline = len(lines)
-    new_lines = lines[: fromline - 1] + lines[toline:]
+    new_lines = lines[:fromline - 1] + lines[toline:]
     path.write_text("\n".join(new_lines), encoding="utf-8")
     print(f"remained: {len(new_lines)} lines")
 

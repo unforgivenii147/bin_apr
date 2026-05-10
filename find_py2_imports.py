@@ -19,7 +19,11 @@ def process_file(fp):
     tree = parser.parse(src)
     root = tree.root_node
     impoz = []
-    results = [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
+    results = [
+        src[node.start_byte:node.end_byte].decode()
+        for node in root.children
+        if node.type in VALID
+    ]
     if results:
         for k in results:
             if k.startswith("import "):
@@ -57,28 +61,20 @@ def process_file(fp):
         for v in stdlib2:
             v = v.lower()
             ratio = fuzz.ratio(x, v)
-            if (
-                ratio > 85
-                and len(x) > 3
-                and (len(v) > 3)
-                and (
-                    x
-                    not in {
-                        "io",
-                        "os",
-                        "pathlib",
-                        "urllib",
-                        "tkinter",
-                        "pickle",
-                        "string",
-                        "queue",
-                        "urllib3",
-                        "configparser",
-                        "copyreg",
-                        "httplib2",
-                    }
-                )
-            ):
+            if (ratio > 85 and len(x) > 3 and (len(v) > 3) and (x not in {
+                    "io",
+                    "os",
+                    "pathlib",
+                    "urllib",
+                    "tkinter",
+                    "pickle",
+                    "string",
+                    "queue",
+                    "urllib3",
+                    "configparser",
+                    "copyreg",
+                    "httplib2",
+            })):
                 cprint(f"{fp.relative_to(cwd)}", "yellow")
                 cprint(f"{x} / {v} / {ratio}", "green")
                 continue

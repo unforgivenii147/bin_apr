@@ -9,7 +9,8 @@ STRTOFIND = ["dist-info", ".so", ".py", ".pth", "__", ".zip"]
 
 
 def clean_text(text: str) -> str:
-    return "\n".join((line for line in text.splitlines() if not any((s in line for s in STRTOFIND))))
+    return "\n".join((line for line in text.splitlines()
+                      if not any((s in line for s in STRTOFIND))))
 
 
 def clean_file(path: str) -> None:

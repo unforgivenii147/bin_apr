@@ -85,13 +85,17 @@ def out_path_with_suffix(original: str, suffix: str) -> str:
 
 
 class Result:
-    def __init__(self, text: str, comments_found: int, comments_removed_chars: int) -> None:
+
+    def __init__(self, text: str, comments_found: int,
+                 comments_removed_chars: int) -> None:
         self.text = text
         self.comments_found = comments_found
         self.comments_removed_chars = comments_removed_chars
 
 
-def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, support_backtick: bool = False) -> Result:
+def strip_comments_c_like(src: str,
+                          treat_hash_as_line_comment: bool = False,
+                          support_backtick: bool = False) -> Result:
     i, n = (0, len(src))
     out = []
     comments = 0
@@ -183,7 +187,8 @@ def strip_comments_c_like(src: str, treat_hash_as_line_comment: bool = False, su
             removed_chars += j - i
             i = j
             continue
-        if treat_hash_as_line_comment and ch == "#" and (not (i == 0 and i + 1 < n and (src[i + 1] == "!"))):
+        if treat_hash_as_line_comment and ch == "#" and (
+                not (i == 0 and i + 1 < n and (src[i + 1] == "!"))):
             comments += 1
             j = i + 1
             while j < n and src[j] not in "\n\r":
@@ -214,19 +219,20 @@ def rm_doc(content: str) -> str:
                 second = line.find(delimiter, first + 3)
                 before = line[:first].rstrip()
                 if before.endswith(":") or before.strip() == "":
-                    result_lines.append(line[:first] + line[second + 3 :])
+                    result_lines.append(line[:first] + line[second + 3:])
                     removed_count += 1
                     i += 1
                     continue
-            before = line[: line.find(delimiter)].rstrip()
-            if before.endswith(":") or before.strip() == "" or "=" not in before:
+            before = line[:line.find(delimiter)].rstrip()
+            if before.endswith(
+                    ":") or before.strip() == "" or "=" not in before:
                 removed_count += 1
                 if before:
                     result_lines.append(before)
                 j = i + 1
                 while j < len(lines):
                     if delimiter in lines[j]:
-                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
+                        after = lines[j][lines[j].find(delimiter) + 3:].strip()
                         if after:
                             result_lines.append(after)
                         i = j + 1
@@ -249,7 +255,8 @@ def rmsl(data):
     removed = 0
     for line in lines:
         stripped = line.lstrip(" ").rstrip(" ").strip()
-        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOC_TH1 * 2):
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (
+                stripped != DOC_TH1 * 2):
             removed += 1
             continue
         nl.append(line)
@@ -373,7 +380,8 @@ def strip_comments_html(src: str) -> Result:
     return pattern.sub("", src)
 
 
-def strip_comments_hash_and_semicolon(src: str, allow_semicolon: bool = True) -> Result:
+def strip_comments_hash_and_semicolon(src: str,
+                                      allow_semicolon: bool = True) -> Result:
     comments = 0
     removed = 0
     out_lines = []
@@ -418,7 +426,8 @@ def strip_comments_hash_and_semicolon(src: str, allow_semicolon: bool = True) ->
         if cut is not None:
             comments += 1
             removed += len(line) - cut
-            out_lines.append(line[:cut].rstrip() + ("\n" if line.endswith("\n") else ""))
+            out_lines.append(line[:cut].rstrip() +
+                             ("\n" if line.endswith("\n") else ""))
         else:
             out_lines.append(line)
     return Result("".join(out_lines), comments, removed)
@@ -426,11 +435,17 @@ def strip_comments_hash_and_semicolon(src: str, allow_semicolon: bool = True) ->
 
 def strip_comments(src: str, lang: str) -> Result:
     lang = lang.lower()
-    if lang in {"c", "cpp", "csharp", "java", "css", "rust", "go", "jsonc", "php"}:
+    if lang in {
+            "c", "cpp", "csharp", "java", "css", "rust", "go", "jsonc", "php"
+    }:
         treat_hash = lang == "php"
-        return strip_comments_c_like(src, treat_hash_as_line_comment=treat_hash, support_backtick=False)
+        return strip_comments_c_like(src,
+                                     treat_hash_as_line_comment=treat_hash,
+                                     support_backtick=False)
     if lang in {"js", "ts"}:
-        return strip_comments_c_like(src, treat_hash_as_line_comment=False, support_backtick=True)
+        return strip_comments_c_like(src,
+                                     treat_hash_as_line_comment=False,
+                                     support_backtick=True)
     if lang == "python":
         return strip_comments_python(src)
     if lang == "sql":
@@ -440,12 +455,16 @@ def strip_comments(src: str, lang: str) -> Result:
     if lang == "ruby":
         return strip_comments_ruby(src)
     if lang == "bash":
-        return strip_comments_c_like(src, treat_hash_as_line_comment=True, support_backtick=False)
+        return strip_comments_c_like(src,
+                                     treat_hash_as_line_comment=True,
+                                     support_backtick=False)
     if lang == "yaml":
         return strip_comments_hash_and_semicolon(src, allow_semicolon=False)
     if lang in {"toml", "ini"}:
         return strip_comments_hash_and_semicolon(src, allow_semicolon=True)
-    return strip_comments_c_like(src, treat_hash_as_line_comment=False, support_backtick=False)
+    return strip_comments_c_like(src,
+                                 treat_hash_as_line_comment=False,
+                                 support_backtick=False)
 
 
 def process_file(path, lang):

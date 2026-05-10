@@ -13,6 +13,7 @@ N_JOBS = -1
 
 
 class CtypesVerifier:
+
     def __init__(self, verbose: bool = True) -> None:
         self.verbose: bool = verbose
         self.platform: str = sys.platform
@@ -43,11 +44,19 @@ class CtypesVerifier:
 
     def verify_with_symbols(self, file_path: Path) -> tuple[bool, dict]:
         can_load, msg = self.verify_so_file(file_path)
-        symbol_info = {"can_load": can_load, "message": msg, "has_symbols": False, "symbol_count": 0}
+        symbol_info = {
+            "can_load": can_load,
+            "message": msg,
+            "has_symbols": False,
+            "symbol_count": 0
+        }
         if not can_load:
             return (can_load, symbol_info)
         try:
-            result = subprocess.run(["nm", str(file_path)], capture_output=True, timeout=10, text=True)
+            result = subprocess.run(["nm", str(file_path)],
+                                    capture_output=True,
+                                    timeout=10,
+                                    text=True)
             if result.returncode == 0:
                 lines = [l for l in result.stdout.split("\n") if l.strip()]
                 symbol_info["symbol_count"] = len(lines)

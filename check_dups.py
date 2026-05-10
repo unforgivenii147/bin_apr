@@ -22,6 +22,7 @@ class Decl:
 
 
 class Normalizer(ast.NodeTransformer):
+
     def visit_FunctionDef(self, node):
         node = copy.deepcopy(node)
         node.name = "__NAME__"
@@ -56,7 +57,7 @@ def stable_hash(node: ast.AST) -> str:
 
 
 def get_source_segment(lines, lineno, end_lineno):
-    return "".join(lines[lineno - 1 : end_lineno])
+    return "".join(lines[lineno - 1:end_lineno])
 
 
 def is_simple_top_level_assign(node):
@@ -86,10 +87,12 @@ def build_decl_for_assign(node, lines):
     decls = []
     for name in names:
         decls.append(
-            Decl(
-                kind="assign", name=name, lineno=node.lineno, end_lineno=node.end_lineno, source=source, content_hash=h
-            )
-        )
+            Decl(kind="assign",
+                 name=name,
+                 lineno=node.lineno,
+                 end_lineno=node.end_lineno,
+                 source=source,
+                 content_hash=h))
     return decls
 
 
@@ -155,7 +158,9 @@ def process_file(src_path):
     remove_lines = set()
     for start, end in duplicate_ranges:
         remove_lines.update(range(start, end + 1))
-    kept_lines = [line for i, line in enumerate(lines, start=1) if i not in remove_lines]
+    kept_lines = [
+        line for i, line in enumerate(lines, start=1) if i not in remove_lines
+    ]
     out = []
     out.append(f"\n# Duplicates moved from {src_path.name}\n")
     for decl, reason in duplicate_reasons:
@@ -167,7 +172,9 @@ def process_file(src_path):
     with dup_path.open("a", encoding="utf-8") as f:
         f.write("".join(out))
     print(f"Updated {src_path} in place")
-    print(f"Moved {len(duplicate_ranges)} duplicate declaration block(s) to {dup_path}")
+    print(
+        f"Moved {len(duplicate_ranges)} duplicate declaration block(s) to {dup_path}"
+    )
 
 
 def main():

@@ -12,9 +12,9 @@ PREFIX = "Tag: py2-none-any"
 
 
 def clean_text(text: str) -> str:
-    return "\n".join((line for line in text.splitlines() if not line.startswith(PREFIX))) + (
-        "\n" if text.endswith("\n") else ""
-    )
+    return "\n".join(
+        (line for line in text.splitlines() if not line.startswith(PREFIX))) + (
+            "\n" if text.endswith("\n") else "")
 
 
 def clean_file(path: str) -> None:
@@ -74,7 +74,8 @@ def main() -> None:
             if name in TARGET_FILES:
                 clean_file(full_path)
                 continue
-            if name.lower().endswith((".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
+            if name.lower().endswith(
+                (".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
                 dispatch_archive(full_path)
 
 

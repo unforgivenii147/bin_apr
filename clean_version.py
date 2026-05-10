@@ -5,8 +5,8 @@ import re
 from pathlib import Path
 
 PKG_NAME_RE = re.compile(
-    "\n    ^\\s*\n    (?:\n        -e\\s+\n    )?\n    (?P<name>[A-Za-z0-9_.\\-]+)\n    ", re.VERBOSE
-)
+    "\n    ^\\s*\n    (?:\n        -e\\s+\n    )?\n    (?P<name>[A-Za-z0-9_.\\-]+)\n    ",
+    re.VERBOSE)
 
 
 def extract_package_name(line: str) -> str | None:
@@ -26,8 +26,8 @@ def extract_package_name(line: str) -> str | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Clean pip freeze output and keep only package names (overwrite file)."
-    )
+        description=
+        "Clean pip freeze output and keep only package names (overwrite file).")
     parser.add_argument("file", help="pip freeze output file")
     args = parser.parse_args()
     path = Path(args.file)

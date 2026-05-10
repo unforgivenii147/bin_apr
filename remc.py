@@ -24,19 +24,20 @@ def rm_doc(content: str) -> tuple[str, int]:
                 second = line.find(delimiter, first + 3)
                 before = line[:first].rstrip()
                 if before.endswith(":") or before.strip() == "":
-                    result_lines.append(line[:first] + line[second + 3 :])
+                    result_lines.append(line[:first] + line[second + 3:])
                     removed_count += 1
                     i += 1
                     continue
-            before = line[: line.find(delimiter)].rstrip()
-            if before.endswith(":") or before.strip() == "" or "=" not in before:
+            before = line[:line.find(delimiter)].rstrip()
+            if before.endswith(
+                    ":") or before.strip() == "" or "=" not in before:
                 removed_count += 1
                 if before:
                     result_lines.append(before)
                 j = i + 1
                 while j < len(lines):
                     if delimiter in lines[j]:
-                        after = lines[j][lines[j].find(delimiter) + 3 :].strip()
+                        after = lines[j][lines[j].find(delimiter) + 3:].strip()
                         if after:
                             result_lines.append(after)
                         i = j + 1
@@ -61,25 +62,20 @@ def rm_ast(content: str) -> tuple[str, int]:
     lines = content.split("\n")
     ranges = find_docstring_ranges(tree)
     for start, end in sorted(ranges, reverse=True):
-        del lines[start - 1 : end]
+        del lines[start - 1:end]
     return ("\n".join(lines), len(ranges))
 
 
 def find_docstring_ranges(node) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for child in ast.walk(node):
-        if (
-            isinstance(child, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-            and child.body
-            and isinstance(child.body[0], ast.Expr)
-        ):
+        if (isinstance(child, (ast.Module, ast.FunctionDef,
+                               ast.AsyncFunctionDef, ast.ClassDef)) and
+                child.body and isinstance(child.body[0], ast.Expr)):
             value = child.body[0].value
-            if (
-                isinstance(value, ast.Constant)
-                and isinstance(value.value, str)
-                and child.body[0].lineno
-                and child.body[0].end_lineno
-            ):
+            if (isinstance(value, ast.Constant) and
+                    isinstance(value.value, str) and child.body[0].lineno and
+                    child.body[0].end_lineno):
                 ranges.append((child.body[0].lineno, child.body[0].end_lineno))
     return ranges
 
@@ -117,7 +113,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd,
+                                                           extensions=[".py"])
     with Pool(8) as pool:
         pending = deque()
         for f in files:

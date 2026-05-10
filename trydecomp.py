@@ -64,13 +64,20 @@ def try_decompress(filename):
         try:
             print(f"Trying {name}...")
             decompressed_data = func(file_data)
-            if decompressed_data and len(decompressed_data) < len(file_data) * 10:
-                print(f"  SUCCESS: Decompressed using {name}. Size: {len(decompressed_data)} bytes.\n")
+            if decompressed_data and len(
+                    decompressed_data) < len(file_data) * 10:
+                print(
+                    f"  SUCCESS: Decompressed using {name}. Size: {len(decompressed_data)} bytes.\n"
+                )
                 success = True
             else:
-                print(f"  FAILED: {name} did not yield valid decompressed data (size: {len(decompressed_data)}).\n")
+                print(
+                    f"  FAILED: {name} did not yield valid decompressed data (size: {len(decompressed_data)}).\n"
+                )
         except Exception as e:
-            print(f"  FAILED: {name} raised an exception: {type(e).__name__}: {e}\n")
+            print(
+                f"  FAILED: {name} raised an exception: {type(e).__name__}: {e}\n"
+            )
     if tarfile.is_tarfile(filename):
         try:
             print("Trying tarfile...")
@@ -84,33 +91,45 @@ def try_decompress(filename):
                 else:
                     print("  FAILED: tarfile is empty.\n")
         except Exception as e:
-            print(f"  FAILED: tarfile opened with exception: {type(e).__name__}: {e}\n")
+            print(
+                f"  FAILED: tarfile opened with exception: {type(e).__name__}: {e}\n"
+            )
     if zipfile.is_zipfile(filename):
         try:
             print("Trying zipfile...")
             with zipfile.ZipFile(filename, "r") as zip_ref:
                 file_list = zip_ref.namelist()
                 if file_list:
-                    print(f"  SUCCESS: Opened as zip archive with {len(file_list)} files. First file: {file_list[0]}\n")
+                    print(
+                        f"  SUCCESS: Opened as zip archive with {len(file_list)} files. First file: {file_list[0]}\n"
+                    )
                     success = True
                 else:
                     print("  FAILED: zipfile is empty.\n")
         except Exception as e:
-            print(f"  FAILED: zipfile opened with exception: {type(e).__name__}: {e}\n")
+            print(
+                f"  FAILED: zipfile opened with exception: {type(e).__name__}: {e}\n"
+            )
     if py7zr:
         try:
             print("Trying py7zr (7z archive)...")
             with py7zr.SevenZipFile(filename, mode="r") as z:
                 file_list = z.getnames()
                 if file_list:
-                    print(f"  SUCCESS: Opened as 7z archive with {len(file_list)} files. First file: {file_list[0]}\n")
+                    print(
+                        f"  SUCCESS: Opened as 7z archive with {len(file_list)} files. First file: {file_list[0]}\n"
+                    )
                     success = True
                 else:
                     print("  FAILED: py7zr archive is empty.\n")
         except Exception as e:
-            print(f"  FAILED: py7zr opened with exception: {type(e).__name__}: {e}\n")
+            print(
+                f"  FAILED: py7zr opened with exception: {type(e).__name__}: {e}\n"
+            )
     if not success:
-        print("No compression or archive format was successfully identified and decompressed.\n")
+        print(
+            "No compression or archive format was successfully identified and decompressed.\n"
+        )
 
 
 if __name__ == "__main__":

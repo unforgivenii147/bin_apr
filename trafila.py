@@ -33,7 +33,8 @@ def process_file(html_file: Path):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".html", ".htm"])
+    files = [Path(p) for p in args] if args else get_files(
+        cwd, extensions=[".html", ".htm"])
     numf = len(files)
     if numf == 1:
         process_file(files[0])

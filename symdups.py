@@ -44,7 +44,9 @@ def find_duplicates(directory="."):
         size_map[size].append(path)
         file_count += 1
     hash_map = defaultdict(list)
-    potential_duplicates = [paths for paths in size_map.values() if len(paths) > 1]
+    potential_duplicates = [
+        paths for paths in size_map.values() if len(paths) > 1
+    ]
     for paths in potential_duplicates:
         for path in paths:
             file_hash = calculate_file_hash(path)
@@ -58,7 +60,10 @@ def choose_keeper(files):
 
 
 def create_symlinks(duplicates, dry_run=False):
-    backup_data = {"timestamp": datetime.now(tz=UTC).isoformat(), "operations": []}
+    backup_data = {
+        "timestamp": datetime.now(tz=UTC).isoformat(),
+        "operations": []
+    }
     total_saved = 0
     symlink_count = 0
     for files in duplicates.values():
@@ -71,14 +76,12 @@ def create_symlinks(duplicates, dry_run=False):
             get_size = Path(duplicate).stat().st_size
             print(f"  Symlinking: {duplicate} -> {keeper_abs}")
             if not dry_run:
-                backup_data["operations"].append(
-                    {
-                        "symlink": str(duplicate_abs),
-                        "target": str(keeper_abs),
-                        "original_existed": True,
-                        "size": get_size,
-                    }
-                )
+                backup_data["operations"].append({
+                    "symlink": str(duplicate_abs),
+                    "target": str(keeper_abs),
+                    "original_existed": True,
+                    "size": get_size,
+                })
                 try:
                     Path(duplicate).unlink()
                     Path(duplicate_abs).symlink_to(keeper_abs)
@@ -87,7 +90,9 @@ def create_symlinks(duplicates, dry_run=False):
                 except OSError as e:
                     print(f"  [ERROR] {e}")
             else:
-                print(f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}")
+                print(
+                    f"  [DRY RUN] Would replace {duplicate} with symlink to {keeper}"
+                )
                 symlink_count += 1
                 total_saved += get_size
     if not dry_run and symlink_count > 0:
@@ -129,11 +134,22 @@ def reverse_symlinks(backup_file=BACKUP_FILE):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Find duplicate files and replace with symlinks (reversible)")
-    parser.add_argument("directory", nargs="?", default=".", help="Directory to scan (default: current directory)")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
-    parser.add_argument("--reverse", action="store_true", help="Reverse previous symlinking operation")
-    parser.add_argument("--backup-file", default=BACKUP_FILE, help=f"Backup file path (default: {BACKUP_FILE})")
+    parser = argparse.ArgumentParser(
+        description="Find duplicate files and replace with symlinks (reversible)"
+    )
+    parser.add_argument("directory",
+                        nargs="?",
+                        default=".",
+                        help="Directory to scan (default: current directory)")
+    parser.add_argument("--dry-run",
+                        action="store_true",
+                        help="Show what would be done without making changes")
+    parser.add_argument("--reverse",
+                        action="store_true",
+                        help="Reverse previous symlinking operation")
+    parser.add_argument("--backup-file",
+                        default=BACKUP_FILE,
+                        help=f"Backup file path (default: {BACKUP_FILE})")
     args = parser.parse_args()
     if args.reverse:
         reverse_symlinks(args.backup_file)
@@ -143,7 +159,9 @@ def main():
             print("\n[INFO] No duplicates found!")
             return
         print(f"\n[INFO] Found {len(duplicates)} groups of duplicates")
-        print(f"[INFO] Total duplicate files: {sum((len(files) - 1 for files in duplicates.values()))}")
+        print(
+            f"[INFO] Total duplicate files: {sum((len(files) - 1 for files in duplicates.values()))}"
+        )
         if args.dry_run:
             print("\n[INFO] [DRY RUN MODE - No changes will be made]")
         create_symlinks(duplicates, dry_run=args.dry_run)

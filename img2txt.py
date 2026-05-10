@@ -28,7 +28,8 @@ def process_file(path):
 def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".jpg", ".png"])
+    files = [Path(p) for p in args] if args else get_files(
+        cwd, extensions=[".jpg", ".png"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

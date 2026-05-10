@@ -14,7 +14,9 @@ OUTPUT_FILE = OUTPUT_DIR / "const.py"
 LOG_FILE = OUTPUT_DIR / "error.log"
 PYTHON_FILES_TO_PROCESS = "**/*.py"
 OUTPUT_DIR.mkdir(exist_ok=True)
-logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(filename=LOG_FILE,
+                    level=logging.ERROR,
+                    format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def get_file_hash(filepath: Path) -> str:
@@ -32,22 +34,24 @@ def extract_constants(filepath: Path) -> list[tuple[str, str, str]]:
             tree = ast.parse(f.read(), filename=str(filepath))
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign):
-                is_simple_assign = all((isinstance(t, ast.Name) for t in node.targets))
+                is_simple_assign = all(
+                    (isinstance(t, ast.Name) for t in node.targets))
                 if is_simple_assign and isinstance(node.value, ast.Constant):
                     for target in node.targets:
                         const_name = target.id
                         if const_name.isupper():
                             const_value = ast.unparse(node.value)
                             const_type = type(node.value.value).__name__
-                            constants.append((const_name, const_value, const_type))
+                            constants.append(
+                                (const_name, const_value, const_type))
             elif isinstance(node, ast.AnnAssign):
                 if isinstance(node.target, ast.Name) and node.value is not None:
                     if node.target.id.isupper():
                         const_name = node.target.id
                         const_value = ast.unparse(node.value)
-                        const_type = (
-                            type(node.value.value).__name__ if isinstance(node.value, ast.Constant) else "unknown"
-                        )
+                        const_type = (type(
+                            node.value.value).__name__ if isinstance(
+                                node.value, ast.Constant) else "unknown")
                         constants.append((const_name, const_value, const_type))
     except SyntaxError as e:
         logging.error(f"Syntax error in {filepath}: {e}")
@@ -56,7 +60,8 @@ def extract_constants(filepath: Path) -> list[tuple[str, str, str]]:
     return constants
 
 
-def process_file(filepath: Path) -> tuple[str, list[tuple[str, str, str]] | None]:
+def process_file(
+        filepath: Path) -> tuple[str, list[tuple[str, str, str]] | None]:
     file_hash = get_file_hash(filepath)
     constants = extract_constants(filepath)
     return (file_hash, constants)
@@ -72,7 +77,8 @@ def main():
         print("No Python files found in the current directory.")
         return
     print(f"Found {len(python_files)} Python files. Processing...")
-    results = Parallel(n_jobs=-1)((delayed(process_file)(f) for f in python_files))
+    results = Parallel(n_jobs=-1)(
+        (delayed(process_file)(f) for f in python_files))
     unique_constants = {}
     processed_hashes = set()
     all_constants_by_hash = {}
@@ -86,13 +92,17 @@ def main():
                     all_constants_by_hash[file_hash] = []
                 constant_repr = f"{name} = {value}"
                 found = False
-                for idx, (existing_name, existing_value, _existing_type) in enumerate(all_constants_by_hash[file_hash]):
+                for idx, (existing_name, existing_value,
+                          _existing_type) in enumerate(
+                              all_constants_by_hash[file_hash]):
                     if existing_name == name and existing_value == value:
-                        all_constants_by_hash[file_hash][idx] = (name, value, ctype)
+                        all_constants_by_hash[file_hash][idx] = (name, value,
+                                                                 ctype)
                         found = True
                         break
                 if not found:
-                    all_constants_by_hash[file_hash].append((name, value, ctype))
+                    all_constants_by_hash[file_hash].append(
+                        (name, value, ctype))
     final_constants = []
     for file_hash, const_list in all_constants_by_hash.items():
         final_constants.extend(const_list)
@@ -107,7 +117,9 @@ def main():
                 f.write(f"# Type: {ctype}\n")
                 f.write(f"{constant_line}\n\n")
                 written_consts.add(constant_line)
-    print(f"Successfully extracted {len(written_consts)} unique constants to {OUTPUT_FILE}")
+    print(
+        f"Successfully extracted {len(written_consts)} unique constants to {OUTPUT_FILE}"
+    )
     if LOG_FILE.exists():
         print(f"Errors logged to {LOG_FILE}")
 

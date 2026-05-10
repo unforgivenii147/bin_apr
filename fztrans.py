@@ -85,11 +85,15 @@ def interactive_mode(fa_en, en_fa):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Offline Persian ↔ English translator")
+    parser = argparse.ArgumentParser(
+        description="Offline Persian ↔ English translator")
     parser.add_argument("word", nargs="*", help="Word to translate")
     parser.add_argument("--prefix", help="List words starting with prefix")
     parser.add_argument("--fuzzy", help="Fuzzy search (typo tolerant)")
-    parser.add_argument("--fzf", default=True, action="store_true", help="Interactive fzf selector")
+    parser.add_argument("--fzf",
+                        default=True,
+                        action="store_true",
+                        help="Interactive fzf selector")
     args = parser.parse_args()
     fa_en, en_fa = load_dictionary(Path(DICT_FILE))
     all_words = set(fa_en) | set(en_fa)

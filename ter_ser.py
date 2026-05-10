@@ -37,9 +37,8 @@ def main():
     args = sys.argv[1:]
     cwd = Path.cwd()
     before = gsz(cwd)
-    files = (
-        [Path(p) for p in args] if args else get_files(cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"])
-    )
+    files = ([Path(p) for p in args] if args else get_files(
+        cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"]))
     _ = mpf(process_file, files)
     diff_size = before - gsz(cwd)
     cprint(f"space freed : {fsz(diff_size)}", "green")

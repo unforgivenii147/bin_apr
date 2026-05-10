@@ -12,21 +12,23 @@ def get_all_dist_info_dirs():
     dist_info_dirs = []
     for site_dir in [*site.getsitepackages(), site.getusersitepackages()]:
         if Path(site_dir).exists():
-            dist_info_dirs.extend(
-                (os.path.join(site_dir, item) for item in os.listdir(site_dir) if item.endswith(".dist-info"))
-            )
+            dist_info_dirs.extend((os.path.join(site_dir, item)
+                                   for item in os.listdir(site_dir)
+                                   if item.endswith(".dist-info")))
     return dist_info_dirs
 
 
 def check_package_binary(dist_info_path):
     record_file = os.path.join(dist_info_path, "RECORD")
-    pkg_name = Path(dist_info_path).name.replace(".dist-info", "").split("-")[0].lower()
+    pkg_name = Path(dist_info_path).name.replace(".dist-info",
+                                                 "").split("-")[0].lower()
     if Path(record_file).exists():
         try:
             with Path(record_file).open(encoding="utf-8") as f:
                 reader = csv.reader(f)
                 for row in reader:
-                    if row and any((row[0].endswith(ext) for ext in [".so", ".pyd"])):
+                    if row and any(
+                        (row[0].endswith(ext) for ext in [".so", ".pyd"])):
                         return pkg_name
         except:
             pass
@@ -51,11 +53,14 @@ def clean_requirements_txt(requirements_file="requirements.txt"):
     with Path(requirements_file).open(encoding="utf-8") as f:
         lines = [line.rstrip() for line in f]
     comments = [line for line in lines if line.startswith("#")]
-    requirements = [line for line in lines if line and (not line.startswith("#"))]
+    requirements = [
+        line for line in lines if line and (not line.startswith("#"))
+    ]
     pure_python = []
     removed = []
     for req in requirements:
-        pkg_name = req.split("==")[0].split(">=")[0].split("<=")[0].split("~=")[0].strip().lower()
+        pkg_name = req.split("==")[0].split(">=")[0].split("<=")[0].split(
+            "~=")[0].strip().lower()
         if pkg_name in binary_packages:
             removed.append(req)
         else:

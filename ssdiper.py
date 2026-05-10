@@ -49,17 +49,19 @@ def compare_files(file_paths: list[Path], similarity_threshold: int = 70):
             try:
                 score = ssdeep.compare(hash1, hash2)
                 if score >= similarity_threshold:
-                    similarities.append(
-                        {
-                            "file1": str(Path(filepath1_str).relative_to(cwd)),
-                            "file2": str(Path(filepath2_str).relative_to(cwd)),
-                            "similarity_score": score,
-                        }
-                    )
+                    similarities.append({
+                        "file1": str(Path(filepath1_str).relative_to(cwd)),
+                        "file2": str(Path(filepath2_str).relative_to(cwd)),
+                        "similarity_score": score,
+                    })
             except ssdeep.error as e:
-                print(f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}")
+                print(
+                    f"Error comparing hashes for {filepath1_str} and {filepath2_str}: {e}"
+                )
             except Exception as e:
-                print(f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}")
+                print(
+                    f"An unexpected error occurred during comparison for {filepath1_str} and {filepath2_str}: {e}"
+                )
     similarities.sort(key=operator.itemgetter("similarity_score"), reverse=True)
     return similarities
 
@@ -78,10 +80,13 @@ if __name__ == "__main__":
     OUTPUT_JSON_FILE = "simz.json"
     files = get_files(cwd)
     if not files:
-        print("No files found matching the criteria in the specified directory.")
+        print(
+            "No files found matching the criteria in the specified directory.")
     else:
         similar_file_pairs = compare_files(files, MIN_SIMILARITY_THRESHOLD)
         if similar_file_pairs:
             save_to_json(similar_file_pairs, OUTPUT_JSON_FILE)
         else:
-            print(f"\nNo files found with similarity >= {MIN_SIMILARITY_THRESHOLD}%.")
+            print(
+                f"\nNo files found with similarity >= {MIN_SIMILARITY_THRESHOLD}%."
+            )

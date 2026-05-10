@@ -18,7 +18,9 @@ def process_file(image_path):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     gaussian_blur = cv2.GaussianBlur(blurred, (0, 0), 3)
     sharpened = cv2.addWeighted(blurred, 1.5, gaussian_blur, -0.5, 0)
-    binary = cv2.adaptiveThreshold(sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    binary = cv2.adaptiveThreshold(sharpened, 255,
+                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY, 11, 2)
     enhanced_img_pil = Image.fromarray(binary)
     enhanced = image_path.with_stem(image_path.stem + "_enhanced_pil")
     cv2.imwrite(str(enhanced), enhanced_img_pil)
@@ -34,7 +36,9 @@ def process_file2(image_path):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     gaussian_blur = cv2.GaussianBlur(blurred, (0, 0), 3)
     sharpened = cv2.addWeighted(blurred, 1.5, gaussian_blur, -0.5, 0)
-    binary = cv2.adaptiveThreshold(sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    binary = cv2.adaptiveThreshold(sharpened, 255,
+                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY, 11, 2)
     enhanced = image_path.with_stem(image_path.stem + "_enhanced_cv")
     cv2.imwrite(str(enhanced), binary)
     return binary
@@ -44,7 +48,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".png", ".jpg"])
+    files = [Path(p) for p in args] if args else get_files(
+        cwd, extensions=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

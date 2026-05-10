@@ -17,7 +17,7 @@ def fix_py2_to_py3_all(line):
     line = line.replace("raw_input(", "input(")
     m = EXCEPT_PATTERN.match(line.strip())
     if m:
-        indent = line[: len(line) - len(line.lstrip())]
+        indent = line[:len(line) - len(line.lstrip())]
         exc_type, exc_var = (m.group(1), m.group(2))
         line = f"{indent}except {exc_type} as {exc_var}:\n"
     return (line, line != original)
@@ -30,14 +30,14 @@ def fix_print_statements(text):
     for line in lines:
         stripped = line.strip()
         if PRINT_BARE_PATTERN.match(stripped):
-            indent = line[: len(line) - len(line.lstrip())]
+            indent = line[:len(line) - len(line.lstrip())]
             new_lines.append(f"{indent}print()\n")
             changed = True
             continue
         m = PRINT_PATTERN.match(stripped)
         if m:
             expr = m.group(1)
-            indent = line[: len(line) - len(line.lstrip())]
+            indent = line[:len(line) - len(line.lstrip())]
             new_lines.append(f"{indent}print({expr})\n")
             changed = True
             continue
@@ -85,10 +85,17 @@ def scan_and_fix(root: Path, force, apply_all) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Fix Python2 print statements and optionally apply all Py2→Py3 conversions."
+        description=
+        "Fix Python2 print statements and optionally apply all Py2→Py3 conversions."
     )
-    parser.add_argument("-f", "--force", action="store_true", help="Overwrite original files (no .bak backups)")
-    parser.add_argument("-a", "--all", action="store_true", help="Apply all Python2→Python3 fixes")
+    parser.add_argument("-f",
+                        "--force",
+                        action="store_true",
+                        help="Overwrite original files (no .bak backups)")
+    parser.add_argument("-a",
+                        "--all",
+                        action="store_true",
+                        help="Apply all Python2→Python3 fixes")
     args = parser.parse_args()
     if not any(vars(args).values()):
         args.force = True

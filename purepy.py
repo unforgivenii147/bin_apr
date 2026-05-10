@@ -11,7 +11,8 @@ def has_native_wheels(info) -> bool:
     urls = info.get("urls", [])
     for u in urls:
         filename = u.get("filename", "").lower()
-        if any((ext in filename for ext in [".so", ".pyd", ".dll", "win_amd64", "manylinux", "macosx"])):
+        if any((ext in filename for ext in
+                [".so", ".pyd", ".dll", "win_amd64", "manylinux", "macosx"])):
             return True
     return False
 
@@ -50,9 +51,12 @@ def main() -> None:
                 native.add(pkg)
             else:
                 missing.add(pkg)
-    Path("pure_python.txt").write_text("\n".join(sorted(pure)), encoding="utf-8")
-    Path("native_extensions.txt").write_text("\n".join(sorted(native)), encoding="utf-8")
-    Path("not_found.txt").write_text("\n".join(sorted(missing)), encoding="utf-8")
+    Path("pure_python.txt").write_text("\n".join(sorted(pure)),
+                                       encoding="utf-8")
+    Path("native_extensions.txt").write_text("\n".join(sorted(native)),
+                                             encoding="utf-8")
+    Path("not_found.txt").write_text("\n".join(sorted(missing)),
+                                     encoding="utf-8")
     print("Done!")
     print(f"Pure Python: {len(pure)}")
     print(f"Native-required: {len(native)}")

@@ -48,7 +48,8 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
                 if stripped.endswith((".tar.gz", ".tar.xz", ".tgz", ".txz")):
                     targz_urls.append(stripped)
                     continue
-                if stripped.endswith((".ttf", ".woff", ".woff2", ".eot", ".otf", ".ttc")):
+                if stripped.endswith(
+                    (".ttf", ".woff", ".woff2", ".eot", ".otf", ".ttc")):
                     font_urls.append(stripped)
                     continue
                 if stripped.endswith((".js", ".css")):

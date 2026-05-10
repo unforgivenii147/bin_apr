@@ -49,12 +49,14 @@ def fix_by_shebang(fp) -> bool:
 
 def get_file_mime(file_path):
     try:
-        result = subprocess.run(
-            ["file", "--brief", "--mime-type", file_path], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["file", "--brief", "--mime-type", file_path],
+                                capture_output=True,
+                                text=True,
+                                check=True)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
-        print(f"Error detecting file type for {file_path}: {e}", file=sys.stderr)
+        print(f"Error detecting file type for {file_path}: {e}",
+              file=sys.stderr)
         return None
 
 
@@ -79,7 +81,10 @@ def check_files(directory):
             ext = file_path.suffix.lower()
             if fix_by_shebang(file_path):
                 continue
-            if ext in {".eot", ".svg", ".woff2", ".woff", ".ttf", ".c", ".md", ".py", ".pdf", ".html", ".js", ".css"}:
+            if ext in {
+                    ".eot", ".svg", ".woff2", ".woff", ".ttf", ".c", ".md",
+                    ".py", ".pdf", ".html", ".js", ".css"
+            }:
                 continue
             mime = get_file_mime(file_path)
             print(f"{name} --> {mime}")
@@ -106,7 +111,9 @@ def main():
         print("Files with mismatched extensions:")
         for file_path, _ext, mime, new_path in mismatches:
             if new_path:
-                print(f"\x1b[5;93m{file_path.name} {mime} \x1b[5;96m{new_path.name}]\x1b[0m")
+                print(
+                    f"\x1b[5;93m{file_path.name} {mime} \x1b[5;96m{new_path.name}]\x1b[0m"
+                )
             else:
                 print(f"{file_path.name} -> \x1b[5m;94mdetected: {mime}\x1b[0m")
     else:

@@ -21,7 +21,11 @@ def load_installed_packages():
     path = Path(PIP_LIST_FILE)
     if get_file_age(path) > 1.0 or not path.exists():
         return create_pip_list_again()
-    return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 def find_dist_info(prefix):
@@ -41,7 +45,9 @@ def find_dist_info(prefix):
 
 def uninstall_packages(pkg_name):
     try:
-        subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", pkg_name], check=True)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", pkg_name],
+            check=True)
         print(f"Uninstalled {pkg_name}")
     except subprocess.CalledProcessError:
         print(f"Skipped {pkg_name} (not installed or error)")
@@ -53,7 +59,11 @@ if __name__ == "__main__":
         sys.exit(1)
     prefix = sys.argv[1].lower()
     installed = load_installed_packages()
-    to_uninstall = [pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.WRatio(prefix, pkg.lower()) > 90]
+    to_uninstall = [
+        pkg.lower()
+        for pkg in installed
+        if prefix in pkg.lower() or fuzz.WRatio(prefix, pkg.lower()) > 90
+    ]
     if not to_uninstall:
         print("no match found")
         sys.exit(0)

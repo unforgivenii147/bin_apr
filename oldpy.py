@@ -53,10 +53,10 @@ def tokenizer_confirm(filepath: str) -> str | None:
                 continue
             j = i + 1
             while j < len(tokens) and tokens[j].type in {
-                tokenize.NL,
-                tokenize.NEWLINE,
-                tokenize.INDENT,
-                tokenize.DEDENT,
+                    tokenize.NL,
+                    tokenize.NEWLINE,
+                    tokenize.INDENT,
+                    tokenize.DEDENT,
             }:
                 j += 1
             if j < len(tokens) and tokens[j].string != "(":

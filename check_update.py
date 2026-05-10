@@ -9,7 +9,8 @@ from loguru import logger
 from packaging.version import InvalidVersion, Version
 
 
-def check_package_on_pypi(package_name: str, current_version: str) -> str | None:
+def check_package_on_pypi(package_name: str,
+                          current_version: str) -> str | None:
     try:
         time.sleep(0.01)
         url = f"https://pypi.org/pypi/{package_name}/json"
@@ -45,7 +46,8 @@ def compare_versions(current: str, latest: str) -> str:
 
 
 def is_venv() -> bool:
-    return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
+    return hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and
+                                           sys.base_prefix != sys.prefix)
 
 
 def main() -> None:
@@ -63,7 +65,8 @@ def main() -> None:
     updates_found = []
     errors = []
     up_to_date = 0
-    for i, (package, current_version) in enumerate(sorted(installed.items()), 1):
+    for i, (package, current_version) in enumerate(sorted(installed.items()),
+                                                   1):
         progress = f"[{i:3d}/{total_packages:3d}]"
         latest_version = check_package_on_pypi(package.lower(), current_version)
         if latest_version is None:
@@ -72,7 +75,9 @@ def main() -> None:
             continue
         status = compare_versions(current_version, latest_version)
         if status == "update":
-            print(f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}")
+            print(
+                f"{progress} {package:<30} : 📦 update available from {current_version} to {latest_version}"
+            )
             updates_found.append((package, current_version, latest_version))
         elif status == "newer":
             print(
@@ -80,7 +85,9 @@ def main() -> None:
             )
             errors.append(package)
         else:
-            print(f"{progress} {package:<30} : ✅ already latest version ({current_version})")
+            print(
+                f"{progress} {package:<30} : ✅ already latest version ({current_version})"
+            )
             up_to_date += 1
     print("\n" + "=" * 60)
     print("SUMMARY")
@@ -97,7 +104,9 @@ def main() -> None:
             print(f"  {package:<30} {current} -> {latest}")
         print("\n💡 To upgrade all packages, run:")
         packages_to_upgrade = [p[0] for p in updates_found]
-        print(f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}")
+        print(
+            f"   python -m pip install --upgrade {' '.join(packages_to_upgrade)}"
+        )
         print("\n💡 To upgrade a specific package, run:")
         print("   python -m pip install --upgrade <package-name>")
 

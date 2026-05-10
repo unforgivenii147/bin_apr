@@ -66,7 +66,13 @@ def get_git_status_for_dir(path: str) -> dict[str, dict[str, str]]:
 
 
 class Entry:
-    def __init__(self, path: str, name: str, stat_obj, link_target=None, git=None) -> None:
+
+    def __init__(self,
+                 path: str,
+                 name: str,
+                 stat_obj,
+                 link_target=None,
+                 git=None) -> None:
         self.path = path
         self.name = name
         self.stat = stat_obj
@@ -76,7 +82,8 @@ class Entry:
 
 def mode_to_string(mode: int) -> str:
     chars = []
-    chars.append("d" if stat.S_ISDIR(mode) else "l" if stat.S_ISLNK(mode) else "-")
+    chars.append(
+        "d" if stat.S_ISDIR(mode) else "l" if stat.S_ISLNK(mode) else "-")
     perms = [
         (stat.S_IRUSR, "r"),
         (stat.S_IWUSR, "w"),
@@ -101,7 +108,10 @@ def human_size(n: int) -> str:
     return f"{n:.1f}P"
 
 
-def output_long(entries: list[Entry], icons=False, colors=True, human=True) -> None:
+def output_long(entries: list[Entry],
+                icons=False,
+                colors=True,
+                human=True) -> None:
     for e in entries:
         st = e.stat
         mode_s = mode_to_string(st.st_mode)
@@ -119,10 +129,15 @@ def output_long(entries: list[Entry], icons=False, colors=True, human=True) -> N
         gitmark = ""
         if e.git:
             gitmark = f" {e.git['raw']}"
-        print(f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}")
+        print(
+            f"{mode_s} {nlink:2} {user:8} {group:8} {size:>6} {tstr} {name}{gitmark}"
+        )
 
 
-def output_columns(entries: list[Entry], icons=False, colors=True, width=None) -> None:
+def output_columns(entries: list[Entry],
+                   icons=False,
+                   colors=True,
+                   width=None) -> None:
     if width is None:
         env_cols = os.environ.get("COLUMNS")
         if env_cols and env_cols.isdigit():
@@ -147,7 +162,7 @@ def output_columns(entries: list[Entry], icons=False, colors=True, width=None) -
         import regex as re
 
         plain = re.sub("\\x1b\\[[0-9;]*m", "", text)
-        return plain[: max_len - 1] + "…"
+        return plain[:max_len - 1] + "…"
 
     rendered = []
     for e in entries:
@@ -159,7 +174,7 @@ def output_columns(entries: list[Entry], icons=False, colors=True, width=None) -
         txt = truncate(txt, col_width - 1)
         rendered.append(txt)
     for i in range(0, len(rendered), cols):
-        row = rendered[i : i + cols]
+        row = rendered[i:i + cols]
         padded = [r + " " * (col_width - real_len(r)) for r in row]
         print("".join(padded))
 
@@ -224,17 +239,21 @@ def list_recursive(base: str, args, depth=0) -> None:
 
 def print_entries(entries: list[Entry], args) -> None:
     if args.json:
-        out = [
-            {
-                "name": e.name,
-                "size": e.stat.st_size,
-                "mode": mode_to_string(e.stat.st_mode),
-                "mtime": e.stat.st_mtime,
-                "git": e.git,
-                "type": "dir" if stat.S_ISDIR(e.stat.st_mode) else "link" if stat.S_ISLNK(e.stat.st_mode) else "file",
-            }
-            for e in entries
-        ]
+        out = [{
+            "name":
+                e.name,
+            "size":
+                e.stat.st_size,
+            "mode":
+                mode_to_string(e.stat.st_mode),
+            "mtime":
+                e.stat.st_mtime,
+            "git":
+                e.git,
+            "type":
+                "dir" if stat.S_ISDIR(e.stat.st_mode) else
+                "link" if stat.S_ISLNK(e.stat.st_mode) else "file",
+        } for e in entries]
         print(json.dumps(out, indent=2))
         return
     if args.long:
@@ -245,7 +264,10 @@ def print_entries(entries: list[Entry], args) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("paths", nargs="*", default=["."], help="Files or directories")
+    p.add_argument("paths",
+                   nargs="*",
+                   default=["."],
+                   help="Files or directories")
     p.add_argument("-l", "--long", action="store_true")
     p.add_argument("-a", "--all", action="store_true")
     p.add_argument("-R", "--recursive", action="store_true")

@@ -21,10 +21,13 @@ def read_lines_standard(path: Path) -> list[str]:
 
 def read_lines_mmap(path: Path) -> list[str]:
     size = Path(path).stat().st_size
-    with Path(path).open("rb") as f, mmap.mmap(f.fileno(), size, access=mmap.ACCESS_READ) as mm:
+    with Path(path).open("rb") as f, mmap.mmap(f.fileno(),
+                                               size,
+                                               access=mmap.ACCESS_READ) as mm:
         text = mm[:].decode("utf-8", errors="replace")
     lines = text.splitlines(keepends=True)
-    if not lines[-1].endswith(("\n", "\r\n", "\r")) and size > 0 and text.endswith("\n"):
+    if not lines[-1].endswith(
+        ("\n", "\r\n", "\r")) and size > 0 and text.endswith("\n"):
         lines.append("")
     return lines
 

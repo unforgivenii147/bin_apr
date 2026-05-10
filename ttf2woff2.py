@@ -16,7 +16,9 @@ def check_app():
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("Error: 'woff2_compress' command not found.")
-        print("Please install 'woff2tools' (e.g., 'sudo apt-get install woff2tools').")
+        print(
+            "Please install 'woff2tools' (e.g., 'sudo apt-get install woff2tools')."
+        )
         return False
 
 
@@ -70,17 +72,22 @@ def find_ttf_files(directory: str) -> list[Path]:
 def main():
     if not check_app():
         sys.exit(1)
-    print(f"Searching for TTF files in '{os.path.abspath(SEARCH_DIR)}' and subdirectories...")
+    print(
+        f"Searching for TTF files in '{os.path.abspath(SEARCH_DIR)}' and subdirectories..."
+    )
     ttf_files_to_process = find_ttf_files(SEARCH_DIR)
     if not ttf_files_to_process:
         print("No .ttf files found. Exiting.")
         sys.exit(0)
-    print(f"Found {len(ttf_files_to_process)} TTF files. Starting conversion...")
+    print(
+        f"Found {len(ttf_files_to_process)} TTF files. Starting conversion...")
     num_processes = multiprocessing.cpu_count()
     print(f"Using {num_processes} parallel processes.")
     results = []
     with multiprocessing.Pool(processes=num_processes) as pool:
-        results = pool.starmap(convert_ttf_to_woff2, [(ttf_file,) for ttf_file in ttf_files_to_process])
+        results = pool.starmap(
+            convert_ttf_to_woff2,
+            [(ttf_file,) for ttf_file in ttf_files_to_process])
     successful_conversions = 0
     failed_conversions = 0
     for ttf_path, success, message in results:
@@ -92,7 +99,8 @@ def main():
     print("\n--- Conversion Summary ---")
     print(f"Total TTF files processed: {len(ttf_files_to_process)}")
     print(f"Successfully converted: {successful_conversions}")
-    print(f"Failed conversions (original TTF not deleted): {failed_conversions}")
+    print(
+        f"Failed conversions (original TTF not deleted): {failed_conversions}")
     print("--------------------------")
 
 

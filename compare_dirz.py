@@ -39,7 +39,8 @@ def compare_dirs(dir1, dir2):
             changed.append(rel_path)
     Path("dir1.txt").write_text("\n".join(changed), encoding="utf-8")
     Path("common.txt").write_text("\n".join(common), encoding="utf-8")
-    Path("only_in_dir1.txt").write_text("\n".join(only_in_dir1), encoding="utf-8")
+    Path("only_in_dir1.txt").write_text("\n".join(only_in_dir1),
+                                        encoding="utf-8")
 
 
 if __name__ == "__main__":

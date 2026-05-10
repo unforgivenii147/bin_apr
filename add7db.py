@@ -16,14 +16,17 @@ def get_current_folder_name():
 
 def get_user_folder_name(default_name):
     while True:
-        user_input = input(f"Enter folder name (default: {default_name}): ").strip()
+        user_input = input(
+            f"Enter folder name (default: {default_name}): ").strip()
         if not user_input:
             return default_name
         return user_input
 
 
 def folder_exists_in_db(cursor, folder_name):
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (folder_name,))
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+        (folder_name,))
     return cursor.fetchone() is not None
 
 
@@ -52,27 +55,44 @@ def read_file_contents(filepath):
         encodings = ["utf-8", "latin-1", "cp1252", "iso-8859-1"]
         get_size = Path(filepath).stat().st_size
         if get_size > 10 * 1024 * 1024:
-            print(f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress")
+            print(
+                f"    Warning: Large file ({get_size / 1024 / 1024:.1f}MB), may take time to compress"
+            )
         for encoding in encodings:
             try:
                 with Path(filepath).open(encoding=encoding) as f:
                     content = f.read()
                     return {
-                        "content": content,
-                        "is_binary": False,
-                        "original_size": len(content.encode("utf-8", errors="replace")),
+                        "content":
+                            content,
+                        "is_binary":
+                            False,
+                        "original_size":
+                            len(content.encode("utf-8", errors="replace")),
                     }
             except (UnicodeDecodeError, UnicodeError):
                 continue
         with Path(filepath).open("rb") as f:
             content = f.read()
-            return {"content": content, "is_binary": True, "original_size": len(content)}
+            return {
+                "content": content,
+                "is_binary": True,
+                "original_size": len(content)
+            }
     except PermissionError:
         error_msg = "[Permission denied - cannot read file]"
-        return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
+        return {
+            "content": error_msg,
+            "is_binary": False,
+            "original_size": len(error_msg)
+        }
     except Exception as e:
         error_msg = f"[Error reading file: {e!s}]"
-        return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
+        return {
+            "content": error_msg,
+            "is_binary": False,
+            "original_size": len(error_msg)
+        }
 
 
 def get_files_in_current_dir():
@@ -89,39 +109,35 @@ def get_files_in_current_dir():
                 if file_data["is_binary"]:
                     compressed = compress_data(file_data["content"])
                     if compressed:
-                        files.append(
-                            {
-                                "filename": item,
-                                "contents": compressed,
-                                "compressed": 1,
-                                "original_size": file_data["original_size"],
-                                "compressed_size": len(compressed),
-                            }
-                        )
+                        files.append({
+                            "filename": item,
+                            "contents": compressed,
+                            "compressed": 1,
+                            "original_size": file_data["original_size"],
+                            "compressed_size": len(compressed),
+                        })
                         print(
                             f"    ✓ Compressed {file_data['original_size'] / 1024:.1f}KB to {len(compressed) / 1024:.1f}KB"
                         )
                     else:
-                        files.append(
-                            {
-                                "filename": item,
-                                "contents": "[Binary file - compression failed]",
-                                "compressed": 0,
-                                "original_size": file_data["original_size"],
-                                "compressed_size": 0,
-                            }
-                        )
-                else:
-                    files.append(
-                        {
+                        files.append({
                             "filename": item,
-                            "contents": file_data["content"],
+                            "contents": "[Binary file - compression failed]",
                             "compressed": 0,
                             "original_size": file_data["original_size"],
                             "compressed_size": 0,
-                        }
+                        })
+                else:
+                    files.append({
+                        "filename": item,
+                        "contents": file_data["content"],
+                        "compressed": 0,
+                        "original_size": file_data["original_size"],
+                        "compressed_size": 0,
+                    })
+                    print(
+                        f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)"
                     )
-                    print(f"    ✓ Stored as text ({file_data['original_size'] / 1024:.1f}KB)")
     except PermissionError:
         print("Warning: Permission denied accessing some files")
     return files
@@ -150,7 +166,9 @@ def main():
         sys.exit(1)
     db_path = "/sdcard/pkgs.db"
     if not os.access("/sdcard/", os.W_OK):
-        print("Error: Cannot write to /sdcard/. Make sure you have proper permissions.")
+        print(
+            "Error: Cannot write to /sdcard/. Make sure you have proper permissions."
+        )
         print("On Android, you might need to:")
         print("1. Grant storage permissions to Termux/terminal app")
         print("2. Or run the script with appropriate permissions")
@@ -176,9 +194,12 @@ def main():
         conn.commit()
         total_original = sum((f.get("original_size", 0) for f in files))
         total_compressed = sum((f.get("compressed_size", 0) for f in files))
-        print(f"\n✅ Successfully added {len(files)} files to table '{folder_name}'")
+        print(
+            f"\n✅ Successfully added {len(files)} files to table '{folder_name}'"
+        )
         if total_compressed > 0:
-            ratio = (1 - total_compressed / total_original) * 100 if total_original > 0 else 0
+            ratio = (1 - total_compressed /
+                     total_original) * 100 if total_original > 0 else 0
             print("📊 Storage stats:")
             print(f"   Original size: {total_original / 1024 / 1024:.2f}MB")
             print(f"   Compressed size: {total_compressed / 1024 / 1024:.2f}MB")

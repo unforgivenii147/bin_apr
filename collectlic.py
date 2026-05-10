@@ -21,7 +21,8 @@ def collect_files(root):
         dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
         for fname in filenames:
             full = os.path.join(dirpath, fname)
-            if Path(full).resolve() == Path(OUTPUT_FILE).resolve() or "license" not in str(fname).lower():
+            if Path(full).resolve() == Path(OUTPUT_FILE).resolve(
+            ) or "license" not in str(fname).lower():
                 continue
             yield full
 

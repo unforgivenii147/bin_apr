@@ -14,12 +14,17 @@ VALID = {"function_definition"}
 
 def extract_file(src: bytes, tree):
     root = tree.root_node
-    return [src[node.start_byte : node.end_byte].decode() for node in root.children if node.type in VALID]
+    return [
+        src[node.start_byte:node.end_byte].decode()
+        for node in root.children
+        if node.type in VALID
+    ]
 
 
 folder_imports = defaultdict(list)
 for py in Path().rglob("*.py"):
-    if any((part.startswith(".") for part in py.parts)) or "site-packages" in py.parts:
+    if any((part.startswith(".")
+            for part in py.parts)) or "site-packages" in py.parts:
         continue
     if OUT_DIR in py.parents:
         continue

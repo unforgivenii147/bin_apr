@@ -46,11 +46,22 @@ def process_file(filepath, inplace=False, keep_strings=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Remove comments and docstrings from code files, optionally keeping strings."
+        description=
+        "Remove comments and docstrings from code files, optionally keeping strings."
     )
-    parser.add_argument("files", metavar="FILE", type=str, nargs="+", help="Files to process")
-    parser.add_argument("-i", "--inplace", action="store_true", help="Edit files in-place")
-    parser.add_argument("-s", "--strings", action="store_true", help="Keep strings in the output")
+    parser.add_argument("files",
+                        metavar="FILE",
+                        type=str,
+                        nargs="+",
+                        help="Files to process")
+    parser.add_argument("-i",
+                        "--inplace",
+                        action="store_true",
+                        help="Edit files in-place")
+    parser.add_argument("-s",
+                        "--strings",
+                        action="store_true",
+                        help="Keep strings in the output")
     args = parser.parse_args()
     for filepath in args.files:
         process_file(filepath, inplace=args.inplace, keep_strings=args.strings)

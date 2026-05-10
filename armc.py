@@ -54,7 +54,9 @@ def process_file(path: Path):
         try:
             ast.parse(cleaned)
         except SyntaxError:
-            cprint(f"⚠️ Skipped (syntax error after clean): {path.relative_to(cwd)}")
+            cprint(
+                f"⚠️ Skipped (syntax error after clean): {path.relative_to(cwd)}"
+            )
             return
         with open(path, "w", encoding="utf-8") as f:
             f.write(cleaned)
@@ -69,7 +71,8 @@ def main():
         print("No Python files found.")
         return
     print(f"Discovered {len(python_files)} python-like files...")
-    Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(f) for f in python_files))
+    Parallel(n_jobs=-1, prefer="processes")(
+        (delayed(process_file)(f) for f in python_files))
 
 
 if __name__ == "__main__":

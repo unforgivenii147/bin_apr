@@ -11,6 +11,7 @@ from loguru import logger
 
 
 class LanguageDetector:
+
     def __init__(self, min_bytes=100, max_bytes=10000) -> None:
         self.min_bytes = min_bytes
         self.max_bytes = max_bytes
@@ -42,7 +43,10 @@ class LanguageDetector:
         except Exception as e:
             return (False, f"ERROR: {e}", None, None)
 
-    def scan_directory(self, directory, show_progress=True, only_report_non_english=True):
+    def scan_directory(self,
+                       directory,
+                       show_progress=True,
+                       only_report_non_english=True):
         directory = Path(directory)
         if not directory.exists():
             print(f"Error: Directory '{directory}' does not exist")
@@ -58,26 +62,32 @@ class LanguageDetector:
                     continue
                 self.stats["total_files"] += 1
                 if show_progress:
-                    print(f"\n{filepath} [Files: {self.stats['total_files']}]", end="", flush=True)
+                    print(f"\n{filepath} [Files: {self.stats['total_files']}]",
+                          end="",
+                          flush=True)
                 if not self.is_text_file(filepath):
                     self.stats["skipped_binary"] += 1
                     continue
-                is_reliable, lang_name, lang_code, percent = self.detect_language(filepath)
-                if lang_name in {"TOO_SHORT", "UNKNOWN", None} or lang_name.startswith(("ERROR:", "CLD2_ERROR:")):
-                    self.stats["skipped_small" if lang_name == "TOO_SHORT" else "skipped_error"] += 1
+                is_reliable, lang_name, lang_code, percent = self.detect_language(
+                    filepath)
+                if lang_name in {"TOO_SHORT", "UNKNOWN", None
+                                } or lang_name.startswith(
+                                    ("ERROR:", "CLD2_ERROR:")):
+                    self.stats["skipped_small" if lang_name ==
+                               "TOO_SHORT" else "skipped_error"] += 1
                     continue
                 self.stats["languages"][lang_name] += 1
                 if lang_code != "en" or not only_report_non_english:
-                    if lang_code == "en" and (not is_reliable) and only_report_non_english or lang_code != "en":
-                        self.stats["non_english"].append(
-                            {
-                                "file": filepath,
-                                "language": lang_name,
-                                "code": lang_code,
-                                "reliable": is_reliable,
-                                "confidence": percent,
-                            }
-                        )
+                    if lang_code == "en" and (
+                            not is_reliable
+                    ) and only_report_non_english or lang_code != "en":
+                        self.stats["non_english"].append({
+                            "file": filepath,
+                            "language": lang_name,
+                            "code": lang_code,
+                            "reliable": is_reliable,
+                            "confidence": percent,
+                        })
         print("\n" + "=" * 60)
         self.report_results(only_report_non_english)
 
@@ -86,12 +96,17 @@ class LanguageDetector:
         print("=" * 60)
         print(f"📁 Total files processed: {self.stats['total_files']}")
         print(f"⏭️  Skipped binary files: {self.stats['skipped_binary']}")
-        print(f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}")
+        print(
+            f"📏 Skipped small files (<100 bytes): {self.stats['skipped_small']}"
+        )
         print(f"❌ Skipped (errors): {self.stats['skipped_error']}")
         if only_report_non_english:
-            print(f"🌍 Non-English files found: {len(self.stats['non_english'])}")
+            print(
+                f"🌍 Non-English files found: {len(self.stats['non_english'])}")
         else:
-            print(f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}")
+            print(
+                f"🌍 Total text files analyzed: {sum(self.stats['languages'].values())}"
+            )
         if self.stats["languages"]:
             print("\n📈 Language Distribution:")
             for lang, count in self.stats["languages"].most_common():
@@ -119,24 +134,45 @@ class LanguageDetector:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Recursively find non-English files using pycld2")
-    parser.add_argument("directory", nargs="?", default=".", help="Directory to scan (default: current directory)")
+    parser = argparse.ArgumentParser(
+        description="Recursively find non-English files using pycld2")
+    parser.add_argument("directory",
+                        nargs="?",
+                        default=".",
+                        help="Directory to scan (default: current directory)")
     parser.add_argument(
-        "--min-bytes", type=int, default=100, help="Minimum bytes to read for language detection (default: 100)"
-    )
+        "--min-bytes",
+        type=int,
+        default=100,
+        help="Minimum bytes to read for language detection (default: 100)")
     parser.add_argument(
-        "--max-bytes", type=int, default=10000, help="Maximum bytes to read from each file (default: 10000)"
-    )
-    parser.add_argument("--all", "-a", action="store_true", help="Report all files, including English ones")
-    parser.add_argument("--no-progress", "-np", action="store_true", help="Don't show progress")
-    parser.add_argument("--output", "-o", type=str, help="Output results to file")
+        "--max-bytes",
+        type=int,
+        default=10000,
+        help="Maximum bytes to read from each file (default: 10000)")
+    parser.add_argument("--all",
+                        "-a",
+                        action="store_true",
+                        help="Report all files, including English ones")
+    parser.add_argument("--no-progress",
+                        "-np",
+                        action="store_true",
+                        help="Don't show progress")
+    parser.add_argument("--output",
+                        "-o",
+                        type=str,
+                        help="Output results to file")
     args = parser.parse_args()
-    detector = LanguageDetector(min_bytes=args.min_bytes, max_bytes=args.max_bytes)
-    detector.scan_directory(args.directory, show_progress=not args.no_progress, only_report_non_english=not args.all)
+    detector = LanguageDetector(min_bytes=args.min_bytes,
+                                max_bytes=args.max_bytes)
+    detector.scan_directory(args.directory,
+                            show_progress=not args.no_progress,
+                            only_report_non_english=not args.all)
     if args.output:
         from contextlib import redirect_stdout
 
-        with Path(args.output).open("w", encoding="utf-8") as f, redirect_stdout(f):
+        with Path(args.output).open("w",
+                                    encoding="utf-8") as f, redirect_stdout(f):
             detector.report_results(only_report_non_english=not args.all)
         print(f"\n✅ Results saved to: {args.output}")
 

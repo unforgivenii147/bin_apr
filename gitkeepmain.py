@@ -8,7 +8,11 @@ from loguru import logger
 
 def run_git_command(cmd, check=True, capture_output=True):
     try:
-        return subprocess.run(cmd, shell=True, check=check, capture_output=capture_output, text=True)
+        return subprocess.run(cmd,
+                              shell=True,
+                              check=check,
+                              capture_output=capture_output,
+                              text=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {cmd}")
         print(f"Error: {e}")
@@ -36,7 +40,11 @@ def get_main_branch_name():
                 return line.split(":")[1].strip()
     result = run_git_command("git branch -l")
     if result:
-        branches = [b.strip().replace("* ", "") for b in result.stdout.split("\n") if b.strip()]
+        branches = [
+            b.strip().replace("* ", "")
+            for b in result.stdout.split("\n")
+            if b.strip()
+        ]
         for branch in branches:
             if branch in {"main", "master"}:
                 return branch

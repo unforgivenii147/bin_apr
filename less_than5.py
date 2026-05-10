@@ -53,7 +53,9 @@ def main():
     try:
         start_dir = Path.cwd()
         print(f"Starting from directory: {start_dir}")
-        print(f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'")
+        print(
+            f"Moving files created in last 5 minutes to '{os.path.join(start_dir, '5min')}'"
+        )
         print("-" * 60)
         move_recent_files(start_dir)
     except KeyboardInterrupt:

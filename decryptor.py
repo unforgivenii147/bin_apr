@@ -15,13 +15,16 @@ AES_BLOCK_SIZE = 16
 
 
 def random_key(length=32):
-    return "".join((random.choice(string.ascii_letters + string.digits) for _ in range(length)))
+    return "".join((random.choice(string.ascii_letters + string.digits)
+                    for _ in range(length)))
 
 
 def encrypt_file(file_path, key):
     backend = default_backend()
     iv = os.urandom(AES_BLOCK_SIZE)
-    cipher = Cipher(algorithms.AES(key.encode()), modes.CBC(iv), backend=backend)
+    cipher = Cipher(algorithms.AES(key.encode()),
+                    modes.CBC(iv),
+                    backend=backend)
     encryptor = cipher.encryptor()
     data = Path(file_path).read_bytes()
     padder = padding.PKCS7(128).padder()
@@ -35,7 +38,9 @@ def decrypt_file(file_path, key):
     raw = Path(file_path).read_bytes()
     iv = raw[:AES_BLOCK_SIZE]
     ciphertext = raw[AES_BLOCK_SIZE:]
-    cipher = Cipher(algorithms.AES(key.encode()), modes.CBC(iv), backend=backend)
+    cipher = Cipher(algorithms.AES(key.encode()),
+                    modes.CBC(iv),
+                    backend=backend)
     decryptor = cipher.decryptor()
     padded_data = decryptor.update(ciphertext) + decryptor.finalize()
     unpadder = padding.PKCS7(128).unpadder()

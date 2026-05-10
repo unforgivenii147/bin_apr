@@ -8,13 +8,18 @@ from loguru import logger
 def save_installed_packages(output_file="installed.txt"):
     try:
         result = subprocess.run(
-            ["dpkg-query", "-f", "${binary:Package}\n", "-W"], capture_output=True, text=True, check=True
-        )
+            ["dpkg-query", "-f", "${binary:Package}\n", "-W"],
+            capture_output=True,
+            text=True,
+            check=True)
         installed_packages = result.stdout.splitlines()
-        Path(output_file).write_text("\n".join(installed_packages), encoding="utf-8")
+        Path(output_file).write_text("\n".join(installed_packages),
+                                     encoding="utf-8")
         print(f"Installed package names saved to '{output_file}'")
     except FileNotFoundError:
-        print("Error: dpkg-query command not found. Are you running this script on a Debian-based system?")
+        print(
+            "Error: dpkg-query command not found. Are you running this script on a Debian-based system?"
+        )
     except subprocess.CalledProcessError as e:
         print(f"Error: Failed to retrieve installed packages. {e}")
     except Exception as e:

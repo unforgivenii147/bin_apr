@@ -13,7 +13,11 @@ from textual.widgets import Footer, Header, Label, Static
 
 
 class DiffLine(Static):
-    def __init__(self, text: str, line_type: str, line_num: int | None = None) -> None:
+
+    def __init__(self,
+                 text: str,
+                 line_type: str,
+                 line_num: int | None = None) -> None:
         self.raw_text = text
         self.line_type = line_type
         self.line_num = line_num
@@ -50,6 +54,7 @@ class DiffLine(Static):
 
 
 class DiffPanel(ScrollableContainer):
+
     def __init__(self, title: str, lines: list[tuple[str, str, int]]) -> None:
         super().__init__()
         self.panel_title = title
@@ -164,7 +169,10 @@ class DiffViewerApp(App):
                 self.search_term = submitted_text
                 self.highlight_search_results()
 
-        self.push_screen("input", on_input, title="Search", instructions="Enter text to search for:")
+        self.push_screen("input",
+                         on_input,
+                         title="Search",
+                         instructions="Enter text to search for:")
 
     def highlight_search_results(self) -> None:
         if not self.search_term:
@@ -183,7 +191,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Compare two files and show their differences",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\nExamples:\n  %(prog)s file1.txt file2.txt\n  %(prog)s --help\n        ",
+        epilog=
+        "\nExamples:\n  %(prog)s file1.txt file2.txt\n  %(prog)s --help\n        ",
     )
     parser.add_argument("file1", help="First file to compare")
     parser.add_argument("file2", help="Second file to compare")

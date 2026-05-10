@@ -10,9 +10,10 @@ OUTPUT_FILE = Path("/sdcard/installed_packages.txt")
 
 def get_installed_debian_packages() -> list[str]:
     try:
-        result = subprocess.run(
-            ["dpkg-query", "-W", "-f=${binary:Package}\n"], check=True, capture_output=True, text=True
-        )
+        result = subprocess.run(["dpkg-query", "-W", "-f=${binary:Package}\n"],
+                                check=True,
+                                capture_output=True,
+                                text=True)
     except FileNotFoundError:
         sys.exit("dpkg-query not found. Are you on a Debian-based system?")
     except subprocess.CalledProcessError as exc:

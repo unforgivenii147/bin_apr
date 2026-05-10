@@ -16,10 +16,13 @@ def hash_file(path: Path, chunk_size: int = 8192) -> str:
     try:
         get_size = path.stat().st_size
         with (
-            Path(path).open("rb") as f,
-            tqdm(
-                total=get_size, unit="B", unit_scale=True, unit_divisor=1024, desc=f"Hashing {path.name}", leave=False
-            ) as pbar,
+                Path(path).open("rb") as f,
+                tqdm(total=get_size,
+                     unit="B",
+                     unit_scale=True,
+                     unit_divisor=1024,
+                     desc=f"Hashing {path.name}",
+                     leave=False) as pbar,
         ):
             for chunk in iter(lambda: f.read(chunk_size), b""):
                 sha.update(chunk)

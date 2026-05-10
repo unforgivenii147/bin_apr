@@ -14,6 +14,7 @@ ts_remover = None
 
 
 class TSRemover:
+
     def __init__(self) -> None:
         self.language = Language(tspython.language())
         self.parser = Parser(self.language)
@@ -39,13 +40,14 @@ class TSRemover:
                     if capture_name == "comment":
                         stripped = text.strip()
                         if stripped.startswith(
-                            ("# type:", "# black:", "# ruff:", "#!/", "# fmt:", "# pylint:", "# mypy:")
-                        ):
+                            ("# type:", "# black:", "# ruff:", "#!/", "# fmt:",
+                             "# pylint:", "# mypy:")):
                             continue
                         comment_count += 1
                     else:
                         docstring_count += 1
-                    if end < len(source_bytes) and source_bytes[end : end + 1] == b"\n":
+                    if end < len(source_bytes) and source_bytes[end:end +
+                                                                1] == b"\n":
                         end += 1
                     deletions.append((start, end))
         deletions = sorted(set(deletions), reverse=True)
@@ -83,7 +85,9 @@ def process_file(fp):
         try:
             ast.parse(result)
             Path(file_path).write_text(result, encoding="utf-8")
-            cprint(f"[OK] {file_path.name}: {comments} comments, {docstrings} docstrings removed", "cyan")
+            cprint(
+                f"[OK] {file_path.name}: {comments} comments, {docstrings} docstrings removed",
+                "cyan")
             return ("changed", file_path, comments, docstrings)
         except Exception as e:
             cprint(f"[ERROR] {file_path.name} after strip: {e}", "yellow")
@@ -95,18 +99,25 @@ def process_file(fp):
 
 if __name__ == "__main__":
     dir_path = Path.cwd()
-    files = [Path(p) for p in walk_files(dir_path) if Path(p).is_file() and Path(p).suffix == ".py"]
+    files = [
+        Path(p)
+        for p in walk_files(dir_path)
+        if Path(p).is_file() and Path(p).suffix == ".py"
+    ]
     before = gsz(dir_path)
     results = []
     nproc = 8
-    with get_context("spawn").Pool(processes=nproc, initializer=ts_remover_initializer) as pool:
+    with get_context("spawn").Pool(processes=nproc,
+                                   initializer=ts_remover_initializer) as pool:
         results = pool.map(process_file, files)
     after = gsz(dir_path)
     size_diff = before - after
     changed = sum((1 for r in results if r and r[0] == "changed"))
     errors = [r for r in results if r and r[0] == "error"]
     nochg = sum((1 for r in results if r and r[0] == "nochange"))
-    print(f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors")
+    print(
+        f"\nProcessed: {len(files)} files: {changed} changed, {nochg} unchanged, {len(errors)} errors"
+    )
     if errors:
         print("Files with errors:")
         for _, fn, *_ in errors:

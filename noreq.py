@@ -86,13 +86,17 @@ def main() -> None:
             full_path = os.path.join(root, filename)
             if filename in TARGET_FILES or filename.endswith(".metadata"):
                 clean_file(full_path)
-            elif filename.lower().endswith((".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
+            elif filename.lower().endswith(
+                (".zip", ".whl", ".tar.gz", ".tgz", ".tar")):
                 dispatch_archive(full_path)
     if removed_lines_accumulator:
         try:
             with Path(LOG_FILE).open("a", encoding="utf-8") as f:
-                f.writelines((line + "\n" for line in removed_lines_accumulator))
-            print(f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---")
+                f.writelines(
+                    (line + "\n" for line in removed_lines_accumulator))
+            print(
+                f"--- Saved {len(removed_lines_accumulator)} lines to {LOG_FILE} ---"
+            )
         except PermissionError:
             pass
         print("\nRemoved Lines:")

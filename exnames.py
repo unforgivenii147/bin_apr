@@ -18,9 +18,14 @@ def load_names(names_filepath):
                         first_initial_pattern = re.escape(parts[0][0].upper())
                         last_initial_pattern = re.escape(parts[-1][0].upper())
                         pattern_str = f"{first_initial_pattern}[\\w\\s\\-']+\\s+{last_initial_pattern}[\\w\\s\\-']+"
-                        names.add((name, re.compile(pattern_str, re.IGNORECASE)))
+                        names.add((name, re.compile(pattern_str,
+                                                    re.IGNORECASE)))
                     else:
-                        names.add((name, re.compile(re.escape(name[0].upper()) + "[\\w\\s\\-']+", re.IGNORECASE)))
+                        names.add(
+                            (name,
+                             re.compile(
+                                 re.escape(name[0].upper()) + "[\\w\\s\\-']+",
+                                 re.IGNORECASE)))
     except FileNotFoundError:
         print(f"Error: Names file not found at {names_filepath}")
         sys.exit(1)
@@ -38,20 +43,21 @@ def find_names_in_files(names_db_path="names.txt"):
     current_dir = Path.cwd()
     for filepath in current_dir.rglob("*"):
         if filepath.is_file() and filepath.suffix in {
-            ".txt",
-            ".md",
-            ".log",
-            ".py",
-            ".html",
-            ".css",
-            ".js",
-            ".json",
-            ".xml",
-            ".yml",
-            ".yaml",
+                ".txt",
+                ".md",
+                ".log",
+                ".py",
+                ".html",
+                ".css",
+                ".js",
+                ".json",
+                ".xml",
+                ".yml",
+                ".yaml",
         }:
             try:
-                with Path(filepath).open("r", encoding="utf-8", errors="ignore") as f:
+                with Path(filepath).open("r", encoding="utf-8",
+                                         errors="ignore") as f:
                     content = f.read()
                     for original_name, pattern in names_to_find:
                         for match in pattern.finditer(content):
@@ -59,12 +65,18 @@ def find_names_in_files(names_db_path="names.txt"):
                             matched_text = match.group(0)
                             match_parts = matched_text.strip().split()
                             if len(match_parts) >= 2 and (
-                                match_parts[0][0].upper() == original_name.split()[0][0].upper()
-                                and match_parts[-1][0].upper() == original_name.split()[-1][0].upper()
-                            ):
+                                    match_parts[0][0].upper()
+                                    == original_name.split()[0][0].upper() and
+                                    match_parts[-1][0].upper()
+                                    == original_name.split()[-1][0].upper()):
                                 if original_name not in found_names:
                                     found_names[original_name] = []
-                                entry = {"file": str(filepath.relative_to(current_dir)), "match": matched_text}
+                                entry = {
+                                    "file":
+                                        str(filepath.relative_to(current_dir)),
+                                    "match":
+                                        matched_text
+                                }
                                 if entry not in found_names[original_name]:
                                     found_names[original_name].append(entry)
             except Exception as e:

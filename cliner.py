@@ -90,7 +90,9 @@ def main():
         else:
             print(f"✗ Error: {path} - {message}")
             error_count += 1
-    print(f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s).")
+    print(
+        f"\nDone. Successfully processed {success_count}/{len(log_files)} file(s)."
+    )
     if error_count > 0:
         print(f"Failed: {error_count} file(s).")
 

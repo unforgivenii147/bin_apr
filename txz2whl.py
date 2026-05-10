@@ -17,7 +17,8 @@ def tar_xz_to_whl(tar_path: Path):
         target = unique_path(target)
     print(f"[TAR.XZ → WHL] {tar_path.name}")
     try:
-        with tarfile.open(tar_path, "r:xz") as tf, zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        with tarfile.open(tar_path, "r:xz") as tf, zipfile.ZipFile(
+                target, "w", compression=zipfile.ZIP_DEFLATED) as zf:
             for member in tf.getmembers():
                 if member.isdir():
                     continue
@@ -33,7 +34,8 @@ def tar_xz_to_whl(tar_path: Path):
 def main():
     args = sys.argv[1:]
     cwd = Path().cwd()
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=False, extensions=[".tar.xz", ".xz"])
+    files = [Path(arg) for arg in args] if args else get_files(
+        cwd, recursive=False, extensions=[".tar.xz", ".xz"])
     for f in files:
         tar_xz_to_whl(f)
 

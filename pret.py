@@ -31,9 +31,10 @@ def fsz(sz: float) -> str:
     return f"{int(sz)} {units[i]}B"
 
 
-def get_files(
-    path: str | Path, include_hidden: bool = True, recursive: bool = True, extensions: list[str] | None = None
-) -> list[Path]:
+def get_files(path: str | Path,
+              include_hidden: bool = True,
+              recursive: bool = True,
+              extensions: list[str] | None = None) -> list[Path]:
     path = Path(path)
     out = []
     if recursive:
@@ -50,7 +51,8 @@ def get_files(
                             if name not in SKIP_DIRS:
                                 stack.append(Path(entry.path))
                             continue
-                        if extensions is not None and (not any((entry.name.endswith(ext) for ext in extensions))):
+                        if extensions is not None and (not any(
+                            (entry.name.endswith(ext) for ext in extensions))):
                             continue
                         out.append(Path(entry.path))
             except (PermissionError, FileNotFoundError):
@@ -97,17 +99,24 @@ def mpf3(
             pending.popleft().get()
 
 
-def runcmd(
-    cmd: list[str], run_silently: bool = False, show_output: bool = True, timeout: float | None = None
-) -> tuple[int, str, str]:
+def runcmd(cmd: list[str],
+           run_silently: bool = False,
+           show_output: bool = True,
+           timeout: float | None = None) -> tuple[int, str, str]:
     if not cmd:
         msg = "cmd must be a non-empty list (e.g., ['ls', '-l'])"
         raise ValueError(msg)
     try:
         if run_silently:
-            result = subprocess_run(cmd, stdout=subprocess_DEVNULL, stderr=subprocess_DEVNULL, timeout=timeout)
+            result = subprocess_run(cmd,
+                                    stdout=subprocess_DEVNULL,
+                                    stderr=subprocess_DEVNULL,
+                                    timeout=timeout)
             return (result.returncode, "", "")
-        result = subprocess_run(cmd, capture_output=True, text=True, timeout=timeout)
+        result = subprocess_run(cmd,
+                                capture_output=True,
+                                text=True,
+                                timeout=timeout)
         stdout, stderr = (result.stdout, result.stderr)
         if show_output:
             if stdout:
@@ -165,32 +174,28 @@ def process_file(fp):
 def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = (
-        [Path(arg) for arg in args]
-        if args
-        else get_files(
-            cwd,
-            extensions=[
-                ".md",
-                ".js",
-                ".css",
-                ".ts",
-                ".tsx",
-                ".jsx",
-                ".json",
-                ".html",
-                ".cjs",
-                ".cts",
-                ".mts",
-                ".mjs",
-                ".coffee",
-                ".yaml",
-                ".yml",
-                ".scss",
-                ".markdown",
-            ],
-        )
-    )
+    files = ([Path(arg) for arg in args] if args else get_files(
+        cwd,
+        extensions=[
+            ".md",
+            ".js",
+            ".css",
+            ".ts",
+            ".tsx",
+            ".jsx",
+            ".json",
+            ".html",
+            ".cjs",
+            ".cts",
+            ".mts",
+            ".mjs",
+            ".coffee",
+            ".yaml",
+            ".yml",
+            ".scss",
+            ".markdown",
+        ],
+    ))
     if not files:
         print("no file found.")
         sys.exit(1)

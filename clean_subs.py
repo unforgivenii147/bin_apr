@@ -13,10 +13,13 @@ except ImportError:
     sys.exit(1)
 VIDEO_EXTS = {".srt"}
 LEADING_JUNK = re.compile("^\\s*[\\d\\s\\.-]{6,}", re.IGNORECASE)
-EPISODE_PATTERNS = [re.compile("S\\d{2}E(\\d{2})", re.IGNORECASE), re.compile("(\\d{1,2})x(\\d{2})", re.IGNORECASE)]
+EPISODE_PATTERNS = [
+    re.compile("S\\d{2}E(\\d{2})", re.IGNORECASE),
+    re.compile("(\\d{1,2})x(\\d{2})", re.IGNORECASE)
+]
 TRASH = re.compile(
-    "(HDTV|WEB[-\\. ]?DL|WEBRIP|BLURAY|IMOVIE[-\\. ]?DL|ELKA|PARISA|KILLERS|FUM|TURBO|FA)", re.IGNORECASE
-)
+    "(HDTV|WEB[-\\. ]?DL|WEBRIP|BLURAY|IMOVIE[-\\. ]?DL|ELKA|PARISA|KILLERS|FUM|TURBO|FA)",
+    re.IGNORECASE)
 
 
 def extract_episode(name: str):
@@ -38,7 +41,10 @@ def clean_name(fname: str):
 def collect_files(path: Path, recursive: bool):
     if recursive:
         return [p for p in path.rglob("*") if p.suffix.lower() in VIDEO_EXTS]
-    return [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in VIDEO_EXTS]
+    return [
+        p for p in path.iterdir()
+        if p.is_file() and p.suffix.lower() in VIDEO_EXTS
+    ]
 
 
 def main():
@@ -58,7 +64,8 @@ def main():
             continue
         new_name = new_core + f.suffix
         target = f.with_name(new_name)
-        print(colored("OLD:", "red"), f.name, colored("-> NEW:", "green"), new_name)
+        print(colored("OLD:", "red"), f.name, colored("-> NEW:", "green"),
+              new_name)
         if args.write:
             if target.exists():
                 print(colored("  EXISTS, skipped", "yellow"))

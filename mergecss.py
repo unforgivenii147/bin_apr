@@ -7,7 +7,8 @@ from pathlib import Path
 from loguru import logger
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
-IMPORT_RE = re.compile("@import\\s+url\\([^)]+fonts\\.googleapis[^)]+\\);?", re.IGNORECASE)
+IMPORT_RE = re.compile("@import\\s+url\\([^)]+fonts\\.googleapis[^)]+\\);?",
+                       re.IGNORECASE)
 URL_RE = re.compile("url\\(([\"\\']?)([^)]+)\\1\\)", re.IGNORECASE)
 RULE_RE = re.compile("([^{]+)\\{([^}]*)\\}", re.DOTALL)
 FONT_EXTS = {".woff", ".woff2", ".ttf", ".otf", ".eot"}

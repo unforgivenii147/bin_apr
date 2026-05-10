@@ -52,7 +52,8 @@ def full_hash(path: Path, block_size=DEFAULT_BLOCK):
     return h.hexdigest()
 
 
-def iter_files(root: Path, recursive: bool, follow_symlinks: bool, min_size: int):
+def iter_files(root: Path, recursive: bool, follow_symlinks: bool,
+               min_size: int):
     if recursive:
         for p in root.rglob("*"):
             if p.is_file() and (follow_symlinks or not p.is_symlink()):
@@ -83,16 +84,27 @@ def choose_keep(files, policy="oldest"):
 
 def main() -> None:
     cwd = Path.cwd()
-    p = argparse.ArgumentParser(description="Find and delete duplicate files by content.")
+    p = argparse.ArgumentParser(
+        description="Find and delete duplicate files by content.")
+    p.add_argument("-r",
+                   "--recursive",
+                   default=True,
+                   action="store_true",
+                   help="Search directories recursively (default: False).")
+    p.add_argument("-n",
+                   "--dry-run",
+                   default=False,
+                   action="store_true",
+                   help="Don't delete; just show what would be done.")
+    p.add_argument("--follow-symlinks",
+                   default=False,
+                   action="store_true",
+                   help="Follow symlinks to files.")
     p.add_argument(
-        "-r", "--recursive", default=True, action="store_true", help="Search directories recursively (default: False)."
-    )
-    p.add_argument(
-        "-n", "--dry-run", default=False, action="store_true", help="Don't delete; just show what would be done."
-    )
-    p.add_argument("--follow-symlinks", default=False, action="store_true", help="Follow symlinks to files.")
-    p.add_argument(
-        "--min-size", type=int, default=1, help="Minimum file size (bytes) to consider. Default 1 (skip zero-size)."
+        "--min-size",
+        type=int,
+        default=1,
+        help="Minimum file size (bytes) to consider. Default 1 (skip zero-size)."
     )
     p.add_argument(
         "-k",
@@ -105,13 +117,16 @@ def main() -> None:
     root = Path.cwd()
     size_groups = defaultdict(list)
     total_files = 0
-    for f in iter_files(root, args.recursive, args.follow_symlinks, args.min_size):
+    for f in iter_files(root, args.recursive, args.follow_symlinks,
+                        args.min_size):
         total_files += 1
         try:
             size_groups[f.stat().st_size].append(f)
         except Exception:
             continue
-    candidates_by_size = {s: lst for s, lst in size_groups.items() if len(lst) > 1}
+    candidates_by_size = {
+        s: lst for s, lst in size_groups.items() if len(lst) > 1
+    }
     if not candidates_by_size:
         print("No potential duplicates found (no groups with equal size).")
         return

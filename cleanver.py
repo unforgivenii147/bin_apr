@@ -7,15 +7,22 @@ from loguru import logger
 
 def create_unpinned_requirements(output_file="req.txt"):
     try:
-        result = subprocess.run(["pip", "freeze"], capture_output=True, text=True, check=True)
+        result = subprocess.run(["pip", "freeze"],
+                                capture_output=True,
+                                text=True,
+                                check=True)
         package_names = []
         for line in result.stdout.splitlines():
             if not line or line.startswith("#"):
                 continue
-            pkg = line.split("==")[0].split(">=")[0].split("<=")[0].split("~=")[0].split(" @ ")[0]
+            pkg = line.split("==")[0].split(">=")[0].split("<=")[0].split(
+                "~=")[0].split(" @ ")[0]
             package_names.append(pkg.strip())
-        Path(output_file).write_text("\n".join(package_names) + "\n", encoding="utf-8")
-        print(f"Successfully saved {len(package_names)} package names to {output_file}.")
+        Path(output_file).write_text("\n".join(package_names) + "\n",
+                                     encoding="utf-8")
+        print(
+            f"Successfully saved {len(package_names)} package names to {output_file}."
+        )
     except subprocess.CalledProcessError as e:
         print(f"Error running pip freeze: {e}")
     except Exception as e:

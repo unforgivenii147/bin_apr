@@ -31,7 +31,10 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    files = [p for p in get_nobinary(cwd) if not p.suffix and has_shell_shebang(p) or p.suffix == ".sh"]
+    files = [
+        p for p in get_nobinary(cwd)
+        if not p.suffix and has_shell_shebang(p) or p.suffix == ".sh"
+    ]
     results = mpf3(process_file, files)
     for res in results:
         ret, k = res

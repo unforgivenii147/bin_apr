@@ -34,19 +34,18 @@ def extract_python_code_elements(filepath):
                 class_name_node = child.child_by_field_name("name")
                 if class_name_node:
                     classes.append(class_name_node.text.decode("utf-8"))
-            elif child.type == "assignment" and node.type not in {"import_statement", "import_from_statement"}:
+            elif child.type == "assignment" and node.type not in {
+                    "import_statement", "import_from_statement"
+            }:
                 target = child.child_by_field_name("name")
-                if target and target.text.decode("utf-8").isupper() and (len(target.text.decode("utf-8")) > 1):
+                if target and target.text.decode("utf-8").isupper() and (len(
+                        target.text.decode("utf-8")) > 1):
                     if child.named_child_count == 2:
                         constants.append(target.text.decode("utf-8"))
             elif child.type == "import_statement":
-                imports.extend(
-                    (
-                        import_node.text.decode("utf-8")
-                        for import_node in child.children
-                        if import_node.type == "dotted_name"
-                    )
-                )
+                imports.extend((import_node.text.decode("utf-8")
+                                for import_node in child.children
+                                if import_node.type == "dotted_name"))
             elif child.type == "import_from_statement":
                 module_name_node = child.child_by_field_name("module_name")
                 if module_name_node:
@@ -55,11 +54,16 @@ def extract_python_code_elements(filepath):
                         if import_spec_node.type == "import_spec":
                             for name_node in import_spec_node.children:
                                 if name_node.type == "dotted_name":
-                                    imports.append(f"{module_name}.{name_node.text.decode('utf-8')}")
+                                    imports.append(
+                                        f"{module_name}.{name_node.text.decode('utf-8')}"
+                                    )
                                 elif name_node.type == "aliased_import":
-                                    aliased_name_node = name_node.child_by_field_name("name")
+                                    aliased_name_node = name_node.child_by_field_name(
+                                        "name")
                                     if aliased_name_node:
-                                        imports.append(f"{module_name}.{aliased_name_node.text.decode('utf-8')}")
+                                        imports.append(
+                                            f"{module_name}.{aliased_name_node.text.decode('utf-8')}"
+                                        )
             if child.children:
                 nodes_to_visit.append(child)
     return (functions, classes, constants, imports)
@@ -75,7 +79,8 @@ def process_directory(start_dir, output_dir):
         print(f"Created output directory: {output_dir}")
     imports_output_path = os.path.join(output_dir, "imports.py")
     for path in get_pyfiles(start_dir):
-        functions, classes, constants, imports = extract_python_code_elements(path)
+        functions, classes, constants, imports = extract_python_code_elements(
+            path)
         if functions:
             all_functions["relative_path"] = functions
         if classes:
@@ -83,17 +88,20 @@ def process_directory(start_dir, output_dir):
         if constants:
             all_constants[relative_path] = constants
         all_imports.update(imports)
-    with Path(os.path.join(output_dir, "functions.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir,
+                           "functions.txt")).open("w", encoding="utf-8") as f:
         for file, funcs in all_functions.items():
             f.write(f"# File: {file}\n")
             f.writelines((f"{func}\n" for func in funcs))
             f.write("\n")
-    with Path(os.path.join(output_dir, "classes.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir,
+                           "classes.txt")).open("w", encoding="utf-8") as f:
         for file, cls in all_classes.items():
             f.write(f"# File: {file}\n")
             f.writelines((f"{c}\n" for c in cls))
             f.write("\n")
-    with Path(os.path.join(output_dir, "constants.txt")).open("w", encoding="utf-8") as f:
+    with Path(os.path.join(output_dir,
+                           "constants.txt")).open("w", encoding="utf-8") as f:
         for file, consts in all_constants.items():
             f.write(f"# File: {file}\n")
             f.writelines((f"{const}\n" for const in consts))

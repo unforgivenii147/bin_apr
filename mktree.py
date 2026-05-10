@@ -30,7 +30,8 @@ def parse_tree_file(tree_path):
         while stack and stack[-1][0] >= indent:
             stack.pop()
         current_path = stack[-1][1] if stack else []
-        is_dir = name.endswith("/") or "." not in Path(name).name or any((c in name for c in ["/", "\\"]))
+        is_dir = name.endswith("/") or "." not in Path(name).name or any(
+            (c in name for c in ["/", "\\"]))
         name = name.rstrip("/")
         full_path = [*current_path, name]
         entries.append((indent, full_path, is_dir))

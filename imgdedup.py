@@ -35,15 +35,20 @@ def compute_hashes(dataset_path, hashSize=8):
 def main():
     ap = argparse.ArgumentParser(
         prog="imgdedup",
-        description="Find and remove visually duplicate images using perceptual hashing.",
+        description=
+        "Find and remove visually duplicate images using perceptual hashing.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\nExamples:\n  imgdedup ./photos\n  imgdedup ./photos --remove\n        ",
+        epilog=
+        "\nExamples:\n  imgdedup ./photos\n  imgdedup ./photos --remove\n        ",
     )
     ap.add_argument("path", help="path to image directory to scan")
-    ap.add_argument(
-        "--dry-run", action="store_true", default=True, help="preview duplicates without deleting (default: True)"
-    )
-    ap.add_argument("--remove", action="store_true", help="actually delete duplicate images")
+    ap.add_argument("--dry-run",
+                    action="store_true",
+                    default=True,
+                    help="preview duplicates without deleting (default: True)")
+    ap.add_argument("--remove",
+                    action="store_true",
+                    help="actually delete duplicate images")
     args = vars(ap.parse_args())
     dataset_path = args["path"]
     if not Path(dataset_path).is_dir():
@@ -66,10 +71,15 @@ def main():
                         print(f"[WARN] unable to read image for montage: {p}")
                         continue
                     image = cv2.resize(image, (900, 900))
-                    montage = image if montage is None else np.hstack([montage, image])
-                print(f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}")
+                    montage = image if montage is None else np.hstack(
+                        [montage, image])
+                print(
+                    f"[INFO] found {len(hashedPaths) - 1} duplicates with hash: {h}"
+                )
             else:
-                print(f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}")
+                print(
+                    f"[INFO] removing {len(hashedPaths) - 1} duplicates with hash: {h}"
+                )
                 for p in hashedPaths[1:]:
                     Path(p).unlink()
 

@@ -9,6 +9,7 @@ from pathlib import Path
 
 
 class UsageAnalyzer(ast.NodeVisitor):
+
     def __init__(self):
         self.func_defs = set()
         self.class_defs = set()
@@ -69,7 +70,11 @@ def find_unused_symbols(source):
     unused_funcs = analyzer.func_defs - analyzer.func_calls
     unused_classes = analyzer.class_defs - analyzer.class_uses
     unused_vars = analyzer.var_defs - analyzer.var_uses
-    unused_imports = {name: node for name, node in analyzer.imports.items() if name not in analyzer.import_uses}
+    unused_imports = {
+        name: node
+        for name, node in analyzer.imports.items()
+        if name not in analyzer.import_uses
+    }
     unused["functions"] = sorted(unused_funcs)
     unused["classes"] = sorted(unused_classes)
     unused["variables"] = sorted(unused_vars)
@@ -82,7 +87,8 @@ def remove_unused(source, unused):
     annotate_parents(tree)
     new_body = []
     for node in tree.body:
-        if isinstance(node, ast.FunctionDef) and node.name in unused["functions"]:
+        if isinstance(node,
+                      ast.FunctionDef) and node.name in unused["functions"]:
             continue
         if isinstance(node, ast.ClassDef) and node.name in unused["classes"]:
             continue
@@ -108,9 +114,8 @@ def process_file(filepath, dry_run=False):
         return (filepath, {}, [f"Error reading file: {e}"])
     unused, parse_errors = find_unused_symbols(source)
     errors.extend(parse_errors)
-    nothing_to_remove = (
-        not unused["functions"] and (not unused["classes"]) and (not unused["variables"]) and (not unused["imports"])
-    )
+    nothing_to_remove = (not unused["functions"] and (not unused["classes"]) and
+                         (not unused["variables"]) and (not unused["imports"]))
     if nothing_to_remove:
         return (filepath, unused, errors)
     try:
@@ -134,9 +139,15 @@ def worker(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove unused functions, classes, variables, and imports.")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would change without modifying files.")
-    parser.add_argument("--workers", type=int, default=mp.cpu_count(), help="Number of processes")
+    parser = argparse.ArgumentParser(
+        description="Remove unused functions, classes, variables, and imports.")
+    parser.add_argument("--dry-run",
+                        action="store_true",
+                        help="Show what would change without modifying files.")
+    parser.add_argument("--workers",
+                        type=int,
+                        default=mp.cpu_count(),
+                        help="Number of processes")
     args = parser.parse_args()
     root = Path()
     py_files = gather_python_files(root)

@@ -38,15 +38,19 @@ def collect_top_lines(directory, text_extensions, top_n=500):
         print(f"Found {len(file_paths)} {ext} files. Processing in parallel...")
         start_time = time.time()
         with get_context("spawn").Pool(8) as pool:
-            results = pool.starmap(process_file, [(file_path, {ext}) for file_path in file_paths])
+            results = pool.starmap(
+                process_file, [(file_path, {ext}) for file_path in file_paths])
         for result in results:
             lines_counter.update(result)
         output_file = f"/sdcard/top500{ext}.txt"
         with Path(output_file).open("w", encoding="utf-8") as f:
             f.write(f"Top {top_n} most frequent lines for {ext} files:\n\n")
-            f.writelines((f"{count}: {line}\n" for line, count in lines_counter.most_common(top_n)))
+            f.writelines((f"{count}: {line}\n"
+                          for line, count in lines_counter.most_common(top_n)))
         elapsed = time.time() - start_time
-        print(f"Saved top {top_n} lines for {ext} files to {output_file} (took {elapsed:.2f} seconds)")
+        print(
+            f"Saved top {top_n} lines for {ext} files to {output_file} (took {elapsed:.2f} seconds)"
+        )
 
 
 def main():

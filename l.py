@@ -43,7 +43,8 @@ if __name__ == "__main__":
     for path in sorted(cwd.rglob("*"), key=lambda e: e.stat().st_mtime):
         if any((pat in path.parts for pat in EXCLUDED)):
             continue
-        mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime).strftime("%H:%M")
+        mtime = datetime.datetime.fromtimestamp(
+            path.stat().st_mtime).strftime("%H:%M")
         if path.is_dir():
             continue
         elif path.is_symlink():

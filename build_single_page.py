@@ -70,7 +70,8 @@ def process_html(path: Path):
             continue
         css = style.string.encode("utf-8")
         fpath = save_hashed_asset(css, "text/css")
-        style.replace_with(f'<link rel="stylesheet" href="{fpath.relative_to(OUTPUT_DIR)}">')
+        style.replace_with(
+            f'<link rel="stylesheet" href="{fpath.relative_to(OUTPUT_DIR)}">')
     for script in soup.find_all("script"):
         if script.get("src"):
             src = script["src"]
@@ -81,7 +82,8 @@ def process_html(path: Path):
             continue
         js = (script.string or "").encode("utf-8")
         fpath = save_hashed_asset(js, "application/javascript")
-        script.replace_with(f'<script src="{fpath.relative_to(OUTPUT_DIR)}"></script>')
+        script.replace_with(
+            f'<script src="{fpath.relative_to(OUTPUT_DIR)}"></script>')
     for img in soup.find_all("img"):
         src = img.get("src", "")
         if src.startswith("data:"):
@@ -95,7 +97,8 @@ def process_html(path: Path):
             data_url = m.group(1)
             fpath = extract_base64(data_url)
             if fpath:
-                tag["style"] = tag["style"].replace(data_url, str(fpath.relative_to(OUTPUT_DIR)))
+                tag["style"] = tag["style"].replace(
+                    data_url, str(fpath.relative_to(OUTPUT_DIR)))
     for svg in soup.find_all("svg"):
         svg_bytes = str(svg).encode("utf-8")
         fpath = save_hashed_asset(svg_bytes, "image/svg+xml")
@@ -113,7 +116,8 @@ def process_html(path: Path):
 
 
 def build_single_page():
-    merged = BeautifulSoup("<html><head></head><body></body></html>", "html.parser")
+    merged = BeautifulSoup("<html><head></head><body></body></html>",
+                           "html.parser")
     head = merged.head
     body = merged.body
     for soup in processed_html_files:
@@ -121,18 +125,21 @@ def build_single_page():
             for el in soup.body.contents:
                 body.append(el)
     for asset_file in ASSETS_DIR.iterdir():
-        mime = mimetypes.guess_type(asset_file.name)[0] or "application/octet-stream"
+        mime = mimetypes.guess_type(
+            asset_file.name)[0] or "application/octet-stream"
         data = asset_file.read_bytes()
         encoded = base64.b64encode(data).decode()
         data_url = f"data:{mime};base64,{encoded}"
         merged_str = str(merged)
-        merged_str = merged_str.replace(str(asset_file.relative_to(OUTPUT_DIR)), data_url)
+        merged_str = merged_str.replace(str(asset_file.relative_to(OUTPUT_DIR)),
+                                        data_url)
         merged = BeautifulSoup(merged_str, "html.parser")
     for link in merged.find_all("link", rel="stylesheet"):
         href = link.get("href", "")
         if href.startswith("data:"):
             css_data = re.sub("^data:.*?;base64,", "", href)
-            decoded = base64.b64decode(css_data).decode("utf-8", errors="ignore")
+            decoded = base64.b64decode(css_data).decode("utf-8",
+                                                        errors="ignore")
             style_tag = merged.new_tag("style")
             style_tag.string = decoded
             link.replace_with(style_tag)
@@ -151,7 +158,8 @@ def build_single_page():
 
 if __name__ == "__main__":
     for path in cwd.rglob("*"):
-        if path.suffix.lower() in {".html", ".htm"} and "output" not in path.parts:
+        if path.suffix.lower() in {".html", ".htm"
+                                  } and "output" not in path.parts:
             process_html(path)
     build_single_page()
     print("\nDONE — all assets extracted, deduped, hashed, and packed!")

@@ -20,14 +20,12 @@ def extract_code_snippets_with_details(markdown_content):
     for i, line in enumerate(lines):
         if line.strip().startswith("```"):
             if in_code_block:
-                snippets_data.append(
-                    {
-                        "language": language,
-                        "start_line": start_line_num,
-                        "end_line": i,
-                        "content": "\n".join(current_block_lines),
-                    }
-                )
+                snippets_data.append({
+                    "language": language,
+                    "start_line": start_line_num,
+                    "end_line": i,
+                    "content": "\n".join(current_block_lines),
+                })
                 in_code_block = False
                 current_block_lines = []
                 language = ""
@@ -43,14 +41,12 @@ def extract_code_snippets_with_details(markdown_content):
         elif in_code_block:
             current_block_lines.append(line)
     if in_code_block:
-        snippets_data.append(
-            {
-                "language": language,
-                "start_line": start_line_num,
-                "end_line": len(lines),
-                "content": "\n".join(current_block_lines),
-            }
-        )
+        snippets_data.append({
+            "language": language,
+            "start_line": start_line_num,
+            "end_line": len(lines),
+            "content": "\n".join(current_block_lines),
+        })
     return snippets_data
 
 
@@ -80,7 +76,8 @@ def get_extension_from_language(language):
 def process_markdown_files(directory="."):
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith((".md", ".markdown", ".metadata", "METADATA", "PKGINFO", "PKG-INFO")):
+            if file.endswith((".md", ".markdown", ".metadata", "METADATA",
+                              "PKGINFO", "PKG-INFO")):
                 filepath = os.path.join(root, file)
                 try:
                     content = Path(filepath).read_text(encoding="utf-8")
@@ -96,7 +93,8 @@ def process_markdown_files(directory="."):
                         extension = get_extension_from_language(language)
                         output_filename = f"output/{base_name}_lines_{line_range}{extension}"
                         output_path = os.path.join(root, output_filename)
-                        Path(output_path).write_text(details["content"].strip(), encoding="utf-8")
+                        Path(output_path).write_text(details["content"].strip(),
+                                                     encoding="utf-8")
                         print(
                             f"Saved snippet from {filepath} (Lines {line_range}, Lang: '{language}') to {output_path}"
                         )

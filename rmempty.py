@@ -8,7 +8,10 @@ TIMEOUT = 3
 
 
 def get_files(folder: Path):
-    return [p for p in folder.rglob("*") if p.is_file() and (not p.is_symlink()) and (".git" not in p.parts)]
+    return [
+        p for p in folder.rglob("*")
+        if p.is_file() and (not p.is_symlink()) and (".git" not in p.parts)
+    ]
 
 
 def wait_for_keypress(timeout):
@@ -27,7 +30,9 @@ def wait_for_keypress(timeout):
 def main():
     cwd = Path.cwd()
     files = get_files(cwd)
-    empty_files = [p for p in files if p.stat().st_size == 0 and p.name != "__init__.py"]
+    empty_files = [
+        p for p in files if p.stat().st_size == 0 and p.name != "__init__.py"
+    ]
     found = len(empty_files)
     if not found:
         cprint("no empty files found", "cyan")

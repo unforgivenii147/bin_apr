@@ -32,8 +32,7 @@ def main():
             pages.append(html)
     full_html = (
         '\n    <html>\n        <head>\n            <style>\n                @font-face {\n                    font-family: "CustomFont";\n                    src: url(\'%s\');\n                }\n                body {\n                    font-family: "CustomFont", sans-serif;\n                    font-size: 16px;\n                }\n                .entry {\n                    page-break-after: always;\n                    padding: 30px;\n                }\n                .word {\n                    margin-top: 0;\n                    color:\n                }\n                .definition {\n                    margin-top: 10px;\n                    line-height: 1.5;\n                }\n            </style>\n        </head>\n        <body>\n    '
-        % CUSTOM_FONT
-    )
+        % CUSTOM_FONT)
     for p in pages:
         full_html += p
     full_html += "</body></html>"

@@ -22,7 +22,8 @@ def process_again(pt):
         lines = text.splitlines()
         for line in lines:
             striped = line.strip()
-            if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and (striped != DOC_TH1):
+            if striped.startswith(DOC_TH1) and striped.endswith(DOC_TH1) and (
+                    striped != DOC_TH1):
                 print(line)
                 continue
             new_lines.append(line)
@@ -48,7 +49,10 @@ def _collect_docstrings(node, source: bytes, deletions: list):
             string_node = first.child_by_field_name("expression")
             if string_node and string_node.type == "string":
                 deletions.append((first.start_byte, first.end_byte))
-    if node.type in {"class_definition", "function_definition", "async_function_definition"}:
+    if node.type in {
+            "class_definition", "function_definition",
+            "async_function_definition"
+    }:
         body = node.child_by_field_name("body")
         if body:
             first = first_named_child(body)
@@ -68,7 +72,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
         def walk_comments(node):
             if node.type == "comment":
-                text = source[node.start_byte : node.end_byte]
+                text = source[node.start_byte:node.end_byte]
                 if not text.lstrip().startswith(EXCLUDE_PREFIXES):
                     deletions.append((node.start_byte, node.end_byte))
             for child in node.children:

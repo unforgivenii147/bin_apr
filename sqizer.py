@@ -8,7 +8,10 @@ from loguru import logger
 
 def compress_python_file(filepath):
     content = Path(filepath).read_text(encoding="utf-8")
-    content = re.sub("\"\"\".*?\"\"\"|\\'\\'\\'.*?\\'\\'\\'", "", content, flags=re.DOTALL)
+    content = re.sub("\"\"\".*?\"\"\"|\\'\\'\\'.*?\\'\\'\\'",
+                     "",
+                     content,
+                     flags=re.DOTALL)
     content = re.sub("#.*", "", content)
     lines = content.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]

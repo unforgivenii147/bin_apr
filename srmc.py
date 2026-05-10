@@ -12,12 +12,13 @@ def _get_comments_symbol(text: str, symbol: str) -> list[str]:
     i: int = 0
     indexes: list = []
     for i in range(len(text)):
-        if text[i] == symbol and len(text) > i + 2 and (text[i] == text[i + 1] == text[i + 2]):
+        if text[i] == symbol and len(text) > i + 2 and (text[i] == text[i + 1]
+                                                        == text[i + 2]):
             if len(indexes) == 0:
                 indexes.append(i)
             elif len(indexes) == 1:
                 indexes.append(i + 2)
-                comments.append(text[indexes[0] : indexes[1] + 1])
+                comments.append(text[indexes[0]:indexes[1] + 1])
                 indexes = []
     return comments
 
@@ -66,7 +67,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd,
+                                                           extensions=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

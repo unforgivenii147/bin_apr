@@ -9,7 +9,11 @@ from dh import STDLIB, get_ipkgs
 def read_requirements(filename):
     req_file = Path(filename)
     with Path(req_file).open(encoding="utf-8") as f:
-        return [line.strip().replace("-", "_").lower() for line in f if line.strip() and (not line.startswith("#"))]
+        return [
+            line.strip().replace("-", "_").lower()
+            for line in f
+            if line.strip() and (not line.startswith("#"))
+        ]
 
 
 def strip_installed_from_requirements(fname):

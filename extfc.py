@@ -11,11 +11,13 @@ parser = Parser()
 parser.language = Language(tsp.language())
 OUT_DIR = Path("output")
 OUT_DIR.mkdir(exist_ok=True)
-VALID = {"\n(expression_statement\n  (assignment_expression\n    (=( _ )@name value:value )\n  )\n  (\n)"}
+VALID = {
+    "\n(expression_statement\n  (assignment_expression\n    (=( _ )@name value:value )\n  )\n  (\n)"
+}
 
 
 def get_node_text(src: bytes, node):
-    return src[node.start_byte : node.end_byte].decode()
+    return src[node.start_byte:node.end_byte].decode()
 
 
 def extract_functions_and_classes(src: bytes, tree):
@@ -53,10 +55,15 @@ def extract_docstring(src: bytes, node):
     return None
 
 
-def format_definition_with_metadata(def_text: str, file_name: str, line_num: int, docstring: str | None = None):
+def format_definition_with_metadata(def_text: str,
+                                    file_name: str,
+                                    line_num: int,
+                                    docstring: str | None = None):
     lines = [f"# From: {file_name}:{line_num}"]
     if docstring:
-        lines.append(f"# Docstring: {docstring[:50]}{('...' if len(docstring) > 50 else '')}")
+        lines.append(
+            f"# Docstring: {docstring[:50]}{('...' if len(docstring) > 50 else '')}"
+        )
     lines.append(def_text)
     return "\n".join(lines)
 
@@ -67,7 +74,8 @@ folders_found = set()
 total_definitions = 0
 cwd = Path.cwd()
 for py in cwd.rglob("*.py"):
-    if any((part.startswith(".") for part in py.parts)) or "site-packages" in py.parts:
+    if any((part.startswith(".")
+            for part in py.parts)) or "site-packages" in py.parts:
         continue
     if OUT_DIR in py.parents:
         continue
@@ -85,7 +93,8 @@ for py in cwd.rglob("*.py"):
             for i, def_text in enumerate(definitions, 1):
                 folder_definitions[relative_folder].append(def_text)
                 if i < len(definitions):
-                    folder_definitions[relative_folder].append("\n" + "#" + "-" * 58 + "\n")
+                    folder_definitions[relative_folder].append("\n" + "#" +
+                                                               "-" * 58 + "\n")
             processed_files_count += 1
             total_definitions += len(definitions)
     except Exception as e:
@@ -98,9 +107,10 @@ for folder, defs_list in folder_definitions.items():
     content = "\n".join(defs_list)
     header = f"#!/usr/bin/env python\n"
     out_file.write_text(header + content)
-    folder_def_count = len(
-        [d for d in defs_list if d.strip() and (not d.startswith("#")) and (not d.startswith("\n#"))]
-    )
+    folder_def_count = len([
+        d for d in defs_list
+        if d.strip() and (not d.startswith("#")) and (not d.startswith("\n#"))
+    ])
     print(
         f"✅ saved: {out_file} ({folder_def_count} definitions from {len([f for f in defs_list if 'File:' in f])} files)"
     )

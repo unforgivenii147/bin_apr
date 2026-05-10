@@ -7,7 +7,10 @@ from loguru import logger
 
 def find_html_files(cwd: str = ".") -> list[Path]:
     root_path = Path(cwd).resolve()
-    html_files = [file_path for file_path in root_path.rglob("*.html") if file_path.name != "template.html"]
+    html_files = [
+        file_path for file_path in root_path.rglob("*.html")
+        if file_path.name != "template.html"
+    ]
     for file_path in root_path.rglob("*.htm"):
         html_files.append(file_path)
     return sorted(html_files)
@@ -23,9 +26,14 @@ def extract_common_structure(html_files: list[Path]) -> dict:
             with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
                 if soup.head:
-                    meta_tags.extend((str(meta) for meta in soup.head.find_all("meta")))
-                    link_tags.extend((str(link) for link in soup.head.find_all("link")))
-                    script_tags.extend((str(script) for script in soup.head.find_all("script") if script.get("src")))
+                    meta_tags.extend(
+                        (str(meta) for meta in soup.head.find_all("meta")))
+                    link_tags.extend(
+                        (str(link) for link in soup.head.find_all("link")))
+                    script_tags.extend(
+                        (str(script)
+                         for script in soup.head.find_all("script")
+                         if script.get("src")))
                 if soup.body and soup.body.get("class"):
                     body_classes.extend(soup.body.get("class"))
         except Exception as e:
@@ -48,7 +56,8 @@ def merge_html_content(html_files: list[Path]) -> str:
         try:
             with Path(file_path).open(encoding="utf-8") as f:
                 soup = BeautifulSoup(f.read(), "html.parser")
-                content = soup.body.decode_contents() if soup.body else str(soup)
+                content = soup.body.decode_contents() if soup.body else str(
+                    soup)
                 section_html = f'\n    <!-- Content from: {file_path.relative_to(Path.cwd())} -->\n    <section class="merged-content" data-source="{file_path.name}">\n        {content}\n    </section>\n'
                 merged_sections.append(section_html)
         except Exception as e:
@@ -56,9 +65,9 @@ def merge_html_content(html_files: list[Path]) -> str:
     return "\n".join(merged_sections)
 
 
-def create_template_html(
-    html_files: list[Path], output_file: str = "template.html", title: str = "Merged HTML Template"
-) -> bool:
+def create_template_html(html_files: list[Path],
+                         output_file: str = "template.html",
+                         title: str = "Merged HTML Template") -> bool:
     if not html_files:
         print("⚠️  No HTML files found")
         return False
@@ -87,7 +96,9 @@ def main():
         print(f"   - {file_path.relative_to(Path.cwd())}")
     if len(html_files) > 10:
         print(f"   ... and {len(html_files) - 10} more")
-    success = create_template_html(html_files, output_file="template.html", title="Merged HTML Template")
+    success = create_template_html(html_files,
+                                   output_file="template.html",
+                                   title="Merged HTML Template")
     if success:
         print("\n" + "=" * 60)
         print("✨ Template generation complete!")
@@ -103,6 +114,7 @@ if __name__ == "__main__":
         import subprocess
         import sys
 
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "beautifulsoup4"])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "beautifulsoup4"])
         from bs4 import BeautifulSoup
     main()

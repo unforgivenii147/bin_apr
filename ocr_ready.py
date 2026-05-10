@@ -20,7 +20,10 @@ def deskew(image):
     h, w = image.shape[:2]
     center = (w // 2, h // 2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    return cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return cv2.warpAffine(image,
+                          M, (w, h),
+                          flags=cv2.INTER_CUBIC,
+                          borderMode=cv2.BORDER_REPLICATE)
 
 
 def preprocess_image(img_path):
@@ -32,7 +35,8 @@ def preprocess_image(img_path):
     gray = cv2.fastNlMeansDenoising(gray, None, 30, 7, 21)
     clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
     gray = clahe.apply(gray)
-    thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 2)
+    thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY, 31, 2)
     kernel = np.ones((1, 1), np.uint8)
     cleaned = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
     return deskew(cleaned)

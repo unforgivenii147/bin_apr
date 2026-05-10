@@ -8,14 +8,20 @@ from pathlib import Path
 from loguru import logger
 
 
-def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
+def convert_html_to_md(html_file: Path,
+                       executable: str = "html2md") -> tuple[Path, bool]:
     if html_file.suffix.lower() in {".html", ".htm"}:
         md_file = html_file.with_suffix(".md")
     else:
-        print(f"Warning: {html_file} doesn't have .html/.htm extension, skipping.")
+        print(
+            f"Warning: {html_file} doesn't have .html/.htm extension, skipping."
+        )
         return (html_file, False)
     try:
-        result = subprocess.run([executable, str(html_file)], capture_output=True, text=True, check=True)
+        result = subprocess.run([executable, str(html_file)],
+                                capture_output=True,
+                                text=True,
+                                check=True)
         md_file.write_text(result.stdout, encoding="utf-8")
         print(f"✓ Converted: {html_file} -> {md_file}")
         return (md_file, True)
@@ -23,18 +29,23 @@ def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Pa
         print(f"✗ Error converting {html_file}: {e.stderr}", file=sys.stderr)
         return (html_file, False)
     except FileNotFoundError:
-        print(f"✗ Error: '{executable}' executable not found. Make sure it's in your PATH.", file=sys.stderr)
+        print(
+            f"✗ Error: '{executable}' executable not found. Make sure it's in your PATH.",
+            file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        print(f"✗ Unexpected error converting {html_file}: {e}", file=sys.stderr)
+        print(f"✗ Unexpected error converting {html_file}: {e}",
+              file=sys.stderr)
         return (html_file, False)
 
 
 def find_html_files(directory: Path, recursive: bool = True) -> list[Path]:
     if recursive:
-        html_files = list(directory.rglob("*.html")) + list(directory.rglob("*.htm"))
+        html_files = list(directory.rglob("*.html")) + list(
+            directory.rglob("*.htm"))
     else:
-        html_files = list(directory.glob("*.html")) + list(directory.glob("*.htm"))
+        html_files = list(directory.glob("*.html")) + list(
+            directory.glob("*.htm"))
     return sorted(html_files)
 
 
@@ -47,19 +58,31 @@ def main():
     parser = argparse.ArgumentParser(
         description="Convert HTML files to Markdown using html2md executable",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\nExamples:\n  %(prog)s\n  %(prog)s -r\n  %(prog)s file.html\n  %(prog)s /path/to/directory\n  %(prog)s /path/to/dir --no-recursive\n        ",
+        epilog=
+        "\nExamples:\n  %(prog)s\n  %(prog)s -r\n  %(prog)s file.html\n  %(prog)s /path/to/directory\n  %(prog)s /path/to/dir --no-recursive\n        ",
     )
     parser.add_argument(
-        "path", nargs="?", default=".", help="HTML file or directory to process (default: current directory)"
-    )
+        "path",
+        nargs="?",
+        default=".",
+        help="HTML file or directory to process (default: current directory)")
+    parser.add_argument("-r",
+                        "--recursive",
+                        action="store_true",
+                        default=True,
+                        help="Process directories recursively (default: True)")
+    parser.add_argument("--no-recursive",
+                        action="store_false",
+                        dest="recursive",
+                        help="Disable recursive processing")
+    parser.add_argument("--executable",
+                        default="html2md",
+                        help="Path to html2md executable (default: html2md)")
     parser.add_argument(
-        "-r", "--recursive", action="store_true", default=True, help="Process directories recursively (default: True)"
-    )
-    parser.add_argument("--no-recursive", action="store_false", dest="recursive", help="Disable recursive processing")
-    parser.add_argument("--executable", default="html2md", help="Path to html2md executable (default: html2md)")
-    parser.add_argument(
-        "--workers", type=int, default=cpu_count(), help=f"Number of worker processes (default: {cpu_count()})"
-    )
+        "--workers",
+        type=int,
+        default=cpu_count(),
+        help=f"Number of worker processes (default: {cpu_count()})")
     args = parser.parse_args()
     input_path = Path(args.path).resolve()
     if not input_path.exists():
@@ -74,7 +97,8 @@ def main():
             sys.exit(0)
         print(f"Found {len(html_files)} HTML file(s) to process")
     else:
-        print(f"Error: '{input_path}' is neither a file nor a directory.", file=sys.stderr)
+        print(f"Error: '{input_path}' is neither a file nor a directory.",
+              file=sys.stderr)
         sys.exit(1)
     if len(html_files) == 1:
         convert_html_to_md(html_files[0], args.executable)
@@ -85,7 +109,9 @@ def main():
             results = pool.map(process_file_wrapper, process_args)
         successful = sum((1 for _, success in results if success))
         print(f"\n{'=' * 50}")
-        print(f"Conversion complete: {successful}/{len(html_files)} files converted successfully")
+        print(
+            f"Conversion complete: {successful}/{len(html_files)} files converted successfully"
+        )
 
 
 if __name__ == "__main__":

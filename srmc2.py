@@ -30,7 +30,8 @@ def process_file(path: Path) -> bool:
     gsz(path)
     try:
         original = path.read_text(encoding="utf-8")
-        if DOC_TH1 not in original and DOC_TH2 not in original and ("#!" not in original) and ("#" not in original):
+        if DOC_TH1 not in original and DOC_TH2 not in original and (
+                "#!" not in original) and ("#" not in original):
             return True
         result = preprocess(original)
         path.write_text(result, encoding="utf-8")

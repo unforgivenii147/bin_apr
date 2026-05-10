@@ -19,7 +19,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".svg"])
+    files = [Path(f) for f in args] if args else get_files(cwd,
+                                                           extensions=[".svg"])
     for f in files:
         process_file(f)
     diff_size = before - gsz(cwd)

@@ -19,7 +19,8 @@ def remove_conditional_exit_blocks(file_path: Path):
             match = IF_BLOCK_REGEX.search(modified_content)
             if not match:
                 break
-            modified_content = modified_content[: match.start()] + modified_content[match.end() :]
+            modified_content = modified_content[:match.start(
+            )] + modified_content[match.end():]
             pass
         if original_content != modified_content:
             file_path.write_text(modified_content, encoding="utf-8")
@@ -36,25 +37,27 @@ def main():
             try:
                 content = item_path.read_text(encoding="utf-8", errors="ignore")
                 is_likely_bash = False
-                if content.startswith("#!/bin/bash") or content.startswith("#!/usr/bin/env bash"):
+                if content.startswith("#!/bin/bash") or content.startswith(
+                        "#!/usr/bin/env bash"):
                     is_likely_bash = True
                 elif oct(item_path.stat().st_mode)[-3:] not in (
-                    "000",
-                    "001",
-                    "010",
-                    "011",
-                    "002",
-                    "012",
-                    "100",
-                    "110",
-                    "111",
-                    "101",
+                        "000",
+                        "001",
+                        "010",
+                        "011",
+                        "002",
+                        "012",
+                        "100",
+                        "110",
+                        "111",
+                        "101",
                 ):
                     is_likely_bash = True
                 if is_likely_bash:
                     remove_conditional_exit_blocks(item_path)
             except Exception as e:
-                print(f"Could not read or process {item_path}: {e}", file=sys.stderr)
+                print(f"Could not read or process {item_path}: {e}",
+                      file=sys.stderr)
 
 
 if __name__ == "__main__":

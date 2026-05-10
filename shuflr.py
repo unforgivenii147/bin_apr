@@ -9,7 +9,10 @@ from pathlib import Path
 from loguru import logger
 
 
-def enhanced_shuffle(input_file, output_file_prefix=None, methods=None, repeats=3):
+def enhanced_shuffle(input_file,
+                     output_file_prefix=None,
+                     methods=None,
+                     repeats=3):
     if methods is None:
         methods = ["basic", "crypto", "shuffle3"]
     input_file_path = Path(input_file)
@@ -25,7 +28,9 @@ def enhanced_shuffle(input_file, output_file_prefix=None, methods=None, repeats=
                 lines = decoded_content.splitlines(keepends=True)
                 mm.close()
         except Exception as e:
-            print(f"Error using mmap: {e}. Falling back to standard file reading.")
+            print(
+                f"Error using mmap: {e}. Falling back to standard file reading."
+            )
             with Path(input_file).open(encoding="utf-8") as f:
                 lines = f.readlines()
     else:
@@ -51,7 +56,9 @@ def enhanced_shuffle(input_file, output_file_prefix=None, methods=None, repeats=
             output_path = f"{base}_{method}{ext}"
         with Path(output_path).open("w", encoding="utf-8") as f:
             f.writelines(shuffled_lines)
-        print(f"Shuffled {original_count} lines using method '{method}' with {repeats} passes")
+        print(
+            f"Shuffled {original_count} lines using method '{method}' with {repeats} passes"
+        )
         print(f"Output written to: {output_path}")
 
 
@@ -90,18 +97,32 @@ def test_randomness(input_file):
             crypto_shuffle(current_lines)
         elif method_to_test == "shuffle3":
             shuffle3(current_lines)
-        changes = sum((1 for a, b in zip(original_order, current_lines, strict=False) if a != b))
-        print(f"Shuffle {i + 1}: {changes} out of {len(current_lines)} positions changed")
+        changes = sum(
+            (1 for a, b in zip(original_order, current_lines, strict=False)
+             if a != b))
+        print(
+            f"Shuffle {i + 1}: {changes} out of {len(current_lines)} positions changed"
+        )
 
 
 def main():
     parser = argparse.ArgumentParser(description="Randomize lines in a file")
     parser.add_argument("input_file", help="Input file to shuffle")
     parser.add_argument(
-        "-o", "--output", help="Output file prefix (default: will append method name to input file name)"
+        "-o",
+        "--output",
+        help=
+        "Output file prefix (default: will append method name to input file name)"
     )
-    parser.add_argument("-r", "--repeats", type=int, default=3, help="Number of shuffle passes per method (default: 3)")
-    parser.add_argument("-t", "--test", action="store_true", help="Test randomness of the 'crypto' method")
+    parser.add_argument("-r",
+                        "--repeats",
+                        type=int,
+                        default=3,
+                        help="Number of shuffle passes per method (default: 3)")
+    parser.add_argument("-t",
+                        "--test",
+                        action="store_true",
+                        help="Test randomness of the 'crypto' method")
     args = parser.parse_args()
     output_prefix = args.output
     if output_prefix and (not output_prefix.endswith((".txt", ".TXT"))):
@@ -109,7 +130,10 @@ def main():
     if args.test:
         test_randomness(args.input_file)
     else:
-        enhanced_shuffle(args.input_file, output_prefix, methods=["basic", "crypto", "shuffle3"], repeats=args.repeats)
+        enhanced_shuffle(args.input_file,
+                         output_prefix,
+                         methods=["basic", "crypto", "shuffle3"],
+                         repeats=args.repeats)
 
 
 if __name__ == "__main__":

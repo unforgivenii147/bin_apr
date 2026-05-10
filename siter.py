@@ -13,6 +13,7 @@ from loguru import logger
 
 
 class WheelBuilder:
+
     def __init__(self, site_packages: Path, output_dir: Path) -> None:
         self.site_packages = site_packages.resolve()
         self.output_dir = output_dir.resolve()
@@ -61,7 +62,10 @@ class WheelBuilder:
                 if not row or not row[0]:
                     continue
                 path = row[0]
-                records[path] = {"hash": row[1] if len(row) > 1 else "", "size": row[2] if len(row) > 2 else ""}
+                records[path] = {
+                    "hash": row[1] if len(row) > 1 else "",
+                    "size": row[2] if len(row) > 2 else ""
+                }
         return records
 
     def _read_installer(self, dist_info: Path) -> str:
@@ -101,7 +105,8 @@ class WheelBuilder:
                     scripts.append(exe_path)
         return scripts
 
-    def _find_data_for_package(self, package_name: str) -> list[tuple[Path, str]]:
+    def _find_data_for_package(self,
+                               package_name: str) -> list[tuple[Path, str]]:
         if not self.share_dir or not self.share_dir.exists():
             return []
         data_files = []
@@ -135,7 +140,8 @@ class WheelBuilder:
             return (python_tag, abi_tag, platform_tag, False)
 
     def _detect_purity(self, records: dict) -> bool:
-        return all((not path.endswith((".so", ".pyd", ".dll")) for path in records))
+        return all(
+            (not path.endswith((".so", ".pyd", ".dll")) for path in records))
 
     def build_wheel(self, dist_info_dir: Path) -> Path | None:
         if not dist_info_dir.is_dir():
@@ -176,7 +182,9 @@ class WheelBuilder:
                 src = self.site_packages / path_str
                 if not src.exists():
                     continue
-                dest = dist_info_dest / Path(path_str).name if ".dist-info" in path_str else tmp_path / path_str
+                dest = dist_info_dest / Path(
+                    path_str
+                ).name if ".dist-info" in path_str else tmp_path / path_str
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dest)
                 rel_path = dest.relative_to(tmp_path)
@@ -211,7 +219,8 @@ class WheelBuilder:
             with Path(wheel_file).open("w", encoding="utf-8") as f:
                 f.write("Wheel-Version: 1.0\n")
                 f.write("Generator: wheel-builder 1.0\n")
-                f.write(f"Root-Is-Purelib: {('true' if is_pure else 'false')}\n")
+                f.write(
+                    f"Root-Is-Purelib: {('true' if is_pure else 'false')}\n")
                 f.write(f"Tag: {python_tag}-{abi_tag}-{platform_tag}\n")
             rel_path = wheel_file.relative_to(tmp_path)
             file_hash = self._compute_hash(wheel_file)
@@ -277,16 +286,27 @@ def main():
     parser = argparse.ArgumentParser(
         description="Build proper wheel files from installed packages",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\nExamples:\n  %(prog)s\n  %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages\n  %(prog)s --output ./wheels\n  %(prog)s --package requests\n        ",
+        epilog=
+        "\nExamples:\n  %(prog)s\n  %(prog)s --site-packages /path/to/venv/lib/python3.11/site-packages\n  %(prog)s --output ./wheels\n  %(prog)s --package requests\n        ",
     )
     parser.add_argument(
-        "--site-packages", "-s", type=Path, help="Path to site-packages directory (auto-detect if not specified)"
-    )
+        "--site-packages",
+        "-s",
+        type=Path,
+        help="Path to site-packages directory (auto-detect if not specified)")
+    parser.add_argument("--output",
+                        "-o",
+                        type=Path,
+                        default=Path("/sdcard/whl"),
+                        help="Output directory for wheels (default: ./wheels)")
+    parser.add_argument("--package",
+                        "-p",
+                        help="Build only this package (by name)")
     parser.add_argument(
-        "--output", "-o", type=Path, default=Path("/sdcard/whl"), help="Output directory for wheels (default: ./wheels)"
-    )
-    parser.add_argument("--package", "-p", help="Build only this package (by name)")
-    parser.add_argument("--list", "-l", action="store_true", help="List available site-packages directories and exit")
+        "--list",
+        "-l",
+        action="store_true",
+        help="List available site-packages directories and exit")
     args = parser.parse_args()
     if args.list:
         sites = find_site_packages()
@@ -302,7 +322,8 @@ def main():
     else:
         sites = find_site_packages()
         if not sites:
-            logger.error("No site-packages found. Use --site-packages to specify.")
+            logger.error(
+                "No site-packages found. Use --site-packages to specify.")
             return 1
         if len(sites) == 1:
             site_packages = sites[0]

@@ -42,8 +42,7 @@ def save_links(name, links):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Extract and save all URLs from a webpage")
+    parser = argparse.ArgumentParser(description="Extract and save all URLs from a webpage")
     parser.add_argument("url", nargs="?", help="Target URL")
     args = parser.parse_args()
     url = args.url or input("Enter URL: ").strip()

@@ -15,11 +15,9 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
     temp_dir.mkdir(parents=True, exist_ok=True)
     temp_path = None
     try:
-        with tempfile.NamedTemporaryFile(mode="wb",
-                                         dir=temp_dir,
-                                         prefix=".tmp_",
-                                         suffix=".xz",
-                                         delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(
+            mode="wb", dir=temp_dir, prefix=".tmp_", suffix=".xz", delete=False
+        ) as temp_file:
             temp_path = Path(temp_file.name)
             temp_file.write(data)
             temp_file.flush()
@@ -46,9 +44,7 @@ def safe_delete(path: Path, max_retries: int = 3) -> bool:
         except PermissionError:
             if attempt < max_retries - 1:
                 continue
-            logger.error(
-                f"Cannot delete {path} after {max_retries} attempts due to PermissionError"
-            )
+            logger.error(f"Cannot delete {path} after {max_retries} attempts due to PermissionError")
             return False
         except FileNotFoundError:
             logger.debug(f"File not found during deletion attempt: {path}")
@@ -71,8 +67,7 @@ def decompress_file(archive_path):
         compressed_data = archive_path.read_bytes()
         out_path = archive_path.parent / f"{fname.replace('.xz', '')}"
         decompressed_data = lzma_mt.decompress(compressed_data, threads=4)
-        if atomic_write(decompressed_data,
-                        out_path) and safe_delete(archive_path):
+        if atomic_write(decompressed_data, out_path) and safe_delete(archive_path):
             return True
     return False
 

@@ -39,8 +39,7 @@ def main():
         Path("js").mkdir()
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(
-        cwd, extensions=[".html", "htm"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".html", "htm"])
     mpf3(process_file, files)
 
 

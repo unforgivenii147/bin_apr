@@ -10,7 +10,7 @@ import lzma_mt
 _executor = asyncio.Semaphore(4)
 
 
-def fsz(size: int) -> str:
+def fsz(size: float) -> str:
     for unit in ["B", "KiB", "MiB", "GiB", "TiB"]:
         if abs(size) < 1024.0:
             return f"{size:3.1f} {unit}"
@@ -18,19 +18,13 @@ def fsz(size: int) -> str:
     return f"{size:.1f} PiB"
 
 
-async def compress_folder_async(folder_path: Path,
-                                output_base_name: str,
-                                format="tar") -> bool:
+async def compress_folder_async(folder_path: Path, output_base_name: str, format="tar") -> bool:
     loop = asyncio.get_running_loop()
     try:
-        await loop.run_in_executor(
-            None, lambda: shutil.make_archive(output_base_name, format,
-                                              str(folder_path)))
+        await loop.run_in_executor(None, lambda: shutil.make_archive(output_base_name, format, str(folder_path)))
         return True
     except Exception as e:
-        print(
-            f"Failed to compress folder {folder_path} → {output_base_name}: {e}"
-        )
+        print(f"Failed to compress folder {folder_path} → {output_base_name}: {e}")
         return False
 
 
@@ -42,11 +36,7 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
     try:
 
         def _create_temp():
-            with tempfile.NamedTemporaryFile(mode="wb",
-                                             dir=temp_dir,
-                                             prefix=".tmp_",
-                                             suffix=".xz",
-                                             delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir, prefix=".tmp_", suffix=".xz", delete=False) as f:
                 f.write(data)
                 f.flush()
             return Path(f.name)
@@ -65,36 +55,19 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
     return False
 
 
-async def safe_delete_async(path: Path, max_retries: int = 3) -> bool:
-    loop = asyncio.get_running_loop()
-    for attempt in range(max_retries):
-        try:
-            if not path.exists():
-                return True
-
-            def _delete(p):
-                if p.is_dir():
-                    shutil.rmtree(str(p))
-                else:
-                    p.unlink()
-
-            await loop.run_in_executor(None, _delete)
-            return True
-        except PermissionError:
-            if attempt < max_retries - 1:
-                await asyncio.sleep(0.001 * (attempt + 1))
-                continue
-            print(
-                f"Cannot delete {path} after {max_retries} attempts due to PermissionError"
-            )
-            return False
-        except FileNotFoundError:
-            print(f"File not found during deletion attempt: {path}")
-            return True
-        except Exception as e:
-            print(f"Error deleting {path}: {e}")
-            return False
-    return False
+def safe_delete(path: Path) -> bool:
+    if not path.exists():
+        return True
+    try:
+        if p.is_dir():
+            shutil.rmtree(str(p))
+        else:
+            p.unlink()
+        return True
+    except PermissionError:
+        return False
+    except Exception as e:
+        return False
 
 
 async def compress_file_async(path: Path) -> bool:
@@ -112,9 +85,7 @@ async def compress_file_async(path: Path) -> bool:
         original_size = path.stat().st_size
 
         def _compress():
-            return lzma_mt.compress(data,
-                                    threads=4,
-                                    preset=lzma_mt.PRESET_EXTREME)
+            return lzma_mt.compress(data, threads=4, preset=lzma_mt.PRESET_EXTREME)
 
         compressed_data = await loop.run_in_executor(None, _compress)
         if not await atomic_write_async(compressed_data, compressed_path):
@@ -123,26 +94,19 @@ async def compress_file_async(path: Path) -> bool:
         if not compressed_size:
             print(f"Compressed file empty: {compressed_path}")
             return False
-        if not await safe_delete_async(path):
-            print(f"Failed to delete original after compression: {path}")
+        if not safe_delete(path):
+            print(f"Failed to delete {path}")
             return False
-        reduction = (original_size - compressed_size) / original_size * 100
-        print(
-            f"{path.name}|{fsz(original_size)} → {fsz(compressed_size)} {reduction:.2f}% reduction"
-        )
+        reduction = ((original_size - compressed_size) / original_size) * 100
+        print(f"{path.name}|{fsz(original_size)} → {fsz(compressed_size)} ratio: {reduction:.2f}%")
         return True
     except Exception as e:
         print(f"Compression failed for {path}: {e}")
         return False
 
 
-async def get_files_async(directory: Path) -> list[Path]:
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(
-        None, lambda: [
-            p for p in directory.glob("*")
-            if p.is_file() and (not p.is_symlink()) and should_compress(p)
-        ])
+def get_files(directory: Path) -> list[Path]:
+    return [p for p in directory.glob("*") if p.is_file() and (not p.is_symlink()) and should_compress(p)]
 
 
 def get_dirs(directory: Path) -> list[Path]:
@@ -171,12 +135,10 @@ async def main_async() -> None:
     if dirs_to_compress:
         for dir_path in sorted(dirs_to_compress):
             print(f"compressing {dir_path.relative_to(cwd)}")
-            if await compress_folder_async(dir_path,
-                                           str(dir_path.parent / dir_path.name),
-                                           format="tar"):
+            if await compress_folder_async(dir_path, str(dir_path.parent / dir_path.name), format="tar"):
                 print(f"compressed {dir_path.relative_to(cwd)}")
-                await safe_delete_async(dir_path)
-    files_to_compress = await get_files_async(cwd)
+                safe_delete(dir_path)
+    files_to_compress = get_files(cwd)
     if not files_to_compress:
         print("No files to compress")
         return

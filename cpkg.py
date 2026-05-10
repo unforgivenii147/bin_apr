@@ -16,9 +16,7 @@ def find_dist_info_dir(site_packages: Path, pkg_name: str) -> Path:
         msg = f"Could not find any dist-info directory for package '{pkg_name}' in {site_packages}"
         raise FileNotFoundError(msg)
     if len(candidates) > 1:
-        logger.warning(
-            "Multiple dist-info directories found for '{}', using: {}",
-            pkg_name, candidates[0])
+        logger.warning("Multiple dist-info directories found for '{}', using: {}", pkg_name, candidates[0])
     return candidates[0]
 
 
@@ -49,8 +47,7 @@ def copy_package_files(pkg_name: str):
                     missing_count += 1
                     continue
                 if not src_path.exists() and src_path.suffix != ".pyc":
-                    logger.warning("Missing file listed in RECORD: {}",
-                                   src_path)
+                    logger.warning("Missing file listed in RECORD: {}", src_path)
                     missing_count += 1
                     continue
                 if not src_path.exists():
@@ -61,8 +58,7 @@ def copy_package_files(pkg_name: str):
                 logger.debug("Copied {} -> {}", src_path, dest_path)
                 copied_count += 1
             except Exception as e:
-                logger.exception("Error while processing RECORD entry {}: {}",
-                                 row, e)
+                logger.exception("Error while processing RECORD entry {}: {}", row, e)
                 error_count += 1
     print("\nMissing files (ignored, warned): {}", missing_count)
     print("\nErrors: {}", error_count)
@@ -77,14 +73,11 @@ def main():
         print("Package name must not be empty", file=sys.stderr)
         sys.exit(1)
     logger.remove()
-    logger.add(sys.stderr,
-               level="INFO",
-               format="<green>{level}</green>|{message}")
+    logger.add(sys.stderr, level="INFO", format="<green>{level}</green>|{message}")
     try:
         copy_package_files(pkg_name)
     except Exception as e:
-        logger.exception("Fatal error while copying package '{}': {}", pkg_name,
-                         e)
+        logger.exception("Fatal error while copying package '{}': {}", pkg_name, e)
         sys.exit(1)
 
 

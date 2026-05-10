@@ -20,6 +20,4 @@ output_filename = "env_vars.txt"
 with open(output_filename, "w", encoding="utf-8") as f:
     for var in sorted(list(env_vars)):
         f.write(var + "\n")
-print(
-    f"Found {len(env_vars)} unique environment variable names. Saved to {output_filename}"
-)
+print(f"Found {len(env_vars)} unique environment variable names. Saved to {output_filename}")

@@ -31,8 +31,7 @@ def process_file(path) -> str:
             return None
         if diff_size < 0:
             expantion = (after - before) / after * 100
-            cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%",
-                   "yellow")
+            cprint(f"+ {fsz(diff_size)} | expantion : {expantion:.3f}%", "yellow")
             return None
     except Exception as e:
         return f"{path}: {e}"
@@ -40,12 +39,21 @@ def process_file(path) -> str:
 
 def main() -> None:
     cwd = Path.cwd()
+    before = gsz(cwd)
     files = get_files(cwd, extensions=[".css", ".min.css"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
     print(f"Found {len(files)} files. Starting multiprocessing...")
     mpf(process_file, files)
+    after = gsz(cwd)
+    dz = before - after
+    if not dz:
+        print("no change")
+        sys.exit(1)
+    if dz:
+        ratio = (dz / before) * 100
+        print(f"space reduced : {dz} ratio:{ratio}%")
 
 
 if __name__ == "__main__":

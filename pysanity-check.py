@@ -24,10 +24,7 @@ def check_package_importable(package_name: str) -> tuple[bool, str]:
 def get_latest_version(package_name: str) -> str:
     try:
         result = subprocess.run(
-            [
-                sys.executable, "-m", "pip", "install", f"{package_name}==",
-                "--dry-run"
-            ],
+            [sys.executable, "-m", "pip", "install", f"{package_name}==", "--dry-run"],
             capture_output=True,
             text=True,
             check=True,

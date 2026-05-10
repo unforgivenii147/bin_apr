@@ -67,7 +67,6 @@ def finglish(text):
 
 
 class TitleParser(HTMLParser):
-
     def __init__(self) -> None:
         super().__init__()
         self.in_title = False
@@ -100,8 +99,8 @@ def slugify(text: str) -> str:
     temp = text
     text = text.lower()
     text = re.sub(
-        "(\\?|\\\\|\\||\\`|\\<|\\>|\\~|\\:|\\;|\\\"|\\'|\\@|\\$|\\#|\\%|\\&|\\^|\\(|\\)|\\{|\\}|\\[|\\])",
-        "", text)
+        "(\\?|\\\\|\\||\\`|\\<|\\>|\\~|\\:|\\;|\\\"|\\'|\\@|\\$|\\#|\\%|\\&|\\^|\\(|\\)|\\{|\\}|\\[|\\])", "", text
+    )
     text = re.sub("( )+", "_", text)
     text = re.sub("(/)+", "_", text)
     text = re.sub("(__)+", "_", text)

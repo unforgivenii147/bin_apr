@@ -15,21 +15,18 @@ def process_file(fp):
     cmd = f"terser --compress --mangle -- {fp}"
     code, output, err = run_command(cmd)
     if code == 0:
-        cprint(output, "green")
+        #        cprint(output, "green")
         new_path.write_text(output)
         fp.unlink()
         after = gsz(new_path)
         diffsize = before - after
-        if diffsize == 0:
+        if not diffsize:
             cprint("[NO CHANGE]", "white")
-        elif diffsize < 0:
-            ratio = (before - after) / before * 100
-            cprint(f"[OK] + {fsz(diffsize)} {abs(ratio)}%", "yellow")
-        elif diffsize > 0:
-            ratio = (before - after) / before * 100
-            cprint(f"[OK] - {fsz(diffsize)} {ratio}%", "cyan")
+        if diffsize:
+            ratio = (diffsize / before) * 100
+            cprint(f"[OK] + {fsz(diffsize)} {abs(ratio):.1f}%", "cyan")
         return True
-    cprint(f"[ERROR] {err}", "magenta")
+    cprint(f"[ERROR] {err}", "red")
     return False
 
 
@@ -37,8 +34,9 @@ def main():
     args = sys.argv[1:]
     cwd = Path.cwd()
     before = gsz(cwd)
-    files = ([Path(p) for p in args] if args else get_files(
-        cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"]))
+    files = (
+        [Path(p) for p in args] if args else get_files(cwd, extensions=[".js", ".ts", ".cjs", ".mjs", ".jsx", ".tsx"])
+    )
     _ = mpf(process_file, files)
     diff_size = before - gsz(cwd)
     cprint(f"space freed : {fsz(diff_size)}", "green")

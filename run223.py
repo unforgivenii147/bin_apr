@@ -20,7 +20,6 @@ def run_2to3(file_path) -> None:
 if __name__ == "__main__":
     args = sys.argv[1:]
     cwd = Path.cwd()
-    files = [Path(f) for f in args] if args else get_files(cwd,
-                                                           extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
     for file_path in files:
         run_2to3(file_path)

@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 
 class ImportVisitor(ast.NodeVisitor):
-
     def __init__(self) -> None:
         self._nesting_level = 0
         self.non_top_level_imports: list[ast.stmt] = []

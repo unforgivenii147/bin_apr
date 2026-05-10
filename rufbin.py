@@ -37,11 +37,8 @@ def format_with_ruff(file_path):
     try:
         print(f"processing {file_path.name}")
         result = subprocess.run(
-            ["ruff", "format", str(file_path)],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30)
+            ["ruff", "format", str(file_path)], check=False, capture_output=True, text=True, timeout=30
+        )
         if result.returncode == 0:
             return (True, "")
         return (False, result.stderr.strip())
@@ -55,10 +52,7 @@ def format_with_ruff(file_path):
 
 def main() -> None:
     current_dir = Path()
-    python_files = [
-        item for item in current_dir.iterdir()
-        if item.is_file() and is_python_file(item)
-    ]
+    python_files = [item for item in current_dir.iterdir() if item.is_file() and is_python_file(item)]
     if not python_files:
         return
     for _f in python_files:

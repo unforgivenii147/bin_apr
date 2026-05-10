@@ -17,8 +17,7 @@ cwdname = cwd.name
 BASE_DIR = Path(f"{cwdname}_doc")
 
 
-def format_markdown(module_name: str, module_doc: str, functions,
-                    classes) -> str:
+def format_markdown(module_name: str, module_doc: str, functions, classes) -> str:
     parts = [f"# Module `{module_name}`\n"]
     if module_doc:
         parts.extend(("## Module Doc\n", module_doc + "\n"))
@@ -138,8 +137,7 @@ def main():
         BASE_DIR.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(
-        cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
     print(f"processing {len(files)} files")
     with get_context("spawn").Pool(4) as pool:
         pending = deque()

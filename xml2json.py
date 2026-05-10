@@ -29,8 +29,7 @@ def process_file(path):
 def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(
-        cwd, extensions=[".xml", ".svg"])
+    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".xml", ".svg"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

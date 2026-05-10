@@ -43,8 +43,7 @@ def find_python_scripts_without_extension():
             try:
                 with Path(path).open(encoding="utf-8", errors="ignore") as file:
                     first_line = file.readline().strip()
-                    if first_line.startswith(
-                            "#!") and "python" in first_line.lower():
+                    if first_line.startswith("#!") and "python" in first_line.lower():
                         py_files.append(path)
             except (OSError, UnicodeDecodeError):
                 continue
@@ -58,8 +57,7 @@ def main() -> None:
     ensure_gitignore()
     python_files = []
     for root, _, files in os.walk("."):
-        python_files.extend(
-            (os.path.join(root, f) for f in files if f.endswith(".py")))
+        python_files.extend((os.path.join(root, f) for f in files if f.endswith(".py")))
     python_files.extend(find_python_scripts_without_extension())
     if not python_files:
         print("No Python files found.")

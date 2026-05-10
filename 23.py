@@ -26,11 +26,7 @@ def is_python_file(path: Path) -> bool:
 
 def run_command(cmd):
     try:
-        result = subprocess.run(cmd,
-                                check=False,
-                                capture_output=True,
-                                text=True,
-                                encoding="utf-8")
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True, encoding="utf-8")
         return (result.returncode, result.stdout, result.stderr)
     except Exception as e:
         return (-1, "", str(e))
@@ -38,11 +34,7 @@ def run_command(cmd):
 
 def process_file(file_path) -> None:
     print(f"[OK] {file_path.name}")
-    check_cmd = [
-        "ruff", "check", "--fix", "--unsafe-fixes", "--line-length", "120",
-        "--quiet",
-        str(file_path)
-    ]
+    check_cmd = ["ruff", "check", "--fix", "--unsafe-fixes", "--line-length", "120", "--quiet", str(file_path)]
     rc_check, out_check, err_check = run_command(check_cmd)
     format_cmd = [
         "ruff",

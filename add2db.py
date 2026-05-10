@@ -11,9 +11,7 @@ def get_current_folder_name():
 
 
 def folder_exists_in_db(cursor, folder_name):
-    cursor.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (folder_name,))
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (folder_name,))
     return cursor.fetchone() is not None
 
 

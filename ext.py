@@ -44,8 +44,7 @@ def is_constant_name(name: str) -> bool:
 
 def extract_from_file(
     path: str,
-) -> tuple[str, dict[str, str], dict[str, str], dict[str, str], dict[str, str],
-           dict[str, str]]:
+) -> tuple[str, dict[str, str], dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
     try:
         source = Path(path).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(source)
@@ -76,12 +75,9 @@ def extract_from_file(
             parent = getattr(node, "_parent", None)
             if not isinstance(parent, ast.Module):
                 continue
-            if isinstance(node,
-                          ast.Assign) and len(node.targets) == 1 and isinstance(
-                              node.targets[0], ast.Name):
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
                 name = node.targets[0].id
-            elif isinstance(node, ast.AnnAssign) and isinstance(
-                    node.target, ast.Name):
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
                 name = node.target.id
             else:
                 continue
@@ -95,8 +91,7 @@ def extract_from_file(
 
 def write_output(path: str, data: dict[str, str]) -> None:
     with Path(path).open("w", encoding="utf-8") as f:
-        f.writelines(
-            (src.rstrip() + "\n\n" for _name, src in sorted(data.items())))
+        f.writelines((src.rstrip() + "\n\n" for _name, src in sorted(data.items())))
 
 
 def main():

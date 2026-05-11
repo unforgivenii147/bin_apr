@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tsp
 from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
 from loguru import logger

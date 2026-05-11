@@ -3,6 +3,7 @@
 import os
 import re
 from pathlib import Path
+
 from dh import is_binary
 from loguru import logger
 

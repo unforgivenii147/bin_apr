@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from loguru import logger
 

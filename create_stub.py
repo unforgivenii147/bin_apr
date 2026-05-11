@@ -1,8 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-from pathlib import Path
 import sys
-from dh import get_ipkgs, runcmd, STDLIB, mpf3
+from pathlib import Path
+
+from dh import STDLIB, get_ipkgs, mpf3, runcmd
 
 
 def process_pkg(pkg) -> None:

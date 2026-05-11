@@ -3,6 +3,7 @@
 import re
 import sys
 from pathlib import Path
+
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 from loguru import logger

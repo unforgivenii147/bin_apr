@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 import nbformat
 
 INPUT = Path(sys.argv[1])

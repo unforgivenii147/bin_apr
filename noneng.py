@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 from dh import BIN_EXT, TXT_EXT, is_binary
 from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException

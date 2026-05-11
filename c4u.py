@@ -6,6 +6,7 @@ import re
 import sys
 import urllib.parse
 from pathlib import Path
+
 import requests
 from loguru import logger
 from packaging.version import Version

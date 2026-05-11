@@ -8,6 +8,7 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from queue import Queue
+
 from fastwalk import walk_files
 from loguru import logger
 

@@ -3,6 +3,7 @@
 import json
 import sys
 from pathlib import Path
+
 from defusedxml.ElementTree import parse as _parse
 from loguru import logger
 

@@ -3,14 +3,19 @@
 import base64
 import sys
 from pathlib import Path
+
 from dh import get_random_name
 
-cleanup = False
+cleanup = True
 
 
 def try_again(txt, fin, fout):
     try:
-        txt = txt[1:]
+        txt = txt[:-1]
+        dbz = base64.b64decode(txt)
+        fout.write_text(dbz)
+    except:
+        txt = txt[:-2]
         dbz = base64.b64decode(txt)
         fout.write_text(dbz)
     except:
@@ -52,7 +57,6 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
                     Path(output_path).write_bytes(decoded_bytes)
                     success_count += 1
                 except Exception as e:
-                    try_again(line, input_path, output_path)
                     print(f"✗ Line {i:4d} failed: {e}")
                     error_count += 1
                     failed.append(i)

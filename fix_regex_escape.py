@@ -2,6 +2,7 @@
 
 import ast
 from pathlib import Path
+
 from loguru import logger
 
 TARGET_FUNCS = {"compile", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn"}

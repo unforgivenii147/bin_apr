@@ -3,6 +3,7 @@
 import re
 import sys
 from pathlib import Path
+
 from dh import get_nobinary
 
 IF_BLOCK_REGEX = re.compile(

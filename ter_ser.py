@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 from dh import fsz, get_files, gsz, mpf, run_command
 from termcolor import cprint
 
@@ -15,7 +16,6 @@ def process_file(fp):
     cmd = f"terser --compress --mangle -- {fp}"
     code, output, err = run_command(cmd)
     if code == 0:
-        #        cprint(output, "green")
         new_path.write_text(output)
         fp.unlink()
         after = gsz(new_path)

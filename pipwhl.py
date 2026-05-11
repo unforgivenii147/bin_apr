@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
+
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger

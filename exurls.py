@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
 

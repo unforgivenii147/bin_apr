@@ -4,6 +4,7 @@ import contextlib
 import os
 from io import BytesIO
 from pathlib import Path
+
 import pycurl
 from loguru import logger
 

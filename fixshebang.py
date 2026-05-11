@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 major, minor, _, _, _ = sys.version_info

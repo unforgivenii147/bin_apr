@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 import cv2
 import numpy as np
 
-
-THRESHOLD = 0.8  # similarity threshold (0.0 - 1.0)
+THRESHOLD = 0.8
 
 
 def hash_similarity(hash1: np.ndarray, hash2: np.ndarray) -> float:
@@ -13,9 +13,8 @@ def hash_similarity(hash1: np.ndarray, hash2: np.ndarray) -> float:
     Compute similarity between two OpenCV hashes.
     Returns value between 0 and 1 (1 = identical).
     """
-    # Hamming distance
     dist = cv2.norm(hash1, hash2, cv2.NORM_HAMMING)
-    max_bits = hash1.size * 8  # each element is uint8
+    max_bits = hash1.size * 8
     similarity = 1.0 - (dist / max_bits)
     return similarity
 
@@ -45,7 +44,6 @@ def gif_to_unique_jpg(gif_path: Path):
         if not ret:
             break
 
-        # Compute hash
         current_hash = hasher.compute(frame)
 
         save_frame = True

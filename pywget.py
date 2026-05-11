@@ -8,6 +8,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Dict, Optional
+
 from loguru import logger
 
 try:

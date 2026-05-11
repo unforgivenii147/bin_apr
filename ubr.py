@@ -3,6 +3,7 @@
 import mmap
 import sys
 from pathlib import Path
+
 import brotlicffi
 from dh import fsz, get_files, gsz
 from loguru import logger

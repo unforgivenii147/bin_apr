@@ -3,6 +3,7 @@
 import sys
 from collections import defaultdict
 from pathlib import Path
+
 import ssdeep
 from loguru import logger
 

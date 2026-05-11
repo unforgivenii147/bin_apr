@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 import jsbeautifier
 from loguru import logger
 

@@ -1,7 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import sys
 from pathlib import Path
-from dh import cprint, fix_code, get_pyfiles
+
+from dh import cprint, fix_code, fsz, get_pyfiles, gsz
 
 
 def process_file(fp):
@@ -10,7 +11,7 @@ def process_file(fp):
     diff_size = len(code) - len(result)
     if diff_size:
         print(f"{fp.name} ", end="")
-        cprint(f"diff :fsz({diff_size})", "cyan")
+        cprint(f"diff : {fsz(diff_size)}", "cyan")
         fp.write_text(result, encoding="utf-8")
     else:
         print(f"{fp.name} no change")
@@ -18,6 +19,8 @@ def process_file(fp):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    files = get_pyfiles(cwd)
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_pyfiles(cwd)
+
     for f in files:
         process_file(f)

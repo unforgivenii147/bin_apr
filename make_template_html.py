@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 from pathlib import Path
+
 from bs4 import BeautifulSoup
 from loguru import logger
 
@@ -77,32 +78,11 @@ def create_template_html(
 
 
 def main():
-    print("🔍 Searching for HTML files in current directory...")
     html_files = find_html_files()
-    if not html_files:
-        print("❌ No HTML files found in current directory")
-        return
-    print(f"📁 Found {len(html_files)} HTML files:")
-    for file_path in html_files[:10]:
-        print(f"   - {file_path.relative_to(Path.cwd())}")
-    if len(html_files) > 10:
-        print(f"   ... and {len(html_files) - 10} more")
     success = create_template_html(html_files, output_file="template.html", title="Merged HTML Template")
     if success:
-        print("\n" + "=" * 60)
-        print("✨ Template generation complete!")
-        print("📄 Output file: template.html")
-        print("=" * 60)
+        print("Output file: template.html")
 
 
 if __name__ == "__main__":
-    try:
-        from bs4 import BeautifulSoup
-    except ImportError:
-        print("📦 Installing BeautifulSoup4...")
-        import subprocess
-        import sys
-
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "beautifulsoup4"])
-        from bs4 import BeautifulSoup
     main()

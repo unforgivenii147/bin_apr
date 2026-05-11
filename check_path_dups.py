@@ -4,8 +4,9 @@ import hashlib
 import os
 import sys
 from pathlib import Path
+from collections import defaultdict
+
 from dh import cprint, get_sha256, runcmd
-from loguru import logger
 
 
 def get_path_dirs() -> list[Path]:
@@ -18,18 +19,14 @@ def get_path_dirs() -> list[Path]:
 
 def get_executables_in_dir(d: Path) -> list[Path]:
     try:
-        return [f for f in d.iterdir() if f.is_file()]
+        return [f for f in d.iterdir() if f.is_file() and not f.name == ".gitignore"]
     except PermissionError:
-        logger.warning(f"Permission denied: {d}")
+        print(f"Permission denied: {d}")
         return []
 
 
 def main():
-    import os
-    from collections import defaultdict
 
-    logger.remove()
-    logger.add("/sdcard/dup_apps")
     dirs = [d for d in get_path_dirs() if d.is_dir()]
     executables: defaultdict[str, list[tuple[Path, str]]] = defaultdict(list)
     for d in dirs:
@@ -38,9 +35,9 @@ def main():
                 hash_ = get_sha256(f)
                 executables[f.name].append((f, hash_))
             except PermissionError:
-                logger.warning(f"Permission denied: {f}")
+                print(f"Permission denied: {f}")
             except Exception as e:
-                logger.error(f"Error processing {f}: {e}")
+                print(f"Error processing {f}: {e}")
     duplicates = {k: v for k, v in executables.items() if len(v) > 1}
     if not duplicates:
         print("No duplicates found.")

@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 from dh import get_nobinary, is_binary
 from loguru import logger
 

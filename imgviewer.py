@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
+
 import numpy as np
 from loguru import logger
 from PIL import Image

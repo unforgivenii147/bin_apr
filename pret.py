@@ -13,6 +13,7 @@ from subprocess import run as subprocess_run
 from tempfile import NamedTemporaryFile as _tmpfile
 from time import sleep as _sleep
 from typing import Any
+
 from dh import cprint
 
 CHUNK_SIZE = 32768

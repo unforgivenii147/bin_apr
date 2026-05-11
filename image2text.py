@@ -4,6 +4,7 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 import cv2
 from dh import fsz, get_files, gsz
 from loguru import logger

@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 import magic
 from loguru import logger
 

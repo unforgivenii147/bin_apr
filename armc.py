@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import re
 import ast
+import re
 import sys
 from pathlib import Path
-from joblib import Parallel, delayed
+
 from dh import cprint, get_pyfiles
+from joblib import Parallel, delayed
 
 SPECIAL_COMMENT_RE = re.compile("#\\s*(type:|fmt:|pylint|mypy)", re.IGNORECASE)
 cwd = Path.cwd().resolve()
@@ -54,7 +55,7 @@ def process_file(path: Path):
         try:
             ast.parse(cleaned)
         except SyntaxError:
-            cprint(f"⚠️ Skipped (syntax error after clean): {path.relative_to(cwd)}")
+            cprint(f"ast parse error: {path.relative_to(cwd)}")
             return
         with open(path, "w", encoding="utf-8") as f:
             f.write(cleaned)
@@ -68,7 +69,7 @@ def main():
     if not python_files:
         print("No Python files found.")
         return
-    print(f"Discovered {len(python_files)} python-like files...")
+    print(f"found {len(python_files)} python files...")
     Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(f) for f in python_files))
 
 

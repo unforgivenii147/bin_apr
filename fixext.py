@@ -4,10 +4,13 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from dh import MIME2EXT, cprint, unique_path
+
+from dh import MIME2EXT, cprint, is_binary, unique_path
 
 
 def fix_by_shebang(fp) -> bool:
+    if is_binary(fp):
+        return False
     content = fp.read_text(encoding="utf8")
     fl = content.splitlines()[0]
     if fl.startswith("#!") and ("bash" in fl or "/bin/sh" in fl):

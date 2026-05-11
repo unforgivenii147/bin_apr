@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+
 import tree_sitter_rust
 from dh import clean_blank_lines, fsz, gsz
 from loguru import logger

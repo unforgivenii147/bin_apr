@@ -8,6 +8,7 @@ import pwd
 import stat
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 COLORS = {"dir": "\x1b[34m", "link": "\x1b[36m", "exec": "\x1b[32m", "reset": "\x1b[0m"}

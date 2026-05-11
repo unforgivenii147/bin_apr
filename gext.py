@@ -11,6 +11,7 @@ import zipfile
 from multiprocessing import get_context
 from pathlib import Path
 from typing import Any
+
 from loguru import logger
 
 OUTPUT_DIR = Path("output")

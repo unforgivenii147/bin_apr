@@ -3,6 +3,7 @@
 import argparse
 import re
 from pathlib import Path
+
 from loguru import logger
 
 TIMESTAMP_RE = re.compile("(\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-->\\s(\\d{2}:\\d{2}:\\d{2},\\d{3})")

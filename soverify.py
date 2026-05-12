@@ -93,4 +93,9 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    gil_state = ctypes.pythonapi.PyGILState_Ensure()
+    print(gil_state)
+    #   call your C functions or something risky
+    main()
+    ctypes.pythonapi.PyGILState_Release(gil_state)
+    sys.exit(1)

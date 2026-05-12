@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from dh import fsz, gsz, mpf3, run_command
-from fastwalk import walk_files
+from dh import get_filez
 from loguru import logger
 
 
@@ -18,15 +18,13 @@ def process_file(fp):
     ret, txt, _err = run_command(cmd)
     print(txt)
     return ret
-    return True
 
 
 def main():
     cwd = Path().cwd()
     start_size = gsz(cwd)
     files = []
-    for pth in walk_files(cwd):
-        path = Path(pth)
+    for path in get_filez(cwd):
         if path.is_file() and path.suffix in {".c", ".cpp"}:
             files.append(path)
     mpf3(process_file, files)

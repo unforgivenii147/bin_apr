@@ -12,12 +12,10 @@ class WheelInspector:
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
 
-    @typing.override
     def log(self, message: str):
         if self.verbose:
             print(f"[INSPECT] {message}")
 
-    @typing.override
     def inspect_wheel(self, wheel_path: Path) -> dict:
         if not wheel_path.exists():
             return {"error": f"File not found: {wheel_path}"}
@@ -52,7 +50,6 @@ class WheelInspector:
         except Exception as e:
             return {"error": str(e)}
 
-    @typing.override
     def validate_wheel(self, wheel_path: Path) -> tuple[bool, list[str]]:
         issues = []
         try:
@@ -74,7 +71,6 @@ class WheelInspector:
             issues.append(f"Error reading wheel: {e!s}")
         return (len(issues) == 0, issues)
 
-    @typing.override
     def inspect_directory(self, directory: Path) -> list[dict]:
         wheels = list(directory.glob("*.whl"))
         results = []
@@ -87,7 +83,6 @@ class WheelInspector:
             results.append(info)
         return results
 
-    @typing.override
     def print_inspection(self, wheel_path: Path):
         info = self.inspect_wheel(wheel_path)
         if "error" in info:

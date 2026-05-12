@@ -9,13 +9,9 @@ from dh import get_random_name
 cleanup = True
 
 
-def try_again(txt, fin, fout):
+def try_again(txt, fout):
     try:
         txt = txt[:-1]
-        dbz = base64.b64decode(txt)
-        fout.write_text(dbz)
-    except:
-        txt = txt[:-2]
         dbz = base64.b64decode(txt)
         fout.write_text(dbz)
     except:
@@ -71,7 +67,7 @@ def decode_base64_lines(input_path, output_folder="decoded_files"):
         print(f"Unexpected error: {e}")
     if cleanup:
         with Path(input_path).open("w", encoding="utf-8") as fo:
-            fo.writelines((f"{k}\n" for k in remained))
+            fo.writelines(f"{k}\n" for k in remained)
 
 
 if __name__ == "__main__":

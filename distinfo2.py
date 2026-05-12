@@ -51,12 +51,14 @@ def process_lic(fp):
     if lic_dir.exists() and "dist-info" in str(lic_dir.parent):
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
-    rett = []
-    for f in ALLOWED:
-        nf = Path(f"{fp}/{f}")
-        if not nf.exists() and f not in {"entry_points.txt", "top_level.txt"}:
-            rett.append(nf)
-    return rett
+
+
+#    rett = []
+#    for f in ALLOWED:
+#        nf = Path(f"{fp}/{f}")
+#        if not nf.exists() and f not in {"entry_points.txt", "top_level.txt"}:
+#            rett.append(nf)
+#    return rett
 
 
 def main():
@@ -64,12 +66,15 @@ def main():
     cwd = Path.cwd()
     for path in cwd.iterdir():
         if path.is_dir() and "dist-info" in path.name:
+            process_lic(path)
             if len(os.listdir(path)) < 2:
                 cprint(f"{path.name} empty pkg", "cyan")
-            missings.extend(process_lic(path))
-    for k in missings:
-        print(f"{k.parent.name}  ==>", end=" ")
-        cprint(f"{k.name}", "yellow")
+
+
+#            missings.extend(process_lic(path))
+#    for k in missings:
+#        print(f"{k.parent.name}  ==>", end=" ")
+#        cprint(f"{k.name}", "yellow")
 
 
 if __name__ == "__main__":

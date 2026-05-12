@@ -35,7 +35,7 @@ class QuickXorHash:
         return b64encode(self.digest()).decode("ascii")
 
 
-def calculate_xorhash(path: Path) -> tuple[str, Path]:
+def calculate_xorhash(path: Path) -> str:
     q = QuickXorHash()
     try:
         with path.open("rb") as f:
@@ -54,6 +54,8 @@ def find_dups_optimized(root: Path):
     file_hashes = {}
     paths_to_process = []
     for path in root.rglob("*"):
+        if ".git" in path.parts:
+            continue
         try:
             if not path.is_symlink() and path.is_file():
                 paths_to_process.append(path)

@@ -60,10 +60,10 @@ def safe_delete(path: Path) -> bool:
     if not path.exists():
         return True
     try:
-        if p.is_dir():
-            shutil.rmtree(str(p))
+        if path.is_dir():
+            shutil.rmtree(str(path))
         else:
-            p.unlink()
+            path.unlink()
         return True
     except PermissionError:
         return False

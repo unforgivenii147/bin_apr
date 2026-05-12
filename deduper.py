@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import sys
 import ast
 import hashlib
 import os

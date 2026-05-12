@@ -14,12 +14,35 @@ from tempfile import NamedTemporaryFile as _tmpfile
 from time import sleep as _sleep
 from typing import Any
 
-from dh import cprint
 
-CHUNK_SIZE = 32768
-MAX_WORKERS: int = 4
-MAX_IN_FLIGHT = 4
 SKIP_DIRS = {".git"}
+
+
+def mpf3(
+    func: Callable[[Any], Any],
+    items: Iterable[Any],
+):
+    args = [(f,) for f in items]
+    with get_context("spawn").Pool(max_workers=4) as p:
+        results = p.starmap(func, args)
+    return results
+
+
+def cprint(text, color="cyan", **kwargs):
+    colors = {
+        "black": 30,
+        "red": 91,
+        "green": 92,
+        "yellow": 93,
+        "blue": 94,
+        "magenta": 95,
+        "cyan": 96,
+        "white": 97,
+        "gray": 90,
+        "default": 39,
+    }
+    color_code = colors.get(color.lower(), 39)
+    print(f"\0x1b[5;{color_code}m{text}\x1b[0m", **kwargs)
 
 
 def fsz(sz: float) -> str:
@@ -79,23 +102,6 @@ def gsz(path: str | Path) -> int:
             except OSError:
                 continue
     return total_size
-
-
-def mpf3(
-    func: Callable[[Any], Any],
-    items: Iterable[Any],
-    max_in_flight: int = 4,
-    num_processes: int = 4,
-    context_method: str = "spawn",
-) -> None:
-    with get_context(context_method).Pool(num_processes) as p:
-        pending = deque()
-        for item in items:
-            pending.append(p.apply_async(func, (item,)))
-            if len(pending) >= max_in_flight:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
 
 
 def runcmd(

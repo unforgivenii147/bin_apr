@@ -9,3 +9,4 @@ credential.json
 *.json
 *.toml
 *.pyc
+*.pyi

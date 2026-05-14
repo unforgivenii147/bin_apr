@@ -3,8 +3,6 @@
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def is_python_file(file_path):
     try:

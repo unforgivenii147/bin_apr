@@ -6,7 +6,6 @@ from pathlib import Path
 
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
-from loguru import logger
 
 DIRECTORY = "."
 non_english_pattern = re.compile("[^\\x00-\\x7F]")

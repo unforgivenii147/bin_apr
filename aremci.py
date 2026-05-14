@@ -7,7 +7,6 @@ import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from loguru import logger
 
 COMMENT_AND_DOCSTRING_REGEX = re.compile(
     "(?:^(\\s*)#.*$)|(?:^(\\s*)(''').*?(\\3)|^(\\s*)(\\\"{3}).*?(\\5))|(?:\\b(def|class)\\s+\\w+[^():]*\\([^)]*\\)\\s*:\\s*)(\\s*)((''').*?(\\7)|(\\\"{3}).*?(\\9))",

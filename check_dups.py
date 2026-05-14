@@ -7,7 +7,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from dh import cprint, fsz, get_pyfiles, gsz, mpf3
+from dh import get_pyfiles, gsz, mpf3
 
 N_JOBS = -1
 

@@ -6,8 +6,6 @@ import os
 import shutil
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_all_files_in_root_only(root_path):
     files_info = []

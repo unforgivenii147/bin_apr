@@ -5,8 +5,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_file_creation_time(filepath):
     try:

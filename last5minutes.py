@@ -2,7 +2,6 @@
 
 import sys
 
-from loguru import logger
 from moviepy import AudioFileClip
 
 if __name__ == "__main__":

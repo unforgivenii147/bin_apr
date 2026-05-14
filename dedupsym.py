@@ -8,7 +8,6 @@ from collections import defaultdict
 from pathlib import Path
 
 import xxhash
-from loguru import logger
 
 CACHE_PATH = Path.home() / ".cache" / "dups_cache.json"
 DUPS_DIR = Path.home() / ".cache" / "dups"

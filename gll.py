@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def main() -> int:
     if len(sys.argv) < 3:

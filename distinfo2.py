@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from dh import cprint
-from loguru import logger
 
 major, minor, _, _, _ = sys.version_info
 py_version = f"{major}.{minor}"

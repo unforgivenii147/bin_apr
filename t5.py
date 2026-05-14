@@ -6,7 +6,6 @@ from pathlib import Path
 
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_pyfiles, mpf
-from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 QUERY_STRING = "\n(comment) @comment\n(block\n  . (expression_statement\n    (string)) @docstring)\n(module\n  . (expression_statement\n    (string)) @docstring)\n"

@@ -3,8 +3,6 @@
 import json
 from pathlib import Path
 
-from loguru import logger
-
 
 def freeze_to_json(input_file="pip.freeze", output_file="packages.json"):
     packages = {}

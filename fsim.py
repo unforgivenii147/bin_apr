@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 import ssdeep
-from loguru import logger
 
 
 def get_all_files(root="."):

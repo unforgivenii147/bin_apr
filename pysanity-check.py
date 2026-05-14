@@ -5,7 +5,6 @@ import subprocess
 import sys
 
 import pkg_resources
-from loguru import logger
 
 
 def get_installed_python_packages() -> list[tuple[str, str]]:

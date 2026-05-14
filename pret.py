@@ -1,17 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
-from collections import deque
 from collections.abc import Callable, Iterable
-from contextlib import suppress as _suppress
 from multiprocessing import get_context
 from os import scandir as os_scandir
 from pathlib import Path
 from subprocess import DEVNULL as subprocess_DEVNULL
 from subprocess import TimeoutExpired as subprocess_TimeoutExpired
 from subprocess import run as subprocess_run
-from tempfile import NamedTemporaryFile as _tmpfile
-from time import sleep as _sleep
 from typing import Any
 
 
@@ -180,7 +176,6 @@ def main() -> None:
             extensions=[
                 ".md",
                 ".js",
-                ".css",
                 ".ts",
                 ".tsx",
                 ".jsx",
@@ -193,7 +188,6 @@ def main() -> None:
                 ".coffee",
                 ".yaml",
                 ".yml",
-                ".scss",
                 ".markdown",
             ],
         )

@@ -5,8 +5,6 @@ import operator
 from pathlib import Path
 from time import perf_counter
 
-from loguru import logger
-
 
 def hash_file_chunked(filepath, chunk_size):
     sha256_hash = hashlib.sha256()

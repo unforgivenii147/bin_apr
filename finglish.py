@@ -3,8 +3,6 @@
 import unicodedata
 from pathlib import Path
 
-from loguru import logger
-
 
 def custom_persian_to_finglish(text):
     persian_map = {

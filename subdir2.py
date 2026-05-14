@@ -5,8 +5,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def safe_mkdir(base: Path) -> Path:
     if not base.exists():

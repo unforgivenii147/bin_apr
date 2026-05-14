@@ -8,7 +8,6 @@ from pathlib import Path
 from deep_translator import GoogleTranslator
 from dh import unique_path
 from fastwalk import walk_files
-from loguru import logger
 from tqdm import tqdm
 
 DIRECTORY = "."

@@ -4,8 +4,6 @@ import argparse
 import csv
 from pathlib import Path
 
-from loguru import logger
-
 
 def sort_packages_by_size(filename: str):
     with Path(filename).open(newline="", encoding="utf-8") as f:

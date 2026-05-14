@@ -5,7 +5,6 @@ import multiprocessing
 import sys
 import zipfile
 from pathlib import Path
-from typing import Tuple
 
 from wheel.archive import wheel_load
 from wheel.wheelfile import WheelFile

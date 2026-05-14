@@ -7,7 +7,6 @@ from pathlib import Path
 from deep_translator import GoogleTranslator
 from dh import is_text_file
 from fastwalk import walk_files
-from loguru import logger
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000

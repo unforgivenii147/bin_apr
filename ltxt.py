@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from dh import BIN_EXT
-from loguru import logger
 from tqdm import tqdm
 
 EXCLUDED_EXTENSIONS = BIN_EXT

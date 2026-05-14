@@ -6,7 +6,6 @@ from io import BytesIO
 from pathlib import Path
 
 import pycurl
-from loguru import logger
 
 
 def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):

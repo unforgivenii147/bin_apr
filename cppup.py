@@ -6,7 +6,6 @@ from pathlib import Path
 from time import perf_counter
 
 import fastwalk
-from loguru import logger
 
 FILE_EXTENSIONS = {
     ".c",

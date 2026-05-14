@@ -2,12 +2,9 @@
 import sys
 import ast
 import hashlib
-import os
-import re
-import shutil
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 CURRENT_DIR = Path(".")
 UTILS_FILE = CURRENT_DIR / "utils.py"

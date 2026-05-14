@@ -2,12 +2,10 @@
 
 import json
 import sys
-from collections import deque
-from multiprocessing import get_context
 from pathlib import Path
 
 import xmltodict
-from dh import cprint, get_files
+from dh import cprint, get_files, mpf3
 
 MAX_QUEUE = 16
 REMOVE_ORIG = True
@@ -31,15 +29,7 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".xml", ".svg"])
-    with get_context("spawn").Pool(8) as pool:
-        pending = deque()
-        for f in files:
-            pending.append(pool.apply_async(process_file, (f,)))
-            if len(pending) > MAX_QUEUE:
-                pending.popleft().get()
-        while pending:
-            pending.popleft().get()
-    print("done.")
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

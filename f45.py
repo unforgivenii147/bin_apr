@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 

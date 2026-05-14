@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 
 from dh import gext
-from loguru import logger
 
 EXT = [".py", ".h", ".c", ".cpp", ".cc", ".cxx", ".hh", ".hpp", ".h", ".hxx"]
 

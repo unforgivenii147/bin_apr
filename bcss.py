@@ -28,7 +28,7 @@ Level 2 optimizations:
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gsz, mpf3, runcmd, cprint, get_random_name
+from dh import fsz, get_files, gsz, mpf3, runcmd, cprint
 
 
 def process_file(path):

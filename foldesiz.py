@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 
 from dh import get_files, unique_path
-from loguru import logger
 
 
 def get_all_files(cwd):

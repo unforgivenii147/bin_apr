@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 from dh import STDLIB, get_files, get_installed_pkgs
-from loguru import logger
 
 
 class ImportVisitor(ast.NodeVisitor):

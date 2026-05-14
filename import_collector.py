@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 from dh import is_python_file
-from loguru import logger
 
 PACKAGE_MAPPING = {
     "cv2": "opencv-python",

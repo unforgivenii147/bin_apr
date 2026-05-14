@@ -6,7 +6,6 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from dh import get_pyfiles
-from loguru import logger
 
 NORMAL_IMPORT = "^import re\\b"
 REGEX_IMPORT = "^import regex as re\\b"

@@ -5,7 +5,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
 
 try:
     from termcolor import colored

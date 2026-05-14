@@ -4,7 +4,6 @@ import os
 import re
 from pathlib import Path
 
-from loguru import logger
 
 OUTPUT_DIR = Path("output")
 if not OUTPUT_DIR.exists():

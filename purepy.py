@@ -5,7 +5,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import requests
-from loguru import logger
 
 
 def has_native_wheels(info) -> bool:

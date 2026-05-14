@@ -8,7 +8,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from loguru import logger
 
 OUTPUT_DIR = Path("output")
 DB_PATH = Path("/sdcard/ext.db")

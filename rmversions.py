@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def clean_requirements(fname):
     with Path(fname).open(encoding="utf-8") as f:

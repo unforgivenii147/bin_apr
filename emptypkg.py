@@ -2,7 +2,6 @@
 
 import csv
 import os
-import sys
 import sysconfig
 from pathlib import Path
 

@@ -4,7 +4,6 @@ from collections import defaultdict
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from loguru import logger
 from tree_sitter import Language, Parser
 
 parser = Parser()

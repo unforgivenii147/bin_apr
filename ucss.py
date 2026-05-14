@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 from dh import MIME_TO_EXT
-from loguru import logger
 
 DATA_URL_RE = re.compile(
     "url\\(\\s*(['\\\"]?)data:(?P<mime>application/(?:vnd\\.ms-fontobject|font-[^;]+|font/[^;]+))(?:;charset=[^;]+)?;base64,(?P<data>[A-Za-z0-9+/=\\s]+)\\1\\s*\\)",

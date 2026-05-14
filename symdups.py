@@ -7,7 +7,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import xxhash
-from loguru import logger
 
 BACKUP_FILE = ".symlink_backup.json"
 MIN_FILE_SIZE = 8

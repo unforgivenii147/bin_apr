@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def encode_local_file_to_base64(file_path):

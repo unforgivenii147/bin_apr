@@ -5,8 +5,6 @@ import re
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_installed_packages():
     installed_packages = []

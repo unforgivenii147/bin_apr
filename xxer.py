@@ -16,15 +16,14 @@ from typing import Optional, Tuple
 
 from loguru import logger
 
-# Optional third-party libs
 import brotlicffi as brotli
 
 import py7zr
-
-import zstd
+import backports.zstd as zstd
 
 
 SUPPORTED_EXTS = {
+    ".tar",
     ".tar.xz",
     ".tar.gz",
     ".tar.br",
@@ -157,12 +156,11 @@ def compress_file_brotli(src: Path, dst: Path) -> None:
 
 
 def compress_file_zstd(src: Path, dst: Path) -> None:
-    if zstd is None:
-        raise RuntimeError("zstandard is not installed")
-    cctx = zstd.ZstdCompressor(level=22)
-    with src.open("rb") as fin, dst.open("wb") as fout:
-        with cctx.stream_writer(fout) as compressor:
-            shutil.copyfileobj(fin, compressor)
+    if not src.stat().st_size:
+        return
+    data = src.read_bytes()
+    compressed = zstd.compress(data)
+    dst.write_bytes(compressed)
 
 
 def compress_file_zip(src: Path, dst: Path) -> None:
@@ -209,8 +207,8 @@ def compress_tar_with_brotli(tar_src: Path, dst: Path) -> None:
 def compress_tar_with_zstd(tar_src: Path, dst: Path) -> None:
     if zstd is None:
         raise RuntimeError("zstandard is not installed")
-    cctx = zstd.ZstdCompressor(level=22)
-    dst.write_bytes(cctx.compress(tar_src.read_bytes()))
+    data = tar_src.read_bytes()
+    dst.write_bytes(zstd.compress(data))
 
 
 def compress_one(path_str: str, mode: str, is_dir: bool) -> Result:
@@ -241,7 +239,8 @@ def compress_one(path_str: str, mode: str, is_dir: bool) -> Result:
 
             # Safely remove original and temporary tar file
             tar_path.unlink(missing_ok=True)
-            src.rmdir()  # This will only succeed if rmdir is empty, which it should be after tarring
+            shutil.rmtree(str(src))
+            #            src.rmdir()  # This will only succeed if rmdir is empty, which it should be after tarring
             result.dst = str(dst)
             result.new_size = get_size(dst)
             result.ok = True
@@ -301,6 +300,12 @@ def decompress_one(path_str: str) -> Result:
                 tf.extractall(path=dst_dir)
             extracted_path_str = str(extracted_path)
 
+        elif name.endswith(".tar"):
+            extracted_path = dst_dir / src.name[:-4]
+            with tarfile.open(src, "r:") as tf:
+                tf.extractall(path=dst_dir)
+            extracted_path_str = str(extracted_path)
+
         elif name.endswith(".tar.gz"):
             extracted_path = dst_dir / src.name[:-6]  # strip .tar.gz
             with tempfile.NamedTemporaryFile(delete=False, dir=dst_dir, suffix=".tar") as tmp_tar:
@@ -327,12 +332,11 @@ def decompress_one(path_str: str) -> Result:
             if zstd is None:
                 raise RuntimeError("zstandard is not installed")
             extracted_path = dst_dir / src.name[:-8]  # strip .tar.zst
-            dctx = zstd.ZstdDecompressor()
             with tempfile.NamedTemporaryFile(delete=False, dir=dst_dir, suffix=".tar") as tmp_tar:
                 temp_file_to_remove = Path(tmp_tar.name)
                 with src.open("rb") as fin:
-                    with dctx.stream_reader(fin) as reader:
-                        shutil.copyfileobj(reader, tmp_tar)
+                    decomp = zstd.decompress(fin.read())
+                    tmp_tar.write(decomp)
             with tarfile.open(temp_file_to_remove, "r:") as tf:
                 tf.extractall(path=dst_dir)
             extracted_path_str = str(extracted_path)
@@ -373,13 +377,16 @@ def decompress_one(path_str: str) -> Result:
             extracted_path_str = str(extracted_path)
 
         elif name.endswith(".zst"):
+            extracted_name = src.stem  # Archive name without extension
+            extracted_path = dst_dir / extracted_name
             if zstd is None:
                 raise RuntimeError("zstandard is not installed")
-            extracted_path = src.with_suffix("")
-            dctx = zstd.ZstdDecompressor()
             with src.open("rb") as fin, extracted_path.open("wb") as fout:
-                with dctx.stream_reader(fin) as reader:
-                    shutil.copyfileobj(reader, fout)
+                decompressed_data = zstd.decompress(fin.read())
+                if decompressed_data:
+                    fout.write(decompressed_data)
+                else:
+                    print("error decompressing zstd file")
             extracted_path_str = str(extracted_path)
 
         elif name.endswith(".7z"):

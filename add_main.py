@@ -4,8 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_files(directory: Path, extensions: list[str]) -> list[Path]:
     found_files = []

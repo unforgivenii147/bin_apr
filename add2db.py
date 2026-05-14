@@ -4,8 +4,6 @@ import os
 import sqlite3
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_current_folder_name():
     return Path(Path.cwd()).name

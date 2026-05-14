@@ -6,7 +6,6 @@ import tarfile
 from pathlib import Path
 
 from google.colab import files
-from loguru import logger
 
 
 def gsz(path):

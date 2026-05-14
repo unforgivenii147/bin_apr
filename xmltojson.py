@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from defusedxml.ElementTree import parse as _parse
-from loguru import logger
 
 
 def etree_to_dict(element):

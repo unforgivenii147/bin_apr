@@ -6,7 +6,6 @@ from pathlib import Path
 
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
-from loguru import logger
 from termcolor import cprint
 
 

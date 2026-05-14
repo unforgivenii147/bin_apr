@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def alias_name(line: str) -> str:
     return line.split("=", 1)[0].replace("alias ", "").strip()

@@ -7,7 +7,6 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 from html_to_markdown import Options, convert
-from loguru import logger
 
 
 def clean_html(html_content: str) -> str:

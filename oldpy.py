@@ -6,7 +6,6 @@ import tokenize
 from pathlib import Path
 
 from dh import get_files, mpf3
-from loguru import logger
 
 SIZE_THRESHOLD = 1 * 1024 * 1024
 OLD_PRINT_RE = re.compile("(?m)^[ \\t]*print[ \\t]+[^(\\n]")

@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from dh import get_file_age
-from loguru import logger
 
 EXCLUDED_DIRS = {".git", "__pycache__"}
 

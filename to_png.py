@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from dh import IMG_EXT, fsz, gsz, is_image
-from loguru import logger
 
 try:
     import cv2

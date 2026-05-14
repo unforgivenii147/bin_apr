@@ -4,8 +4,6 @@ import ast
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def is_python_file(path: Path) -> bool:
     if path.suffix == ".py":

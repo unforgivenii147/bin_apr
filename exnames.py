@@ -4,8 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def load_names(names_filepath):
     names = set()

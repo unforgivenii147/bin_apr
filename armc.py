@@ -2,7 +2,6 @@
 
 import ast
 import re
-import sys
 from pathlib import Path
 
 from dh import cprint, get_pyfiles

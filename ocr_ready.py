@@ -5,7 +5,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 import pytesseract
-from loguru import logger
 
 SUPPORTED_EXT = {".jpg", ".jpeg", ".png", ".tiff", ".bmp", ".webp"}
 BASE_DIR = Path.cwd()

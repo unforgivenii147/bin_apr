@@ -5,7 +5,6 @@ import shutil
 import sys
 from pathlib import Path
 
-from loguru import logger
 from termcolor import cprint
 
 major, minor, _, _, _ = sys.version_info

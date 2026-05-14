@@ -5,8 +5,6 @@ import csv
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def find_site_packages():
     import site

@@ -4,8 +4,6 @@ import ast
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def sort_python_script(file_path: Path):
     try:

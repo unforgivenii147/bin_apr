@@ -3,7 +3,6 @@
 import re
 from pathlib import Path
 
-from loguru import logger
 
 DIRS = [Path()]
 ver_pattern = re.compile("\\?[a-zA-Z0-9_-]+=[^\\\"\\'\\s>]+", re.IGNORECASE)

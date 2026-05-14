@@ -5,7 +5,6 @@ import sys
 from collections import defaultdict
 
 from dh import get_files
-from loguru import logger
 from ppdeep import hash_from_file
 
 

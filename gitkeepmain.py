@@ -4,8 +4,6 @@ import shutil
 import subprocess
 import sys
 
-from loguru import logger
-
 
 def run_git_command(cmd, check=True, capture_output=True):
     try:

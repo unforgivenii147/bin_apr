@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def dict_val(line: str) -> str:
     if ":" in line:

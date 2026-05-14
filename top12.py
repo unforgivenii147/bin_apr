@@ -4,8 +4,6 @@ import heapq
 import os
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_top_10_largest_files_optimized(directory="."):
     top_10 = []

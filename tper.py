@@ -7,7 +7,6 @@ from pathlib import Path
 from threading import Lock
 
 from deep_translator import GoogleTranslator
-from loguru import logger
 from tqdm import tqdm
 
 INPUT_FILE = "words.txt"

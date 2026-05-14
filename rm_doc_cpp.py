@@ -4,8 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 class RegexCommentRemover:
     def __init__(self) -> None:

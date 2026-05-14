@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from dh import get_file_age, get_ipkgs
-from loguru import logger
 from rapidfuzz import fuzz
 
 PIP_LIST_FILE = "/sdcard/data/pip.list"
@@ -52,9 +51,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <package_prefix>")
         sys.exit(1)
+
     prefix = sys.argv[1].lower()
     installed = load_installed_packages()
-    to_uninstall = [pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.WRatio(prefix, pkg.lower()) > 90]
+    to_uninstall = [
+        pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.partial_ratio(prefix, pkg.lower()) > 95
+    ]
     if not to_uninstall:
         print("no match found")
         sys.exit(0)

@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import builtins
-import os
 import re
 from pathlib import Path
 
-from dh import is_binary
 
 env_vars = set()
 env_var_pattern = re.compile("^([A-Z_0-9]+)=")

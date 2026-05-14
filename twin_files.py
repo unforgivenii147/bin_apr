@@ -3,8 +3,6 @@
 import argparse
 from pathlib import Path
 
-from loguru import logger
-
 
 def remove_ipynb_if_md_exists(root: Path, dry_run: bool = True):
     removed = 0

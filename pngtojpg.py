@@ -3,7 +3,6 @@
 import os
 from pathlib import Path
 
-from loguru import logger
 from PIL import Image
 
 for root, _dirs, files in os.walk("."):

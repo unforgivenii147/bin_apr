@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 import pdfplumber
-from loguru import logger
 
 
 def process_file(fp):

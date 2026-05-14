@@ -7,7 +7,6 @@ from pathlib import Path
 import pytesseract
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
-from loguru import logger
 from PIL import Image, ImageEnhance, ImageFilter
 
 DetectorFactory.seed = 0

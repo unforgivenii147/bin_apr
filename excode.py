@@ -3,7 +3,6 @@
 import re
 from pathlib import Path
 
-from loguru import logger
 
 LANG_TO_EXT = {
     "python": ".py",

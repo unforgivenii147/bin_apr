@@ -7,7 +7,6 @@ from pathlib import Path
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, fsz, gsz
 from fastwalk import walk_files
-from loguru import logger
 from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
 

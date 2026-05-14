@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def samefile(path1: str, path2: str) -> bool:
     try:

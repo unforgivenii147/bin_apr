@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import os
 import sys
 from pathlib import Path
 
 import cv2
-from loguru import logger
 
 
 def detect_and_save_faces(input_video_path, output_video_path="out.mp4"):

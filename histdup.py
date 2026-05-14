@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-from loguru import logger
-
 
 def main() -> None:
     hist_file = Path.home() / ".bash_history"

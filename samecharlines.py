@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def is_repeated_char_line(line: str) -> bool:
     stripped = line.rstrip("\n")

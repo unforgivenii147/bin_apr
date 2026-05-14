@@ -6,7 +6,6 @@ from pathlib import Path
 
 import ssdeep
 from dh import get_files
-from loguru import logger
 
 
 def calculate_ssdeep_hash(filepath: Path, min_file_size: int = 1):

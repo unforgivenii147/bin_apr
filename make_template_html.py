@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def find_html_files(cwd: str = ".") -> list[Path]:

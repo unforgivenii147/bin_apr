@@ -5,8 +5,6 @@ import json
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def csv_to_json_map(csv_file):
     csv_path = Path(csv_file)

@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pycld2
 from dh import is_binary
-from loguru import logger
 
 
 class LanguageDetector:

@@ -6,8 +6,6 @@ import re
 import tokenize
 from pathlib import Path
 
-from loguru import logger
-
 
 def remove_comments_and_docstrings(source_code):
     io_obj = io.StringIO(source_code)

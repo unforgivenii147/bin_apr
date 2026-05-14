@@ -5,7 +5,7 @@ import hashlib
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from tree_sitter import Parser
 from tree_sitter_languages import get_language

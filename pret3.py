@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 import jsbeautifier
-from loguru import logger
 
 
 def beautify_file(file_path) -> None:

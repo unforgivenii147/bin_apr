@@ -3,7 +3,6 @@
 import operator
 from pathlib import Path
 
-from loguru import logger
 
 total = 0
 

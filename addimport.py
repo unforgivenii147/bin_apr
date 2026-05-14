@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from fastwalk import walk_files
-from loguru import logger
 
 shebang = "#!/data/data/com.termux/files/usr/bin/python\n"
 

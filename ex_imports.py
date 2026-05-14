@@ -6,7 +6,6 @@ from pathlib import Path
 
 import tree_sitter_python as tsp
 from dh import get_files
-from loguru import logger
 from tree_sitter import Language, Parser
 
 OUTPUT_DIR = Path("output")

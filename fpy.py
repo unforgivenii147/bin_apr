@@ -6,7 +6,6 @@ import tokenize
 from io import StringIO
 from pathlib import Path
 
-from loguru import logger
 
 python_keywords = {"def", "class", "import", "from", "lambda", "yield", "async", "await"}
 

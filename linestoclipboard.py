@@ -4,8 +4,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def copy_lines_to_clipboard(filename: str, start_line: int, end_line: int | None = None):
     input_file = Path(filename)

@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 import nbformat
-from loguru import logger
 
 if __name__ == "__main__":
     fn = Path(sys.argv[1])

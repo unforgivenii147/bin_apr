@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
-from glob import glob
-from pathlib import Path
 
-from dh import runcmd
 
 if __name__ == "__main__":
     args = sys.argv[1:]

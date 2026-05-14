@@ -4,8 +4,6 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
-from loguru import logger
-
 
 def find_path_duplicates():
     path_env = os.environ.get("PATH", "")

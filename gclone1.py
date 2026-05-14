@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 
 import requests
 from dh import runcmd
-from loguru import logger
 
 GITHUB_API_URL = "https://api.github.com/repos"
 remained = []

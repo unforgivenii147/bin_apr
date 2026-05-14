@@ -5,8 +5,6 @@ import json
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def run(cmd):
     result = subprocess.run(cmd, check=False, capture_output=True, text=True)

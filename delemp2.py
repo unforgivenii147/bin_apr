@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 
 
 def clean_lines(lines: list[str], collapse: bool) -> tuple[list[str], int]:

@@ -3,8 +3,6 @@
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def save_installed_packages(output_file="installed.txt"):
     try:

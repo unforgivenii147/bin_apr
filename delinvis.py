@@ -5,8 +5,6 @@ import string
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def find_unprintable_positions(text):
     allowed = set(string.printable) | {"\n", "\r", "\t"}

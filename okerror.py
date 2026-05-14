@@ -4,7 +4,6 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from loguru import logger
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")

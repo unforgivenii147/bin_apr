@@ -4,8 +4,6 @@ import difflib
 import re
 from pathlib import Path
 
-from loguru import logger
-
 
 def show_diff(text1, text2):
     diff = difflib.unified_diff(text1.splitlines(keepends=True), text2.splitlines(keepends=True), lineterm="")

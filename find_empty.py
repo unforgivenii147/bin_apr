@@ -4,8 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def main():
     cwd = Path.cwd()

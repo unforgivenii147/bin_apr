@@ -6,7 +6,6 @@ from pathlib import Path
 import cssbeautifier
 import yapf
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def beautify_html(file_path) -> bool:

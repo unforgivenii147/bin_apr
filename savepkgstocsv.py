@@ -5,7 +5,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from loguru import logger
 
 OUTPUT_DIR = Path("/sdcard/backups")
 TSV_FILE = OUTPUT_DIR / "installed.tsv"

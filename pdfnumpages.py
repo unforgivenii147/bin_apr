@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pdfplumber
 from fastwalk import walk_files
-from loguru import logger
 
 
 def process_file(fp):

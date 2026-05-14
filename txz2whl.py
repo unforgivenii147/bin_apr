@@ -6,7 +6,6 @@ import zipfile
 from pathlib import Path
 
 from dh import get_files, unique_path
-from loguru import logger
 
 
 def tar_xz_to_whl(tar_path: Path):

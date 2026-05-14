@@ -3,8 +3,6 @@
 import sysconfig
 from pathlib import Path
 
-from loguru import logger
-
 
 def clean_record_file(record_path: Path):
     lines = record_path.read_text(encoding="utf-8").splitlines()

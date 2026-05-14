@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from dh import get_pyfiles
-from loguru import logger
 from tqdm import tqdm
 
 SIZE_THRESHOLD = 1 * 1024 * 1024

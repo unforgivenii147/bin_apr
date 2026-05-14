@@ -10,7 +10,6 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from fastwalk import walk_files
-from loguru import logger
 
 AES_BLOCK_SIZE = 128
 

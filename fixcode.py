@@ -4,7 +4,6 @@ import ast
 import re
 from pathlib import Path
 
-from loguru import logger
 
 INDENT = " " * 4
 DEF_CLASS = re.compile("^\\s*(def|class)\\s+")

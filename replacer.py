@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 from dh import is_binary
-from loguru import logger
 
 
 def process_file(file_path, search_text, replace_text=None, dry_run=False):
@@ -54,14 +53,15 @@ def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=F
         else:
             print(f"Error: {target_file} is not a valid file", file=sys.stderr)
         return (files_processed, files_changed)
+
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:
-            file_path = os.path.join(root, filename)
-            if Path(file_path).is_symlink() or is_binary(file_path):
+            path = Path(root) / filename
+            if path.is_symlink() or is_binary(path):
                 continue
             files_processed += 1
-            if process_file(file_path, search_text, replace_text, dry_run):
+            if process_file(path, search_text, replace_text, dry_run):
                 files_changed += 1
             if files_processed % 100 == 0:
                 print(f"Processed {files_processed} files...", end="\r")

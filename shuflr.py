@@ -7,8 +7,6 @@ import random
 import secrets
 from pathlib import Path
 
-from loguru import logger
-
 
 def enhanced_shuffle(input_file, output_file_prefix=None, methods=None, repeats=3):
     if methods is None:

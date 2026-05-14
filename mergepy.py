@@ -4,8 +4,6 @@ import os
 import re
 from pathlib import Path
 
-from loguru import logger
-
 
 def resolve_imports(content, current_dir):
     folder_name = Path(current_dir).name

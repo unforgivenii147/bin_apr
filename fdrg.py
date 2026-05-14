@@ -10,7 +10,6 @@ from pathlib import Path
 from queue import Queue
 
 from fastwalk import walk_files
-from loguru import logger
 
 pause_event = threading.Event()
 pause_event.set()

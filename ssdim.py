@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 import ssdeep
-from loguru import logger
 
 try:
     from tabulate import tabulate

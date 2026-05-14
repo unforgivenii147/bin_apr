@@ -8,7 +8,6 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import requests
-from loguru import logger
 from tqdm import tqdm
 
 MAX_WORKERS = 8

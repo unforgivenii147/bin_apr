@@ -4,8 +4,6 @@ import json
 import os
 from pathlib import Path
 
-from loguru import logger
-
 
 def rename_pypi_metadata_files():
     files = [f for f in os.listdir(".") if f.endswith(".json")]

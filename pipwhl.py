@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
-from loguru import logger
 
 LOCAL_MIRROR_URL = "https://mirror-pypi.runflare.com"
 

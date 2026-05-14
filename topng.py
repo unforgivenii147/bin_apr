@@ -5,7 +5,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from loguru import logger
 
 SUPPORTED_FORMATS = {".png", ".bmp", ".tiff", ".webp", ".ico", ".jpg", ".jpeg"}
 

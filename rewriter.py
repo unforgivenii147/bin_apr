@@ -6,7 +6,6 @@ import unicodedata
 from pathlib import Path
 
 from dh import get_files, is_binary
-from loguru import logger
 from pbar import Pbar
 from termcolor import cprint
 from unidecode import unidecode_expect_ascii as uea

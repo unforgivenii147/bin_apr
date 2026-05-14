@@ -7,7 +7,6 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from loguru import logger
 
 BASE_URL = "https://github.com/trending/python"
 TIMEFRAMES = ["daily", "weekly", "monthly"]

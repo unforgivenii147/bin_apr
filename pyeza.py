@@ -11,8 +11,6 @@ import stat
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def colorize(text: str, mode: int, link_target: str | None = None) -> str:
     if stat.S_ISDIR(mode):

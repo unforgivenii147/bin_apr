@@ -10,7 +10,6 @@ from pathlib import Path
 
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
-from loguru import logger
 
 PYTHON_EXT = ".py"
 BACKUP_EXT = ".bak"

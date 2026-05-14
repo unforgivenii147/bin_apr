@@ -4,7 +4,6 @@ import re
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from loguru import logger
 
 meta_tag_pattern = re.compile("<meta[^>]*>", re.IGNORECASE)
 

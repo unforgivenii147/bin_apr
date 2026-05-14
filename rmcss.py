@@ -7,7 +7,6 @@ from multiprocessing import get_context
 from pathlib import Path
 
 from dh import fsz, get_files, gsz
-from loguru import logger
 from termcolor import cprint
 
 MAX_QUEUE = 16

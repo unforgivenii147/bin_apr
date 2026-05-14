@@ -3,7 +3,6 @@
 import subprocess
 from pathlib import Path
 
-from loguru import logger
 
 FILE_TYPE_MAP = {
     "xz compressed data": ".xz",

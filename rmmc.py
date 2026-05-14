@@ -7,7 +7,6 @@ from multiprocessing import get_context
 from pathlib import Path
 
 from dh import get_nobinary, is_binary
-from loguru import logger
 
 
 def process_file(file_path: Path) -> None:

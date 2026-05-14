@@ -2,8 +2,6 @@
 
 from datetime import datetime
 
-from loguru import logger
-
 
 class JalaliDate:
     JALALI_MONTHS_EN = [

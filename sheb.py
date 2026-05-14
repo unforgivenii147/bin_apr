@@ -3,7 +3,6 @@
 import os
 from pathlib import Path
 
-from loguru import logger
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/env python"
 

@@ -9,7 +9,6 @@ from pathlib import Path
 
 import ssdeep
 import xxhash
-from loguru import logger
 from tqdm import tqdm
 
 EXCLUDE_DIRS = {".git", "__pycache__", "node_modules"}

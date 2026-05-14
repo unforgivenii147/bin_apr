@@ -3,8 +3,6 @@
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def optimize_pngs_recursively():
     total_original_size = 0

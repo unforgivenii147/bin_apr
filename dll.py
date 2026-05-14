@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def delete_lines_from_file():
     filename = sys.argv[1]

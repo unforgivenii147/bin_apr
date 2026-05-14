@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import sys
-import typing
 import zipfile
 from pathlib import Path
 

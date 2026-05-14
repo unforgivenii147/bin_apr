@@ -1,14 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import argparse
-import os
 import pathlib
-import shutil
 import sys
 import tarfile
-import tempfile
 from contextlib import contextmanager
-from typing import List, Optional, Tuple
+from typing import List
 
 try:
     import brotli

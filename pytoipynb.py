@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 import nbformat as nbf
-from loguru import logger
 
 
 def simple_convert(py_file, ipynb_file=None):

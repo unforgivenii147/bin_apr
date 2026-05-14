@@ -10,3 +10,5 @@ credential.json
 *.toml
 *.pyc
 *.pyi
+out/
+output/

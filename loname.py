@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def unique_path(path: Path | str) -> Path:
     path = Path(path)

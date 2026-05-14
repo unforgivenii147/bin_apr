@@ -6,8 +6,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from loguru import logger
-
 
 class GitHubRepoManager:
     def __init__(self, repo_name: str | None = None) -> None:

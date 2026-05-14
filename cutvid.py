@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 import cv2
-from loguru import logger
 
 
 def format_time(time_str):

@@ -3,8 +3,6 @@
 from pathlib import Path
 from sys import argv
 
-from loguru import logger
-
 
 def remove_spaces_from_file(fname) -> None:
     try:

@@ -3,7 +3,6 @@
 import re
 from pathlib import Path
 
-from loguru import logger
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
 IMG_TAG_RE = re.compile("<img\\b[^>]*\\bsrc\\s*=\\s*[\"\\']([^\"\\']+)[\"\\'][^>]*>", re.IGNORECASE)

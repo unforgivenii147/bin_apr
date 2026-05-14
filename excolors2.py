@@ -18,10 +18,9 @@ from __future__ import annotations
 
 import os
 import re
-import math
 from dataclasses import dataclass
 from typing import Iterable, Optional, Tuple, List, Dict
-from dh import is_binary, get_nobinary, TXT_EXT
+from dh import is_binary, TXT_EXT
 # ---------- Color extraction ----------
 
 HEX_RE = re.compile(

@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 
 import dh
-from loguru import logger
 from PIL import Image
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}

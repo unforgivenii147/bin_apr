@@ -2,7 +2,6 @@
 
 import glob
 
-from loguru import logger
 from PIL import Image
 
 

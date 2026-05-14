@@ -6,8 +6,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def install_js2py():
     try:

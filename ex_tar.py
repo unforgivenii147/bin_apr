@@ -8,7 +8,6 @@ import time
 from pathlib import Path
 
 import zstandard as zstd
-from loguru import logger
 
 
 def get_dir_size(path):

@@ -11,7 +11,6 @@ from pathlib import Path
 from subprocess import getoutput
 from time import sleep
 
-from loguru import logger
 
 try:
     from bs4 import BeautifulSoup

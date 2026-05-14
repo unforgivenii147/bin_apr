@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 
 from dh import mpf3
-from loguru import logger
 
 LOG_EXT = ".log"
 MMAP_THRESHOLD = 1 * 1024 * 1024

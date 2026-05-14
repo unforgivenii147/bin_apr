@@ -3,7 +3,6 @@
 import re
 from pathlib import Path
 
-from loguru import logger
 
 HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
 SKIP_TAGS = ("pre", "code")

@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any
 
 import markdown
-from loguru import logger
 
 
 class GUIFramework:

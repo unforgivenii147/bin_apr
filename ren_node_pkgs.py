@@ -5,8 +5,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def sanitize_pkg_name(name: str) -> str:
     name = name.lstrip("@")

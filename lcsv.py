@@ -6,7 +6,6 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from loguru import logger
 from tqdm import tqdm
 
 binf = Path("/sdcard/bin").open(encoding="utf-8")

@@ -4,8 +4,6 @@ import os
 import re
 from pathlib import Path
 
-from loguru import logger
-
 
 def refactor_file(file_path):
     try:

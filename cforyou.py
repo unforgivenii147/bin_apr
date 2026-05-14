@@ -8,7 +8,6 @@ from pathlib import Path
 
 import requests
 from dh import get_installed_packages
-from loguru import logger
 from packaging.version import Version
 from termcolor import cprint
 

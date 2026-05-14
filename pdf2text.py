@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 import PyPDF2
-from loguru import logger
 
 
 def extract_text_from_pdf(pdf_filename):

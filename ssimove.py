@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 
 import ssdeep
-from loguru import logger
 
 SEARCH_DIR = Path.cwd()
 OUTPUT_DIR = SEARCH_DIR / "output"

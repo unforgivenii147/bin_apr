@@ -5,7 +5,6 @@ from pathlib import Path
 
 from dh import fsz, gsz, mpf3, run_command
 from dh import get_filez
-from loguru import logger
 
 
 def process_file(fp):

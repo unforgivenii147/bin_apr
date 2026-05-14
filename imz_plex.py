@@ -9,7 +9,6 @@ from collections import defaultdict
 from pathlib import Path
 
 from dh import STDLIB
-from loguru import logger
 
 SHEBANG_PATTERNS = ["#!/data/data/com.termux/files/usr/bin/python", "#!/usr/bin/env python", "#! */python"]
 COMPRESSED_EXTS = {".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar.zst", ".zip", ".whl", ".7z"}

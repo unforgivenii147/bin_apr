@@ -6,8 +6,7 @@ from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 
-from dh import fsz, get_files, gsz
-from loguru import logger
+from dh import get_files, gsz
 
 MAX_QUEUE = 4
 REMOVE_ORIG = False

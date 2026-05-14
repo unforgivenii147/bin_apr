@@ -7,7 +7,6 @@ from pathlib import Path
 
 import cv2
 from dh import fsz, get_files, gsz
-from loguru import logger
 from PIL import Image
 
 MAX_QUEUE = 16

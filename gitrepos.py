@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import requests
-from loguru import logger
 
 
 def get_github_repos(username, output_file=None) -> None:

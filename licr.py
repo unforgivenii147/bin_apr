@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import dh
-from loguru import logger
 
 EXT = [".md", ".txt", ".rst"]
 

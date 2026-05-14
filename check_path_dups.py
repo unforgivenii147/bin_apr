@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import hashlib
 import os
-import sys
 from pathlib import Path
 from collections import defaultdict
 
-from dh import cprint, get_sha256, runcmd
+from dh import cprint, get_sha256
 
 
 def get_path_dirs() -> list[Path]:

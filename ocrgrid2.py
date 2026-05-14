@@ -7,7 +7,6 @@ from pathlib import Path
 import cv2
 import pytesseract
 from dh import IMG_EXT
-from loguru import logger
 
 OUTPUT_DIR = Path("ocr_results")
 OUTPUT_DIR.mkdir(exist_ok=True)

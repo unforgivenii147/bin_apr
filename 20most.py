@@ -7,7 +7,6 @@ from multiprocessing import Pool
 from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 
 
 def extract_words(text):

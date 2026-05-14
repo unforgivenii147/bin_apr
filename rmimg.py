@@ -7,7 +7,6 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 from dh import fsz, get_files, gsz
-from loguru import logger
 from termcolor import cprint
 
 

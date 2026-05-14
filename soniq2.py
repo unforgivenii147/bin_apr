@@ -7,7 +7,6 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from loguru import logger
 
 MB_5 = 5 * 1024 * 1024
 

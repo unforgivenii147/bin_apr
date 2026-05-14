@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-from loguru import logger
-
 
 def find_md_files():
     cwd = Path.cwd()

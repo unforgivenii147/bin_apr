@@ -5,7 +5,6 @@ import re
 import shutil
 from pathlib import Path
 
-from loguru import logger
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 IMPORT_RE = re.compile("@import\\s+url\\([^)]+fonts\\.googleapis[^)]+\\);?", re.IGNORECASE)

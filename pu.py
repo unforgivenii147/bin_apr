@@ -3,12 +3,12 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
 from pip._internal.cli.main import main as pip_main
+from rapidfuzz import fuzz
 
 
 def uninstall(packages: list[str]):
-    args = ["uninstall", "-y", *packages]
+    args = ["uninstall", *packages]
     return pip_main(args)
 
 
@@ -24,7 +24,9 @@ def display_packages(packages: dict[str, str], title: str = "Packages"):
 def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
     pattern_lower = pattern.lower()
     return {
-        package_name: version for package_name, version in packages.items() if pattern_lower in package_name.lower()
+        package_name: version
+        for package_name, version in packages.items()
+        if pattern_lower in package_name.lower() or fuzz.partial_ratio(pattern_lower, package_name.lower()) > 95
     }
 
 

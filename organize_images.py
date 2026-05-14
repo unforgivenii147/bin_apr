@@ -6,7 +6,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from loguru import logger
 
 
 def get_image_features_cv2(image_path, size=(64, 64)):

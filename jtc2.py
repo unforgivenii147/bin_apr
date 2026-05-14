@@ -5,7 +5,6 @@ from pathlib import Path
 from sys import argv
 
 from dh import run_command
-from loguru import logger
 
 if __name__ == "__main__":
     path = Path(argv[1])

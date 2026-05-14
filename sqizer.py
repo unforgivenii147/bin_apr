@@ -4,8 +4,6 @@ import os
 import re
 from pathlib import Path
 
-from loguru import logger
-
 
 def compress_python_file(filepath):
     content = Path(filepath).read_text(encoding="utf-8")

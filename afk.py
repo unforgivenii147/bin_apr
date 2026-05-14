@@ -2,12 +2,13 @@
 import sys
 from pathlib import Path
 
-from dh import cprint, fix_code, fsz, get_pyfiles, gsz
+from dh import cprint, fsz, get_pyfiles, mpf3
+from autoflake import fix_code
 
 
 def process_file(fp):
     code = fp.read_text(encoding="utf-8")
-    result = fix_code(code)
+    result = fix_code(code, remove_all_unused_imports=True, additional_imports=["loguru"])
     diff_size = len(code) - len(result)
     if diff_size:
         print(f"{fp.name} ", end="")
@@ -22,5 +23,4 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_pyfiles(cwd)
 
-    for f in files:
-        process_file(f)
+    mpf3(process_file, files)

@@ -2,8 +2,6 @@
 
 import os
 
-from loguru import logger
-
 
 def count_lines_of_code(file_path, lang):
     if ".git" in str(file_path):

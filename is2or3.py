@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from dh import get_files
-from loguru import logger
 
 
 def detect_version(file_path) -> None:

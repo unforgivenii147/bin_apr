@@ -2,7 +2,7 @@
 
 import re
 
-from weasyprint import CSS, HTML
+from weasyprint import HTML
 
 INPUT_FILE = "dictionary.txt"
 OUTPUT_FILE = "dictionary.pdf"

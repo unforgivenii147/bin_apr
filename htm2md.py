@@ -6,8 +6,6 @@ import sys
 from multiprocessing import cpu_count
 from pathlib import Path
 
-from loguru import logger
-
 
 def convert_html_to_md(html_file: Path, executable: str = "html2md") -> tuple[Path, bool]:
     if html_file.suffix.lower() in {".html", ".htm"}:

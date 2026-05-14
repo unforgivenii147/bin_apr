@@ -7,7 +7,6 @@ from multiprocessing import get_context
 from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 from toolz import compose, frequencies
 from toolz.curried import map as _map
 

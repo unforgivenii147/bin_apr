@@ -3,8 +3,6 @@
 import os
 from pathlib import Path
 
-from loguru import logger
-
 
 def main():
     count = 0

@@ -1,9 +1,0 @@
-import os
-import shutil
-import sys
-from pathlib import Path
-from loguru import logger
-
-def replace_in_file(path: str, old: str, new: str) -> None: ...
-def rename_path(path: str, old: str, new: str) -> str: ...
-def main() -> None: ...

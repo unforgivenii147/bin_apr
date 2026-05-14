@@ -3,7 +3,6 @@
 import os
 from pathlib import Path
 
-from loguru import logger
 
 search_string = 'b64 = """'
 current_dir = Path.cwd()

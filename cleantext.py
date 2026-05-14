@@ -4,8 +4,6 @@ import sys
 import unicodedata
 from pathlib import Path
 
-from loguru import logger
-
 
 def clean_file(filename):
     try:

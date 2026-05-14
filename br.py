@@ -7,7 +7,6 @@ from pathlib import Path
 import brotlicffi
 from dh import fsz, get_files, gsz
 from joblib import Parallel, delayed
-from loguru import logger
 from termcolor import cprint
 
 CHUNK_SIZE = 32768

@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def split_file_by_delimiter(fname, delim) -> None:
     content = Path(fname).read_text(encoding="utf-8")

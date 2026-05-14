@@ -6,7 +6,6 @@ from pathlib import Path
 
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, get_files
-from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None

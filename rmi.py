@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 
 INVISIBLE_CHARS = {
     "\u200b",

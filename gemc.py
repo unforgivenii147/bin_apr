@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from loguru import logger
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 PY_LANGUAGE = Language(tspython.language())

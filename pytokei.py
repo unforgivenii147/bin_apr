@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 
 from dh import is_binary
-from loguru import logger
 
 LANG_EXTENSIONS = {
     "python": [".py", ".pyi"],

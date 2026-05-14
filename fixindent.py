@@ -3,8 +3,6 @@
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4):
     if not Path(input_file_path).exists():

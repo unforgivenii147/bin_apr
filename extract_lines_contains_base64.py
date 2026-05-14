@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from dh import get_nobinary
-from loguru import logger
 
 
 def process_file(fp):
@@ -19,7 +18,10 @@ def process_file(fp):
             if '"' in cleaned:
                 end_indx = cleaned.index('"')
                 cleaned = cleaned[:end_indx]
-            elif ")" in cleaned:
+            if " " in cleaned:
+                end_indx = cleaned.index(" ")
+                cleaned = cleaned[:end_indx]
+            if ")" in cleaned:
                 end_indx = cleaned.index(")")
                 cleaned = cleaned[:end_indx]
             nl.append(cleaned)

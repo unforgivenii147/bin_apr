@@ -9,7 +9,6 @@ from pathlib import Path
 
 import aiohttp
 from bs4 import BeautifulSoup
-from loguru import logger
 
 MIRROR_BASE = "https://mirror-pypi.runflare.com"
 OUTPUT_DIR = Path("output")

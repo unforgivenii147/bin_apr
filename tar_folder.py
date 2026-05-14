@@ -4,8 +4,6 @@ import shutil
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def compress_folder(folder_path: Path, output_path: Path):
     try:

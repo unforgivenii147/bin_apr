@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from dh import atomic_write
-from loguru import logger
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")
 FONT_EXTS = {".woff", ".woff2", ".ttf", ".otf", ".eot"}

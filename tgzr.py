@@ -5,8 +5,6 @@ import tarfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from loguru import logger
-
 
 def remove_items_fast(items):
     with ThreadPoolExecutor(max_workers=32) as ex:

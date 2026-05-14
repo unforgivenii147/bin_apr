@@ -9,7 +9,6 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def get_latest_version_info(pkg_name: str, mirror_url: str) -> dict:

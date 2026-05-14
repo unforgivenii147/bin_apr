@@ -3,7 +3,6 @@
 import os
 from pathlib import Path
 
-from loguru import logger
 
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "/sdcard/all2.txt"

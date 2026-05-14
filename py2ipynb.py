@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 
 import nbformat as nbf
-from loguru import logger
 
 
 def py_to_ipynb(input_file, output_file=None):

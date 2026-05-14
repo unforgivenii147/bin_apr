@@ -21,7 +21,6 @@ def remove_conditional_exit_blocks(file_path: Path):
             if not match:
                 break
             modified_content = modified_content[: match.start()] + modified_content[match.end() :]
-            pass
         if original_content != modified_content:
             file_path.write_text(modified_content, encoding="utf-8")
             print(f"Cleaned: {file_path}")

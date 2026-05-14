@@ -4,8 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def restructure_text_file(filepath: Path):
     if not filepath.is_file():

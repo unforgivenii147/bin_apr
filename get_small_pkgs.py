@@ -5,8 +5,6 @@ import os
 import site
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_all_dist_info_dirs():
     dist_info_dirs = []

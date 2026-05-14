@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-from loguru import logger
-
 
 def process_file(fp):
     path = Path(fp)

@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from deep_translator import GoogleTranslator
-from loguru import logger
 
 CHUNK_SIZE = 2000
 

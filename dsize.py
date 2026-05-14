@@ -5,8 +5,6 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from loguru import logger
-
 
 def fetch_content_length(url: str) -> int | None:
     request = urllib.request.Request(url, method="HEAD")

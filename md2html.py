@@ -8,7 +8,6 @@ from pathlib import Path
 
 import markdown
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def modify_classes(html_content):

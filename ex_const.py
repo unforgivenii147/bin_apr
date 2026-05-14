@@ -8,7 +8,6 @@ import shutil
 from pathlib import Path
 
 from joblib import Parallel, delayed
-from loguru import logger
 
 OUTPUT_DIR = Path("output")
 OUTPUT_FILE = OUTPUT_DIR / "const.py"

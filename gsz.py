@@ -4,7 +4,6 @@ import re
 import sys
 
 import requests
-from loguru import logger
 
 
 def get_repo_size(input_str):

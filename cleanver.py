@@ -3,8 +3,6 @@
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def create_unpinned_requirements(output_file="req.txt"):
     try:

@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 from dh import run_command
-from loguru import logger
 
 if __name__ == "__main__":
     cwd = Path.cwd()

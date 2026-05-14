@@ -6,7 +6,6 @@ import time
 
 import requests
 from dh import get_installed_packages
-from loguru import logger
 from packaging.version import InvalidVersion, Version
 
 

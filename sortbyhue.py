@@ -5,7 +5,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
 
 HEX_RE = re.compile("^#([0-9a-fA-F]{6})$")
 

@@ -7,7 +7,6 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from loguru import logger
 
 
 def download_image(url, output_dir):

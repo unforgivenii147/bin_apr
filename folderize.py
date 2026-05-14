@@ -4,8 +4,6 @@ import os
 import shutil
 from pathlib import Path
 
-from loguru import logger
-
 
 def falpha(cwd="."):
     root_path = Path(cwd).resolve()

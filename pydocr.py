@@ -11,7 +11,6 @@ from pathlib import Path
 from textwrap import dedent
 
 from dh import get_files, unique_path
-from loguru import logger
 
 cwd = Path.cwd()
 cwdname = cwd.name

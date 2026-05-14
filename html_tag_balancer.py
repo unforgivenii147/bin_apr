@@ -82,8 +82,6 @@ def fix_html_file(path: Path) -> bool:
     remove_ranges = []
     for _, tag, pos in parser.errors:
         line, col = pos
-        pass
-    from html.parser import HTMLParseError
 
     class TagScanner(HTMLParser):
         def __init__(self, source):

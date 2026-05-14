@@ -4,8 +4,6 @@ import json
 import sys
 from pathlib import Path
 
-from loguru import logger
-
 
 def minify_json_file(path: Path, dry_run: bool = False) -> bool:
     try:

@@ -3,8 +3,6 @@
 import shutil
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_size_str(size_bytes):
     for unit in ["B", "KB", "MB", "GB"]:

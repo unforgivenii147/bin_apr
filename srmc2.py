@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from dh import DOC_TH1, DOC_TH2, fsz, get_pyfiles, gsz, mpf3
-from loguru import logger
 
 
 def preprocess(orig):

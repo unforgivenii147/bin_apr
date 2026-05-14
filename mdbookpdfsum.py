@@ -8,7 +8,6 @@ from pathlib import Path
 
 import lxml.html
 import pypdf
-from loguru import logger
 
 
 class Section:

@@ -9,7 +9,6 @@ import tarfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from loguru import logger
 
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)

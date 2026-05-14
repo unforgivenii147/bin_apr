@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import argparse
-import os
 import re
 import sys
 from os.path import commonpath
 from pathlib import Path
 
-from loguru import logger
 
 try:
     from termcolor import colored

@@ -6,7 +6,6 @@ from multiprocessing import get_context
 from pathlib import Path
 
 from dh import get_files
-from loguru import logger
 
 MAX_QUEUE = 16
 

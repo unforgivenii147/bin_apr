@@ -4,8 +4,6 @@ import os
 import subprocess
 from pathlib import Path
 
-from loguru import logger
-
 
 def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     if not Path(input_file).exists():

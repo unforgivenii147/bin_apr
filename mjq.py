@@ -5,7 +5,6 @@ import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
 
-from loguru import logger
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 

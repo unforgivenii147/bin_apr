@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pycld2
 from dh import TXT_EXT
-from loguru import logger
 
 MIN_TEXT_LENGTH = 20
 SUPPORTED_EXTENSIONS = TXT_EXT

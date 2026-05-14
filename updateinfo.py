@@ -4,7 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-from loguru import logger
 
 NEW_INFO = {"name": "Isaac Onagh", "email": "mkalafsaz@gmail.com", "github_username": "unforgivenii147"}
 

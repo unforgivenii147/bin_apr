@@ -5,7 +5,6 @@ import time
 from pathlib import Path
 
 from deep_translator import GoogleTranslator
-from loguru import logger
 from tqdm import tqdm
 
 MAX_CHARS = 5000

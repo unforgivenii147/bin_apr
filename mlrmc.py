@@ -7,7 +7,6 @@ import tree_sitter_cpp
 import tree_sitter_python
 import tree_sitter_rust
 from dh import clean_blank_lines, mpf
-from loguru import logger
 from tree_sitter import Language, Parser
 
 LANGUAGES = {

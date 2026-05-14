@@ -2,8 +2,6 @@
 
 import sys
 
-from loguru import logger
-
 
 def hex_to_rgb(value: str) -> tuple[int, int, int]:
     hex_color = value.lstrip("#")

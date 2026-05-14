@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 import ssdeep
-from loguru import logger
 from ppdeep import compare, hash_from_file
 
 try:

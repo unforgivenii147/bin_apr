@@ -3,8 +3,6 @@
 import subprocess
 import sys
 
-from loguru import logger
-
 
 def get_installed_packages():
     try:

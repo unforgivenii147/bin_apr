@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 from deep_translator import GoogleTranslator
-from loguru import logger
 
 
 def read_text_file(path: Path) -> str:

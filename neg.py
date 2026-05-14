@@ -7,7 +7,6 @@ from pathlib import Path
 
 import cv2 as cv
 from dh import get_files
-from loguru import logger
 
 cwd = Path.cwd()
 

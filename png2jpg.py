@@ -4,7 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-from loguru import logger
 from PIL import Image
 
 if len(sys.argv) != 2:

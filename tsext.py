@@ -5,7 +5,6 @@ from pathlib import Path
 
 import tree_sitter_python as tsp
 from dh import get_pyfiles
-from loguru import logger
 from tree_sitter import Language, Parser
 
 PY_LANGUAGE = Language(tsp.language())

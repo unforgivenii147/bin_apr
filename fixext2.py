@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 import magic
-from loguru import logger
 
 MIME_TO_EXT = {
     "text/html": "html",

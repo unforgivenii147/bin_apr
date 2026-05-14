@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from loguru import logger
 
 EXCLUDED_DIRS = {".git", "__pycache__"}
 N = 10

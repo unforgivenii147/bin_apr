@@ -10,7 +10,6 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
 
-from loguru import logger
 
 OUTPUT_DIR = Path("output")
 ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")

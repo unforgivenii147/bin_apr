@@ -16,7 +16,6 @@ from pathlib import Path
 
 import xxhash
 from dh import PKG_MAPPING, STDLIB
-from loguru import logger
 from tqdm import tqdm
 
 CACHE_FILE = ".reqcache.json"

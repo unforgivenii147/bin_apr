@@ -12,8 +12,6 @@ import zipfile
 from email.parser import Parser
 from pathlib import Path
 
-from loguru import logger
-
 
 def prefix_path():
     p = os.environ.get("PREFIX")

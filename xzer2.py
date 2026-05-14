@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-from loguru import logger
-
 
 def compress_folder_to_tar(folder_path: Path, output_base_name: str, format: str = "tar") -> bool:
     print(f"Simulating: Compressing folder '{folder_path}' to '{output_base_name}.tar'...")

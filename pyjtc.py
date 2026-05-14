@@ -5,8 +5,6 @@ import os
 import re
 from pathlib import Path
 
-from loguru import logger
-
 
 def remove_comments_and_strings(content, filetype, keep_strings=False):
     if filetype in {"c", "cpp", "h", "hpp"}:

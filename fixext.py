@@ -9,7 +9,7 @@ from dh import MIME2EXT, cprint, is_binary, unique_path
 
 
 def fix_by_shebang(fp) -> bool:
-    if is_binary(fp):
+    if is_binary(fp) or not fp.stat().st_size:
         return False
     content = fp.read_text(encoding="utf8")
     fl = content.splitlines()[0]
@@ -50,14 +50,12 @@ def fix_by_shebang(fp) -> bool:
     return False
 
 
-def get_file_mime(file_path):
+def get_file_mime(path):
     try:
-        result = subprocess.run(
-            ["file", "--brief", "--mime-type", file_path], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["file", "--brief", "--mime-type", path], capture_output=True, text=True, check=True)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
-        print(f"Error detecting file type for {file_path}: {e}", file=sys.stderr)
+        print(f"Error detecting file type for {path}: {e}", file=sys.stderr)
         return None
 
 
@@ -76,16 +74,19 @@ def check_files(directory):
     mismatched_files = []
     for root, _, files in os.walk(directory):
         for name in files:
-            file_path = Path(root) / name
-            if ".git" in file_path.parts or "__pycache__" in file_path.parts:
+            path = Path(root) / name
+            if ".git" in path.parts or "__pycache__" in path.parts:
                 continue
-            ext = file_path.suffix.lower()
-            if fix_by_shebang(file_path):
+            ext = path.suffix.lower()
+            if fix_by_shebang(path):
                 continue
-            if ext in {".eot", ".svg", ".woff2", ".woff", ".ttf", ".c", ".md", ".py", ".pdf", ".html", ".js", ".css"}:
+
+            if ext in {".svg", ".c", ".py", ".js", ".css", ".ts", ".map", ".jsx", ".tsx", ".mjs", ".mts"}:
                 continue
-            mime = get_file_mime(file_path)
+
+            mime = get_file_mime(path)
             print(f"{name} --> {mime}")
+
             if mime:
                 expected_exts = MIME2EXT.get(mime, [])
                 if expected_exts and ext not in expected_exts:
@@ -97,8 +98,11 @@ def check_files(directory):
                         continue
                     if new_path.exists():
                         new_path = unique_path(new_path)
-                    file_path.rename(new_path)
-                    mismatched_files.append((file_path, ext, mime, new_path))
+                    print(f"{path.name} -> {new_path.name}")
+                    ans = input()
+                    if ans == "y":
+                        path.rename(new_path)
+                    mismatched_files.append((path, ext, mime, new_path))
     return mismatched_files
 
 
@@ -107,11 +111,11 @@ def main():
     mismatches = check_files(cwd)
     if mismatches:
         print("Files with mismatched extensions:")
-        for file_path, _ext, mime, new_path in mismatches:
+        for path, _ext, mime, new_path in mismatches:
             if new_path:
-                print(f"\x1b[5;93m{file_path.name} {mime} \x1b[5;96m{new_path.name}]\x1b[0m")
+                print(f"\x1b[5;93m{path.name} {mime} \x1b[5;96m{new_path.name}]\x1b[0m")
             else:
-                print(f"{file_path.name} -> \x1b[5m;94mdetected: {mime}\x1b[0m")
+                print(f"{path.name} -> \x1b[5m;94mdetected: {mime}\x1b[0m")
     else:
         cprint("no mismatch")
 

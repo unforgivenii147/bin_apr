@@ -7,8 +7,6 @@ import site
 from collections import defaultdict
 from pathlib import Path
 
-from loguru import logger
-
 
 def get_site_packages_dirs():
     dirs = []

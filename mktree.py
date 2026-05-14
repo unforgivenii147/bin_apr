@@ -1,11 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-import os
 import re
 import sys
 from pathlib import Path
-
-from loguru import logger
 
 
 def parse_tree_file(tree_path):

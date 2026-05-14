@@ -5,7 +5,6 @@ import subprocess
 import zipfile
 from pathlib import Path
 
-from loguru import logger
 
 VENV_PATH = Path("~/venv").expanduser()
 

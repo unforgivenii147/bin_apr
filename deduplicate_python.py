@@ -1,6 +1,7 @@
-#!/data/data/com.termux/files/usr/bin/python3
+#!/data/data/com.termux/files/usr/bin/python
+
+
 import os
-import re
 import sys
 import ast
 import hashlib

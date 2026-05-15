@@ -1,4 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/python
+#!/data/data/com.termux/files/usr/bin/python3
+
 
 import sys
 from pathlib import Path
@@ -14,7 +15,7 @@ OLD = {
     "#!/usr/bin/env python",
     "#!/usr/bin/env python3",
 }
-NEW = "#!/data/data/com.termux/files/usr/bin/python\n"
+NEW = "#!/data/data/com.termux/files/usr/bin/python\n\n"
 
 
 def fix_file(path: Path) -> bool:

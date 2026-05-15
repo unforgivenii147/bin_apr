@@ -1,5 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/python
-
+#!/data/data/com.termux/files/usr/bin/python3
+from utils import (
     DIRECTORY,
     CHUNK_SIZE,
     non_english_pattern,

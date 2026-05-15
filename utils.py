@@ -1,5 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python
-
 DIRECTORY = "."
 
 CHUNK_SIZE = 2000

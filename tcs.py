@@ -1,4 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/python
+#!/data/data/com.termux/files/usr/bin/python3
+
 
 import subprocess
 import sys

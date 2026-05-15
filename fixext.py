@@ -7,6 +7,8 @@ from pathlib import Path
 
 from dh import MIME2EXT, cprint, is_binary, unique_path
 
+CONFIRM = False
+
 
 def fix_by_shebang(fp) -> bool:
     if is_binary(fp) or not fp.stat().st_size:
@@ -98,9 +100,12 @@ def check_files(directory):
                         continue
                     if new_path.exists():
                         new_path = unique_path(new_path)
-                    print(f"{path.name} -> {new_path.name}")
-                    ans = input()
-                    if ans == "y":
+                    if CONFIRM:
+                        print(f"{path.name} -> {new_path.name}")
+                        ans = input()
+                        if ans == "y":
+                            path.rename(new_path)
+                    else:
                         path.rename(new_path)
                     mismatched_files.append((path, ext, mime, new_path))
     return mismatched_files

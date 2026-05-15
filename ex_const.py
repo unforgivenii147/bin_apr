@@ -6,13 +6,12 @@ import logging
 import operator
 import shutil
 from pathlib import Path
-
+from dh import get_pyfiles
 from joblib import Parallel, delayed
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path.home() / "isaac" / "may" / "pkgs" / "dh2" / "src" / "dh2" / "output"
 OUTPUT_FILE = OUTPUT_DIR / "const.py"
 LOG_FILE = OUTPUT_DIR / "error.log"
-PYTHON_FILES_TO_PROCESS = "**/*.py"
 OUTPUT_DIR.mkdir(exist_ok=True)
 logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -20,7 +19,7 @@ logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format="%(asctime)s 
 def get_file_hash(filepath: Path) -> str:
     hasher = hashlib.sha256()
     with Path(filepath).open("rb") as f:
-        while chunk := f.read(4096):
+        while chunk := f.read(32768):
             hasher.update(chunk)
     return hasher.hexdigest()
 
@@ -63,11 +62,9 @@ def process_file(filepath: Path) -> tuple[str, list[tuple[str, str, str]] | None
 
 
 def main():
-    if OUTPUT_DIR.exists():
-        shutil.rmtree(OUTPUT_DIR)
-    OUTPUT_DIR.mkdir()
-    current_dir = Path()
-    python_files = list(current_dir.glob(PYTHON_FILES_TO_PROCESS))
+    #    OUTPUT_DIR.mkdir(exist_ok=True)
+    cwd = Path.cwd()
+    python_files = list(get_pyfiles(cwd))
     if not python_files:
         print("No Python files found in the current directory.")
         return

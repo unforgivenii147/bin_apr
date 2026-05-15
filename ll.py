@@ -66,7 +66,7 @@ if __name__ == "__main__":
                     sz = "  " + sz
                 case 8:
                     sz = " " + sz
-            print(f"\x1b[05;92m{f.name[:24]:25}\x1b[0m", end=" ")
+            print(f"\x1b[05;92m{f.stem[:20]+f.suffix:25}\x1b[0m", end=" ")
         print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
         print(f"\x1b[05;93m{ctime}\x1b[0m")
     for dr in dirz:

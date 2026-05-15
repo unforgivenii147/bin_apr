@@ -20,6 +20,7 @@ def safe_run(path):
 
 
 def process_file(fp):
+    if "site-packages" in fp.parts
     before = gsz(fp)
     if not fp.exists() or not before:
         return False

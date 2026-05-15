@@ -8,12 +8,12 @@ cwd = Path.cwd()
 
 
 def process_file(path: Path):
-    woff2_path = path.with_suffix(".woff2")
-    if woff2_path.exists() and woff2_path.stat().st_size:
+    ttf_path = path.with_suffix(".ttf")
+    if ttf_path.exists() and ttf_path.stat().st_size:
         print(f"{path.name} already converted.")
         return True
     try:
-        woff2.compress(path, woff2_path)
+        woff2.decompress(path, ttf_path)
         print(f"{path.name} converted.")
         path.unlink()
     except:
@@ -21,7 +21,7 @@ def process_file(path: Path):
 
 
 def main():
-    files = get_files(cwd, extensions=[".ttf", ".woff", ".otf"])
+    files = get_files(cwd, extensions=[".woff2"])
     _ = mpf3(process_file, files)
 
 

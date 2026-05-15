@@ -13,10 +13,9 @@ from pathlib import Path
 from typing import Any
 
 
-OUTPUT_DIR = Path("output")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = Path.home() / "tmp" / "output"
 ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")
-ALLOWED_PYTHON_EXTENSIONS = (".py", "")
+ALLOWED_PYTHON_EXTENSIONS = ".py"
 
 
 class EntityExtractor(ast.NodeVisitor):
@@ -80,7 +79,7 @@ class EntityExtractor(ast.NodeVisitor):
         if not self.scope_stack and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             target_name = node.targets[0].id
             if re.match("^[A-Z_][A-Z0-9_]*$", target_name):
-                self._extract_and_save(node, "constant", target_name)
+                self._extract_and_save(node, "const", target_name)
 
     def generic_visit(self, node: ast.AST):
         super().generic_visit(node)
@@ -101,7 +100,7 @@ def get_unique_filepath(base_path: Path) -> Path:
 
 def save_entity(entity: dict[str, Any]):
     filename_base = f"{entity['full_name']}.py"
-    output_path_base = OUTPUT_DIR / entity["type"] / filename_base
+    output_path_base = OUTPUT_DIR / entity["type"] / filename_base.lower()
     output_path_base.parent.mkdir(parents=True, exist_ok=True)
     content = entity["code"]
     final_py_path = get_unique_filepath(output_path_base)
@@ -201,14 +200,10 @@ def worker_process(path_str: str) -> list[dict[str, Any]]:
 
 
 def main():
-    print(f"Starting analysis in {Path.cwd()}...")
-    if OUTPUT_DIR.exists():
-        shutil.rmtree(OUTPUT_DIR)
-        print(f"Cleaned previous output directory: {OUTPUT_DIR}")
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    cwd = Path.cwd()
+    print(f"analyzing {cwd}")
     files_to_process = []
-    current_dir = Path()
-    for root, _, filenames in os.walk(current_dir):
+    for root, _, filenames in os.walk(cwd):
         for name in filenames:
             path = Path(root) / name
             if path.is_relative_to(OUTPUT_DIR):
@@ -228,12 +223,11 @@ def main():
         results_list = pool.map(worker_process, files_to_process)
         for result in results_list:
             all_entities.extend(result)
-    print(f"Processing complete. Extracted {len(all_entities)} entities.")
-    print(f"Saving entities to {OUTPUT_DIR}...")
+
+    print(f"Saving entities ... ")
     for entity in all_entities:
         save_entity(entity)
-    print("\n\nAll tasks finished successfully!")
-    print(f"Results are saved in the '{OUTPUT_DIR}' folder, organized by entity type (class, function, constant).")
+    print(f"Results are saved.")
     subprocess.run(["ex_imports"], check=True)
 
 

@@ -1,14 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from dh import get_files
+from dh import get_files, unique_path, mpf3
 from tree_sitter import Language, Parser
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path.home() / "tmp" / "output"
 parser = Parser()
 parser.language = Language(tsp.language())
 VALID = {"import_statement", "import_from_statement"}
@@ -22,16 +21,18 @@ def process_file(fp):
 
 
 def main():
-    if not OUTPUT_DIR.exists():
-        OUTPUT_DIR.mkdir()
+    #    if not OUTPUT_DIR.exists():
+    #        OUTPUT_DIR.mkdir()
     cwd = Path.cwd()
-    outfile = Path(f"output/{cwd.name}_importz.py")
+    outfile = OUTPUT_DIR / f"{cwd.name}_importz.py"
+    if outfile.exists():
+        outfile = unique_path(outfile)
     all_imports = []
     files = get_files(cwd, extensions=[".py"])
-    results = []
-    with ThreadPoolExecutor(max_workers=8) as ex:
-        futures = [ex.submit(process_file, f) for f in files]
-        results.extend((future.result() for future in as_completed(futures)))
+    results = mpf3(process_file, files)
+    #    with ThreadPoolExecutor(max_workers=8) as ex:
+    #        futures = [ex.submit(process_file, f) for f in files]
+    #        results.extend((future.result() for future in as_completed(futures)))
     for imports in results:
         if imports:
             for k in imports:

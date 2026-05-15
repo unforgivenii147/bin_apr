@@ -12,9 +12,11 @@ def sanitize_pkg_name(name: str) -> str:
     return re.sub("[^\\w.-]", "_", name)
 
 
-def rename_package_dirs(root: Path, dry_run: bool = False) -> None:
-    for pkg_json in root.rglob("package.json"):
+def rename_package_dirs(cwd: Path, dry_run: bool = False) -> None:
+    for pkg_json in cwd.rglob("package.json"):
         pkg_dir = pkg_json.parent
+        if pkg_dir.name != "package":
+            continue
         try:
             with pkg_json.open(encoding="utf-8") as f:
                 data = json.load(f)
@@ -38,9 +40,9 @@ def rename_package_dirs(root: Path, dry_run: bool = False) -> None:
 
 
 def main():
-    root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.cwd()
+    cwd = Path.cwd()
     dry_run = "--dry-run" in sys.argv
-    rename_package_dirs(root, dry_run=dry_run)
+    rename_package_dirs(cwd, dry_run=dry_run)
 
 
 if __name__ == "__main__":

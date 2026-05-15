@@ -38,11 +38,17 @@ def generate_html(font_files):
                 "</style>",
             )
         )
-        html.extend(
-            f"<h1 style='font-family: \"{font_name}\"; font-size: {size}px;'>LIFE IS A DREAM, we are dreaming.</h1>"
-            for size in FONT_SIZES
+
+        html.append(
+            f"<div style='font-family: \"{font_name}\"; font-size: 16px;'>LIFE IS A DREAM, we are dreaming.</div>"
         )
-        html.append(f"<div style='font-family: \"{font_name}\"; font-size: 12px;'>{font_name}</div><hr>")
+        html.append(
+            f"<div style='font-family: \"{font_name}\"; font-size: 22px;'>LIFE IS A DREAM, we are dreaming.</div>"
+        )
+        html.append(
+            f"<div style='font-family: \"{font_name}\"; font-size: 28px;'>LIFE IS A DREAM, we are dreaming.</div>"
+        )
+        html.append(f"<div style='font-family: \"{font_name}\"; font-size: 14px;'>{font_name}</div><hr>")
         html.append("</div>")
     html.append("</body></html>")
     return "\n".join(html)

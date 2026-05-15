@@ -5,6 +5,7 @@ import os
 import runpy
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from dh import mpf3
 
 
 def find_python_files(root_dir="."):
@@ -49,6 +50,11 @@ def main():
         print("No Python scripts found (excluding this script).")
         return
     print(f"Found {len(scripts)} Python script(s). Starting execution...\n")
+
+    mpf3(run_script, scripts)
+
+
+"""
     for script in scripts:
         try:
             run_script(script)
@@ -58,6 +64,8 @@ def main():
     print("All scripts processed.")
     print("=" * 60)
 
+
+"""
 
 if __name__ == "__main__":
     main()

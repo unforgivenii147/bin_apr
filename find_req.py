@@ -7,13 +7,15 @@ from dh import cprint
 
 def process_file(path, text):
     content = path.read_text().lower()
-    target1 = "require-dist: " + text
-    target2 = "provide-extra: " + text
-    target3 = " " + text
-    if target1 in content or target2 in content:
+    target1 = "requires-dist: " + text
+    #    target2 = "provides-extra: " + text
+    #    target3 = " " + text
+    if target1 in content:
         print(path.parent.name)
-    if target3 in content:
-        cprint(path.parent.name)
+
+
+#    if target3 in content:
+#        cprint(path.parent.name)
 
 
 if __name__ == "__main__":

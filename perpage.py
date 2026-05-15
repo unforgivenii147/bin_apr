@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from dh import get_files
-from pbar import Pbar
 from PyPDF2 import PdfReader
 
 
@@ -28,15 +27,32 @@ def process_file(pdf_path: Path):
     num_pages = len(reader.pages)
     print(f"Processing PDF: {pdf_path.name} ({num_pages} pages)")
     for page_num in range(num_pages):
+        if 100 <= num_pages < 1000:
+            if 0 <= page_num + 1 < 10:
+                pad = "00"
+            elif 10 <= page_num + 2 < 100:
+                pad = "0"
+            else:
+                pad = ""
+        elif 10 <= num_pages < 100:
+            if 0 <= page_num + 1 < 10:
+                pad = "0"
+            elif 10 <= page_num + 1 < 100:
+                pad = ""
+        elif 0 < num_pages < 10:
+            pad = ""
+        page_filename = f"{pdf_filename_base}_{pad}{page_num + 1}.txt"
+        output_filepath = output_folder / page_filename
+        if output_filepath.exists():
+            continue
         try:
             page = reader.pages[page_num]
             text = page.extract_text()
             if text:
-                page_filename = f"{pdf_filename_base}_page_{page_num + 1}.txt"
-                output_filepath = output_folder / page_filename
                 with output_filepath.open("w", encoding="utf-8") as txt_file:
                     txt_file.write(text)
-                print(f"Saved: {output_filepath.name}")
+                if page_num % 10 == 0:
+                    print(f"Saved: {output_filepath.name}")
             else:
                 print(f"Warning: No text extracted from page {page_num + 1}.")
         except Exception as e:
@@ -47,6 +63,5 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".pdf", ".PDF"])
-    with Pbar("...") as pbar:
-        for f in pbar.wrap(files):
-            process_file(f)
+    for f in files:
+        process_file(f)

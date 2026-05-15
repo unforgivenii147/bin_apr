@@ -61,10 +61,22 @@ def process_file(fn):
     if fn.name == new_path.name:
         cprint("no change", "blue")
         return 0
+    new_path = Path(
+        str(new_path)
+        .replace("_1", "")
+        .replace("_2", "")
+        .replace("_3", "")
+        .replace("_4", "")
+        .replace("_5", "")
+        .replace("_6", "")
+        .replace("_7", "")
+        .replace("_8", "")
+        .replace("_9", "")
+    )
     if new_path.exists():
         new_path = unique_path(new_path)
     fn.rename(new_path)
-    print(f"{fn.name} -> ", end="")
+    #    print(f"{fn.name} -> ", end="")
     cprint(f"{new_path.name}", "green")
     return 0
 

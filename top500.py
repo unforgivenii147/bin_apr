@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/python
+
     DIRECTORY,
     CHUNK_SIZE,
     non_english_pattern,

@@ -1,4 +1,3 @@
-from utils import (
     DIRECTORY,
     CHUNK_SIZE,
     non_english_pattern,

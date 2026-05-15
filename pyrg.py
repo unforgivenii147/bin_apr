@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-from utils import (
     DIRECTORY,
     CHUNK_SIZE,
     non_english_pattern,

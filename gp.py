@@ -37,9 +37,8 @@ def symlink_global_gitignore() -> None:
         sys.exit(1)
 
 
-def get_current_branch(cmd):
-    cmd=["git","branch"]
-    return subprocess.check_output(cmd, shell=True).decode().strip()
+def get_current_branch(cmd=["git","branch"]):
+    return subprocess.check_output(cmd, shell=True).decode().strip("* ").strip()
 
 
 def main() -> None:

@@ -3,7 +3,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
+from dh import runcmd
 
 def run(cmd) -> None:
     try:
@@ -38,7 +38,9 @@ def symlink_global_gitignore() -> None:
 
 
 def get_current_branch(cmd=["git","branch"]):
-    return subprocess.check_output(cmd, shell=True).decode().strip("* ").strip()
+    _,txt,_=runcmd(cmd, show_output=False)
+    branch=txt.strip().replace("* ","")
+    return branch
 
 
 def main() -> None:

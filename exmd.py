@@ -1,17 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    OUTPUT_DIR,
-    OUTPUT_DIR,
-    OUTPUT_DIR,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from pathlib import Path
-
 
 OUTPUT_DIR = Path("output")
 if not OUTPUT_DIR.exists():
@@ -43,10 +34,7 @@ def extract_code_snippets_with_details(markdown_content):
                 in_code_block = True
                 start_line_num = i + 1
                 match = re.match("```(\\w*)", line.strip())
-                if match and match.group(1):
-                    language = match.group(1).lower()
-                else:
-                    language = ""
+                language = match.group(1).lower() if match and match.group(1) else ""
                 current_block_lines = []
         elif in_code_block:
             current_block_lines.append(line)

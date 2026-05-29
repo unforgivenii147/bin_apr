@@ -1,25 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 from dh import cprint, fsz, get_files, gsz, mpf3, runcmd
@@ -27,6 +7,8 @@ from dh import cprint, fsz, get_files, gsz, mpf3, runcmd
 
 def process_file(path):
     before = gsz(path)
+    if not before or len(path.read_text().splitlines()) == 1:
+        return
     try:
         runcmd(["svgo", str(path)], show_output=False)
         after = gsz(path)
@@ -47,7 +29,7 @@ def process_file(path):
 
 def main():
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".svg", ".SVG"])
+    files = get_files(cwd, ext=[".svg", ".SVG"])
     mpf3(process_file, files)
 
 

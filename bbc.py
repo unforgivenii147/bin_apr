@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 from pathlib import Path
 
@@ -20,9 +14,7 @@ def is_setupcfg(fn):
     if content == SETUPCFG:
         return True
     lines = content.splitlines(keepends=False)
-    if lines[0] == L1 and lines[1] == L2 and (lines[2] == L3):
-        return True
-    return False
+    return bool(lines[0] == L1 and lines[1] == L2 and (lines[2] == L3))
 
 
 if __name__ == "__main__":
@@ -37,7 +29,6 @@ if __name__ == "__main__":
         if item.is_file() and item.name == "PKG-INFO":
             item.unlink()
             print(f"{item.name} removed.")
-        if item.is_file() and item.name == "setup.cfg":
-            if is_setupcfg(item):
-                item.unlink()
-                print(f"{item.name} removed.")
+        if item.is_file() and item.name == "setup.cfg" and is_setupcfg(item):
+            item.unlink()
+            print(f"{item.name} removed.")

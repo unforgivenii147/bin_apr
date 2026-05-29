@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    parse_minutes,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import sys
 import time

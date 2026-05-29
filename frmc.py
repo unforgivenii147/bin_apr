@@ -1,31 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
 
-from dh import SOURCE_CODE_EXT, clean_blank_lines, fsz, get_nobinary, gsz, is_binary, mpf3
-from termcolor import cprint
+from dh import SOURCE_CODE_EXT, clean_blank_lines, cprint, fsz, get_nobinary, gsz, is_binary, mpf3
 
 
 def process_file(fp):

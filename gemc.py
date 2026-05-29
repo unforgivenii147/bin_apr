@@ -1,26 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    parser,
-    PY_LANGUAGE,
-    parser,
-    should_preserve_comment,
-    main,
-    QUERY_STRING,
-    should_preserve_comment,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import multiprocessing
 import operator

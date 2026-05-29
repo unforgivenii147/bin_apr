@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import importlib.metadata
 import importlib.util
@@ -43,7 +28,7 @@ class ImportVisitor(ast.NodeVisitor):
 def find_imports(start_path):
     all_imports = set()
     std_libs = STDLIB
-    files = get_files(start_path, extensions=[".py"])
+    files = get_files(start_path, ext=[".py"])
     for f in files:
         try:
             code = f.read_text(encoding="utf-8")

@@ -1,16 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    DIRECTORY,
-    non_english_pattern,
-    chunk_text,
-    is_english,
-    translate_chunk,
-    chunk_text,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import io
 import re

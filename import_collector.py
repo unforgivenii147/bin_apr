@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    get_imports_from_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import importlib.metadata
 import importlib.util

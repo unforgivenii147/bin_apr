@@ -1,25 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    chunk_text,
-    main,
-    chunk_text,
-    main,
-    CHUNK_SIZE,
-    main,
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 from pathlib import Path
@@ -47,7 +26,6 @@ def detect_lang_from_text(text: str) -> str:
 def read_text_file(path: Path) -> str:
     ext = path.suffix.lower()
     if ext not in TEXT_EXT:
-        msg = f"Unsupported text file: {ext}"
         raise ValueError(msg)
     return path.read_text(encoding="utf-8")
 
@@ -65,7 +43,6 @@ def read_image_ocr(path: Path) -> str:
         img = preprocess_image(img)
         return pytesseract.image_to_string(img)
     except Exception as e:
-        msg = f"OCR failed: {e}"
         raise RuntimeError(msg)
 
 

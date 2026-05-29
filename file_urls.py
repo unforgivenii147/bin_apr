@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDED,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 from dh import BIN_EXT, TXT_EXT
@@ -39,7 +33,7 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
     whl_urls = []
     font_urls = []
     js_css_urls = []
-    with open("urls.txt", "r", encoding="utf-8", errors="ignore") as f:
+    with open("urls.txt", encoding="utf-8", errors="ignore") as f:
         for line in f:
             stripped = line.strip()
             if any((stripped.endswith(p) for p in ALL_EXT)):
@@ -89,8 +83,7 @@ def extract_urls_to_file(output_filename="file_urls.txt"):
         js_css_file.write_text(js_css_content, encoding="utf8")
     if extracted_urls:
         with open(output_filename, "w", encoding="utf-8") as outfile:
-            for url in sorted(list(extracted_urls)):
-                outfile.write(url + "\n")
+            outfile.writelines((url + "\n" for url in sorted(extracted_urls)))
         print(f"\nSuccessfully extracted {len(extracted_urls)} unique URLs")
     else:
         print("\nNo URLs with specified file extensions found.")

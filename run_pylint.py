@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -25,7 +9,7 @@ from dh import get_pyfiles, runcmd
 def process_file(fp) -> None:
     cmd = [
         "pylint",
-        f"{str(fp)}",
+        f"{fp!s}",
         "--persistent=n",
         "--reports=n",
         "--output-format=parseable",

@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    parser,
-    PY_LANGUAGE,
-    parser,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
 

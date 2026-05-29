@@ -1,25 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    FONT_EXTENSIONS,
-    FONT_SIZES,
-    find_fonts,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 from dh import FONT_EXT
 
 FONT_EXTENSIONS = tuple(FONT_EXT)
@@ -31,7 +14,7 @@ def find_fonts(cwd="."):
     fonts = []
     for dirpath, _, filenames in os.walk(cwd):
         fonts.extend(
-            os.path.join(dirpath, filename) for filename in filenames if filename.lower().endswith(FONT_EXTENSIONS)
+            (os.path.join(dirpath, filename) for filename in filenames if filename.lower().endswith(FONT_EXTENSIONS))
         )
     return fonts
 
@@ -58,10 +41,12 @@ def generate_html(font_files):
             )
         )
         html.extend(
-            f"<h1 style='font-family: \"{font_name}\"; font-size: {size}px;'>هنر برتز از گوهر آمد پدید</h1>"
-            for size in FONT_SIZES
+            (
+                f"""<h1 style='font-family: "{font_name}"; font-size: {size}px;'>هنر برتز از گوهر آمد پدید</h1>"""
+                for size in FONT_SIZES
+            )
         )
-        html.append(f"<div style='font-family: \"{font_name}\"; font-size: 12px;'>{font_name}</div><hr>")
+        html.append(f"""<div style='font-family: "{font_name}"; font-size: 12px;'>{font_name}</div><hr>""")
         html.append("</div>")
     html.append("</body></html>")
     return "\n".join(html)

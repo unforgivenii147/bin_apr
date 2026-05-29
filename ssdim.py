@@ -1,27 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    get_all_files,
-    compute_hashes,
-    group_similar_files,
-    copy_groups,
-    write_report,
-    colorize_score,
-    write_matrix,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import csv
 import json
 import os

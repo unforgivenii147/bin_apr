@@ -1,24 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    process_file,
-    fsz,
-    gsz,
-    ts_remover,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from multiprocessing import get_context
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, fsz, gsz
+from dh import clean_blank_lines, cprint, fsz, gsz
 from fastwalk import walk_files
-from termcolor import cprint
 from tree_sitter import Language, Parser, Query, QueryCursor
 
 ts_remover = None

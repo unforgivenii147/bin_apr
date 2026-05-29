@@ -1,24 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    process_archive,
-    main,
-    main,
-    main,
-    main,
-    get_dir_size,
-    extract_zst_file,
-    find_archives,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 import tarfile

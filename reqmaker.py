@@ -1,44 +1,36 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
+import re
 import subprocess
 import sys
-import re
 from collections import defaultdict
 from pathlib import Path
 
-
 REQ = Path("requirements.txt")
+BLACKLIST = {
+    "pydantic-core",
+    "h5py",
+    "jiter",
+    "jupyter-server-ydoc",
+    "scipy",
+    "rpds-py",
+    "nh3",
+    "pandas",
+    "torch",
+    "torchvision",
+    "scikit-learn",
+    "pynacl",
+    "gensim",
+    "spacy",
+    "torchaudio",
+    "selenium",
+    "jupyter-ydoc",
+    "tensorflow",
+}
 
 
 def save_to_req(packages) -> None:
-
-    def read_existing_requirements() -> set[str]:
-        if not REQ.exists():
-            return set()
-        return {
-            line.strip()
-            for line in REQ.read_text(encoding="utf-8").splitlines()
-            if line.strip() and (not line.startswith("#"))
-        }
-
-    existing = read_existing_requirements()
-    merged = sorted(existing | set(packages))
-    REQ.write_text("\n".join(merged) + "\n", encoding="utf-8")
+    REQ.write_text("\n".join(packages) + "\n", encoding="utf-8")
 
 
 def run_pip_check():
@@ -50,13 +42,15 @@ def run_pip_check():
 
 
 def parse_pip_check(output):
-    pattern = re.compile(r"^(\S+)\s+.*requires\s+([^,]+),\s+which is not installed\.$", re.MULTILINE)
+    pattern = re.compile("^(\\S+)\\s+.*requires\\s+([^,]+),\\s+which is not installed\\.$", re.MULTILINE)
     missing_deps = defaultdict(list)
     for line in output.splitlines():
         match = pattern.match(line.strip())
         if match:
             requirer = match.group(1)
             missing_pkg = match.group(2).strip()
+            if missing_pkg in BLACKLIST:
+                continue
             missing_deps[missing_pkg].append(requirer)
     return missing_deps
 
@@ -79,7 +73,6 @@ def main():
         return
     missing_deps = parse_pip_check(output)
     format_deptree(missing_deps)
-
     save_to_req(sorted(missing_deps.keys()))
 
 

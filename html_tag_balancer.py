@@ -1,21 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
+import contextlib
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -144,10 +130,8 @@ def fix_html_file(path: Path) -> bool:
                 self.tokens.append(("startend", tag, start, end + 1))
 
     scanner = TagScanner(source)
-    try:
+    with contextlib.suppress(Exception):
         scanner.feed(source)
-    except Exception:
-        pass
     ranges_to_remove = []
     for _, tag, pos in parser.errors:
         line, col = pos
@@ -185,10 +169,7 @@ def fix_html_file(path: Path) -> bool:
         idx = new_source.rfind(end_tag)
         if idx != -1:
             idx_end = new_source.find(">", idx)
-            if idx_end != -1:
-                insert_pos = idx_end + 1
-            else:
-                insert_pos = idx + len(end_tag)
+            insert_pos = idx_end + 1 if idx_end != -1 else idx + len(end_tag)
             break
     if missing_tags:
         closing_html = "".join((f"</{tag}>" for tag in missing_tags))
@@ -213,7 +194,7 @@ def main():
         help="Fix files in-place (append missing closing tags, remove unexpected ones)",
     )
     args = parser.parse_args()
-    current_dir = Path(".")
+    current_dir = Path()
     html_files = list(current_dir.rglob("*.html")) + list(current_dir.rglob("*.htm"))
     html_files = sorted(set(html_files))
     if not html_files:
@@ -233,10 +214,10 @@ def main():
                 print(f"   • {issue}")
             if args.autofix:
                 if fix_html_file(fpath):
-                    print(f"   🔧 Fixed in-place.")
+                    print("   🔧 Fixed in-place.")
                     fixed_count += 1
                 else:
-                    print(f"   ⚠️  Fix failed.")
+                    print("   ⚠️  Fix failed.")
     print()
     print(f"Summary: {len(html_files) - problem_count} OK, {problem_count} with issues")
     if args.autofix:

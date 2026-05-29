@@ -1,21 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    logger,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -52,7 +35,6 @@ def quick_hash(path: Path, n=QUICK_READ):
                 rest = f.read()
                 h.update(rest)
     except Exception as e:
-        msg = f"quick_hash error {path}: {e}"
         raise OSError(msg)
     return h.hexdigest()
 
@@ -64,28 +46,21 @@ def full_hash(path: Path, block_size=DEFAULT_BLOCK):
             for chunk in iter(lambda: f.read(block_size), b""):
                 h.update(chunk)
     except Exception as e:
-        msg = f"full_hash error {path}: {e}"
         raise OSError(msg)
     return h.hexdigest()
 
 
 def iter_files(root: Path, recursive: bool, follow_symlinks: bool, min_size: int):
-    if recursive:
-        for p in root.rglob("*"):
+    from os import walk as os_walk
+
+    for r, _, files in os_walk(root):
+        for file in files:
+            p = Path(r) / file
+            if ".git" in p.parts:
+                continue
             if p.is_file() and (follow_symlinks or not p.is_symlink()):
-                try:
-                    if p.stat().st_size >= min_size:
-                        yield p
-                except Exception:
-                    continue
-    else:
-        for p in root.iterdir():
-            if p.is_file() and (follow_symlinks or not p.is_symlink()):
-                try:
-                    if p.stat().st_size >= min_size:
-                        yield p
-                except Exception:
-                    continue
+                if p.stat().st_size >= min_size:
+                    yield p
 
 
 def choose_keep(files, policy="oldest"):

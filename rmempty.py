@@ -1,27 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    TIMEOUT,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 from dh import cprint
 
-TIMEOUT = 3
+TIMEOUT = 0
 
 
 def get_files(folder: Path):

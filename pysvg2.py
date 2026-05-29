@@ -1,31 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    cwd,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 import tempfile
 from pathlib import Path
+
 from dh import get_files
+
+SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"
 
 
 def clean_single_svg(path):
     if not Path(path).exists():
-        msg = f"Input file not found: {path}"
         raise FileNotFoundError(msg)
     before = path.stat().st_size
     tmp_out_path = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".svg", delete=False) as tmp_out:
             tmp_out_path = tmp_out.name
-        subprocess.run(
-            ["svgcleaner", str(path), str(tmp_out_path)],
-            check=True,
-            capture_output=True,
-        )
+        subprocess.run(["svgcleaner", str(path), str(tmp_out_path)], check=True, capture_output=True)
         after = Path(tmp_out_path).stat().st_size
         if after != 0:
             Path(tmp_out_path).replace(path)
@@ -42,7 +33,7 @@ def clean_single_svg(path):
 
 
 def clean_svg_dir(cwd, svgcleaner_path="svgcleaner"):
-    svg_files = get_files(cwd, extensions=[".svg", ".SVG"])
+    svg_files = get_files(cwd, ext=[".svg"])
     if not svg_files:
         print("No SVG files found.")
         return

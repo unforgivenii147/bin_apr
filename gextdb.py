@@ -1,27 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    extract_entities_from_content,
-    is_python_file_no_extension,
-    process_single_file,
-    main,
-    main,
-    OUTPUT_DIR,
-    ALLOWED_PYTHON_EXTENSIONS,
-    main,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import ast
 import os
@@ -29,7 +7,6 @@ import re
 import sqlite3
 from pathlib import Path
 from typing import Any
-
 
 OUTPUT_DIR = Path("output")
 DB_PATH = Path("/sdcard/ext.db")

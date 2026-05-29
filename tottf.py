@@ -1,23 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
 import sys
+from pathlib import Path
+
 from dh import get_files, runcmd
 
 
@@ -27,11 +12,10 @@ def process_file(fp) -> bool:
         cmd = ["fontforge", "-lang=ff", "-c", '"Open($1); Generate($2);"', str(fp), str(out)]
         ret, _, _ = runcmd(cmd, show_output=False)
         if not ret:
-            print(f"\u2713 {fp.name}")
+            print(f"✓ {fp.name}")
             return True
-        else:
-            print(f"\u2718 {fp.name}")
-            return False
+        print(f"✘ {fp.name}")
+        return False
     except:
         print(f"error processing {fp.name}")
         return False
@@ -49,9 +33,8 @@ def main():
                 files.extend(get_files(p))
     else:
         files = get_files(cwd)
-
     for f in files:
-        if not f.suffix == ".ttf":
+        if f.suffix != ".ttf":
             process_file(f)
 
 

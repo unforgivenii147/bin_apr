@@ -1,30 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gsz
+from dh import cprint, fsz, get_files, gsz, mpf3
 
 blank_line = "\n"
 IMAGE_RE = re.compile("^\\s*(\\.\\.\\s+image::|:target:|:alt:)", re.IGNORECASE)
@@ -39,14 +19,15 @@ def process_file(path: Path):
         return
     lines = content.splitlines(keepends=True)
     replaced_count = 0
+    nl = []
     for line in lines:
         stripped = line.rstrip("\r\n")
         if stripped.lower().startswith("classifier"):
-            modified_lines.append("\n")
+            nl.append("\n")
             replaced_count += 1
             continue
         if stripped.startswith("[![") or stripped.lower().startswith("project-url"):
-            modified_lines.append("\n")
+            nl.append("\n")
             replaced_count += 1
             continue
         if stripped.startswith(
@@ -62,35 +43,35 @@ def process_file(path: Path):
                 "Provides-Extra",
             )
         ):
-            modified_lines.append("\n")
+            nl.append("\n")
             replaced_count += 1
             continue
         if IMAGE_RE.match(stripped):
-            modified_lines.append("\n")
+            nl.append("\n")
             replaced_count += 1
             continue
-        modified_lines.append(line)
+        nl.append(line)
     if not replaced_count:
         return
-    new_content = "".join(modified_lines)
-    try:
+    new_content = "".join(nl)
+    if replaced_count:
         path.write_text(new_content, encoding="utf-8")
-        print(f"✅ Replaced {replaced_count} line(s) in {path.name}")
-    except Exception as e:
-        print(f"❌ Failed to write {path}: {e}")
+        print(f"✅ {path.name}", end="")
+        cprint(f"{replaced_count}", "cyan")
+        return
+    print(f"❌ {path.name}: (no change)")
 
 
 def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".metadata", ".md"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".metadata", ".md"])
     metafiles = list(cwd.rglob("METADATA"))
     if metafiles:
         files.extend(metafiles)
     print(f"{len(files)} files found.")
-    for f in files:
-        process_file(f)
+    _ = mpf3(process_file, files)
     diff_size = before - gsz(cwd)
     print(f"space saved : {fsz(diff_size)}")
 

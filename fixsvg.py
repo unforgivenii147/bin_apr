@@ -1,15 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
-from dh import get_files
+from fastwalk import walk_files
 
 
 def process_file(fp: Path):
@@ -38,7 +31,8 @@ def process_file(fp: Path):
 
 
 if __name__ == "__main__":
-    cwd = Path().cwd()
-    for path in get_files(cwd):
+    cwd = Path().cwd().resolve()
+    for pth in walk_files(cwd):
+        path = Path(pth)
         if path.suffix in {".html", ".htm", ".svg", ".xml"}:
             process_file(path)

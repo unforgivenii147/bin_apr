@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    logger,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import os
 import re
@@ -23,7 +17,7 @@ def get_file_extension(url):
 
 
 def is_font_url(url):
-    extensions = [".woff", ".woff2", ".ttf", ".eot", ".svg"]
+    e = [".woff", ".woff2", ".ttf", ".eot", ".svg"]
     return any((url.lower().endswith(ext) for ext in extensions))
 
 

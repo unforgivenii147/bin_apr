@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import math
 import operator
 import os
@@ -177,7 +161,6 @@ def organize_files_in_root(root_path=".", target_folders=4, max_get_size_mb=None
 
 
 def main():
-    ROOT_PATH = "."
     organize_files_in_root(root_path=ROOT_PATH)
 
 

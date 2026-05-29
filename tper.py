@@ -1,28 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    INPUT_FILE,
-    OUTPUT_FILE,
-    translate_word,
-    main,
-    main,
-    MAX_WORKERS,
-    MAX_WORKERS,
-    main,
-    OUTPUT_FILE,
-    main,
-    MAX_WORKERS,
-    main,
-    INPUT_FILE,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed

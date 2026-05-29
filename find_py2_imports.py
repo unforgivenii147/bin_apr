@@ -1,32 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    parser,
-    parser,
-    VALID,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from dh import STDLIB2, get_filez
+from dh import STDLIB2, cprint, get_filez
 from rapidfuzz import fuzz
-from termcolor import cprint
 from tree_sitter import Language, Parser
 
 cwd = Path.cwd()

@@ -1,29 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    TIMESTAMP_RE,
-    to_ms,
-    from_ms,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 import sys
 from pathlib import Path
-
 
 TIMESTAMP_RE = re.compile("(\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-->\\s(\\d{2}:\\d{2}:\\d{2},\\d{3})")
 ONE_SEC_MS = 1000

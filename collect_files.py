@@ -1,29 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    collect_files_by_extension,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
-import sys
 import shutil
+import sys
 from pathlib import Path
 
 
 def unique_destination_path(dest_dir: Path, filename: str) -> Path:
-    """
-    Return a non-existing path in dest_dir by appending _number before the suffix
-    if needed.
-    Example: file.css -> file_1.css -> file_2.css
-    """
     candidate = dest_dir / filename
     if not candidate.exists():
         return candidate
-
     stem = Path(filename).stem
     suffix = Path(filename).suffix
-
     counter = 1
     while True:
         candidate = dest_dir / f"{stem}_{counter}{suffix}"
@@ -36,9 +23,7 @@ def collect_files_by_extension(extension: str):
     current_dir = Path.cwd()
     target_dir = current_dir / extension
     target_dir.mkdir(parents=True, exist_ok=True)
-
     copied_count = 0
-
     for file_path in current_dir.rglob(f"*.{extension}"):
         if file_path.is_file() and target_dir not in file_path.parents:
             try:
@@ -48,8 +33,7 @@ def collect_files_by_extension(extension: str):
                 copied_count += 1
             except Exception as e:
                 print(f"Error copying {file_path}: {e}")
-
-    print(f"\nFinished collecting files.")
+    print("\nFinished collecting files.")
     print(f"Total files copied: {copied_count}")
 
 
@@ -57,6 +41,5 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python collect_files.py <extension>")
         sys.exit(1)
-
     file_extension = sys.argv[1].lower().strip(".")
     collect_files_by_extension(file_extension)

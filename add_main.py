@@ -1,57 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from pathlib import Path
-
-
-def get_files(directory: Path, extensions: list[str]) -> list[Path]:
-    found_files = []
-    for ext in extensions:
-        found_files.extend(directory.rglob(f"*{ext}"))
-    return found_files
-
-
-def gsz(path: Path) -> int:
-    total_size = 0
-    if path.is_file():
-        total_size = path.stat().st_size
-    elif path.is_dir():
-        for dirpath, _dirnames, filenames in os.walk(str(path)):
-            for f in filenames:
-                fp = Path(dirpath) / f
-                total_size += fp.stat().st_size
-    return total_size
-
-
-def fsz(size: int) -> str:
-    power = 2**10
-    n = 0
-    power_labels = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}
-    while size > power and n < len(power_labels) - 1:
-        size /= power
-        n += 1
-    return f"{int(size)} {power_labels[n]}B"
+from dh import get_files, fsz, gsz
 
 
 MAINBLOCK_INDICATOR = 'if __name__ == "__main__":'
@@ -94,12 +46,12 @@ def main():
                 files_to_process.append(path)
             elif path.is_dir():
                 print(f"Searching for Python files in directory: {path}")
-                files_to_process.extend(get_files(path, extensions=[".py"]))
+                files_to_process.extend(get_files(path, ext=[".py"]))
             else:
                 print(f"Warning: '{arg}' is not a Python file or directory. Skipping.")
     else:
         print(f"No arguments provided. Searching for Python files in '{cwd}' and its subdirectories...")
-        files_to_process = get_files(cwd, extensions=[".py"])
+        files_to_process = get_files(cwd, ext=[".py"])
     if not files_to_process:
         print("No Python files found to process.")
         sys.exit(0)
@@ -125,7 +77,7 @@ def main():
     final_directory_size = gsz(cwd)
     space_saved = initial_directory_size - final_directory_size
     try:
-        from termcolor import cprint
+        from dh import cprint
 
         cprint(f"Operation complete. Space saved: {fsz(space_saved)}", "cyan")
     except ImportError:

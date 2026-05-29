@@ -1,22 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    random_key,
-    decrypt_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import glob
 import os
@@ -72,12 +54,10 @@ def main():
         action = encrypt_file
     elif args.decrypt:
         if not args.key:
-            msg = "Decryption requires --key"
             raise SystemExit(msg)
         key = args.key
         action = decrypt_file
     else:
-        msg = "Specify --encrypt or --decrypt"
         raise SystemExit(msg)
     for file_path in glob.glob("*"):
         if Path(file_path).is_file():

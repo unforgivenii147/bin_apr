@@ -1,30 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from pathlib import Path
 
-from dh import fsz, get_nobinary, gsz
-from termcolor import cprint
+from dh import cprint, fsz, get_nobinary, gsz
 
 LIC_FILE = Path("/sdcard/lic")
 MIN_BLANK_LINES = 3

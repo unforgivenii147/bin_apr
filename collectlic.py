@@ -1,19 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDE_DIRS,
-    read_file,
-    EXCLUDE_DIRS,
-    OUTPUT_FILE,
-    EXCLUDE_DIRS,
-    OUTPUT_FILE,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
-
 
 EXCLUDE_DIRS = {".git"}
 OUTPUT_FILE = "/sdcard/all2.txt"

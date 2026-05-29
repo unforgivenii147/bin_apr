@@ -1,25 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import shutil
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-
 
 FILE_EXTENSIONS = [".pyc", ".log", ".bak"]
 DIR_NAMES = ["__pycache__", ".ruff_cache", ".mypy_cache", "dist", "build", "target"]

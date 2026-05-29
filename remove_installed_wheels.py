@@ -1,25 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import subprocess
 import zipfile
 from pathlib import Path
-
 
 VENV_PATH = Path("~/venv").expanduser()
 

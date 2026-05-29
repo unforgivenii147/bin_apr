@@ -1,26 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import compileall
 import sys
 from collections import deque
@@ -45,7 +24,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".py"])
     with get_context("spawn").Pool(8) as pool:
         pending = deque()
         for f in files:

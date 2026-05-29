@@ -1,16 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 import tree_sitter_cpp as tscpp
-from dh import clean_blank_lines, run_command
-from termcolor import cprint
+from dh import clean_blank_lines, cprint, run_command
 from tree_sitter import Language, Parser
 
 

@@ -1,35 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    EXCLUDE_PREFIXES,
-    parser,
-    parser,
-    main,
-    EXCLUDE_PREFIXES,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
-from multiprocessing import cpu_count
 from pathlib import Path
-
+from multiprocessing import Pool
 import tree_sitter_cpp
-from dh import clean_blank_lines, fsz, gsz
-from termcolor import cprint
+from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/",)
@@ -81,7 +56,7 @@ def main() -> None:
     files = collect_cpp_files(root)
     if not files:
         sys.exit("No C++ files found")
-    with Pool(cpu_count()) as pool:
+    with Pool(4) as pool:
         pool.map(remove_comments_cpp, files)
     after = gsz(root)
     difsize = before - after

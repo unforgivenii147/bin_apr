@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import os
 from io import BytesIO
@@ -38,8 +34,7 @@ def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):
                     cd_header = buffer.getvalue()
                 safe_filename = "".join((c for c in filename if c.isalnum() or c in "._- "))[:200].strip()
                 if not safe_filename:
-                    safe_filename = f"file_{i}.html"
-                filepath_out = os.path.join(output_dir, safe_filename)
+                    filepath_out = os.path.join(output_dir, safe_filename)
                 Path(filepath_out).write_bytes(buffer.getvalue())
                 print(f"✅ Saved to: {filepath_out}\n")
             else:

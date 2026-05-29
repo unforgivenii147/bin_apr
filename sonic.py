@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import mmap
 import os
@@ -84,7 +68,6 @@ class MmapReader(LineProcessor):
                         if not skip_empty or decoded_line.strip():
                             yield decoded_line
         except Exception as e:
-            msg = f"Error reading file: {e!s}"
             raise OSError(msg)
 
     def read_lines_regular(
@@ -98,7 +81,6 @@ class MmapReader(LineProcessor):
                     if not skip_empty or decoded_line.strip():
                         yield decoded_line
         except Exception as e:
-            msg = f"Error reading file: {e!s}"
             raise OSError(msg)
 
     def read_lines(
@@ -210,7 +192,6 @@ class FileSorter(LineProcessor):
     ) -> dict:
         input_path = Path(file_path)
         if not input_path.exists():
-            msg = f"File not found: {file_path}"
             raise FileNotFoundError(msg)
         if output_path is None:
             output_path = file_path
@@ -268,7 +249,6 @@ class FileSorter(LineProcessor):
                 "lines_per_second": original_lines / elapsed_time if elapsed_time > 0 else 0,
             }
         except Exception as e:
-            msg = f"Error processing file: {e!s}"
             raise RuntimeError(msg)
 
     def print_stats(self, stats: dict):
@@ -292,9 +272,7 @@ class FileSorter(LineProcessor):
 
     def save_report(self, stats: dict, report_file: str | None = None):
         if report_file is None:
-            report_file = "sort_unique_report.json"
-        import json
-
+            import json
         report = {"timestamp": datetime.now(tz=UTC).isoformat(), "statistics": stats}
         try:
             with Path(report_file).open("w", encoding="utf-8") as f:

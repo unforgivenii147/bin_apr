@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    compute_hashes,
-    main,
-    main,
-    main,
-    main,
-    main,
-    OUT_PREFIX,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 from pathlib import Path
 

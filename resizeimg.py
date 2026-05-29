@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import glob
 
 from PIL import Image
@@ -33,7 +18,7 @@ def reduce_image_size(image_path, scale_factor=0.75) -> None:
 
 
 def main() -> None:
-    image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.tiff", "*.webp"]
+    image_e = ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.tiff", "*.webp"]
     image_files = []
     for extension in image_extensions:
         image_files.extend(glob.glob(extension))

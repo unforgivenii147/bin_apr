@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from multiprocessing import get_context
 from pathlib import Path
@@ -44,7 +28,7 @@ def process_file(path):
 def main() -> None:
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".jpg", ".png"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".jpg", ".png"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

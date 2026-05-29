@@ -1,21 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    compute_hashes,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 from pathlib import Path
 
@@ -63,7 +46,6 @@ def main():
     args = vars(ap.parse_args())
     dataset_path = args["path"]
     if not Path(dataset_path).is_dir():
-        msg = f"[ERROR] dataset path does not exist or is not a directory: {dataset_path}"
         raise SystemExit(msg)
     is_remove_mode = args["remove"]
     print("[INFO] computing image hashes...")

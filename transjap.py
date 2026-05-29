@@ -1,22 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    write_text_file,
-    build_output_path,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 from pathlib import Path
@@ -27,7 +9,6 @@ from deep_translator import GoogleTranslator
 def read_text_file(path: Path) -> str:
     allowed = {".txt", ".md", ".csv", ".json", ".py", ""}
     if path.suffix.lower() not in allowed:
-        msg = f"Unsupported file type: {path.suffix}"
         raise ValueError(msg)
     return path.read_text(encoding="utf-8")
 

@@ -1,32 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import re
 import sys
 from multiprocessing import get_context
 from pathlib import Path
 
-from dh import get_nobinary, is_binary
+from dh import fsz, get_nobinary, gsz, is_binary
 
 
 def process_file(file_path: Path) -> None:

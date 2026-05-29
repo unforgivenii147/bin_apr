@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
 import asyncio
+import contextlib
 import shutil
 import sys
 import tempfile
@@ -30,48 +30,6 @@ async def compress_folder_async(folder_path: Path, output_base_name: str, format
         return False
 
 
-async def atomic_write_async(data: bytes, final_path: Path) -> bool:
-    temp_dir = final_path.parent
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    temp_path = None
-    loop = asyncio.get_running_loop()
-    try:
-
-        def _create_temp():
-            with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir, prefix=".tmp_", suffix=".xz", delete=False) as f:
-                f.write(data)
-                f.flush()
-            return Path(f.name)
-
-        temp_path = await loop.run_in_executor(None, _create_temp)
-        await loop.run_in_executor(None, lambda: temp_path.rename(final_path))
-        print(f"Atomically written to: {final_path}")
-        return True
-    except Exception as e:
-        print(f"Atomic write failed for {final_path}: {e}")
-        if temp_path and temp_path.exists():
-            try:
-                temp_path.unlink()
-            except Exception:
-                pass
-    return False
-
-
-def safe_delete(path: Path) -> bool:
-    if not path.exists():
-        return True
-    try:
-        if path.is_dir():
-            shutil.rmtree(str(path))
-        else:
-            path.unlink()
-        return True
-    except PermissionError:
-        return False
-    except Exception as e:
-        return False
-
-
 async def compress_file_async(path: Path) -> bool:
     compressed_path = path.with_suffix(path.suffix + ".xz")
     if compressed_path.exists():
@@ -90,16 +48,14 @@ async def compress_file_async(path: Path) -> bool:
             return lzma_mt.compress(data, threads=4, preset=lzma_mt.PRESET_EXTREME)
 
         compressed_data = await loop.run_in_executor(None, _compress)
-        if not await atomic_write_async(compressed_data, compressed_path):
-            return False
+        with compressed_path.open("rb") as f:
+            f.write(compressed_data)
         compressed_size = compressed_path.stat().st_size
         if not compressed_size:
             print(f"Compressed file empty: {compressed_path}")
             return False
-        if not safe_delete(path):
-            print(f"Failed to delete {path}")
-            return False
-        reduction = ((original_size - compressed_size) / original_size) * 100
+        path.unlink()
+        reduction = (original_size - compressed_size) / original_size * 100
         print(f"{path.name}|{fsz(original_size)} → {fsz(compressed_size)} ratio: {reduction:.2f}%")
         return True
     except Exception as e:
@@ -139,7 +95,7 @@ async def main_async() -> None:
             print(f"compressing {dir_path.relative_to(cwd)}")
             if await compress_folder_async(dir_path, str(dir_path.parent / dir_path.name), format="tar"):
                 print(f"compressed {dir_path.relative_to(cwd)}")
-                safe_delete(dir_path)
+                shutil.rmtree(dir_path)
     files_to_compress = get_files(cwd)
     if not files_to_compress:
         print("No files to compress")

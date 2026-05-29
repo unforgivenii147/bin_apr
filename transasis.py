@@ -1,19 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    DIRECTORY,
-    CHUNK_SIZE,
-    non_english_pattern,
-    chunk_text,
-    translate_file,
-    translate_file,
-    chunk_text,
-    CHUNK_SIZE,
-    CHUNK_SIZE,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path

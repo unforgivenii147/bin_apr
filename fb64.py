@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
-
 
 search_string = 'b64 = """'
 current_dir = Path.cwd()

@@ -1,38 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    CHUNK_SIZE,
-    N_JOBS,
-    compress_chunk,
-    main,
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
 from pathlib import Path
 
 import brotlicffi
-from dh import fsz, get_files, gsz
+from dh import cprint, fsz, get_files, gsz
 from joblib import Parallel, delayed
-from termcolor import cprint
 
 CHUNK_SIZE = 32 * 1024 * 1024
 QUALITY = 5
@@ -78,7 +52,7 @@ def main():
     root_dir = Path.cwd()
     before = gsz(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir)
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)

@@ -1,12 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import datetime
 
 from dh import georgian_to_hijri
-from print_persian import print_persian
+from print_persian import print_persian as pp
 
 
 def get_current_ymd():
@@ -15,4 +12,4 @@ def get_current_ymd():
 
 
 y, m, d = get_current_ymd()
-print_persian(f"{georgian_to_hijri(y, m, d)}")
+print(pp(f"{georgian_to_hijri(y, m, d)}"))

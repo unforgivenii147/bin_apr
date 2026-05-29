@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 TARGET_SHEBANG = "#!/data/data/com.termux/files/usr/bin/bash"

@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    count_lines_of_code,
-    scan_directory,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from pathlib import Path

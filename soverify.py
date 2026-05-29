@@ -1,23 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    logger,
-    main,
-    main,
-    N_JOBS,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ctypes
 import subprocess
 import sys
@@ -98,9 +80,9 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_files(p, recursive=True))
+                files.extend(get_files(p))
     else:
-        files = get_files(cwd, extensions=[".so"])
+        files = get_files(cwd, ext=[".so"])
     for f in files:
         try:
             if not process_file(f):
@@ -113,7 +95,6 @@ def main():
 if __name__ == "__main__":
     gil_state = ctypes.pythonapi.PyGILState_Ensure()
     print(gil_state)
-    #   call your C functions or something risky
     main()
     ctypes.pythonapi.PyGILState_Release(gil_state)
     sys.exit(1)

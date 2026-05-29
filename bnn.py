@@ -1,33 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import sys
-from pathlib import Path
-
-
-def main():
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <filename>")
-        sys.exit(1)
-    fname = sys.argv[1]
-    content = Path(fname).read_text(encoding="utf-8")
+def process_file(fname):
+    content = fname.read_text(encoding="utf-8")
     content = content.replace("\\n", "\n")
-    Path(fname).write_text(content, encoding="utf-8")
+    fname.write_text(content, encoding="utf-8")
+    print(f"{fname.name} updated.")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    from pathlib import Path
+
+    from dh import get_pyfiles, mpf3
+
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_pyfiles(cwd)
+    mpf3(process_file, files)

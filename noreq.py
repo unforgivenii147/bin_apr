@@ -1,27 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    clean_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import shutil
 import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
+from dh import is_valid_archive
 
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}
 PREFIX = "Requires-Dist:"
@@ -88,6 +73,9 @@ def process_tar(path: str) -> None:
 
 
 def dispatch_archive(path: str | Path) -> None:
+    if not is_valid_archive(path):
+        print(f"{path} is not valid archive")
+        return
     name = path.lower()
     if name.endswith(".whl"):
         print(f"processing ... {path}")

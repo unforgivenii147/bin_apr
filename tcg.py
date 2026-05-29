@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
 import subprocess
 import sys
 from pathlib import Path
-
 
 TERMUX_PYTHON = "#!/data/data/com.termux/files/usr/bin/python\n"
 TERMUX_BASH = "#!/data/data/com.termux/files/usr/bin/bash\n"

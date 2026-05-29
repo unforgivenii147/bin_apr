@@ -1,34 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    DICT_FILE,
-    load_dictionary,
-    setup_readline,
-    translate,
-    prefix_search,
-    fuzzy_search,
-    interactive_mode,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import json
 import readline
 import sys
 from difflib import get_close_matches
 from pathlib import Path
-
 
 DICT_FILE = "/sdcard/isaac/dic.json"
 

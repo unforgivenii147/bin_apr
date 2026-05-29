@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -40,4 +37,4 @@ if __name__ == "__main__":
     srt_output = convert_vtt_to_srt(vtt)
     srtfile = fn.with_suffix(".srt")
     srtfile.write_text(srt_output, encoding="utf-8")
-print(f"File saved to: {output_path}")
+    print("File saved.")

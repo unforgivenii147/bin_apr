@@ -1,33 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    main,
-    process_file,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    parser,
-    parser,
-    VALID,
-    main,
-    OUTPUT_DIR,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from dh import get_files, unique_path, mpf3
+from dh import get_files, mpf3, unique_path
 from tree_sitter import Language, Parser
 
 OUTPUT_DIR = Path.home() / "tmp" / "output"
@@ -44,18 +21,13 @@ def process_file(fp):
 
 
 def main():
-    #    if not OUTPUT_DIR.exists():
-    #        OUTPUT_DIR.mkdir()
     cwd = Path.cwd()
     outfile = OUTPUT_DIR / f"{cwd.name}_importz.py"
     if outfile.exists():
         outfile = unique_path(outfile)
     all_imports = []
-    files = get_files(cwd, extensions=[".py"])
+    files = get_files(cwd, ext=[".py"])
     results = mpf3(process_file, files)
-    #    with ThreadPoolExecutor(max_workers=8) as ex:
-    #        futures = [ex.submit(process_file, f) for f in files]
-    #        results.extend((future.result() for future in as_completed(futures)))
     for imports in results:
         if imports:
             for k in imports:

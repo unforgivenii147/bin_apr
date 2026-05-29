@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 
 from dh import STDLIB, get_ipkgs, mpf3, runcmd
@@ -23,9 +8,7 @@ from dh import STDLIB, get_ipkgs, mpf3, runcmd
 def process_pkg(pkg) -> None:
     cmd = ["pyright", "--createstub", str(pkg)]
     ret, _, _ = runcmd(cmd, show_output=True)
-    if not ret:
-        return True
-    return False
+    return bool(not ret)
 
 
 def main():

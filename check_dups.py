@@ -1,23 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    gsz,
-    main,
-    main,
-    N_JOBS,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import copy
 import hashlib
@@ -26,8 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from dh import get_pyfiles, gsz, mpf3
-
-N_JOBS = -1
 
 
 @dataclass
@@ -62,8 +41,7 @@ class Normalizer(ast.NodeTransformer):
     def visit_Name(self, node):
         node = copy.deepcopy(node)
         if isinstance(node.ctx, ast.Store):
-            node.id = "__VAR__"
-        return node
+            return node
 
 
 def stable_hash(node: ast.AST) -> str:
@@ -200,7 +178,7 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_pyfiles(p, recursive=True))
+                files.extend(get_pyfiles(p))
     else:
         files = get_pyfiles(root_dir)
     results = mpf3(process_file, files)

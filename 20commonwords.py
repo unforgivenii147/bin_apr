@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    extract_words,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import Counter
 from pathlib import Path

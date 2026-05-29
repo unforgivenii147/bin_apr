@@ -1,29 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    video,
-    txtfile,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 import cv2
 import pytesseract
+from dh import cprint
 from PIL import Image
-from termcolor import cprint
 
 video = sys.argv[1]
 txtfile = Path(video).with_suffix(".txt")

@@ -1,27 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    THRESHOLD,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
-from multiprocessing import Pool, cpu_count
+from multiprocessing import get_context
 from pathlib import Path
 
+from binaryornot import is_binary
+
 THRESHOLD = 1024 * 1024
-
-
-def is_binary(path: Path, blocksize=4096):
-    with path.open("rb") as f:
-        sample = f.read(blocksize)
-    if b"\x00" in sample:
-        return True
-    text_chars = bytes(range(32, 127)) + b"\n\r\t\x08"
-    nontext = sum((c not in text_chars for c in sample))
-    return nontext / max(len(sample), 1) > 0.3
 
 
 def _process_chunk(chunk: list[str]):
@@ -47,10 +33,9 @@ def sort_uniq(path: Path, show_diff: bool = False):
     if not original_count:
         return 0
     if original_count > 1000:
-        num_workers = max(1, cpu_count() - 1)
-        chunk_size = len(lines) // num_workers + 1
+        chunk_size = len(lines) // 5
         chunks = [lines[i : i + chunk_size] for i in range(0, len(lines), chunk_size)]
-        with Pool(num_workers) as pool:
+        with get_context("spawn").Pool(4) as pool:
             processed = pool.map(_process_chunk, chunks)
         all_lines = [line for group in processed for line in group]
     else:
@@ -61,7 +46,7 @@ def sort_uniq(path: Path, show_diff: bool = False):
     path.write_text("\n".join(unique_sorted), encoding="utf-8")
     if show_diff and diff_lines:
         print("\nDuplicate lines removed:")
-        for line in list(sorted(diff_lines))[:50]:
+        for line in sorted(diff_lines)[:50]:
             print("  " + line)
         if len(diff_lines) > 50:
             print(f"... ({len(diff_lines) - 50} more not shown)")

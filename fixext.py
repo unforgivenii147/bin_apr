@@ -1,36 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    safe_rename,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
-import subprocess
-import sys
 from pathlib import Path
 
-from dh import MIME2EXT, cprint, is_binary, unique_path
+from dh import MIME2EXT, cprint, is_binary, runcmd, unique_path
 
-CONFIRM = False
+CONFIRM = True
 
 
 def fix_by_shebang(fp) -> bool:
     if is_binary(fp) or not fp.stat().st_size:
         return False
-    content = fp.read_text(encoding="utf8")
+    try:
+        content = fp.read_text(encoding="utf8")
+    except:
+        return False
     fl = content.splitlines()[0]
     if fl.startswith("#!") and ("bash" in fl or "/bin/sh" in fl):
         new_path = fp.with_suffix(".sh")
@@ -38,51 +21,24 @@ def fix_by_shebang(fp) -> bool:
             new_path = unique_path(new_path)
         fp.rename(new_path)
         return True
-    elif fl.startswith("#!") and "python" in fl:
+    if fl.startswith("#!") and "python" in fl:
         new_path = fp.with_suffix(".py")
         if new_path.exists():
             new_path = unique_path(new_path)
         fp.rename(new_path)
         return True
-    elif fl.startswith("#!") and "perl" in fl:
-        new_path = fp.with_suffix(".pl")
-        if new_path.exists():
-            new_path = unique_path(new_path)
-        print(f"rename {fp.name} -> {new_path.name}")
-        ans = input("?")
-        if ans == "y":
-            fp.rename(new_path)
-            return True
-        return False
-    elif fl.startswith("#!") and "node" in fl:
-        new_path = fp.with_suffix(".js")
-        if new_path.exists():
-            new_path = unique_path(new_path)
-        print(f"rename {fp.name} -> {new_path.name}")
-        ans = input("?")
-        if ans == "y":
-            fp.rename(new_path)
-            return True
-        return False
-    else:
-        return False
     return False
 
 
 def get_file_mime(path):
-    try:
-        result = subprocess.run(["file", "--brief", "--mime-type", path], capture_output=True, text=True, check=True)
-        return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error detecting file type for {path}: {e}", file=sys.stderr)
-        return None
+    _, txt, _ = runcmd(["file", "--brief", "--mime-type", str(path)], show_output=False)
+    return txt
 
 
 def safe_rename(old_path, new_path):
     base, ext = os.path.splitext(new_path)
     counter = 1
     while Path(new_path).exists():
-        new_path = f"{base}_{counter}{ext}"
         counter += 1
     cprint(f"{old_path} -> {new_path} ?")
     Path(old_path).rename(new_path)
@@ -99,26 +55,21 @@ def check_files(directory):
             ext = path.suffix.lower()
             if fix_by_shebang(path):
                 continue
-
-            if ext in {".svg", ".c", ".py", ".js", ".css", ".ts", ".map", ".jsx", ".tsx", ".mjs", ".mts"}:
-                continue
-
             mime = get_file_mime(path)
             print(f"{name} --> {mime}")
-
             if mime:
                 expected_exts = MIME2EXT.get(mime, [])
                 if expected_exts and ext not in expected_exts:
                     new_path = None
                     new_ext = expected_exts[0]
-                    new_name = os.path.splitext(name)[0] + new_ext
+                    new_name = path.stem + new_ext
                     new_path = Path(root) / new_name
                     if new_name == name:
                         continue
                     if new_path.exists():
                         new_path = unique_path(new_path)
                     if CONFIRM:
-                        print(f"{path.name} -> {new_path.name}")
+                        print(f"{path.suffix} -> {new_path.suffix}")
                         ans = input()
                         if ans == "y":
                             path.rename(new_path)

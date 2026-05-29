@@ -1,27 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
-from dh import get_files, unique_path
-from termcolor import cprint
+from dh import cprint, get_files, unique_path
 
 OUT_PATH = Path("/data/data/com.termux/files/home/tmp/metadata")
 

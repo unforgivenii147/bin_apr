@@ -1,31 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import itertools
 import os
 import re
 import sys
 from argparse import ArgumentParser
 from datetime import datetime
-from multiprocessing import cpu_count
+from multiprocessing import get_context
 from pathlib import Path
 from subprocess import getoutput
 from time import sleep
-
 
 try:
     from bs4 import BeautifulSoup
@@ -217,6 +201,7 @@ if BeautifulSoup:
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
+
 else:
 
     def html_prettify(html: str, extraline: bool = False) -> str:
@@ -332,8 +317,8 @@ def main():
         print("Target is a Folder with CSS / SCSS, HTML, JS.")
         print("Processing a whole Folder may take some time...")
         list_of_files = walk2list(args.fullpath, (".css", ".scss", ".html", ".htm"), ".min.css")
-        pool = Pool(cpu_count())
-        pool.map_async(process_multiple_files, list_of_files)
+        pool = get_context("spawn").Pool(4)
+        pool.map(process_multiple_files, list_of_files)
         pool.close()
         pool.join()
     else:

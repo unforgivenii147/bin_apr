@@ -1,16 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    CHUNK_SIZE,
-    CHUNK_SIZE,
-    MAX_WORKERS,
-    MAX_WORKERS,
-    MAX_WORKERS,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import hashlib
 import json
 import signal

@@ -1,31 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gext, gsz, mpf
+from dh import cprint, fsz, get_files, gext, gsz, mpf
 from rcssmin import cssmin
-from termcolor import cprint
 
 
 def process_file(path) -> str:
@@ -60,7 +39,7 @@ def process_file(path) -> str:
 def main() -> None:
     cwd = Path.cwd()
     before = gsz(cwd)
-    files = get_files(cwd, extensions=[".css", ".min.css"])
+    files = get_files(cwd, ext=[".css", ".min.css"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)
@@ -72,7 +51,7 @@ def main() -> None:
         print("no change")
         sys.exit(1)
     if dz:
-        ratio = (dz / before) * 100
+        ratio = dz / before * 100
         print(f"space reduced : {dz} ratio:{ratio}%")
 
 

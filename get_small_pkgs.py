@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    get_all_dist_info_dirs,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import csv
 import os
 import site

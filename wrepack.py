@@ -1,24 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    find_dist_info_dir,
-    UNPACKED_WHEELS_SOURCE_DIR,
-    WHEELS_OUTPUT_DIR,
-    find_dist_info_dir,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import zipfile
 from pathlib import Path

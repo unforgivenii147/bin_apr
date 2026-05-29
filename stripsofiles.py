@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import time
 from pathlib import Path
 
@@ -40,7 +25,7 @@ class BatchStripper:
         directory: str, extensions: list[str] | None = None, verbose: bool = False, verify: bool = True
     ) -> dict:
         if extensions is None:
-            extensions = [".so", ".so.1", ".so.6"]
+            e = [".so", ".so.1", ".so.6"]
         print(f"\nStripping .so files with extensions: {extensions}")
         so_files = []
         for ext in extensions:

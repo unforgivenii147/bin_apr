@@ -1,14 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    DIRECTORY,
-    non_english_pattern,
-    is_english,
-    unique_path,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed

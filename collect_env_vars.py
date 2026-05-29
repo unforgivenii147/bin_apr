@@ -1,22 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    env_vars,
-    env_var_pattern,
-    output_filename,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from pathlib import Path
 
 env_vars = set()
 env_var_pattern = re.compile("^([A-Z_0-9]+)=")
-for filepath in Path(".").rglob("*"):
+for filepath in Path().rglob("*"):
     if filepath.is_file():
         try:
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 for line in f:
                     match = env_var_pattern.match(line)
                     if match:
@@ -25,6 +17,5 @@ for filepath in Path(".").rglob("*"):
             print(f"Could not process file {filepath}: {e}")
 output_filename = "env_vars.txt"
 with open(output_filename, "w", encoding="utf-8") as f:
-    for var in sorted(list(env_vars)):
-        f.write(var + "\n")
+    f.writelines((var + "\n" for var in sorted(env_vars)))
 print(f"Found {len(env_vars)} unique environment variable names. Saved to {output_filename}")

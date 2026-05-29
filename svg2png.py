@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from io import BytesIO
 from pathlib import Path
 
@@ -38,7 +22,7 @@ def process_file(fp):
 
 def main():
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".svg"])
+    files = get_files(cwd, ext=[".svg"])
     with Pbar("...") as pbar:
         for f in pbar.wrap(files):
             process_file(f)

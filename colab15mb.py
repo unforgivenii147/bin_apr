@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    gsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import site
 import tarfile

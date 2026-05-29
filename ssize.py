@@ -1,17 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    fsz,
-    gsz,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import operator
 from pathlib import Path
-
 
 total = 0
 

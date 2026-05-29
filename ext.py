@@ -1,31 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDE_DIRS,
-    main,
-    EXCLUDE_DIRS,
-    OUTPUT_DIR,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    EXCLUDE_DIRS,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import multiprocessing as mp
 import os
 from pathlib import Path
-
 
 OUTPUT_DIR = "output"
 EXCLUDE_DIRS = {"test", "tests", "examples", "output"}

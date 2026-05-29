@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import re
@@ -140,13 +124,10 @@ def main():
     print("args.summary_path: ", args.summary_path)
     print("args.output_path: ", args.output_path)
     if not Path(args.html_path).exists():
-        msg = f"{args.html_path} does not exist"
         raise FileNotFoundError(msg)
     if not Path(args.pdf_path).exists():
-        msg = f"{args.pdf_path} does not exist"
         raise FileNotFoundError(msg)
     if not Path(args.summary_path).exists():
-        msg = f"{args.summary_path} does not exist"
         raise FileNotFoundError(msg)
     reader = pypdf.PdfReader(args.pdf_path)
     writer = pypdf.PdfWriter()

@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 from pathlib import Path
 
@@ -11,8 +7,7 @@ import requests
 
 def get_github_repos(username, output_file=None) -> None:
     if output_file is None:
-        output_file = f"{username}.txt"
-    url = f"https://api.github.com/users/{username}/repos"
+        url = f"https://api.github.com/users/{username}/repos"
     try:
         response = requests.get(url)
         response.raise_for_status()

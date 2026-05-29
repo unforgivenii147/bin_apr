@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    process_file,
-    parser,
-    parser,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import re
@@ -61,7 +53,6 @@ def replace_in_files(search_text, replace_text=None, target_file=None, dry_run=F
         else:
             print(f"Error: {target_file} is not a valid file", file=sys.stderr)
         return (files_processed, files_changed)
-
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for filename in files:

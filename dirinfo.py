@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    scan_directory,
-    parser,
-    parser,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import operator
 import os
@@ -44,12 +36,11 @@ def scan_directory(path="."):
 def format_size(size_in_bytes):
     if size_in_bytes < 1024:
         return f"{size_in_bytes} bytes"
-    elif size_in_bytes < 1024**2:
+    if size_in_bytes < 1024**2:
         return f"{size_in_bytes / 1024:.2f} KB"
-    elif size_in_bytes < 1024**3:
+    if size_in_bytes < 1024**3:
         return f"{size_in_bytes / 1024**2:.2f} MB"
-    else:
-        return f"{size_in_bytes / 1024**3:.2f} GB"
+    return f"{size_in_bytes / 1024**3:.2f} GB"
 
 
 def write_summary(filename: Path | None = None) -> None:
@@ -57,7 +48,7 @@ def write_summary(filename: Path | None = None) -> None:
     summary_lines = []
     summary_lines.append(f"Total size: {format_size(total_size)}\n")
     summary_lines.append("File extensions:\n")
-    sorted_extensions = sorted(list(extensions))
+    sorted_extensions = sorted(extensions)
     for ext in sorted_extensions:
         summary_lines.append(f"   - {ext}\n")
     summary_lines.append(f"Number of files: {file_count}\n")
@@ -69,18 +60,21 @@ def write_summary(filename: Path | None = None) -> None:
         if filename is None or filename == sys.stderr:
             print(f"  {ext}: {format_size(size)}\n", file=sys.stderr)
     summary_string = "".join(summary_lines)
+    if filename.exists():
+        print(f"{filename} exists")
+        sys.exit(1)
     if filename and filename != sys.stderr:
         try:
             with filename.open("w", encoding="utf-8") as f:
                 f.write(summary_string)
             print(f"Summary saved to {filename}")
-        except IOError as e:
+        except OSError as e:
             print(f"Error saving summary to {filename}: {e}", file=sys.stderr)
     elif filename is None:
         print(summary_string)
 
 
-def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> None:
+def create_bar_chart(chart_type: str, output_filename: str = "/sdcard/dirinfo.png") -> None:
     _, _, _, _, size_by_ext = scan_directory()
     sorted_items = sorted(
         [(ext, size) for ext, size in size_by_ext.items() if size > 0], key=operator.itemgetter(1), reverse=True
@@ -88,7 +82,7 @@ def create_bar_chart(chart_type: str, output_filename: str = "dirinfo.png") -> N
     if not sorted_items:
         print("No data to plot.", file=sys.stderr)
         return
-    extensions, sizes = zip(*sorted_items)
+    extensions, sizes = zip(*sorted_items, strict=False)
     reshaped_extensions = extensions
     plt.title("Size by File Extension")
     plt.xticks(rotation=45, ha="right")
@@ -134,8 +128,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     if args.save:
-        write_summary(Path(".dirinfo"))
+        write_summary(Path("/sdcard/.dirinfo"))
     elif args.image:
         create_bar_chart(args.type, args.image)
     else:
-        write_summary()
+        write_summary(Path("/sdcard/dirinfo"))

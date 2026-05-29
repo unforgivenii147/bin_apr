@@ -1,28 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    SIZE_THRESHOLD,
-    OLD_PRINT_RE,
-    _open_source,
-    _read_text,
-    _has_rich_print_import,
-    regex_flag,
-    tokenizer_confirm,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import mmap
 import os

@@ -1,16 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    cwd,
-    fsz,
-    gsz,
-    EXCLUDED,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import datetime
 from os import scandir as _scandir
 from pathlib import Path

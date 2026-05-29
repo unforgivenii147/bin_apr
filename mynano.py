@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import readline
 import rlcompleter
 import sys
@@ -50,7 +46,6 @@ class BasicEditor(App):
                 log.write(f"Error opening file: {e}")
                 self.title = "Basic Editor - New File"
         else:
-            self.title = "Basic Editor - New File"
             log.write("New file. Use Ctrl+O to open or Ctrl+S to save.")
 
     def action_open_file(self) -> None:

@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    DIRECTORY,
-    CHUNK_SIZE,
-    non_english_pattern,
-    split_into_chunks,
-    translate_file,
-    translate_chunk,
-    translate_file,
-    is_text_file,
-    CHUNK_SIZE,
-    CHUNK_SIZE,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path

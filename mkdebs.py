@@ -1,30 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    BASE_DIR,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import argparse
 import contextlib
-import multiprocessing
 import shutil
 import subprocess
 import tarfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
+from dh import mpf3
 
 BASE_DIR = Path.home() / "tmp" / "debs"
 BASE_DIR.mkdir(parents=True, exist_ok=True)
@@ -77,7 +58,7 @@ def build_deb(pkg_dir, output_deb) -> None:
     subprocess.run(f"ar r {output_deb} {debian_binary} {control_tar} {data_tar}", shell=True, check=True)
 
 
-def process_package(pkg) -> str | None:
+def process_pkg(pkg) -> str | None:
     try:
         pkg_dir = BASE_DIR / pkg
         if pkg_dir.exists():
@@ -93,21 +74,21 @@ def process_package(pkg) -> str | None:
         create_control_file(debian_dir, meta)
         output_deb = BASE_DIR / f"{pkg}.deb"
         build_deb(pkg_dir, output_deb)
-        return f"[✔] {pkg} → {output_deb}"
+        print(f"[✔] {pkg} → {output_deb}")
+        return
     except Exception as e:
-        return f"[✖] {pkg} FAILED: {e}"
+        print(f"[✖] {pkg} FAILED: {e}")
+        return
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--workers", type=int, default=multiprocessing.cpu_count(), help="Number of parallel workers")
-    args = parser.parse_args()
-    pkgs = ["tor"]
-    print(f"[+] Building {len(pkgs)} packages using {args.workers} workers…\n")
-    with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = {executor.submit(process_package, pkg): pkg for pkg in pkgs}
-        for future in as_completed(futures):
-            print(future.result())
+    import sys
+
+    args = sys.argv[1:]
+    pkgs = [p.strip() for p in args] if args else ["python", "mc"]
+    print(f"[+] Building {len(pkgs)} packages\n")
+
+    _ = mpf3(process_pkg, pkgs)
 
 
 if __name__ == "__main__":

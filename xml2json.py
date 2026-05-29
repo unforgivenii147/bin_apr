@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 import sys
 from pathlib import Path
@@ -45,7 +28,7 @@ def process_file(path):
 def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".xml", ".svg"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".xml", ".svg"])
     mpf3(process_file, files)
 
 

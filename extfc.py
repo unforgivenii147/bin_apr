@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    parser,
-    parser,
-    OUT_DIR,
-    VALID,
-    get_node_text,
-    get_relative_path,
-    processed_files_count,
-    folders_found,
-    total_definitions,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from collections import defaultdict
 from pathlib import Path
 
@@ -110,7 +95,7 @@ for folder, defs_list in folder_definitions.items():
     out_file = OUT_DIR / folder / "definitions.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
     content = "\n".join(defs_list)
-    header = f"#!/usr/bin/env python\n"
+    header = "#!/usr/bin/env python\n"
     out_file.write_text(header + content)
     folder_def_count = len(
         [d for d in defs_list if d.strip() and (not d.startswith("#")) and (not d.startswith("\n#"))]

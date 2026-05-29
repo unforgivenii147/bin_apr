@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -40,7 +33,7 @@ def process_file(html_file: Path):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".html", ".htm", ".xhtml", ".xhtm"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".html", ".htm", ".xhtml", ".xhtm"])
     numf = len(files)
     if numf == 1:
         process_file(files[0])

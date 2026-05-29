@@ -1,78 +1,31 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    cwd,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import re
+import sys
 from pathlib import Path
 
-
-HTML_EXTS = {".html", ".htm", ".svg", ".xml"}
-SKIP_TAGS = ("pre", "code")
-SKIP_OPEN_RE = re.compile("<\\s*(pre|code)\\b", re.IGNORECASE)
-SKIP_CLOSE_RE = re.compile("<\\s*/\\s*(pre|code)\\s*>", re.IGNORECASE)
-cwd = Path.cwd()
+from bs4 import BeautifulSoup
+from dh import cprint, fsz, get_files
 
 
-def split_tags_preserve_indent(line: str) -> str:
-    indent = re.match("\\s*", line).group(0)
-    stripped = line.strip()
-    parts = re.split("(>)(\\s*)(<)", stripped)
-    if len(parts) <= 1:
-        return line.rstrip()
-    rebuilt = []
-    buffer = ""
-    i = 0
-    while i < len(parts):
-        if i + 3 < len(parts) and parts[i + 1] == ">" and (parts[i + 3] == "<"):
-            buffer += parts[i] + ">"
-            rebuilt.append(indent + buffer.strip())
-            buffer = "<"
-            i += 4
-        else:
-            buffer += parts[i]
-            i += 1
-    if buffer.strip():
-        rebuilt.append(indent + buffer.strip())
-    return "\n".join(rebuilt)
-
-
-def format_file(path: Path):
-    content = path.read_text(encoding="utf-8", errors="ignore")
-    lines = content.splitlines()
-    formatted = []
-    skip_mode = False
-    for line in lines:
-        if SKIP_OPEN_RE.search(line):
-            skip_mode = True
-        if skip_mode:
-            formatted.append(line.rstrip())
-        else:
-            formatted.append(split_tags_preserve_indent(line))
-        if SKIP_CLOSE_RE.search(line):
-            skip_mode = False
-    path.write_text("\n".join(formatted) + "\n", encoding="utf-8")
-    print(f"[+] Processed: {path.relative_to(cwd)}")
-
-
-def main():
-    for file in cwd.rglob("*"):
-        if file.is_file() and file.suffix.lower() in HTML_EXTS:
-            format_file(file)
+def process_file(path):
+    content = path.read_text(encoding="utf-8")
+    soup = BeautifulSoup(content, parser="lxml.parser", features="lxml")
+    before = len(content)
+    new_content = soup.prettify()
+    after = len(new_content)
+    dsz = before - after
+    print(f"{path.name}", end=" | ")
+    if dsz:
+        ratio = dsz / before * 100
+        cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
+        path.write_text(new_content, encoding="utf-8")
+        return
+    else:
+        cprint("no change", "grey")
 
 
 if __name__ == "__main__":
-    main()
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".html", ".svg", ".xml", ".mhtml"])
+    for f in files:
+        process_file(f)

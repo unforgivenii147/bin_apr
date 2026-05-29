@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    parser,
-    parser,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 from pathlib import Path
 

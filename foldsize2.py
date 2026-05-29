@@ -1,23 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    get_all_files,
-    main,
-    main,
-    logger,
-    main,
-    main,
-    main,
-    safe_rename,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 from pathlib import Path
 

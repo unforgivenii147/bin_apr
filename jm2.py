@@ -1,35 +1,48 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    cwd,
-    process_file,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 import json
+import sys
 from pathlib import Path
-from dh import get_files, mpf3
+
+from dh import cprint, fsz, get_files, gsz, mpf3
 
 
 def process_file(fp):
-    data = ""
+    before = gsz(fp)
+    data = fp.read_text(encoding="utf-8")
+    if not before or len(data.splitlines()) == 1:
+        del data, before
+        print(f"{fp.name}  | (no change)")
+        return
     try:
-        with fp.open("r", encoding="utf8") as f:
-            data = json.load(f)
-        with fp.open("w") as fo:
-            json.dump(data, fo, ensure_ascii=False, indent=None)
-        print(f"[OK] {fp.name}")
+        jdata = json.loads(data)
+        with fp.open("w", encoding="utf8") as fo:
+            json.dump(jdata, fo, ensure_ascii=False, indent=None)
+        after = gsz(fp)
+        diffsize = abs(before - after)
+
+        print(f"{fp.name}", end=" | ")
+        if not diffsize:
+            cprint("(no change)", "grey")
+            return
+        ratio = (diffsize / before) * 100
+        ratio2 = (abs(after - before) / after) * 100
+        cprint(f"{ratio:.2f}% | {ratio2:.2f}%", "cyan")
+        return
     except:
-        print(f"[ERROR] {fp.name}")
+        cprint(f"{fp.name} Error", "yellow")
         return
 
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".json"])
+    before = gsz(cwd)
+    files = get_files(cwd, ext=[".json"])
     if not files:
         print("no json files found")
         sys.exit(1)
-
+    print(f"{len(files)} json files found.")
     mpf3(process_file, files)
+    after = gsz(cwd)
+    dsz = abs(before - after)
+    ratio = (dsz / before) * 100
+    cprint(f"space saved: {fsz(dsz)} {ratio:.2f}%")

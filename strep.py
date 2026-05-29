@@ -1,19 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    cwd,
-    process_file,
-    fsz,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, mpf3, runcmd
+from dh import cprint, fsz, get_files, mpf3, runcmd
 
 
 def process_file(fp):
@@ -24,7 +14,7 @@ def process_file(fp):
         return
     dz = before - after
     if dz:
-        print(f"{fp.name} -> {fsz(before)}/{fsz(after)} | ratio: {(before - after) / before * 100:.1f}%")
+        cprint(f"{fp.name} -> {fsz(before)}/{fsz(after)} | ratio: {(before - after) / before * 100:.1f}%")
     else:
         print(f"{fp.name} : no change")
 
@@ -32,5 +22,9 @@ def process_file(fp):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".so", ".SO"])
+    files = (
+        [Path(p) for p in args]
+        if args
+        else get_files(cwd, ext=[".so", ".SO", ".so.1", ".so.0", ".so.2", ".so.2400", ".so.2400.0.0"])
+    )
     mpf3(process_file, files)

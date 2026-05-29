@@ -1,31 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    ARCHIVE_EXTENSIONS,
-    get_unique_filepath,
-    extract_entities_from_content,
-    is_python_file_no_extension,
-    process_single_file,
-    process_archive,
-    worker_process,
-    main,
-    main,
-    OUTPUT_DIR,
-    ALLOWED_PYTHON_EXTENSIONS,
-    main,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import os
 import re
@@ -35,7 +9,6 @@ import zipfile
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
-
 
 OUTPUT_DIR = Path("output")
 ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")

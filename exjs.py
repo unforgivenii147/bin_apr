@@ -1,35 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from dh import get_files, get_random_name, mpf3
-from termcolor import cprint
+from dh import cprint, get_files, get_random_filename, mpf3
 
 MAX_QUEUE = 16
 
 
 def save_script(str1):
     fn = "js/"
-    fn += get_random_name(10)
+    fn += get_random_filename(10)
     fn += ".js"
     fn = Path(fn)
     if fn.exists():
@@ -57,7 +39,7 @@ def main():
         Path("js").mkdir()
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".html", "htm"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".html", "htm"])
     mpf3(process_file, files)
 
 

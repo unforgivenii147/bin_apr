@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import hashlib
 import json
 import os
@@ -48,7 +44,6 @@ def collect_all_files(directory: Path):
 def find_duplicate_files(directory: str):
     directory = Path(directory)
     if not directory.exists():
-        msg = f"Directory does not exist: {directory}"
         raise ValueError(msg)
     all_files = collect_all_files(directory)
     duplicates = defaultdict(list)

@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -46,10 +30,11 @@ def process_file(fp, module_name):
 
 
 def main():
+    cwd = Path.cwd()
     files = []
     cwd = Path.cwd()
     modname = sys.argv[1]
-    for pth in walk_files("."):
+    for pth in walk_files(cwd):
         path = Path(pth)
         if path.is_file() and path.suffix == ".py":
             files.append(path)

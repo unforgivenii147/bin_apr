@@ -1,11 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    output_filename,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
+import contextlib
 import os
 
 import matplotlib.pyplot as plt
@@ -17,20 +12,16 @@ for dirpath, dirnames, filenames in os.walk(current_dir):
     dir_size = 0
     for f in filenames:
         fp = os.path.join(dirpath, f)
-        try:
+        with contextlib.suppress(OSError):
             dir_size += os.path.getsize(fp)
-        except OSError:
-            pass
     if dirpath != current_dir:
         subdir_sizes[dirpath] = dir_size
         total_size += dir_size
     else:
         for f in filenames:
             fp = os.path.join(dirpath, f)
-            try:
+            with contextlib.suppress(OSError):
                 total_size += os.path.getsize(fp)
-            except OSError:
-                pass
 subdir_percentages = {}
 for subdir, size in subdir_sizes.items():
     if total_size > 0:

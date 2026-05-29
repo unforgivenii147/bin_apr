@@ -1,18 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from pathlib import Path
 
 from binaryornot import is_binary
-from termcolor import cprint
+from dh import cprint
 
 
 def get_filez(root_dir):

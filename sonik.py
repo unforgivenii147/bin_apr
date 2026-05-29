@@ -1,15 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 
 
 def sort_and_dedup(file_name):
     file_size = os.path.getsize(file_name)
-    with open(file_name, "r") as f:
+    with open(file_name) as f:
         lines = f.readlines()
     unique_lines = sorted(set(lines))
     removed_lines = set(lines) - set(unique_lines)

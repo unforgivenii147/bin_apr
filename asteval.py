@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
@@ -26,18 +9,23 @@ from dh import get_pyfiles, mpf3
 DRY_RUN = True
 cwd = Path.cwd()
 err_dir = Path(f"{cwd}/error")
-err_dir.mkdir(exist_ok=True)
 
 
 def process_file(fp) -> None:
-    content = fp.read_text(encoding="utf-8")
+    try:
+        content = fp.read_text(encoding="utf-8")
+    except:
+        print(f"error reading {fp}")
+        return
     try:
         ast.parse(content)
-    except:
+    except Exception as e:
+        print(f"{fp} | {e}")
+        err_dir.mkdir(exist_ok=True)
         newpath = err_dir / fp.name
         newpath = Path(newpath)
         if not DRY_RUN:
-            newpath.write_text(content, encoding="utf-8")
+            newpath.write_text(f"# copied from {fp} \n\n" + content, encoding="utf-8")
         else:
             print(f"{fp.name} ast parse error")
 

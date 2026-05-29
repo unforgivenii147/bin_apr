@@ -1,35 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    EXCLUDE_PREFIXES,
-    parser,
-    parser,
-    main,
-    EXCLUDE_PREFIXES,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 import tree_sitter_rust
-from dh import clean_blank_lines, fsz, gsz
-from termcolor import cprint
+from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/",)

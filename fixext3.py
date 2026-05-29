@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 from pathlib import Path
-
 
 FILE_TYPE_MAP = {
     "xz compressed data": ".xz",

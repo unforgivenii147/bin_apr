@@ -1,36 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    EXCLUDE_PREFIXES,
-    parser,
-    parser,
-    main,
-    EXCLUDE_PREFIXES,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
 
 import tree_sitter_python
-from dh import DOC_TH1, clean_blank_lines, fsz, gsz
-from termcolor import cprint
+from dh import DOC_TH1, clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
 
 EXCLUDE_PREFIXES = (b"#!/", b"# fmt:", b"# type:")
@@ -115,7 +91,7 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
 def get_files(cwd, extensions=None) -> list[Path]:
     if extensions is None:
-        extensions = [".py"]
+        e = [".py"]
     if cwd.is_file() and cwd.suffix == ".py":
         return [root]
     return [p for p in cwd.rglob("*.py") if p.is_file()]
@@ -123,7 +99,7 @@ def get_files(cwd, extensions=None) -> list[Path]:
 
 def main() -> None:
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".py"])
+    files = get_files(cwd, ext=[".py"])
     if not files:
         sys.exit("No Python files found")
     before = gsz(cwd)

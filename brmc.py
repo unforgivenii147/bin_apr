@@ -1,27 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
+import sys
 from pathlib import Path
 
-from dh import cprint, get_pyfiles
-from joblib import Parallel, delayed
+from dh import cprint, fsz, get_pyfiles, gsz, mpf3
 
 cwd = Path.cwd()
 
@@ -34,7 +17,10 @@ class DocstringRemover(ast.NodeTransformer):
             and isinstance(node.body[0].value, ast.Constant)
             and isinstance(node.body[0].value.value, str)
         ):
-            node.body = node.body[1:]
+            if len(node.body) == 1:
+                node.body = [ast.Pass()]
+            else:
+                node.body = node.body[1:]
         return node
 
     def visit_Module(self, node):
@@ -54,34 +40,67 @@ class DocstringRemover(ast.NodeTransformer):
         return self._remove_docstring(node)
 
 
+class DocstringRemover(ast.NodeTransformer):
+    def _remove_docstring(self, node):
+        if (
+            node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        ):
+            node.body = node.body[1:]
+        return node
+
+
 def process_file(path: Path):
+    before = gsz(path)
     try:
-        original = path.read_text(encoding="utf-8")
-        tree = ast.parse(original)
+        code = path.read_text(encoding="utf-8")
+        first_line = ""
+        if code.startswith("#!/"):
+            lines = code.splitlines(keepends=True)
+            first_line = lines[0]
+            code = "".join(lines[1:])
+        tree = ast.parse(code)
         transformer = DocstringRemover()
         new_tree = transformer.visit(tree)
         ast.fix_missing_locations(new_tree)
-        cleaned = ast.unparse(new_tree)
+        newcode = ast.unparse(new_tree)
+        if first_line:
+            newcode = first_line + newcode
         try:
-            ast.parse(cleaned)
+            ast.parse(newcode)
         except SyntaxError:
-            cprint(f"syntax error: {path.relative_to(cwd)}")
+            cprint(f"syntax error: {path.name}")
             return
-        if cleaned.strip() == original.strip():
+        if len(newcode.strip()) == len(code.strip()):
+            print(f"{path.name} (no change)")
             return
-        path.write_text(cleaned + "\n", encoding="utf-8")
-        print(f"✅ Cleaned: {path.relative_to(cwd)}")
+        path.write_text(newcode, encoding="utf-8")
+        after = gsz(path)
+        dsz = before - after
+        if dsz:
+            ratio = (dsz / before) * 100
+            print(f"✅ {path.name}", end=" | ")
+            cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
+            return
+        else:
+            cprint(f"{path.name} (no change)", "grey")
+            return
     except Exception as e:
-        print(f"❌ Error processing {path}: {e}")
+        cprint(f"❌ {path.name}: {e}", "yellow")
 
 
 def main():
-    python_files = get_pyfiles(cwd)
-    if not python_files:
+    args = sys.argv[1:]
+    files = [Path(p) for p in args] if args else get_pyfiles(cwd)
+    if not files:
         print("No Python files found.")
         return
-    print(f"Discovered {len(python_files)} python-like files...")
-    Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(p) for p in python_files))
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(1)
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

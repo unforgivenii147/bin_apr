@@ -1,26 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    _executor,
-    get_dirs,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import asyncio
+import contextlib
 import shutil
 import sys
 import tempfile
@@ -69,10 +50,8 @@ async def atomic_write_async(data: bytes, final_path: Path) -> bool:
     except Exception as e:
         print(f"Atomic write failed for {final_path}: {e}")
         if temp_path and temp_path.exists():
-            try:
+            with contextlib.suppress(Exception):
                 temp_path.unlink()
-            except Exception:
-                pass
 
 
 async def safe_delete_async(path: Path, max_retries: int = 3) -> bool:

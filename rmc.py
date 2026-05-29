@@ -1,69 +1,42 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    parser,
-    PY_LANGUAGE,
-    parser,
-    should_preserve_comment,
-    find_docstring_ranges,
-    main,
-    should_preserve_comment,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import ast
-import operator
-import sys
+from ast import get_docstring as ast_get_docstring
+from ast import parse as ast_parse
+from operator import itemgetter
 from pathlib import Path
 
-import tree_sitter_python as tspython
-from dh import clean_blank_lines, fsz, get_pyfiles, gsz
-from termcolor import cprint
+import tree_sitter_python as tsp
+from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
 
-PY_LANGUAGE = Language(tspython.language())
+PY_LANGUAGE = Language(tsp.language())
 parser = Parser(PY_LANGUAGE)
-PRESERVED: set = {"#!", "# type", "# fmt"}
 
 
 def havedoc(code):
-    tree = ast.parse(code)
-    doc = ast.get_docstring(tree)
+
+    tree = ast_parse(code)
+    doc = ast_get_docstring(tree)
     has_doc = doc is not None
     has_comment = "#" in code
     return has_doc or has_comment
 
 
-def should_preserve_comment(content):
-    content = content.strip()
-    return any((pat in content for pat in PRESERVED))
-
-
-def strip_code(source_code):
+def strip_code(code):
     try:
-        tree = parser.parse(bytes(source_code, "utf8"))
+        tree = parser.parse(bytes(code, "utf8"))
         root_node = tree.root_node
         to_delete = []
         to_replace_with_pass = []
 
         def traverse(node):
+            def should_preserve_comment(content):
+                content = content.strip()
+                PRESERVED: set = {"#!", "# type", "# fmt"}
+                return any((pat in content for pat in PRESERVED))
+
             if node.type == "comment":
-                comment_text = source_code[node.start_byte : node.end_byte]
+                comment_text = code[node.start_byte : node.end_byte]
                 if not should_preserve_comment(comment_text):
                     to_delete.append((node.start_byte, node.end_byte))
             elif node.type == "expression_statement":
@@ -81,75 +54,50 @@ def strip_code(source_code):
         traverse(root_node)
         modifications = [(s, e, "") for s, e in to_delete]
         modifications += [(s, e, "pass") for s, e in to_replace_with_pass]
-        modifications.sort(key=operator.itemgetter(0), reverse=True)
-        working_code = source_code
+        modifications.sort(key=itemgetter(0), reverse=True)
+        working_code = code
         for start, end, replacement in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
         return working_code
     except:
-        return source_code
+        print(f"error")
+        return code
 
 
-def rm_ast(content: str) -> tuple[str, int]:
-    try:
-        tree = ast.parse(content)
-    except SyntaxError:
-        del tree
-        return content
-    lines = content.split("\n")
-    ranges = find_docstring_ranges(tree)
-    for start, end in sorted(ranges, reverse=True):
-        del lines[start - 1 : end]
-    return ("\n".join(lines), len(ranges))
+def process_file(path: Path) -> bool:
 
-
-def find_docstring_ranges(node) -> list[tuple[int, int]]:
-    ranges: list[tuple[int, int]] = []
-    for child in ast.walk(node):
-        if (
-            isinstance(child, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-            and child.body
-            and isinstance(child.body[0], ast.Expr)
-        ):
-            value = child.body[0].value
-            if (
-                isinstance(value, ast.Constant)
-                and isinstance(value.value, str)
-                and child.body[0].lineno
-                and child.body[0].end_lineno
-            ):
-                ranges.append((child.body[0].lineno, child.body[0].end_lineno))
-    return ranges
-
-
-def process_file(file_path: Path) -> bool:
-    before = gsz(file_path)
-    original = file_path.read_text(encoding="utf-8")
+    before = gsz(path)
+    original = path.read_text(encoding="utf-8")
     if havedoc(original):
-        modified, _removed = rm_ast(original)
-        finalcode = strip_code(modified)
+        finalcode = strip_code(original)
         wcode = clean_blank_lines(finalcode)
         try:
-            _ = ast.parse(wcode)
-            file_path.write_text(wcode, encoding="utf-8")
-            dsz = before - gsz(file_path)
-            print(f"{file_path.name}", end=" ")
-            cprint(f"{fsz(dsz)}", "blue")
+            _ = ast_parse(wcode)
+            print(f"{path.name}", end=" ")
+            if len(wcode) == len(original):
+                cprint("(no change)", "magenta")
+                return True
+            path.write_text(wcode, encoding="utf-8")
+            after = gsz(path)
+            dsz = before - after
+            if dsz:
+                cprint(f"{fsz(before - gsz(path))}", "blue")
+            else:
+                cprint("(no change)", "grey")
             return True
         except:
-            print("ast parse error")
+            cprint(f"{path.name} ast parse error", "yellow")
             return False
-    return None
-
-
-def main():
-    cwd = Path.cwd()
-    args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_pyfiles(cwd)
-    print(f"{len(files)} files found.")
-    for f in files:
-        process_file(f)
+    return False
 
 
 if __name__ == "__main__":
-    main()
+    from sys import argv as sys_argv
+
+    from dh import get_pyfiles, mpf3
+
+    cwd = Path.cwd()
+    args = sys_argv[1:]
+    files = [Path(f) for f in args] if args else get_pyfiles(cwd)
+    print(f"{len(files)} files found.")
+    _ = mpf3(process_file, files)

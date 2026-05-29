@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import Pool
@@ -39,7 +22,7 @@ def process_file(fp):
 
 def main():
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True, extensions=[".png", ".jpg"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, ext=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

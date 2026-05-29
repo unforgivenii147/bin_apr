@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
 import argparse
@@ -22,9 +6,8 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
-from PIL import Image
 import imagehash
-
+from PIL import Image
 
 SUPPORTED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff", ".gif"}
 
@@ -36,7 +19,6 @@ class HashedImage:
 
 
 def iter_image_paths(root: Path):
-    # Recursive traversal with pathlib
     for p in root.rglob("*"):
         if p.is_file() and p.suffix.lower() in SUPPORTED_EXTS:
             yield p
@@ -44,10 +26,8 @@ def iter_image_paths(root: Path):
 
 def compute_hash(path: Path, hash_func: str, hash_size: int) -> HashedImage | None:
     try:
-        # Many imagehash functions work best with RGB conversion
         with Image.open(path) as img:
             img = img.convert("RGB")
-
             if hash_func == "phash":
                 h = imagehash.phash(img, hash_size=hash_size)
             elif hash_func == "dhash":
@@ -55,18 +35,14 @@ def compute_hash(path: Path, hash_func: str, hash_size: int) -> HashedImage | No
             elif hash_func == "ahash":
                 h = imagehash.average_hash(img, hash_size=hash_size)
             else:
-                raise ValueError(f"Unknown hash_func: {hash_func}")
-
+                raise ValueError(msg)
             return HashedImage(path=path, h=h)
-
     except Exception as e:
-        # Skip unreadable/corrupt images
         print(f"[WARN] Skipping {path} ({e})")
         return None
 
 
 def hash_distance(h1: imagehash.ImageHash, h2: imagehash.ImageHash) -> int:
-    # imagehash.ImageHash implements subtraction as Hamming distance
     return int(h1 - h2)
 
 
@@ -81,26 +57,17 @@ def folderize_by_similarity(
 ):
     out_dir = root / out_dir_name
     out_dir.mkdir(parents=True, exist_ok=True)
-
     images: list[HashedImage] = []
     for p in iter_image_paths(root):
-        # Avoid hashing images already moved/copied to output groups
         if out_dir_name in p.parts:
             continue
         hashed = compute_hash(p, hash_func=hash_func, hash_size=hash_size)
         if hashed is not None:
             images.append(hashed)
-
     if not images:
         print("No images found.")
         return
-
-    # Greedy clustering:
-    # - Each group has a representative hash (first member)
-    # - Add image to first group where distance <= threshold
-    # This is simple and works well for many practical cases.
-    groups: list[dict] = []  # each: { "rep": ImageHash, "members": [HashedImage, ...] }
-
+    groups: list[dict] = []
     for item in images:
         placed = False
         for g in groups:
@@ -111,26 +78,17 @@ def folderize_by_similarity(
                 break
         if not placed:
             groups.append({"rep": item.h, "members": [item]})
-
-    # Create folders and move/copy
     group_idx = 0
     moved_or_copied = 0
     for g in groups:
         members = g["members"]
-
-        # Skip singleton groups if you only care about duplicates/similar clusters
         if len(members) < 2:
             continue
-
         group_idx += 1
         group_folder = out_dir / f"group_{group_idx:06d}"
         group_folder.mkdir(parents=True, exist_ok=True)
-
         for mi, member in enumerate(members):
             dest = group_folder / member.path.name
-
-            # Optional: if destination exists, avoid collision
-            # by adding a suffix.
             if dest.exists():
                 stem = dest.stem
                 suffix = dest.suffix
@@ -141,16 +99,13 @@ def folderize_by_similarity(
                         dest = dest2
                         break
                     k += 1
-
             if move:
                 shutil.move(str(member.path), str(dest))
             else:
                 shutil.copy2(str(member.path), str(dest))
-
             moved_or_copied += 1
-
     print(f"Found {len(groups)} groups (including singletons).")
-    print(f"Action complete: {moved_or_copied} files {'moved' if move else 'copied'} into {out_dir}.")
+    print(f"Action complete: {moved_or_copied} files {('moved' if move else 'copied')} into {out_dir}.")
 
 
 def main():
@@ -162,10 +117,7 @@ def main():
     parser.add_argument("--threshold", type=int, default=8, help="Max Hamming distance to consider similar.")
     parser.add_argument("--move", action="store_true", help="Move files instead of copying")
     args = parser.parse_args()
-
     root = Path(args.root).resolve()
-
-    # copy_duplicates_to_group_only is kept for extensibility; currently not used.
     folderize_by_similarity(
         root=root,
         out_dir_name=args.out,

@@ -1,27 +1,31 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
-import os
+import sys
 from pathlib import Path
 
 from markdownify import markdownify
+from dh import cprint, get_files, mpf3
 
 
-def convert_html_to_markdown(cwd):
-    for root, _, files in os.walk(cwd):
-        for file in files:
-            if file.endswith(".html"):
-                html_file_path = os.path.join(root, file)
-                md_file_path = os.path.join(root, f"{os.path.splitext(file)[0]}.md")
-                with Path(html_file_path).open(encoding="utf-8") as html_file:
-                    html_content = html_file.read()
-                    md_content = markdownify(html_content)
-                Path(md_file_path).write_text(md_content, encoding="utf-8")
-                print(f"[✔] {Path(md_file_path).name}")
+def process_file(fp):
+    md_path = fp.with_suffix(".md")
+    content = fp.read_text(encoding="utf8")
+    md = markdownify(content)
+    md_path.write_text(md_content, encoding="utf-8")
 
 
 if __name__ == "__main__":
-    current_dir = Path.cwd()
-    convert_html_to_markdown(current_dir)
+    cwd = Path.cwd()
+    args = sys.argv[1:]
+    files = []
+    if args:
+        for arg in args:
+            p = Path(arg)
+            if p.is_file():
+                files.append(p)
+            elif p.is_dir():
+                files.extend(get_files(p, ext=[".html"]))
+    else:
+        files.extend(get_files(p, ext=[".html"]))
+
+    mpf3(process_file, files)

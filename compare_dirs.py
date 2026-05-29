@@ -1,24 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-    main,
-    CHUNK_SIZE,
-    main,
-    CHUNK_SIZE,
-    get_sha256,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import shlex
 import stat
 import sys

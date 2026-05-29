@@ -1,23 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import hashlib
 import re
@@ -61,7 +42,7 @@ def decode_base64(data: str) -> bytes:
 
 
 def content_hash(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
+    return hashlib.sha256(data).hexdigest()[:15]
 
 
 def extract_from_html(html: str) -> Iterable[tuple[str, bytes]]:
@@ -78,8 +59,6 @@ def extract_from_html(html: str) -> Iterable[tuple[str, bytes]]:
 def save_asset(mime: str, data: bytes) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     ext = infer_extension(mime)
-    if ext is None:
-        ext = ".bin"
     digest = content_hash(data)
     filename = f"{digest}.{ext}"
     path = OUTPUT_DIR / filename

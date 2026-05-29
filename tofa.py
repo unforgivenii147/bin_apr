@@ -1,28 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    MAX_CHARS,
-    save_file,
-    find_chunk_boundary,
-    chunk_text,
-    translate_file,
-    main,
-    translate_chunk,
-    translate_file,
-    chunk_text,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import time
 from pathlib import Path

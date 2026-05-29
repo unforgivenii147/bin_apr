@@ -1,26 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import get_context
@@ -65,7 +44,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".png", ".jpg"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".png", ".jpg"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

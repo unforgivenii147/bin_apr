@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
 import subprocess
 import sys
 from pathlib import Path
@@ -22,8 +21,8 @@ def send_to_process(txt):
 
 
 def selective_copy(fp, lines):
-    cl = [p for p in lines if not p == "-s"]
-    seleced = []
+    cl = [p for p in lines if p != "-s"]
+    selected = []
     nl = fp.read_text(encoding="utf-8").splitlines()
     total = len(nl)
     for k in cl:
@@ -33,7 +32,7 @@ def selective_copy(fp, lines):
     send_to_process(content)
 
 
-def copy_lines_to_clipboard(path: str, start_line: int | None = None, end_line: int | None = None):
+def copy_lines_to_clipboard(path: str | Path, start_line: int | None = None, end_line: int | None = None):
     content = ""
     path = Path(path)
     if not path.is_file():

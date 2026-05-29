@@ -1,28 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDE_DIRS,
-    main,
-    EXCLUDE_DIRS,
-    main,
-    main,
-    main,
-    main,
-    EXCLUDE_DIRS,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
-
 
 EXCLUDE_DIRS = {".git", "__pycache__"}
 

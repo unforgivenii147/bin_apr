@@ -1,28 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import get_files, mpf3, cprint, decompress, fsz, gsz
+
+from dh import cprint, decompress, fsz, get_files, gsz, mpf3
 
 
 def process_file(fp):
@@ -38,7 +19,7 @@ def process_file(fp):
         decomp_path.unlink()
         return
     diff_size = before - after
-    ratio = (diff_size / before) * 100
+    ratio = diff_size / before * 100
     print(f"{decomp_path.name}", end=" | ")
     cprint(f"{fsz(before)} -> {fsz(after)} | {fsz(diff_size)} | {ratio:.1f}%")
     fp.unlink()
@@ -49,7 +30,6 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -59,7 +39,6 @@ def main():
                 files.extend(get_files(p))
     else:
         files = get_files(cwd)
-
     mpf3(process_file, files)
 
 

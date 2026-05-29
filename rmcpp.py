@@ -1,17 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    cwd,
-    process_file,
-    fsz,
-    gsz,
-    ts_remover,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from multiprocessing import get_context
 from pathlib import Path
@@ -90,7 +78,7 @@ if __name__ == "__main__":
     files = (
         [Path(p) for p in args]
         if args
-        else get_files(cwd, extensions=[".js", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"])
+        else get_files(cwd, ext=[".js", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".hh"])
     )
     before = gsz(cwd)
     with get_context("spawn").Pool(processes=8, initializer=ts_remover_initializer) as pool:

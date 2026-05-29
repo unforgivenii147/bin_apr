@@ -1,24 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import time
 from pathlib import Path
-
 
 TIME_THRESHOLD = 8 * 60
 
@@ -55,7 +39,6 @@ def move_recent_files(start_dir="."):
                             new_filename = f"{base}_{counter}{ext}"
                             dest_path = os.path.join(dest_dir, new_filename)
                             counter += 1
-                    #                    shutil.move(filepath, dest_path)
                     print(f"Moved: {filepath} -> {dest_path}")
                     moved_count += 1
             except (OSError, PermissionError) as e:

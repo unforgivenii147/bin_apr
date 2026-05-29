@@ -1,28 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    FONT_EXTENSIONS,
-    find_fonts,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import html
 import os
 from pathlib import Path
-
 
 FONT_EXTENSIONS = (".ttf", ".otf", ".woff", ".woff2", ".eot")
 SAMPLE_TEXT = "Lorem ipsum dolor sit amet\nهنر برتر از گوهر آمد پدید"

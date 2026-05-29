@@ -1,22 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDE_DIRS,
-    read_file,
-    EXCLUDE_DIRS,
-    OUTPUT_FILE,
-    EXCLUDE_DIRS,
-    OUTPUT_FILE,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
 
+from dh import get_random_filename
 
 EXCLUDE_DIRS = {".git"}
-OUTPUT_FILE = "merged.txt"
+OUTPUT_FILE = get_random_filename(8) + ".txt"
 
 
 def read_file(path):
@@ -39,17 +29,14 @@ def collect_files(root):
 
 def merge_files(root):
     files = list(collect_files(root))
-    print(f"Found {len(files)} files")
     with Path(OUTPUT_FILE).open("w", encoding="utf-8") as fo:
         for i, path in enumerate(files, 1):
             content = read_file(path)
             if content is None:
                 continue
-            fo.write(f"\n# {path}\n")
             fo.write(content)
             if i != len(files):
                 fo.write("\n")
-            print(f"Added: {path}")
     print(f"\nsaved as: {OUTPUT_FILE}")
 
 

@@ -1,15 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    fsz,
-    cwd,
-    fsz,
-    gsz,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import datetime
 from os import scandir as _scandir
 from pathlib import Path
@@ -59,7 +48,6 @@ if __name__ == "__main__":
     for f in otherz:
         ctime = datetime.datetime.fromtimestamp(f.stat().st_ctime).strftime("%H:%M")
         if f.is_symlink():
-            sz = " \x1b[05;95msymlink "
             print(f"\x1b[05;95m{f.name[:24]:25}\x1b[0m", end=" ")
         else:
             sz = str(fsz(gsz(f)))
@@ -79,7 +67,7 @@ if __name__ == "__main__":
             print(f"\x1b[05;92m{f.stem[:20] + f.suffix:25}\x1b[0m", end=" ")
         print(f"\x1b[05;96m{sz}\x1b[0m", end=" ")
         print(f"\x1b[05;93m{ctime}\x1b[0m")
-    for dr in dirz:
+    for dr in sorted(dirz):
         ctime = datetime.datetime.fromtimestamp(dr.stat().st_ctime).strftime("%H:%M")
         sz = str(fsz(gsz(dr)))
         if len(sz) == 7:

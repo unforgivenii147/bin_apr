@@ -1,107 +1,48 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    cwd,
-    CHUNK_SIZE,
-    CHUNK_SIZE,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-from base64 import b64encode
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import sys
 from pathlib import Path
 
+from dh import cprint, mpf3
+from xorhash import get_xorhash
 
-CHUNK_SIZE = 524288
-MAX_BYTE_INDEX = 19
-
-
-class QuickXorHash:
-    def __init__(self) -> None:
-        self._hash = [0] * 20
-        self._length = 0
-
-    def update(self, data: bytes):
-        for b in data:
-            shift = self._length % 160
-            byte_index = shift // 8
-            bit_index = shift % 8
-            self._hash[byte_index] ^= b << bit_index & 255
-            if bit_index > 0 and byte_index < MAX_BYTE_INDEX:
-                self._hash[byte_index + 1] ^= b >> 8 - bit_index & 255
-            self._length += 1
-
-    def digest(self):
-        length_bytes = self._length.to_bytes(8, "little")
-        for i in range(8):
-            self._hash[20 - 8 + i] ^= length_bytes[i]
-        return bytes(self._hash)
-
-    def hexdigest(self):
-        return b64encode(self.digest()).decode("ascii")
-
-
-def calculate_xorhash(path: Path) -> str:
-    q = QuickXorHash()
-    try:
-        with path.open("rb") as f:
-            while True:
-                chunk = f.read(CHUNK_SIZE)
-                if not chunk:
-                    break
-                q.update(chunk)
-        return (q.hexdigest(), path)
-    except Exception as e:
-        print(f"Error hashing file {path}: {e}")
-        return (None, path)
+REMOVE = "-r" in sys.argv
 
 
 def find_dups_optimized(root: Path):
+    from os import walk as os_walk
+
     file_hashes = {}
     paths_to_process = []
-    for path in root.rglob("*"):
-        if ".git" in path.parts:
-            continue
-        try:
-            if not path.is_symlink() and path.is_file():
+    for r, _, files in os_walk(root):
+        for file in files:
+            path = Path(r) / file
+            if ".git" in path.parts:
+                continue
+            if not path.is_symlink() and path.is_file() and path.exists():
                 paths_to_process.append(path)
-        except OSError as e:
-            print(f"Error accessing path {path}: {e}")
-            continue
     if not paths_to_process:
         return {}
-    files_by_size = {}
-    for path in paths_to_process:
-        try:
-            size = path.stat().st_size
-            files_by_size.setdefault(size, []).append(path)
-        except OSError as e:
-            print(f"Error getting size for {path}: {e}")
-            continue
-    paths_to_hash = []
-    for paths in files_by_size.values():
-        if len(paths) > 1:
-            paths_to_hash.extend(paths)
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        future_to_path = {executor.submit(calculate_xorhash, path): path for path in paths_to_hash}
-        for future in as_completed(future_to_path):
-            hash_result, path = future.result()
-            if hash_result is not None:
-                file_hashes.setdefault(hash_result, []).append(path)
+    results = mpf3(get_xorhash, paths_to_process)
+    for res in results:
+        hash_result, path = res
+        if hash_result is not None:
+            file_hashes.setdefault(hash_result, []).append(path)
     return {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
 
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    print(f"Scanning directory: {cwd}")
     dupes = find_dups_optimized(cwd)
     if not dupes:
-        print("No duplicate files found.")
-    else:
-        print(f"Found {len(dupes)} group(s) of duplicate files:")
-        for h, paths in dupes.items():
-            print(f"Duplicate group ({h}):")
-            for p in paths:
-                print("  ", p)
+        print("No dups")
+        sys.exit(1)
+    for h, paths in dupes.items():
+        cprint(f"dups with hash: {h}")
+        for p in paths:
+            print(" - ", p)
+    if REMOVE:
+        for _, paths in dupes.items():
+            for p in paths[1:]:
+                Path(p).unlink()
+    print(f"Found {len(dupes)} group(s) of dups")

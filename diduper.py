@@ -1,37 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    sha256_text,
-    is_const_name,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
 
 import hashlib
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List
 
 from tree_sitter import Parser
-
-# tree-sitter-languages provides a prebuilt Python grammar
 from tree_sitter_languages import get_language
-
 
 OUTPUT_FILE = "utils.py"
 SKIP_FILES = {OUTPUT_FILE, Path(__file__).name}
@@ -39,7 +16,7 @@ SKIP_FILES = {OUTPUT_FILE, Path(__file__).name}
 
 @dataclass(frozen=True)
 class Item:
-    kind: str  # constant / function / class
+    kind: str
     name: str
     source: str
     file_path: str
@@ -53,7 +30,6 @@ def sha256_text(text: str) -> str:
 def get_python_parser() -> Parser:
     parser = Parser()
     lang = get_language("python")
-    # tree-sitter 0.25.x uses parser.language assignment
     parser.language = lang
     return parser
 
@@ -66,19 +42,15 @@ def is_const_name(name: str) -> bool:
     return name.isupper()
 
 
-def extract_items_from_file(path: Path, parser: Parser) -> List[Item]:
+def extract_items_from_file(path: Path, parser: Parser) -> list[Item]:
     try:
         source = path.read_text(encoding="utf-8")
     except (UnicodeDecodeError, OSError):
         return []
-
     src_bytes = source.encode("utf-8", errors="replace")
     tree = parser.parse(src_bytes)
     root = tree.root_node
-
-    items: List[Item] = []
-
-    # Only inspect top-level declarations
+    items: list[Item] = []
     for child in root.children:
         if child.type == "function_definition":
             name_node = child.child_by_field_name("name")
@@ -86,43 +58,19 @@ def extract_items_from_file(path: Path, parser: Parser) -> List[Item]:
                 continue
             name = node_text(src_bytes, name_node)
             code = node_text(src_bytes, child)
-            items.append(
-                Item(
-                    kind="function",
-                    name=name,
-                    source=code,
-                    file_path=str(path),
-                    hash=sha256_text(code),
-                )
-            )
-
+            items.append(Item(kind="function", name=name, source=code, file_path=str(path), hash=sha256_text(code)))
         elif child.type == "class_definition":
             name_node = child.child_by_field_name("name")
             if name_node is None:
                 continue
             name = node_text(src_bytes, name_node)
             code = node_text(src_bytes, child)
-            items.append(
-                Item(
-                    kind="class",
-                    name=name,
-                    source=code,
-                    file_path=str(path),
-                    hash=sha256_text(code),
-                )
-            )
-
+            items.append(Item(kind="class", name=name, source=code, file_path=str(path), hash=sha256_text(code)))
         elif child.type == "expression_statement":
-            # Possible top-level assignment forms:
-            #   X = 1
-            #   X: int = 1
-            # We only treat ALL_CAPS names as constants.
             expr = child.children[0] if child.children else None
             if expr is None:
                 continue
-
             if expr.type == "assignment":
-                # left side may be a name or tuple; we only accept single name
                 if len(expr.children) < 3:
                     continue
                 lhs = expr.children[0]
@@ -133,22 +81,10 @@ def extract_items_from_file(path: Path, parser: Parser) -> List[Item]:
                 if not is_const_name(name):
                     continue
                 code = node_text(src_bytes, child)
-                items.append(
-                    Item(
-                        kind="const",
-                        name=name,
-                        source=code,
-                        file_path=str(path),
-                        hash=sha256_text(code),
-                    )
-                )
-
+                items.append(Item(kind="const", name=name, source=code, file_path=str(path), hash=sha256_text(code)))
             elif expr.type == "assignment_expression":
-                # Some grammars may parse differently; keep a fallback
                 pass
-
         elif child.type == "assignment":
-            # Some tree-sitter Python grammar versions may expose top-level assignment directly
             if len(child.children) < 3:
                 continue
             lhs = child.children[0]
@@ -158,62 +94,43 @@ def extract_items_from_file(path: Path, parser: Parser) -> List[Item]:
             if not is_const_name(name):
                 continue
             code = node_text(src_bytes, child)
-            items.append(
-                Item(
-                    kind="const",
-                    name=name,
-                    source=code,
-                    file_path=str(path),
-                    hash=sha256_text(code),
-                )
-            )
-
+            items.append(Item(kind="const", name=name, source=code, file_path=str(path), hash=sha256_text(code)))
     return items
 
 
-def write_utils_file(duplicates: Dict[str, Item], output_path: Path) -> None:
-    # Write one representative copy per duplicate hash
+def write_utils_file(duplicates: dict[str, Item], output_path: Path) -> None:
     blocks = []
     seen_hashes = set()
-
     for h, item in duplicates.items():
         if h in seen_hashes:
             continue
         seen_hashes.add(h)
         blocks.append(f"# Duplicate {item.kind}: {item.name}\n# Source: {item.file_path}\n{item.source}\n")
-
     content = (
-        "# Auto-generated by find_duplicates_ts.py\n"
-        "# Contains duplicate constants / functions / classes found in the project.\n\n" + "\n".join(blocks)
+        "# Auto-generated by find_duplicates_ts.py\n# Contains duplicate constants / functions / classes found in the project.\n\n"
+        + "\n".join(blocks)
     )
-
     output_path.write_text(content, encoding="utf-8")
 
 
 def main() -> None:
     parser = get_python_parser()
-    all_items: Dict[str, Item] = {}
-    duplicates: Dict[str, Item] = {}
-
-    base_dir = Path(".").resolve()
-
+    all_items: dict[str, Item] = {}
+    duplicates: dict[str, Item] = {}
+    base_dir = Path.cwd()
     for root, _, files in os.walk(base_dir):
         for fname in files:
             if not fname.endswith(".py"):
                 continue
             if fname in SKIP_FILES:
                 continue
-
             path = Path(root) / fname
             items = extract_items_from_file(path, parser)
-
             for item in items:
                 if item.hash in all_items:
-                    # exact duplicate detected
                     duplicates[item.hash] = all_items[item.hash]
                 else:
                     all_items[item.hash] = item
-
     output_path = base_dir / OUTPUT_FILE
     if duplicates:
         write_utils_file(duplicates, output_path)

@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import hashlib
 import json
@@ -241,7 +225,6 @@ class VenvRepacker:
             site_packages_dir = Path.cwd()
         self.site_packages = Path(site_packages_dir).resolve()
         if not self.site_packages.exists():
-            msg = f"Site-packages directory not found: {site_packages_dir}"
             raise ValueError(msg)
         if output_dir is None:
             output_dir = str(Path.home() / "tmp" / "whl")

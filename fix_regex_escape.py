@@ -1,23 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from pathlib import Path
 
+from dh import get_pyfiles
 
 TARGET_FUNCS = {"compile", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn"}
 
@@ -39,6 +25,7 @@ class RegexFixer(ast.NodeTransformer):
                 fixed = fixed.replace("\\\\t", "\\t")
                 fixed = fixed.replace("\\\\r", "\\r")
                 node.args[0] = ast.Constant(value=fixed)
+                print(f"{original}\n{fixed}\n\n")
         return node
 
 
@@ -61,8 +48,8 @@ def fix_file(path: Path):
 
 
 def main():
-    root = Path()
-    files = list(root.rglob("*.py"))
+    cwd = Path()
+    files = get_pyfiles(cwd)
     changed = 0
     for f in files:
         if fix_file(f):

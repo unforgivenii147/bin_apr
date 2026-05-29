@@ -1,32 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import subprocess
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gsz, mpf3
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz, mpf3, runcmd
 
 MAX_QUEUE = 16
 EXT = [".java", ".c", ".cpp", ".cxx", ".cc", ".h", ".hh", ".hpp", ".hxx", ".js", ".json"]
@@ -36,15 +13,14 @@ def process_file(path):
     before = gsz(path)
     print(f"{path.name} ", end=" ")
     try:
-        res = subprocess.run(["clang-format", "-i", "--style=LLVM", str(path)], check=True, capture_output=True)
+        runcmd(["clang-format", "-i", "--style=LLVM", str(path)], show_output=False)
         size_diff = before - gsz(path)
-        if size_diff == 0:
+        if not size_diff:
             cprint("[NO CHANGE]", "magenta")
         elif size_diff > 0:
             cprint(f"+ {fsz(size_diff)}", "cyan")
         elif size_diff < 0:
             cprint(f"- {fsz(size_diff)}", "green")
-        del res
         del size_diff
         del before
         return True
@@ -61,7 +37,7 @@ def main() -> None:
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    cfiles = [Path(arg) for arg in args] if args else get_files(cwd, extensions=EXT)
+    cfiles = [Path(arg) for arg in args] if args else get_files(cwd, ext=EXT)
     all_count = len(cfiles)
     cprint(f"{all_count} files found", "cyan")
     if all_count == 1:

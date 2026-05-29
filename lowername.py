@@ -1,26 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from functools import partial
 from pathlib import Path
 
-from dh import mpf, unique_path
+from dh import mpf3, unique_path
 
 
 def rename_item_to_lowercase(path: Path, dry_run: bool = False, verbose: bool = False) -> tuple[Path, Path] | None:
@@ -76,7 +60,7 @@ def main():
         return
     print(f"Found {len(paths_to_process)} items to potentially rename.")
     process_func_with_flags = partial(rename_item_to_lowercase, dry_run=dry_run, verbose=verbose)
-    results = mpf(process_func_with_flags, paths_to_process)
+    results = mpf3(process_func_with_flags, paths_to_process)
     if dry_run:
         print("--- DRY RUN COMPLETE ---")
     else:

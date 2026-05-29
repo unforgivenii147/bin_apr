@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    unique_path,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 import sys
 from pathlib import Path

@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from pathlib import Path
-
 
 DIRS = [Path()]
 ver_pattern = re.compile("\\?[a-zA-Z0-9_-]+=[^\\\"\\'\\s>]+", re.IGNORECASE)

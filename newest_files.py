@@ -1,26 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    EXCLUDED_DIRS,
-    format_time,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from datetime import datetime
 from pathlib import Path
-
 
 EXCLUDED_DIRS = {".git", "__pycache__"}
 N = 10

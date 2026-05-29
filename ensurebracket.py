@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import get_context
@@ -47,7 +30,7 @@ def process_file(fn):
 def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

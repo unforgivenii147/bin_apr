@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
@@ -58,7 +55,7 @@ if __name__ == "__main__":
             print(f"Error: Invalid path provided. Must be an SVG file or a directory. Path: {input_path}")
             sys.exit(1)
     else:
-        current_dir = Path(".")
+        current_dir = Path()
         print(f"No file specified. Processing current directory: {current_dir.resolve()}")
         processed_count = 0
         for item in current_dir.rglob("*.svg"):

@@ -1,25 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    TIMESTAMP_RE,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 
 TIMESTAMP_RE = re.compile("\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}")
 TAG_RE = re.compile("<[^>]+>|{\\w+}")

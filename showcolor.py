@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 from secrets import randbelow
 
 
@@ -10,7 +7,7 @@ def show_random_color():
     red = randbelow(256)
     green = randbelow(256)
     blue = randbelow(256)
-    print(f"\x1b[48;2;{red};{green};{blue}m        \x1b[0m {str(red)} {str(green)} {str(blue)}")
+    print(f"\x1b[48;2;{red};{green};{blue}m        \x1b[0m {red!s} {green!s} {blue!s}")
 
 
 if __name__ == "__main__":

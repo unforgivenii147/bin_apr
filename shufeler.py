@@ -1,27 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import mmap
 import random
 import secrets
 import sys
 from pathlib import Path
-
 
 MMAP_THRESHOLD_BYTES = 1 * 1024 * 1024
 
@@ -102,10 +86,7 @@ def enhanced_shuffle_large_file(input_file_path, output_file_path):
                 else:
                     end_of_line_offset = file_size
                 actual_end_of_line = mm.find(b"\n", offset)
-                if actual_end_of_line == -1:
-                    line_data = mm[offset:file_size]
-                else:
-                    line_data = mm[offset : actual_end_of_line + 1]
+                line_data = mm[offset:file_size] if actual_end_of_line == -1 else mm[offset : actual_end_of_line + 1]
                 outfile.write(line_data)
                 if (i + 1) % 100000 == 0:
                     print(f"  {i + 1}/{original_line_count} lines written...", end="\r")

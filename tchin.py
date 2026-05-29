@@ -1,24 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-    main,
-    ALLOWED_EXT,
-    CHUNK_SIZE,
-    main,
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 from pathlib import Path

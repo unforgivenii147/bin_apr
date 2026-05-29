@@ -1,13 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
-from dh import get_lines
-from termcolor import cprint
+from dh import cprint, get_lines
 
 
 def process_files(fp1, fp2):

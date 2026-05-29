@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 from pathlib import Path
@@ -47,7 +31,6 @@ def main() -> None:
     args = parser.parse_args()
     path = Path(args.file)
     if not path.is_file():
-        msg = f"Error: file not found: {path}"
         raise SystemExit(msg)
     lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
     packages = []

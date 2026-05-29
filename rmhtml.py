@@ -1,32 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gsz, mpf3
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
 
@@ -49,7 +27,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm", ".xml"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".html", ".htm", ".xml"])
     mpf3(process_file, files)
     diff_size = before - gsz(cwd)
     print(f"space saved : {fsz(diff_size)}")

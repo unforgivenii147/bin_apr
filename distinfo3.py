@@ -1,27 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    py_version,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import shutil
 import sys
 from pathlib import Path
 
-from termcolor import cprint
+from dh import cprint
 
 major, minor, _, _, _ = sys.version_info
 py_version = f"{major}.{minor}"

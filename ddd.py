@@ -1,54 +1,61 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    get_dir_size,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
-import operator
+from operator import itemgetter
+from os import walk as os_walk
 from pathlib import Path
 
-
-def get_dir_size(path="."):
+def get_dir_size(path):
     total = 0
-    try:
-        for entry in Path(path).rglob("*"):
-            if entry.is_file():
+    for r, _, files in os_walk(path):
+        for file in files:
+            path = Path(r) / file
+            if path.is_file() and not path.is_symlink():
                 try:
-                    total += entry.stat().st_size
+                    total += path.stat().st_size
                 except OSError:
                     continue
-    except Exception:
-        return 0
     return total
 
 
-def human_readable_size(size_bytes):
-    if size_bytes == 0:
-        return "0B"
-    units = ("B", "K", "M", "G", "T", "P", "E", "Z", "Y")
-    i = 0
-    while size_bytes >= 1024 and i < len(units) - 1:
-        size_bytes /= 1024.0
-        i += 1
-    return f"{size_bytes:.1f}{units[i]}"
+def fsz(sz: float) -> str:
+    sz = abs(int(sz))
+    units = ("B", "KB", "MB", "GB", "TB")
+    if sz == 0:
+        return "0 B"
+    i = min((int(sz).bit_length() - 1) // 10, len(units) - 1)
+    value = sz / 1024**i
+    if i == 0:
+        return f"{int(value)} {units[i]}"
+    return f"{value:.1f} {units[i]}"
 
 
-def du_sort_python(target_dir="."):
-    current_path = Path(target_dir)
+def du_sort_python(path):
     results = []
-    results.append((get_dir_size(current_path), str(current_path)))
-    for entry in current_path.iterdir():
+    total = 0
+    for entry in path.iterdir():
         if entry.is_dir() or entry.is_file():
             size = get_dir_size(entry) if entry.is_dir() else entry.stat().st_size
+            total += size
             results.append((size, str(entry)))
-    sorted_results = sorted(results, key=operator.itemgetter(0), reverse=False)
-    print(f"{target_dir}:")
+    sorted_results = sorted(results, key=itemgetter(0), reverse=False)
     for size_bytes, path in sorted_results:
-        size_hr = human_readable_size(size_bytes)
-        print(f"{size_hr}\t{path}")
+        sz = fsz(size_bytes)
+        path=Path(path)
+        if path.is_dir():
+            if size_bytes > 1024 * 1024:
+                print(f"\033[5;94m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
+            else:
+                print(f"\033[5;94m{path.name:25}\033[0m  {sz}")
+
+        if path.is_file():
+            if size_bytes > 1024 * 1024:
+                print(f"\033[5;92m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
+            else:
+                print(f"\033[5;92m{path.name:25}\033[0m  {sz}")
+
+    print(f"total size : \033[5;94m{fsz(total)}\033[0m")
 
 
 if __name__ == "__main__":
-    du_sort_python(".")
+    cwd = Path.cwd()
+    du_sort_python(cwd)

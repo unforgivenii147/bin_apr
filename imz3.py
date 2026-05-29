@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from pathlib import Path
 
@@ -67,7 +52,7 @@ def is_local_module(base_path: Path, module: str) -> bool:
 def main():
     cwd = Path.cwd()
     importz = []
-    for file in get_files(cwd, extensions=[".py"]):
+    for file in get_files(cwd, ext=[".py"]):
         with Path(file).open(encoding="utf-8") as f:
             contents = f.read()
             importz.append(extract_imports_from_py(contents))

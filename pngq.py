@@ -1,24 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    START_DIR,
-    NUM_PROCESSES,
-    main,
-    main,
-    process_file,
-    main,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -45,16 +26,15 @@ def process_file(path):
         if "skipping" in txt.lower():
             print(f" Skipped: {path.name}")
             return
-        else:
-            after = gsz(path)
-            dz = before - after
-            if not dz:
-                print(f"✅ : {path.name} : (no change)")
-                return
-            ratio = (before - after) / before * 100
-            print(f"✅ : {path.name}", end=" | ")
-            cprint(f"{ratio:.1f} %")
+        after = gsz(path)
+        dz = before - after
+        if not dz:
+            print(f"✅ : {path.name} : (no change)")
             return
+        ratio = (before - after) / before * 100
+        print(f"✅ : {path.name}", end=" | ")
+        cprint(f"{ratio:.1f} %")
+        return
     except FileNotFoundError:
         print(
             "❌ Error: 'pngquant' command not found. Please ensure the 'pngquant' binary is installed and in your system PATH."
@@ -74,9 +54,9 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_files(p, extensions=[".png", ".PNG"]))
+                files.extend(get_files(p, ext=[".png", ".PNG"]))
     else:
-        files = get_files(root_dir, extensions=[".png", ".PNG"])
+        files = get_files(root_dir, ext=[".png", ".PNG"])
     _ = mpf3(process_file, files)
 
 

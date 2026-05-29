@@ -1,24 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    get_sha256,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 from dh import cprint, get_sha256
 
@@ -33,14 +17,13 @@ def get_path_dirs() -> list[Path]:
 
 def get_executables_in_dir(d: Path) -> list[Path]:
     try:
-        return [f for f in d.iterdir() if f.is_file() and not f.name == ".gitignore"]
+        return [f for f in d.iterdir() if f.is_file() and f.name != ".gitignore"]
     except PermissionError:
         print(f"Permission denied: {d}")
         return []
 
 
 def main():
-
     dirs = [d for d in get_path_dirs() if d.is_dir()]
     executables: defaultdict[str, list[tuple[Path, str]]] = defaultdict(list)
     for d in dirs:

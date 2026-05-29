@@ -1,33 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    MAX_QUEUE,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 
-from dh import fsz, get_files, gsz
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz
 
 MAINBLOCK = 'if __name__ == "__main__":'
 MAX_QUEUE = 16
@@ -49,7 +27,7 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".py"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

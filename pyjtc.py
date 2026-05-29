@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    process_file,
-    parser,
-    parser,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import re

@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    DIRECTORY,
-    non_english_pattern,
-    is_english,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from pathlib import Path

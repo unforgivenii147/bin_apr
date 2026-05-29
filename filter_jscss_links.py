@@ -1,28 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    INPUT_FILE,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    INPUT_FILE,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from pathlib import Path
 from urllib.parse import urlparse
-
 
 INPUT_FILE = Path("urls.txt")
 OUTPUT_FILE = Path("filtered_urls.txt")

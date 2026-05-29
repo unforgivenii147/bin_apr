@@ -1,15 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import os
 import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 
 MB_5 = 5 * 1024 * 1024
 

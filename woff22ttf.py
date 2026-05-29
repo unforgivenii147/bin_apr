@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
 from pathlib import Path
 
 from dh import cprint, get_files, mpf3
@@ -39,7 +22,7 @@ def process_file(path: Path):
 
 
 def main():
-    files = get_files(cwd, extensions=[".woff2"])
+    files = get_files(cwd, ext=[".woff2"])
     _ = mpf3(process_file, files)
 
 

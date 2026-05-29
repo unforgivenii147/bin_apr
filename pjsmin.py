@@ -1,31 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gext, gsz, mpf
+from dh import cprint, fsz, get_files, gext, gsz, mpf
 from rjsmin import jsmin
-from termcolor import cprint
 
 
 def process_file(path) -> str:
@@ -59,7 +38,7 @@ def process_file(path) -> str:
 
 def main() -> None:
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".js", ".min.js"])
+    files = get_files(cwd, ext=[".js", ".min.js"])
     if len(files) == 1:
         process_file(files[0])
         sys.exit(0)

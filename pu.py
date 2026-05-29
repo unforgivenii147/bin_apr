@@ -1,23 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
+import subprocess
 import sys
 from pathlib import Path
 
+from dh import get_file_age, get_ipkgs
 from pip._internal.cli.main import main as pip_main
 from rapidfuzz import fuzz
 
@@ -27,45 +14,59 @@ def uninstall(packages: list[str]):
     return pip_main(args)
 
 
-def display_packages(packages: dict[str, str], title: str = "Packages"):
-    if not packages:
-        return
-    print(f"\n{title}:")
-    for pkg, version in sorted(packages.items()):
-        print(f"  - {pkg} (version: {version})")
-    print(f"\nTotal: {len(packages)} package(s)")
+PIP_LIST_FILE = "/sdcard/data/pip.list"
 
 
-def find_matching_packages(pattern: str, packages: dict[str, str]) -> dict[str, str]:
-    pattern_lower = pattern.lower()
-    return {
-        package_name: version
-        for package_name, version in packages.items()
-        if pattern_lower in package_name.lower() or fuzz.partial_ratio(pattern_lower, package_name.lower()) > 95
-    }
+def create_pip_list_again():
+    installed = get_ipkgs()
+    content = "\n".join(installed)
+    Path(PIP_LIST_FILE).write_text(content, encoding="utf-8")
+    return installed
 
 
-def get_pkgs():
-    pkgfile = Path("/sdcard/data/pip.freeze")
-    pkgfile_content = pkgfile.read_text(encoding="utf-8")
-    packages = {}
-    for line in pkgfile_content.splitlines():
-        if "==" in line:
-            name, version = line.split("==", 1)
-            packages[name] = version
-    return packages
+def load_installed_packages():
+    path = Path(PIP_LIST_FILE)
+    ONE_DAY = 60 * 60 * 24
+    age = get_file_age(path)
+    print(age)
+    if age / ONE_DAY > 1.0 or not path.exists():
+        return create_pip_list_again()
+    return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def main():
-    pat = sys.argv[1]
-    pkgs = get_pkgs()
-    matc = find_matching_packages(pat, pkgs)
-    if not matc:
-        print(f"No installed packages found containing '{pat}' in their name.")
-        sys.exit(0)
-    display_packages(matc, "Packages to uninstall")
-    uninstall(list(matc.keys()))
+def find_dist_info(prefix):
+    import site
+
+    matches = []
+    for sp in site.getsitepackages():
+        sp_path = Path(sp)
+        for d in sp_path.glob(f"{prefix}*.dist-info"):
+            matches.append(d)
+    for sp in (site.getusersitepackages(),):
+        sp_path = Path(sp)
+        for d in sp_path.glob(f"{prefix}*.dist-info"):
+            matches.append(d)
+    return matches
+
+
+def uninstall_packages(pkg_name):
+    try:
+        subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", pkg_name], check=True)
+        print(f"Uninstalled {pkg_name}")
+    except subprocess.CalledProcessError:
+        print(f"Skipped {pkg_name} (not installed or error)")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <package_prefix>")
+        sys.exit(1)
+    prefix = sys.argv[1].lower()
+    installed = load_installed_packages()
+    to_uninstall = [
+        pkg.lower() for pkg in installed if prefix in pkg.lower() or fuzz.partial_ratio(prefix, pkg.lower()) > 95
+    ]
+    if not to_uninstall:
+        print("no match found")
+        sys.exit(0)
+    uninstall(to_uninstall)

@@ -1,21 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 
@@ -32,7 +15,6 @@ def process_file(fp):
 
 
 def main():
-    filename = "uv.lock"
     process_file(filename)
 
 

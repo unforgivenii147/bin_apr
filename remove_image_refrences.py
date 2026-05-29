@@ -1,24 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 from pathlib import Path
-
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
 IMG_TAG_RE = re.compile("<img\\b[^>]*\\bsrc\\s*=\\s*[\"\\']([^\"\\']+)[\"\\'][^>]*>", re.IGNORECASE)

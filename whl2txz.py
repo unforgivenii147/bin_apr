@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import tarfile
 import zipfile
@@ -45,7 +29,7 @@ def whl_to_tar_xz(whl_path: Path):
 def main():
     args = sys.argv[1:]
     cwd = Path().cwd()
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=False, extensions=[".whl"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=False, ext=[".whl"])
     if len(files) == 1:
         whl_to_tar_xz(files[0])
         sys.exit(0)

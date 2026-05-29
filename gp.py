@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 import sys
 from datetime import datetime
@@ -53,8 +37,8 @@ def symlink_global_gitignore() -> None:
         sys.exit(1)
 
 
-def get_current_branch():
-    cmd = "git rev-parse --abbrev-ref HEAD"
+def get_current_branch(cmd):
+    cmd=["git","branch"]
     return subprocess.check_output(cmd, shell=True).decode().strip()
 
 

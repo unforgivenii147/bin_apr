@@ -1,36 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    CHUNK_SIZE,
-    N_JOBS,
-    main,
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
 from pathlib import Path
 
 import brotlicffi
-from dh import fsz, get_files, gsz
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz
 
 CHUNK_SIZE = 32768
 N_JOBS = -1
@@ -67,7 +42,8 @@ def parallel_decompress(in_path, out_path):
 
 
 def process_file(fp):
-    fp = Path(fp)
+    if not fp.stat().st_size:
+        return
     if not fp.exists() or fp.suffix != ".br":
         return
     before = gsz(fp)
@@ -98,7 +74,7 @@ def main():
     root_dir = Path.cwd()
     before = gsz(root_dir)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(root_dir, recursive=True)
+    files = [Path(arg) for arg in args] if args else get_files(root_dir)
     for f in files:
         process_file(f)
     diff_size = before - gsz(root_dir)

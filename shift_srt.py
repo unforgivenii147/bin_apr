@@ -1,28 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    TIMESTAMP_RE,
-    to_ms,
-    from_ms,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 from pathlib import Path
-
 
 TIMESTAMP_RE = re.compile("(\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-->\\s(\\d{2}:\\d{2}:\\d{2},\\d{3})")
 
@@ -42,7 +21,6 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
-
     def repl(m):
         start, end = m.groups()
         return f"{from_ms(to_ms(start) + shift_ms)} --> {from_ms(to_ms(end) + shift_ms)}"
@@ -69,7 +47,6 @@ def main():
         process_file(path, shift_ms)
         return
     if not path.is_dir():
-        msg = "Invalid path"
         raise SystemExit(msg)
     glob = "**/*.srt" if args.recursive else "*.srt"
     files = sorted(path.glob(glob))

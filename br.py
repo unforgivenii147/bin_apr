@@ -1,49 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    CHUNK_SIZE,
-    N_JOBS,
-    compress_chunk,
-    main,
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
 from pathlib import Path
-
+from binaryornot import is_binary
 import brotlicffi
-from dh import fsz, get_files, gsz
-from joblib import Parallel, delayed
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz, mpf3
+# from joblib import Parallel, delayed
 
-CHUNK_SIZE = 32768
-QUALITY = 11
+CHUNK_SIZE = 524288
 N_JOBS = -1
 
 
-def compress_chunk(data, quality=QUALITY):
-    return brotlicffi.compress(data, quality=quality)
+def compress_chunk(data, mode: int = 0):
+    return brotlicffi.compress(data, mode=mode, quality=11)
 
 
 def parallel_compress(in_path, out_path):
+    mode = 0
+    if not is_binary(in_path):
+        mode = 1
     try:
         file_size = in_path.stat().st_size
         if not file_size:
@@ -52,10 +28,12 @@ def parallel_compress(in_path, out_path):
         with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
             chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
-            compressed_chunks = Parallel(n_jobs=N_JOBS, backend="loky")(
-                (delayed(compress_chunk)(chunk) for chunk in chunks)
-            )
-            for block in compressed_chunks:
+            #            compressed_chunks=mpf3(compress_chunk,chunks)
+            #            compressed_chunks = Parallel(n_jobs=N_JOBS, backend="loky")(
+            #                (delayed(compress_chunk)(chunk) for chunk in chunks)
+            #            )
+            for chunk in chunks:
+                block = compress_chunk(chunk, mode)
                 fout.write(len(block).to_bytes(4, "big"))
                 fout.write(block)
             mm.close()
@@ -64,8 +42,10 @@ def parallel_compress(in_path, out_path):
         return False
 
 
+0
+
+
 def process_file(fp):
-    fp = Path(fp)
     if not fp.exists() or fp.suffix == ".br":
         return
     before = gsz(fp)
@@ -77,9 +57,10 @@ def process_file(fp):
     elif outfile.exists():
         outfile.unlink()
     after = gsz(outfile)
-    ratio = after / before * 100
+    dsz = abs(before - after)
+    ratio = dsz / before * 100
     cprint(f"{outfile.name}", "green", end=" | ")
-    cprint(f"{ratio:.3f}", "cyan")
+    cprint(f"{fsz(dsz)} | {ratio:.2f}%", "cyan")
     del before, after, ratio
     return
 
@@ -88,9 +69,8 @@ def main():
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True)
-    for f in files:
-        process_file(f)
+    files = [Path(arg) for arg in args] if args else get_files(cwd)
+    mpf3(process_file, files)
     diff_size = before - gsz(cwd)
     print(f"{fsz(diff_size)}")
 

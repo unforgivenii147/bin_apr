@@ -1,26 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import subprocess
 import sys
 from pathlib import Path
-
 
 try:
     from tree_sitter import Language, Parser
@@ -103,8 +86,7 @@ class BashCommentRemover:
                 else:
                     modified_lines[start_line] = modified_lines[start_line][:start_col]
                     for line_num in range(start_line + 1, end_line):
-                        modified_lines[line_num] = ""
-                    modified_lines[end_line] = modified_lines[end_line][end_col:]
+                        modified_lines[end_line] = modified_lines[end_line][end_col:]
             modified_content = "".join(modified_lines)
             import re
 

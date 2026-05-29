@@ -1,14 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 import tokenize
 from io import StringIO
 from pathlib import Path
-
 
 python_keywords = {"def", "class", "import", "from", "lambda", "yield", "async", "await"}
 

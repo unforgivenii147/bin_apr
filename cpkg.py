@@ -1,24 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    logger,
-    copy_package_files,
-    main,
-    main,
-    main,
-    main,
-    find_dist_info_dir,
-    find_dist_info_dir,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import csv
 import shutil
 import sys
@@ -33,7 +13,6 @@ def find_dist_info_dir(site_packages: Path, pkg_name: str) -> Path:
         norm = pkg_name.replace("-", "_")
         candidates = list(site_packages.glob(f"{norm}-*.dist-info"))
     if not candidates:
-        msg = f"Could not find any dist-info directory for package '{pkg_name}' in {site_packages}"
         raise FileNotFoundError(msg)
     if len(candidates) > 1:
         logger.warning("Multiple dist-info directories found for '{}', using: {}", pkg_name, candidates[0])
@@ -45,7 +24,6 @@ def copy_package_files(pkg_name: str):
     dist_info_dir = find_dist_info_dir(site_packages, pkg_name)
     record_path = dist_info_dir / "RECORD"
     if not record_path.is_file():
-        msg = f"RECORD file not found: {record_path}"
         raise FileNotFoundError(msg)
     dest_root = Path.home() / "tmp" / "1" / pkg_name
     dest_root.mkdir(parents=True, exist_ok=True)

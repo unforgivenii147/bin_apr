@@ -1,16 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    parser,
-    parser,
-    OUT_DIR,
-    extract_file,
-    folder_imports,
-    VALID,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from collections import defaultdict
 from pathlib import Path
 

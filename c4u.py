@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import html as _html
 import re
@@ -11,8 +8,8 @@ import urllib.parse
 from pathlib import Path
 
 import requests
+from dh import cprint
 from packaging.version import Version
-from termcolor import cprint
 
 
 def save_output(content, pkg):

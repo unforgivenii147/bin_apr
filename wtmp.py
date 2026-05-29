@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 import sys
 import time
@@ -13,7 +10,7 @@ from watchdog.observers import Observer
 
 TEMPDIR = Path("/data/data/com.termux/files/usr/tmp")
 DEST_DIR = Path("~/tmp/tgz").expanduser()
-ALLOWED_EXTENSIONS = (".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.bz2")
+ALLOWED_EXTENSIONS = (".tar.gz", ".whl", ".tar.xz", ".zip", ".tar.bz2", ".metadata", ".tar.lz4")
 
 
 def copy_if_match(src: Path) -> None:
@@ -48,7 +45,7 @@ if __name__ == "__main__":
     startup_scan(watch_path)
     event_handler = CopyEventHandler()
     observer = Observer()
-    observer.schedule(event_handler, str(watch_path), recursive=True)
+    observer.schedule(event_handler, str(watch_path))
     observer.start()
     try:
         while True:

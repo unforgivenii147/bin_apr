@@ -1,26 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    START_DIR,
-    NUM_PROCESSES,
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
+import os
 import sys
 from pathlib import Path
-import os
+
 from dh import get_files, mpf3
 
 START_DIR = Path.cwd()
@@ -33,13 +16,6 @@ def process_file(path):
     os.system(f"cythonize {path.name}")
 
 
-#    cmd=["cythonize",str(path)]
-#    ret,txt,err = runcmd(cmd,show_output=True)
-#    print(ret)
-#    print(txt)
-#    print(err)
-
-
 def main():
     root_dir = Path.cwd()
     args = sys.argv[1:]
@@ -50,9 +26,9 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_files(p, extensions=[".pyx"]))
+                files.extend(get_files(p, ext=[".pyx"]))
     else:
-        files = get_files(root_dir, extensions=[".pyx"])
+        files = get_files(root_dir, ext=[".pyx"])
     _ = mpf3(process_file, files)
 
 

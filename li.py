@@ -1,17 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    get_dir_size,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import os
 import stat
 import sys
 from pathlib import Path
-
 
 CYAN = "\x1b[36m"
 BLUE = "\x1b[34m"

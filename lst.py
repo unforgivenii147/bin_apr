@@ -1,20 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    cwd,
-    fsz,
-    gsz,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import datetime
 from pathlib import Path
 
-from dh import fsz, gsz
-from termcolor import cprint
+from dh import cprint, fsz, gsz
 
 if __name__ == "__main__":
     cwd = Path.cwd()

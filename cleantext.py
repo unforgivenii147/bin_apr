@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    clean_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import unicodedata
 from pathlib import Path

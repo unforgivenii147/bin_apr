@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 from dh import get_files
@@ -22,7 +7,7 @@ from dh import get_files
 
 def main():
     cwd = Path.home()
-    files = get_files(cwd, extensions=[".html", ".htm"])
+    files = get_files(cwd, ext=[".html", ".htm"])
     for f in files:
         if f.stat().st_size > 1024 * 1024:
             print(f.relative_to(cwd))

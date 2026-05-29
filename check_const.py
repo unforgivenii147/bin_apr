@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
@@ -50,7 +35,7 @@ def main():
         f.write(f"\n# Duplicate declarations from {src_path.name}\n")
         for _, dup_line in duplicates:
             f.write(dup_line)
-    print(f"Kept the first declaration of each constant.")
+    print("Kept the first declaration of each constant.")
     print(f"Moved {len(duplicates)} duplicate declarations to {dup_path}")
     print(f"Updated {src_path} in place.")
 

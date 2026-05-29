@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import re
@@ -22,7 +7,6 @@ import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
-
 
 try:
     from tqdm import tqdm

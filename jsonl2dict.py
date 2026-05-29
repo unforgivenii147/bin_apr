@@ -1,14 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 
 
 def jsonl_to_dict_list(filepath):
     data = []
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             try:
                 data.append(json.loads(line))
@@ -19,7 +16,7 @@ def jsonl_to_dict_list(filepath):
 
 def with_key(filepath, key_field):
     data = {}
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             try:
                 record = json.loads(line)

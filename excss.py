@@ -1,35 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from dh import get_files, get_random_name, mpf3
-from termcolor import cprint
+from dh import cprint, get_files, get_random_filename, mpf3
 
 
 def save_style(str1):
     if not str1 or len(str(str1)) < 2:
         return
     fn = "css/"
-    fn += get_random_name(10)
+    fn += get_random_filename(10)
     fn += ".css"
     path = Path(fn)
     if path.exists():
@@ -57,7 +39,7 @@ def main():
         outpath.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, recursive=True, extensions=[".html", ".htm"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, ext=[".html", ".htm"])
     mpf3(process_file, files)
 
 

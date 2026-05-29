@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    get_mode,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import stat
 from pathlib import Path
 

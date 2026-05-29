@@ -1,31 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    parser,
-    parser,
-    extract_file,
-    VALID,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
 import tree_sitter_python as tsp
-from dh import STDLIB, get_filez, get_installed_pkgs, is_binary
-from termcolor import cprint
+from dh import STDLIB, cprint, get_filez, get_installed_pkgs, is_binary
 from tree_sitter import Language, Parser
 
 parser = Parser()

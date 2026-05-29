@@ -1,29 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fetch_content_length,
-    fsz,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import urllib.error
 import urllib.request
 from pathlib import Path
-
 
 MAX_DOWNLOAD_SIZE = 1 * 1024 * 1024
 

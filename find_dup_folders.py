@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    get_dirs,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 from collections import defaultdict
 from pathlib import Path

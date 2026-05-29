@@ -1,29 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    ERROR_DIR,
-    OK_DIR,
-    ensure_dirs,
-    unique_destination,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-
 
 ERROR_DIR = Path("error")
 OK_DIR = Path("ok")

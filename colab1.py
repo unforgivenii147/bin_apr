@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    EXCLUDE_PREFIXES,
-    EXCLUDE_PREFIXES,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import shutil
 import site

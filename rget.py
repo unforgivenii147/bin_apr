@@ -1,17 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    OUTPUT_DIR,
-    OUTPUT_DIR,
-    MAX_WORKERS,
-    OUTPUT_DIR,
-    TIMEOUT,
-    MAX_WORKERS,
-    MAX_WORKERS,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 import sys

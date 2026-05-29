@@ -1,33 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    main,
-    process_file,
-    main,
-    OUTPUT_DIR,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
-import hashlib
 import logging
 import operator
 from pathlib import Path
+
 from dh import get_pyfiles
 from joblib import Parallel, delayed
+from xxhash import xxh64
 
 OUTPUT_DIR = Path.home() / "isaac" / "may" / "pkgs" / "dh2" / "src" / "dh2" / "output"
 OUTPUT_FILE = OUTPUT_DIR / "const.py"
@@ -37,7 +17,7 @@ logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format="%(asctime)s 
 
 
 def get_file_hash(filepath: Path) -> str:
-    hasher = hashlib.sha256()
+    hasher = xxh64()
     with Path(filepath).open("rb") as f:
         while chunk := f.read(32768):
             hasher.update(chunk)
@@ -82,7 +62,6 @@ def process_file(filepath: Path) -> tuple[str, list[tuple[str, str, str]] | None
 
 
 def main():
-    #    OUTPUT_DIR.mkdir(exist_ok=True)
     cwd = Path.cwd()
     python_files = list(get_pyfiles(cwd))
     if not python_files:

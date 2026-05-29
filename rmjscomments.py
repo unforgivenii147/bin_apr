@@ -1,36 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    CHUNK_SIZE,
-    N_JOBS,
-    main,
-    CHUNK_SIZE,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
 
-from dh import fsz, get_files, gsz
+from dh import cprint, fsz, get_files, gsz
 from joblib import Parallel, delayed
-from termcolor import cprint
 
 CHUNK_SIZE = 1024 * 1024
 N_JOBS = -1
@@ -61,11 +36,11 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_files(p, recursive=True))
+                files.extend(get_files(p))
     else:
         files = get_files(
             root_dir,
-            extensions=[
+            e=[
                 ".js",
                 ".jsx",
                 ".ts",

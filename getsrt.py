@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import subprocess
 from pathlib import Path
@@ -10,7 +6,6 @@ from pathlib import Path
 
 def extract_subtitles(input_file, output_file=None, subtitle_index=0):
     if not Path(input_file).exists():
-        msg = f"Input file not found: {input_file}"
         raise FileNotFoundError(msg)
     if output_file is None:
         output_file = os.path.splitext(input_file)[0] + ".srt"

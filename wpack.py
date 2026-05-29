@@ -1,14 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    find_dist_info_dir,
-    UNPACKED_WHEELS_SOURCE_DIR,
-    WHEELS_OUTPUT_DIR,
-    find_dist_info_dir,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import asyncio
 import multiprocessing
 import sys

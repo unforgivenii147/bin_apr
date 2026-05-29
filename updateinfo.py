@@ -1,24 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 
 NEW_INFO = {"name": "Isaac Onagh", "email": "mkalafsaz@gmail.com", "github_username": "unforgivenii147"}
 
@@ -50,7 +33,6 @@ def update_pyproject_toml(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
         if "[project]" in content:
-            author_pattern = "(authors\\s*=\\s*\\[\\s*\\{[^}]*name\\s*=\\s*[\"\\'][^\"\\']*[\"\\'][^}]*email\\s*=\\s*[\"\\'][^\"\\']*[\"\\'][^}]*\\})"
 
             def replace_author(match):
                 author_block = match.group(1)

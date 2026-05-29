@@ -1,28 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    chunk_text,
-    main,
-    chunk_text,
-    write_text_file,
-    build_output_path,
-    main,
-    ALLOWED_EXT,
-    CHUNK_SIZE,
-    main,
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 from pathlib import Path
@@ -36,7 +12,6 @@ ALLOWED_EXT = {".txt", ".md", ".csv", ".json", ".py"}
 def read_text_file(path: Path) -> str:
     ext = path.suffix.lower()
     if ext not in ALLOWED_EXT:
-        msg = f"Unsupported file type: {ext}"
         raise ValueError(msg)
     return path.read_text(encoding="utf-8")
 

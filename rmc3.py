@@ -1,32 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    N_JOBS,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
 
 from dh import DOC_TH1, cprint, fsz, gsz, mpf
-from termcolor import cprint
 
 N_JOBS = -1
 
@@ -65,7 +43,7 @@ def main():
             if p.is_file():
                 files.append(p)
             elif p.is_dir():
-                files.extend(get_files(p, recursive=True))
+                files.extend(get_files(p))
     else:
         files = get_files(root_dir)
     results = mpf(process_file, files)

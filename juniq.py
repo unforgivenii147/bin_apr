@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 import sys
 from pathlib import Path
@@ -18,7 +14,6 @@ def deduplicate_json_object(data):
 
 def deduplicate_json_list(data_list, unique_by=None):
     if not isinstance(data_list, list):
-        msg = "Input must be a list of dictionaries."
         raise ValueError(msg)
     seen = set()
     new_list = []

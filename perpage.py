@@ -1,12 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -69,6 +62,6 @@ def process_file(pdf_path: Path):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".pdf", ".PDF"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".pdf", ".PDF"])
     for f in files:
         process_file(f)

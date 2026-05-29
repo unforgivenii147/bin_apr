@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-    unique_path,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -48,6 +40,6 @@ def process_file(path):
 if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = list(cwd.rglob("*")) if args else list(cwd.glob("*"))
+    files = list(cwd.glob("*")) if args else list(cwd.rglob("*"))
     for f in files:
         process_file(f)

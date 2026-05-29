@@ -1,23 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    main,
-    main,
-    main,
-    BASE_DIR,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import importlib
 import inspect
@@ -155,7 +137,7 @@ def main():
         BASE_DIR.mkdir(exist_ok=True)
     cwd = Path.cwd()
     args = sys.argv[1:]
-    files = [Path(arg) for arg in args] if args else get_files(cwd, extensions=[".py", ".pyi", ".pyx", ".pxd"])
+    files = [Path(arg) for arg in args] if args else get_files(cwd, ext=[".py", ".pyi", ".pyx", ".pxd"])
     print(f"processing {len(files)} files")
     with get_context("spawn").Pool(4) as pool:
         pending = deque()

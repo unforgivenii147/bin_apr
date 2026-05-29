@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    logger,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 import traceback
 from importlib import import_module

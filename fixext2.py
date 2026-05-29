@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    safe_rename,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
 

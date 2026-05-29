@@ -1,26 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import os
 from pathlib import Path
-
 
 OUTPUT_FILE = "found.txt"
 

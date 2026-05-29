@@ -1,22 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    get_current_folder_name,
-    folder_exists_in_db,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sqlite3
 from pathlib import Path
@@ -78,11 +61,11 @@ def insert_files(cursor, folder_name, files):
 
 def main():
     db_path = "/sdcard/pkg.db"
-    default_name = get_current_folder_name()
+    folder_name = get_current_folder_name()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     if folder_exists_in_db(cursor, folder_name):
-        folder_name = default_name + "_new"
+        folder_name = folder_name + "_new"
     create_folder_table(cursor, folder_name)
     files = get_files_in_current_dir()
     if not files:

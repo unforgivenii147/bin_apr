@@ -1,51 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    can_fetch,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
-"""
-Search a website for PDF files and save their URLs to urls.txt.
-Usage:
-    python find_pdfs.py <start_url> [max_pages] [delay_seconds]
-Example:
-    python find_pdfs.py https://example.com/docs 100 0.5
-"""
-
 import sys
 import time
-import requests
+from collections import deque
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
+
+import requests
 from bs4 import BeautifulSoup
-from collections import deque
 
 
 def can_fetch(rp, url):
-    """Check if crawling is allowed for `url` by robots.txt."""
     try:
         return rp.can_fetch("*", url)
     except Exception:
-        return True  # Assume allowed if robots.txt parsing fails
+        return True
 
 
 def crawl_for_pdfs(start_url, max_pages=100, delay=1.0):
-    """
-    Crawl `start_url` (same domain only) to find PDF files.
-    Returns list of absolute PDF URLs.
-    """
     parsed = urlparse(start_url)
     if not parsed.scheme:
         start_url = "https://" + start_url.lstrip("/")
@@ -68,7 +40,7 @@ def crawl_for_pdfs(start_url, max_pages=100, delay=1.0):
         url = queue.popleft()
         if url in visited:
             continue
-        if rp and not can_fetch(rp, url):
+        if rp and (not can_fetch(rp, url)):
             print(f"🚫 Skipping (robots.txt): {url}")
             continue
         visited.add(url)
@@ -80,9 +52,8 @@ def crawl_for_pdfs(start_url, max_pages=100, delay=1.0):
             if "pdf" in content_type:
                 pdf_urls.add(url)
                 print(f"  📄 PDF (via Content-Type): {url}")
-                continue  # Skip HTML parsing
-            if "html" not in content_type and not url.lower().endswith((".html", ".htm")):
-                # Skip non-HTML (e.g., images, JSON, XML)
+                continue
+            if "html" not in content_type and (not url.lower().endswith((".html", ".htm"))):
                 continue
             soup = BeautifulSoup(resp.content, "html.parser")
             for a in soup.find_all("a", href=True):
@@ -96,9 +67,8 @@ def crawl_for_pdfs(start_url, max_pages=100, delay=1.0):
                     pdf_urls.add(full_url)
                     print(f"  📄 PDF (via link): {full_url}")
                 elif full_url not in visited:
-                    # Queue for crawling (only HTML-like pages)
                     if not any(
-                        full_url.lower().endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".gif", ".css", ".js")
+                        (full_url.lower().endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".gif", ".css", ".js"))
                     ):
                         queue.append(full_url)
         except requests.RequestException as e:
@@ -110,10 +80,8 @@ def crawl_for_pdfs(start_url, max_pages=100, delay=1.0):
 
 
 def save_urls(urls, filename="urls.txt"):
-    """Save URLs to a file, one per line."""
     with open(filename, "w", encoding="utf-8") as f:
-        for url in urls:
-            f.write(url + "\n")
+        f.writelines((url + "\n" for url in urls))
     print(f"\n✅ Saved {len(urls)} PDF URLs to '{filename}'")
 
 

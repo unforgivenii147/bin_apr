@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import json
 import subprocess
@@ -58,8 +42,7 @@ def extract_subtitles(video_path, output_dir):
         title = s.get("tags", {}).get("title", "").replace(" ", "_")
         suffix = f".{lang}"
         if title:
-            suffix += f".{title}"
-        out_ext = "srt" if codec in {"subrip", "srt"} else codec
+            out_ext = "srt" if codec in {"subrip", "srt"} else codec
         out_file = output_dir / f"{base}{suffix}.{out_ext}"
         cmd = ["ffmpeg", "-y", "-i", str(video_path), "-map", f"0:s:{subs.index(s)}", str(out_file)]
         try:

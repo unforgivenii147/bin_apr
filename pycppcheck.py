@@ -1,18 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 
-from dh import get_files, run_command
-from termcolor import cprint
+from dh import cprint, get_files, run_command
 
 c_files = {".c", ".h", ".inc"}
 cpp_files = {".cpp", ".cc", ".cxx", ".hpp", ".hpp11", ".hh", ".hxx"}
@@ -34,7 +27,7 @@ if __name__ == "__main__":
     files = (
         [Path(p) for p in args]
         if args
-        else get_files(cwd, extensions=[".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx", ".inc", "hpp11"])
+        else get_files(cwd, ext=[".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx", ".inc", "hpp11"])
     )
     results = []
     with get_context("spawn").Pool(8) as pool:

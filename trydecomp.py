@@ -1,8 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import bz2
 import gzip
 import lzma
@@ -12,7 +8,6 @@ import tarfile
 import zipfile
 import zlib
 from pathlib import Path
-
 
 try:
     import brotli
@@ -48,7 +43,6 @@ def try_decompress(filename):
                 dctx = zstandard.ZstdDecompressor()
                 return dctx.decompress(data)
             except zstandard.ZstdError as e:
-                msg = f"Zstandard decompression error: {e}"
                 raise ValueError(msg) from e
 
         compression_methods["zstandard"] = zstd_decompress_all

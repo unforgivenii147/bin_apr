@@ -1,17 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    OUTPUT_DIR,
-    cwd,
-    process_file,
-    OUTPUT_DIR,
-    OUTPUT_DIR,
-    ASSETS_DIR,
-    TIMEOUT,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import mimetypes
 import re

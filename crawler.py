@@ -1,42 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-import re
 import argparse
 import json
 import os
+import re
 import signal
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing import Manager, cpu_count
+from urllib.parse import urljoin
+
+import requests
+from bs4 import BeautifulSoup
 
 DEFAULT_URL = "https://sr.moviesho.com/Series/"
 STATE_FILE = "crawler_state.json"
 TXT_OUTPUT = "movies.txt"
 JSON_OUTPUT = "movies.json"
-
 stop_flag = False
 
 
-# ----------------------------
-# Signal Handling
-# ----------------------------
 def signal_handler(sig, frame):
     global stop_flag
     print("\n⚠️  Interrupt received! Saving progress...")
@@ -46,11 +28,8 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
-# ----------------------------
-# Helpers
-# ----------------------------
 def size_to_mb(size_str):
-    match = re.search(r"([\d.]+)\s*Mi?B", size_str)
+    match = re.search("([\\d.]+)\\s*Mi?B", size_str)
     if match:
         return float(match.group(1))
     return None
@@ -77,57 +56,39 @@ def fetch_directory(url):
 def parse_directory(url, max_size):
     results = []
     subdirs = []
-
     html = fetch_directory(url)
     if not html:
-        return results, subdirs
-
+        return (results, subdirs)
     soup = BeautifulSoup(html, "html.parser")
     rows = soup.find_all("tr")
-
     for row in rows:
         cols = row.find_all("td")
         if len(cols) < 3:
             continue
-
         link_tag = cols[0].find("a")
         if not link_tag:
             continue
-
         name = link_tag.text.strip()
         href = link_tag.get("href")
         size_text = cols[1].text.strip()
-
         if "Parent directory" in name:
             continue
-
         full_url = urljoin(url, href)
-
-        # Directory
         if href.endswith("/"):
             subdirs.append(full_url)
             continue
-
-        # File
         if not name.lower().endswith(".mkv"):
             continue
-
         quality = extract_quality(name)
         if quality not in ("480", "720"):
             continue
-
         size_mb = size_to_mb(size_text)
         if size_mb is None or size_mb > max_size:
             continue
-
         results.append({"url": full_url, "quality": quality, "size_mb": size_mb})
+    return (results, subdirs)
 
-    return results, subdirs
 
-
-# ----------------------------
-# Save & Resume
-# ----------------------------
 def save_state(queue, visited):
     state = {"queue": list(queue), "visited": list(visited)}
     with open(STATE_FILE, "w", encoding="utf-8") as f:
@@ -136,86 +97,61 @@ def save_state(queue, visited):
 
 def load_state():
     if not os.path.exists(STATE_FILE):
-        return None, None
-    with open(STATE_FILE, "r", encoding="utf-8") as f:
+        return (None, None)
+    with open(STATE_FILE, encoding="utf-8") as f:
         state = json.load(f)
-    return set(state["visited"]), state["queue"]
+    return (set(state["visited"]), state["queue"])
 
 
 def append_results(results):
-    # Append to txt
     with open(TXT_OUTPUT, "a", encoding="utf-8") as f:
-        for r in results:
-            f.write(r["url"] + "\n")
-
-    # Append to JSON (line-based JSON)
+        f.writelines((r["url"] + "\n" for r in results))
     with open(JSON_OUTPUT, "a", encoding="utf-8") as f:
-        for r in results:
-            f.write(json.dumps(r) + "\n")
+        f.writelines((json.dumps(r) + "\n" for r in results))
 
 
-# ----------------------------
-# Main Crawl Logic
-# ----------------------------
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--url", default=DEFAULT_URL, help="Base URL to crawl")
     parser.add_argument("-s", "--size", type=float, default=300, help="Max size in MB (default 300)")
     args = parser.parse_args()
-
     max_size = args.size
     base_url = args.url if args.url.endswith("/") else args.url + "/"
-
     manager = Manager()
     visited = manager.list()
     queue = manager.list()
-
-    # Resume support
     prev_visited, prev_queue = load_state()
-
     if prev_queue:
         print("🔁 Resuming previous crawl...")
         visited[:] = prev_visited
         queue[:] = prev_queue
     else:
         queue.append(base_url)
-
     workers = cpu_count()
     print(f"🚀 Using {workers} processes")
-
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        while queue and not stop_flag:
+        while queue and (not stop_flag):
             futures = {}
-
-            # Submit batch
             for _ in range(min(len(queue), workers)):
                 url = queue.pop(0)
                 if url in visited:
                     continue
                 visited.append(url)
                 futures[executor.submit(parse_directory, url, max_size)] = url
-
             for future in as_completed(futures):
                 if stop_flag:
                     break
-
                 results, subdirs = future.result()
-
                 if results:
                     append_results(results)
                     print(f"✅ Found {len(results)} movies")
-
                 for sub in subdirs:
                     if sub not in visited:
                         queue.append(sub)
-
-    # Save state before exit
     save_state(queue, visited)
-
     if stop_flag:
         print("💾 Progress saved. Run again to continue.")
     else:
-        # Cleanup state if finished
         if os.path.exists(STATE_FILE):
             os.remove(STATE_FILE)
         print("✅ Crawl completed successfully.")

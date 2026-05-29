@@ -1,11 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    get_dir_size,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
+import contextlib
 import os
 import sys
 
@@ -37,10 +32,8 @@ def get_dir_size(start_path):
             for f in filenames:
                 fp = os.path.join(dirpath, f)
                 if not os.path.islink(fp):
-                    try:
+                    with contextlib.suppress(OSError):
                         total_size += os.path.getsize(fp)
-                    except OSError:
-                        pass
     except Exception as e:
         print(f"Error walking directory {start_path}: {e}", file=sys.stderr)
     return total_size
@@ -83,7 +76,7 @@ def create_chart(target_dir="."):
         ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140)
         ax.set_title("Directory Size Distribution")
     elif CHART_TYPE == "circle":
-        ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140, wedgeprops=dict(width=0.4))
+        ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140, wedgeprops={"width": 0.4})
         ax.set_title("Directory Size Distribution")
     else:
         print(f"Chart type '{CHART_TYPE}' is not supported.")

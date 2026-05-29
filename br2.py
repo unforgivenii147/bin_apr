@@ -1,37 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-    main,
-    CHUNK_SIZE,
-    main,
-    CHUNK_SIZE,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
-import pathlib
 import sys
 import tarfile
-from contextlib import contextmanager
-from typing import List
+from contextlib import contextmanager, suppress
+from pathlib import Path
 
-try:
-    import brotli
-except ImportError:
-    print("❌ Error: brotlicffi not installed. Run: pip install brotlicffi", file=sys.stderr)
-    sys.exit(1)
-CHUNK_SIZE = 1024 * 1024
-LARGE_FILE_THRESHOLD = 5 * 1024 * 1024
+from brotlicffi import Compressor, Decompressor
+
+CHUNK_SIZE = 32768
+LARGE_FILE_THRESHOLD = 2 * 1024 * 1024
 
 
 def parse_args() -> argparse.Namespace:
@@ -54,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def find_files_to_process(base_dir: pathlib.Path, recursive: bool = True) -> List[pathlib.Path]:
+def find_files_to_process(base_dir: Path, recursive: bool = True) -> list[Path]:
     files = []
     for p in base_dir.iterdir():
         if p.is_file() and (not p.name.endswith(".br")) and (not p.name.startswith(".")):
@@ -64,20 +42,19 @@ def find_files_to_process(base_dir: pathlib.Path, recursive: bool = True) -> Lis
     return sorted(files)
 
 
-def compress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = False) -> bool:
+def compress_file_chunked(src: Path, dst: Path, verbose: bool = False) -> bool:
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        with open(src, "rb") as f_in:
-            with open(dst, "wb") as f_out:
-                compressor = brotli.Compressor()
-                while True:
-                    chunk = f_in.read(CHUNK_SIZE)
-                    if not chunk:
-                        break
-                    compressed = compressor.process(chunk)
-                    f_out.write(compressed)
-                final = compressor.finish()
-                f_out.write(final)
+        with open(src, "rb") as f_in, open(dst, "wb") as f_out:
+            compressor = Compressor()
+            while True:
+                chunk = f_in.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                compressed = compressor.process(chunk, quality=11)
+                f_out.write(compressed)
+            final = compressor.finish()
+            f_out.write(final)
         if dst.stat().st_size == 0:
             dst.unlink()
             return False
@@ -90,21 +67,20 @@ def compress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = 
         return False
 
 
-def decompress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool = False) -> bool:
+def decompress_file_chunked(src: Path, dst: Path, verbose: bool = False) -> bool:
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        with open(src, "rb") as f_in:
-            with open(dst, "wb") as f_out:
-                decompressor = brotli.Decompressor()
-                while True:
-                    chunk = f_in.read(CHUNK_SIZE)
-                    if not chunk:
-                        break
-                    decompressed = decompressor.decompress(chunk)
-                    f_out.write(decompressed)
-                final = decompressor.decompress(b"")
-                if final:
-                    f_out.write(final)
+        with open(src, "rb") as f_in, open(dst, "wb") as f_out:
+            decompressor = Decompressor()
+            while True:
+                chunk = f_in.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                decompressed = decompressor.decompress(chunk)
+                f_out.write(decompressed)
+            final = decompressor.decompress(b"")
+            if final:
+                f_out.write(final)
         if dst.stat().st_size == 0:
             dst.unlink()
             return False
@@ -118,7 +94,7 @@ def decompress_file_chunked(src: pathlib.Path, dst: pathlib.Path, verbose: bool 
 
 
 @contextmanager
-def temp_tar_compression(files: List[pathlib.Path], out_dir: pathlib.Path, verbose: bool = False):
+def temp_tar_compression(files: list[Path], out_dir: Path, verbose: bool = False):
     tar_path = None
     br_path = None
     try:
@@ -136,13 +112,11 @@ def temp_tar_compression(files: List[pathlib.Path], out_dir: pathlib.Path, verbo
     finally:
         for p in [tar_path, br_path]:
             if p and p.exists():
-                try:
+                with suppress(Exception):
                     p.unlink()
-                except Exception:
-                    pass
 
 
-def process_directory(base_dir: pathlib.Path, compress: bool, keep: bool, no_tar: bool, verbose: bool = False) -> int:
+def process_directory(base_dir: Path, compress: bool, keep: bool, no_tar: bool, verbose: bool = False) -> int:
     success_count = 0
     total_files = 0
     files = find_files_to_process(base_dir)
@@ -202,7 +176,7 @@ def main():
     if args.files:
         files = []
         for path in args.files:
-            p = pathlib.Path(path)
+            p = Path(path)
             if p.exists():
                 files.append(p)
             else:
@@ -237,10 +211,10 @@ def main():
             print(f"\n✅ Processed {len(files)} files, {success} successful")
         sys.exit(0 if success == len(files) else 1)
     else:
-        base_dir = pathlib.Path(".")
+        base_dir = Path()
         success = process_directory(base_dir, compress, args.keep, args.no_tar, args.verbose)
         if args.verbose:
-            print(f"\n✅ Completed directory processing")
+            print("\n✅ Completed directory processing")
         sys.exit(0 if success >= 0 else 1)
 
 

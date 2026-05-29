@@ -1,14 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    MAX_WORKERS,
-    TIMEOUT,
-    MAX_WORKERS,
-    MAX_WORKERS,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import json
 import re
@@ -16,9 +7,8 @@ import time
 from pathlib import Path
 
 import requests
-from dh import get_installed_packages
+from dh import cprint, get_installed_packages
 from packaging.version import Version
-from termcolor import cprint
 
 MAX_WORKERS = 8
 TIMEOUT = 15

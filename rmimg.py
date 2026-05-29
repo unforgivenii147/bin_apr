@@ -1,33 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from dh import fsz, get_files, gsz
-from termcolor import cprint
+from dh import cprint, fsz, get_files, gsz
 
 
 def process_file(file_path: Path) -> None:
@@ -66,7 +45,7 @@ def main():
     if args:
         files = [Path(f) for f in args]
     else:
-        files = get_files(cwd, recursive=True, extensions=[".html", ".htm", ".md", ".rst", ".txt"])
+        files = get_files(cwd, ext=[".html", ".htm", ".md", ".rst", ".txt"])
     with get_context("spawn").Pool(8) as p:
         pending = deque()
         for f in files:

@@ -1,44 +1,21 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    OUTPUT_DIR,
-    ARCHIVE_EXTENSIONS,
-    get_unique_filepath,
-    extract_entities_from_content,
-    is_python_file_no_extension,
-    process_single_file,
-    process_archive,
-    worker_process,
-    main,
-    main,
-    OUTPUT_DIR,
-    ALLOWED_PYTHON_EXTENSIONS,
-    main,
-    main,
-    main,
-    OUTPUT_DIR,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import os
 import re
-import subprocess
 import sys
 import tarfile
 import zipfile
-from multiprocessing import get_context
 from pathlib import Path
 from typing import Any
+from dh import mpf3, get_files, runcmd
 
+HERE = "-h" in sys.argv
+if HERE:
+    OUTPUT_DIR = Path.cwd() / "output"
+else:
+    OUTPUT_DIR = Path.home() / "tmp" / "output"
 
-OUTPUT_DIR = Path.home() / "tmp" / "output"
 ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")
 ALLOWED_PYTHON_EXTENSIONS = ".py"
 
@@ -227,33 +204,30 @@ def worker_process(path_str: str) -> list[dict[str, Any]]:
 def main():
     cwd = Path.cwd()
     print(f"analyzing {cwd}")
+    files = get_files(cwd)
     files_to_process = []
-    for root, _, filenames in os.walk(cwd):
-        for name in filenames:
-            path = Path(root) / name
-            if path.is_relative_to(OUTPUT_DIR):
-                continue
-            is_archive = path.suffix in ARCHIVE_EXTENSIONS or any(
-                (path.name.endswith(ext) for ext in ARCHIVE_EXTENSIONS)
-            )
-            is_py = path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path)
-            if is_archive or is_py:
-                files_to_process.append(str(path))
+    for path in files:
+        if path.is_relative_to(OUTPUT_DIR):
+            continue
+        is_archive = path.suffix in ARCHIVE_EXTENSIONS or any((path.name.endswith(ext) for ext in ARCHIVE_EXTENSIONS))
+        is_py = path.suffix in ALLOWED_PYTHON_EXTENSIONS or is_python_file_no_extension(path)
+        if is_archive or is_py:
+            files_to_process.append(str(path))
     if not files_to_process:
         print("No Python files or archives found to process.")
         return
     print(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
     all_entities = []
-    with get_context("spawn").Pool(processes=8) as pool:
-        results_list = pool.map(worker_process, files_to_process)
-        for result in results_list:
-            all_entities.extend(result)
-
-    print(f"Saving entities ... ")
+    results_list = mpf3(worker_process, files_to_process)
+    #    with get_context("spawn").Pool(processes=8) as pool:
+    #        results_list = pool.map(worker_process, files_to_process)
+    for result in results_list:
+        all_entities.extend(result)
+    print("Saving entities ... ")
     for entity in all_entities:
         save_entity(entity)
-    print(f"Results are saved.")
-    subprocess.run(["ex_imports"], check=True)
+    print("Results are saved.")
+    runcmd(["ex_imports"], show_output=True)
 
 
 if __name__ == "__main__":

@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    logger,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import glob
 import logging
 import os
@@ -153,7 +137,7 @@ class CommentRemover:
 
 def find_python_files(cwd: str = ".") -> list[str]:
     python_files = []
-    for py_file in glob.glob(os.path.join(cwd, "**", "*.py"), recursive=True):
+    for py_file in glob.glob(os.path.join(cwd, "**", "*.py")):
         if any((part in py_file for part in ["__pycache__", ".git", ".venv", "venv", ".tox"])):
             continue
         python_files.append(py_file)

@@ -1,25 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    process_archive,
-    main,
-    main,
-    gsz,
-    main,
-    main,
-    get_dir_size,
-    extract_zst_file,
-    find_archives,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 import tarfile
@@ -55,14 +35,14 @@ def extract_tar_zst(archive_path, extract_path):
             temp_tar_path = temp_tar.name
     try:
         with tarfile.open(temp_tar_path, "r") as tar:
-            tar.extractall(path=extract_path)
+            tar.extractall(path=extract_path, filter="data")
     finally:
         Path(temp_tar_path).unlink()
 
 
 def extract_tar_xz(archive_path, extract_path):
     with tarfile.open(archive_path, "r:xz") as tar:
-        tar.extractall(path=extract_path)
+        tar.extractall(path=extract_path, filter="data")
 
 
 def process_archive(archive_path, dry_run=False, keep_original=False, quiet=False):

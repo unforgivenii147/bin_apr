@@ -1,11 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import re
 from pathlib import Path
@@ -19,15 +13,14 @@ def cdeb(fp):
     if "_" in name:
         indx = name.index("_")
         return name[:indx]
-    else:
-        return name
+    return name
 
 
 if __name__ == "__main__":
     cwd = Path.cwd()
     wheel_pattern = re.compile("(?P<name>.+)-(?P<version>\\d+(\\.\\d+)+).*\\.whl")
     deb_pattern = re.compile("(?P<name>.+)_(?P<version>\\d+(\\.\\d+)+).*\\.deb")
-    files = get_files(cwd, extensions=[".metadata", ".whl", ".deb"])
+    files = get_files(cwd, ext=[".metadata", ".whl", ".deb"])
     print(f"{len(files)} files found.")
     packages = {}
     seen = set()

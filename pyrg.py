@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    main,
-    main,
-    main,
-    main,
-    ANSI_RESET,
-    main,
-    main,
-    main,
-    main,
-)
 import argparse
 import fnmatch
 import operator
@@ -38,24 +23,36 @@ ANSI_HIGHLIGHT = "\x1b[31m"
 def colorize(text: str, start: int, end: int, enable: bool = True) -> str:
     if not enable:
         return text
-    return text[:start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[start:end] + ANSI_RESET + text[end:]
+    ss = start - 50
+    if ss < 0:
+        ss = 0
+    ee = end + 50
+    if ee > len(text):
+        ee = len(text)
+    removed_from_left = text[0:ss]
+    rmchar = len(removed_from_left)
+    new_start = start - rmchar
+    new_end = end - rmchar
+    text = text[ss:ee]
+    return text[:new_start] + ANSI_HIGHLIGHT + ANSI_BOLD + text[new_start:new_end] + ANSI_RESET + text[new_end:]
 
 
 def matches_any_glob(path: Path, patterns: Iterable[str]) -> bool:
     basename = path.name
-    return any((fnmatch.fnmatch(path, p) or fnmatch.fnmatch(basename, p) for p in patterns))
+    return any((fnmatch.fnmatch(str(path), p) or fnmatch.fnmatch(basename, p) for p in patterns))
 
 
 def search_file_text_mode(
-    path: Path,
+    path: str | Path,
     regex: re.Pattern | None,
-    fixed: str | None,
+    fixed: str,
     ignore_case: bool,
     show_line_numbers: bool,
     color: bool,
     max_matches: int | None = None,
 ) -> tuple[str, list[tuple[int, str, list[tuple[int, int]]]]]:
     matches = []
+    path = Path(path)
     try:
         with path.open(encoding="utf-8", errors="replace") as fh:
             for lineno, raw_line in enumerate(fh, start=1):
@@ -78,8 +75,8 @@ def search_file_text_mode(
                     if max_matches and len(matches) >= max_matches:
                         break
     except Exception:
-        return (path.relative_to(cwd), [])
-    return (path.relative_to(cwd), matches)
+        return (str(path.relative_to(cwd)), [])
+    return (str(path.relative_to(cwd)), matches)
 
 
 def build_argparser() -> argparse.ArgumentParser:
@@ -136,14 +133,14 @@ def main(argv: list[str] | None = None) -> int:
         return search_file_text_mode(
             path,
             regex=compiled,
-            fixed=pattern if fixed else None,
+            fixed=pattern,
             ignore_case=ignore_case,
             show_line_numbers=args.line_number,
             color=color,
         )
 
     with ThreadPoolExecutor(max_workers=args.threads) as ex:
-        futures = {ex.submit(worker, p): p for p in candidates}
+        futures = {ex.submit(worker, str(p)): p for p in candidates}
         try:
             for fut in as_completed(futures):
                 path, matches = fut.result()

@@ -1,22 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    get_current_folder_name,
-    folder_exists_in_db,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import io
 import os
@@ -85,10 +67,8 @@ def read_file_contents(filepath):
             content = f.read()
             return {"content": content, "is_binary": True, "original_size": len(content)}
     except PermissionError:
-        error_msg = "[Permission denied - cannot read file]"
         return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
     except Exception as e:
-        error_msg = f"[Error reading file: {e!s}]"
         return {"content": error_msg, "is_binary": False, "original_size": len(error_msg)}
 
 

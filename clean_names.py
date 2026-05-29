@@ -1,29 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 import sys
 from os.path import commonpath
 from pathlib import Path
 
-
 try:
-    from termcolor import colored
+    from dh import colored
 except ImportError:
     print("Install termcolor: pip install termcolor")
     sys.exit(1)

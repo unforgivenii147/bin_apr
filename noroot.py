@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
@@ -51,20 +36,9 @@ def main():
             try:
                 content = item_path.read_text(encoding="utf-8", errors="ignore")
                 is_likely_bash = False
-                if content.startswith("#!/bin/bash") or content.startswith("#!/usr/bin/env bash"):
-                    is_likely_bash = True
-                elif oct(item_path.stat().st_mode)[-3:] not in (
-                    "000",
-                    "001",
-                    "010",
-                    "011",
-                    "002",
-                    "012",
-                    "100",
-                    "110",
-                    "111",
-                    "101",
-                ):
+                if content.startswith(("#!/bin/bash", "#!/usr/bin/env bash")) or oct(item_path.stat().st_mode)[
+                    -3:
+                ] not in ("000", "001", "010", "011", "002", "012", "100", "110", "111", "101"):
                     is_likely_bash = True
                 if is_likely_bash:
                     remove_conditional_exit_blocks(item_path)

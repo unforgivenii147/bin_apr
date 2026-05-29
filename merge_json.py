@@ -1,25 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 import sys
 from pathlib import Path
 
-from dh import get_random_name
+from dh import get_random_filename
 
 
 def mergedict(da, db):
@@ -30,7 +14,6 @@ def load_json_object(path):
     with path.open(encoding="utf-8") as f:
         data = json.load(f)
     if not isinstance(data, dict):
-        msg = f"{path} is not a JSON object"
         raise ValueError(msg)
     return data
 
@@ -55,12 +38,12 @@ def main():
         sys.exit(1)
     args = sys.argv[1:]
     cwd = Path.cwd()
-    files = [Path(p) for p in args] if args else get_files(cwd, extensions=[".json"])
+    files = [Path(p) for p in args] if args else get_files(cwd, ext=[".json"])
     if len(files) == 1:
         print("provide more than file.")
         sys.exit(0)
     merged = merge_json_files(files)
-    out_file = Path(f"{get_random_name(6)}.json")
+    out_file = Path(f"{get_random_filename(6)}.json")
     if out_file.exists():
         print(f"{out_file} exists")
         sys.exit(0)

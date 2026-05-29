@@ -1,25 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    INPUT_FILE,
-    OUTPUT_FILE,
-    translate_word,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    INPUT_FILE,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 from pathlib import Path
 

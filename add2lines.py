@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
 
@@ -15,5 +12,5 @@ if __name__ == "__main__":
             ln = str_to_add + " " + line
             newlines.append(ln)
     with Path(fn).open("w") as fo:
-        bbfo.writelines(newlines)
+        fo.writelines(newlines)
     print(f"{fn} updated")

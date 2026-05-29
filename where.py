@@ -1,23 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from __future__ import annotations
 
 import argparse
+import contextlib
 import shutil
 import sys
 import time
@@ -222,7 +208,7 @@ def main():
         interval_sec=interval_sec,
     )
     observer = Observer()
-    observer.schedule(handler, str(root_dir), recursive=True)
+    observer.schedule(handler, str(root_dir))
     observer.start()
     print(f"Watching: {root_dir}")
     if args.copy:
@@ -241,10 +227,8 @@ def main():
     except KeyboardInterrupt:
         print("\nStopping...")
     finally:
-        try:
+        with contextlib.suppress(Exception):
             handler.flush()
-        except Exception:
-            pass
         observer.stop()
         observer.join()
 

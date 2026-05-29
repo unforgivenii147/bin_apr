@@ -1,16 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    OUTPUT_DIR,
-    cwd,
-    OUTPUT_DIR,
-    OUTPUT_DIR,
-    ASSETS_DIR,
-    TIMEOUT,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import hashlib
 import mimetypes

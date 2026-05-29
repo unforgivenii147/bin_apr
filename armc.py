@@ -1,31 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    cwd,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import re
+import sys
 from pathlib import Path
 
-from dh import cprint, get_pyfiles
+from dh import cprint, fsz, get_pyfiles, gsz, get_removed_lines
 from joblib import Parallel, delayed
 
 SPECIAL_COMMENT_RE = re.compile("#\\s*(type:|fmt:|pylint|mypy)", re.IGNORECASE)
-cwd = Path.cwd().resolve()
+cwd = Path.cwd()
 
 
 def strip_comments(source: str) -> str:
@@ -62,31 +46,46 @@ def strip_comments(source: str) -> str:
 
 
 def process_file(path: Path):
+    before = gsz(path)
+    if not before:
+        return
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            original = f.read()
-        cleaned = strip_comments(original)
-        if cleaned.strip() == original.strip():
+        original = path.read_text(encoding="utf-8")
+        if not "#" in original:
             return
+        final_code = strip_comments(original)
         try:
-            ast.parse(cleaned)
-        except SyntaxError:
-            cprint(f"ast parse error: {path.relative_to(cwd)}")
+            _ = ast.parse(final_code)
+            path.write_text(final_code, encoding="utf-8")
+            after = gsz(path)
+            print(f"✅ {path.name}", end=" | ")
+            dsz = before - after
+            if not dsz:
+                cprint("(no change)", "grey")
+                return
+            ratio = (dsz / before) * 100
+            cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
+            removed, _ = get_removed_lines(original, final_code)
+            for k in removed:
+                cprint(f"- {k}", "red")
             return
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(cleaned)
-        print(f"✅ Cleaned: {path.relative_to(cwd)}")
+        except SyntaxError:
+            cprint(f"{path.name} | ast parse error", "yellow")
+            return
     except Exception as e:
-        print(f"❌ Error processing {path}: {e}")
+        print(f"❌ {path}: {e}")
 
 
 def main():
-    python_files = get_pyfiles(cwd)
-    if not python_files:
+    args = sys.argv[1:]
+    files = [Path(p.strip()) for p in args] if args else get_pyfiles(cwd)
+    if not files:
         print("No Python files found.")
         return
-    print(f"found {len(python_files)} python files...")
-    Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(f) for f in python_files))
+    if len(files) == 1:
+        process_file(files[0])
+        sys.exit(1)
+    Parallel(n_jobs=-1, prefer="processes")((delayed(process_file)(f) for f in files))
 
 
 if __name__ == "__main__":

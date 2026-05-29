@@ -1,28 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    get_all_files,
-    main,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import os
 import shutil
 from pathlib import Path
 
 from dh import get_files, unique_path
+import sys
 
 
 def get_all_files(cwd):
@@ -34,7 +18,7 @@ def get_all_files(cwd):
     return sorted(files, key=operator.itemgetter(1))
 
 
-def calculate_optimal_folders(files):
+def get_num_folders(files):
     if len(files) < 2:
         return 1
     sizes = [size for _, size in files]
@@ -102,7 +86,12 @@ def main():
     if not files:
         print("No files found.")
         return
-    num_folders = 4
+    SIMPLE = "-s" in sys.argv
+    if SIMPLE:
+        num_folders = int(len(files) // 250)
+    else:
+        num_folders = get_num_folders(files)
+    print(f"{num_folders} dirs will be created")
     folders = create_range_folders(cwd, files, num_folders)
     distribute_files(files, folders, cwd)
     print("Folderization complete!")

@@ -1,22 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    collect_files_by_extension,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import csv
 import os
 from collections import Counter
@@ -54,8 +36,7 @@ def collect_files_by_extension():
             if ext in EXCLUDED_EXTENSIONS:
                 continue
             if not ext:
-                ext = "no_ext"
-            ext_map.setdefault(ext, []).append(full_path)
+                ext_map.setdefault(ext, []).append(full_path)
     return ext_map
 
 

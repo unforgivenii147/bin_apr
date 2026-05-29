@@ -1,13 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    cwd,
-    process_file,
-    unique_path,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from pathlib import Path
 
@@ -31,7 +23,7 @@ def process_file(file_path):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    files = get_files(cwd, extensions=[".py"])
+    files = get_files(cwd, ext=[".py"])
     results = mpf3(process_file, files)
     uniq_imports = set()
     for k in results:

@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
 import sys
 from pathlib import Path
-
 
 major, minor, _, _, _ = sys.version_info
 py_version = f"{major}{minor}"
@@ -15,7 +13,7 @@ OLD = {
     "#!/usr/bin/env python",
     "#!/usr/bin/env python3",
 }
-NEW = "#!/data/data/com.termux/files/usr/bin/python\n\n"
+NEW = "#!/data/data/com.termux/files/usr/bin/python\n"
 
 
 def fix_file(path: Path) -> bool:

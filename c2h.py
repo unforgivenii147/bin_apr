@@ -1,20 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 
@@ -30,8 +14,7 @@ def main():
                 cleaned.append(f"#{color.strip()}")
     html_content = "<html>\n<head>\n<title>Color Display</title>\n</head>\n<body>\n"
     for color in cleaned:
-        html_content += f'<div style="background-color: {color}; color: white; padding: 10px; margin: 5px; border-radius: 5px;">{color}</div>\n'
-    html_content += "</body>\n</html>"
+        html_content += "</body>\n</html>"
     Path("/sdcard/colors.html").write_text(html_content, encoding="utf-8")
     print("/sdcard/colors.html created")
 

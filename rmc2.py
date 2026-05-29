@@ -1,27 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    parser,
-    PY_LANGUAGE,
-    parser,
-    should_preserve_comment,
-    find_docstring_ranges,
-    main,
-    should_preserve_comment,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import operator
 from pathlib import Path
@@ -77,7 +55,7 @@ def strip_code(source_code):
         modifications = [(s, e, "") for s, e in to_delete]
         modifications += [(s, e, "pass") for s, e in to_replace_with_pass]
         modifications.sort(key=operator.itemgetter(0), reverse=True)
-        working_code = source_code0
+        working_code = source_code
         for start, end, replacement in modifications:
             working_code = working_code[:start] + replacement + working_code[end:]
         return working_code

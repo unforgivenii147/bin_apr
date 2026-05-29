@@ -1,15 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    process_file,
-    logger,
-    MAX_WORKERS,
-    MAX_WORKERS,
-    MAX_WORKERS,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 import tarfile

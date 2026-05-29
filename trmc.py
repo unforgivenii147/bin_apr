@@ -1,24 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    fsz,
-    cwd,
-    process_file,
-    fsz,
-    gsz,
-    fsz,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
 
 import tree_sitter_python as tspython
-from dh import clean_blank_lines, get_files
-from termcolor import cprint
+from dh import clean_blank_lines, cprint, get_files
 from tree_sitter import Language, Parser
 
 
@@ -76,7 +64,7 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     before = gsz(cwd)
     args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_files(cwd, extensions=[".py"])
+    files = [Path(f) for f in args] if args else get_files(cwd, ext=[".py"])
     pool = Pool(8)
     for _ in pool.imap_unordered(process_file, files):
         pass

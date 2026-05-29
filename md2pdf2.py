@@ -1,11 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    ValidationError,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 
@@ -44,7 +37,6 @@ def md2pdf(pdf_file_path, md_file_path, css_file_path=None, base_url=None):
     extras = ["header-ids", "fenced-code-blocks", "tables", "cuddled-lists"]
     html = markdown_path(md_file_path, extras=extras)
     if not html.strip():
-        msg = "Input markdown seems empty"
         raise ValidationError(msg)
     html = pygments_highlight(html)
     html = TOC_HTML + html

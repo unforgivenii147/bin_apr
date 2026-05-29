@@ -1,28 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    get_installed_debian_packages,
-    save_packages,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-    OUTPUT_FILE,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 import sys
 from pathlib import Path
-
 
 OUTPUT_FILE = Path("installed_debian_packages.txt")
 

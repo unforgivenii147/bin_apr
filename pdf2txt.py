@@ -1,20 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import logging
 import sys
@@ -28,7 +13,6 @@ from pdfminer.pdfexceptions import PDFValueError
 
 if TYPE_CHECKING:
     from pdfminer.utils import AnyIO
-
 logging.basicConfig()
 OUTPUT_TYPES = ((".htm", "html"), (".html", "html"), (".xml", "xml"), (".tag", "tag"))
 

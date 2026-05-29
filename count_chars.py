@@ -1,11 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

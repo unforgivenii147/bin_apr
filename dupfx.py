@@ -1,10 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
-from loguru import logger
 from xxhash import xxh64
 
 DEFAULT_BLOCK = 32768
@@ -35,6 +32,7 @@ def quick_hash(path: Path, n=QUICK_READ):
                 rest = f.read()
                 h.update(rest)
     except Exception as e:
+        msg="error hashing file"
         raise OSError(msg)
     return h.hexdigest()
 
@@ -46,11 +44,12 @@ def full_hash(path: Path, block_size=DEFAULT_BLOCK):
             for chunk in iter(lambda: f.read(block_size), b""):
                 h.update(chunk)
     except Exception as e:
+        msg="error hashing file"
         raise OSError(msg)
     return h.hexdigest()
 
 
-def iter_files(root: Path, recursive: bool, follow_symlinks: bool, min_size: int):
+def iter_files(root: Path):
     from os import walk as os_walk
 
     for r, _, files in os_walk(root):
@@ -58,8 +57,8 @@ def iter_files(root: Path, recursive: bool, follow_symlinks: bool, min_size: int
             p = Path(r) / file
             if ".git" in p.parts:
                 continue
-            if p.is_file() and (follow_symlinks or not p.is_symlink()):
-                if p.stat().st_size >= min_size:
+            if p.is_file() and  not p.is_symlink():
+                if p.stat().st_size >= 1:
                     yield p
 
 
@@ -75,29 +74,9 @@ def choose_keep(files, policy="oldest"):
 
 def main() -> None:
     cwd = Path.cwd()
-    p = argparse.ArgumentParser(description="Find and delete duplicate files by content.")
-    p.add_argument(
-        "-r", "--recursive", default=True, action="store_true", help="Search directories recursively (default: False)."
-    )
-    p.add_argument(
-        "-n", "--dry-run", default=False, action="store_true", help="Don't delete; just show what would be done."
-    )
-    p.add_argument("--follow-symlinks", default=False, action="store_true", help="Follow symlinks to files.")
-    p.add_argument(
-        "--min-size", type=int, default=1, help="Minimum file size (bytes) to consider. Default 1 (skip zero-size)."
-    )
-    p.add_argument(
-        "-k",
-        "--keep",
-        choices=("first", "oldest", "newest"),
-        default="first",
-        help="Which file to keep within duplicates.",
-    )
-    args = p.parse_args()
-    root = Path.cwd()
     size_groups = defaultdict(list)
     total_files = 0
-    for f in iter_files(root, args.recursive, args.follow_symlinks, args.min_size):
+    for f in iter_files(cwd):
         total_files += 1
         try:
             size_groups[f.stat().st_size].append(f)
@@ -150,7 +129,7 @@ def main() -> None:
         group_reps = [min(ps) for ps in inode_map.values()]
         if len(group_reps) < 2:
             continue
-        keep_file = choose_keep(group_reps, policy=args.keep)
+        keep_file = choose_keep(group_reps, policy="oldest")
         for ps in group_reps:
             if ps == keep_file:
                 continue
@@ -161,9 +140,6 @@ def main() -> None:
     print(f"Planned deletions: {len(to_delete)} files.")
     for p in to_delete:
         print("  " + str(p))
-    if args.dry_run:
-        print("Dry-run enabled; no files were deleted.")
-        return
     removed = 0
     failed = 0
     for p in to_delete:
@@ -177,7 +153,7 @@ def main() -> None:
     if failed:
         print(f"Removed: {removed}. Failed: {failed}.")
     else:
-        logger.debug(f"Removed: {removed}")
+        print(f"Removed: {removed}")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from dh import get_pyfiles
 from joblib import Parallel, delayed
 from xxhash import xxh64
 
-OUTPUT_DIR = Path.home() / "isaac" / "may" / "pkgs" / "dh2" / "src" / "dh2" / "output"
+OUTPUT_DIR = Path("output")
 OUTPUT_FILE = OUTPUT_DIR / "const.py"
 LOG_FILE = OUTPUT_DIR / "error.log"
 OUTPUT_DIR.mkdir(exist_ok=True)

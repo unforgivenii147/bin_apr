@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-from dh import cprint, get_lines
+from dh import cprint, read_lines
 
 
 def process_files(fp1, fp2):
-    lines1 = get_lines(fp1)
-    lines2 = get_lines(fp2)
+    lines1 = read_lines(fp1)
+    lines2 = read_lines(fp2)
     only_in_first = [p for p in lines1 if p not in lines2]
     only_in_second = [p for p in lines2 if p not in lines1]
     common_lines = [p for p in lines1 if p in lines2]

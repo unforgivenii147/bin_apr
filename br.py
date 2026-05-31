@@ -4,7 +4,7 @@ import mmap
 import sys
 from pathlib import Path
 from binaryornot import is_binary
-import brotlicffi
+from brotlicffi import compress as brotli_compress
 from dh import cprint, fsz, get_files, gsz, mpf3
 # from joblib import Parallel, delayed
 
@@ -12,8 +12,19 @@ CHUNK_SIZE = 524288
 N_JOBS = -1
 
 
+def compress_in_memory(infile, outfile, mode) -> bool:
+    try:
+        data = infile.read_bytes()
+        compressed_data = brotli_compress(data, mode=mode, quality=11)
+        outfile.write_bytes(compressed_data)
+        del data, compressed_data
+        return True
+    except:
+        return False
+
+
 def compress_chunk(data, mode: int = 0):
-    return brotlicffi.compress(data, mode=mode, quality=11)
+    return brotli_compress(data, mode=mode, quality=11)
 
 
 def parallel_compress(in_path, out_path):
@@ -24,6 +35,8 @@ def parallel_compress(in_path, out_path):
         file_size = in_path.stat().st_size
         if not file_size:
             return False
+        if file_size < CHUNK_SIZE:
+            return compress_in_memory(in_path, out_path, mode)
         chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
         with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
@@ -40,9 +53,6 @@ def parallel_compress(in_path, out_path):
             return True
     except OSError:
         return False
-
-
-0
 
 
 def process_file(fp):

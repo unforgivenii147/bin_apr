@@ -20,29 +20,40 @@ from pathlib import Path
 
 
 from fontTools.ttLib import TTFont
-from fontTools.ttLib import woff2
+from dh import unique_path, FONT_EXT
 
-SUPPORTED_EXTENSIONS = {".ttf", ".otf", ".woff", ".woff2", ".ttc",".bin"}
 
 STYLE_MAPPING = {
-    "normal": "Regular", "regular": "Regular", "bold": "Bold",
-    "italic": "Italic", "bold italic": "BoldItalic", "bolditalic": "BoldItalic",
-    "semibold": "SemiBold", "light": "Light", "thin": "Thin", "black": "Black",
-    "medium": "Medium", "ultra light": "UltraLight", "extra bold": "ExtraBold",
-    "condensed": "Condensed", "extended": "Extended", "narrow": "Narrow",
+    "normal": "Regular",
+    "regular": "Regular",
+    "bold": "Bold",
+    "italic": "Italic",
+    "bold italic": "BoldItalic",
+    "bolditalic": "BoldItalic",
+    "semibold": "SemiBold",
+    "light": "Light",
+    "thin": "Thin",
+    "black": "Black",
+    "medium": "Medium",
+    "ultra light": "UltraLight",
+    "extra bold": "ExtraBold",
+    "condensed": "Condensed",
+    "extended": "Extended",
+    "narrow": "Narrow",
 }
+
 
 def get_font_name_and_style(font_path):
     """Extract font family name and style from a font file using fontTools."""
     ext = font_path.suffix.lower()
 
     try:
-#        ttf_path=font_path.with_suffix(".ttf")
-#        if ext == ".woff2":
-#            with open(font_path, "rb") as f:
-#                ttf_data = woff2.decompress(f.read(),ttf_path)
-#            font = TTFont(io.BytesIO(ttf_data))
-#        else:
+        #        ttf_path=font_path.with_suffix(".ttf")
+        #        if ext == ".woff2":
+        #            with open(font_path, "rb") as f:
+        #                ttf_data = woff2.decompress(f.read(),ttf_path)
+        #            font = TTFont(io.BytesIO(ttf_data))
+        #        else:
         font = TTFont(font_path)
 
         name_table = font.get("name")
@@ -78,6 +89,7 @@ def get_font_name_and_style(font_path):
         print(f"  Warning: Could not read {font_path.name}: {e}")
         return None, None
 
+
 def sanitize_filename(name):
     """Sanitize a string for use as a filename."""
     if not name:
@@ -88,18 +100,6 @@ def sanitize_filename(name):
         sanitized = sanitized.replace("__", "_")
     return sanitized
 
-def get_unique_filename(directory, desired_name):
-    """Get a unique filename by appending _1, _2, etc. if needed."""
-    path = Path(directory) / desired_name
-    if not path.exists():
-        return desired_name
-    stem, suffix = path.stem, path.suffix
-    counter = 1
-    while True:
-        new_name = f"{stem}_{counter}{suffix}"
-        if not (Path(directory) / new_name).exists():
-            return new_name
-        counter += 1
 
 def rename_font_file(font_path):
     """Rename a single font file based on its metadata."""
@@ -114,12 +114,13 @@ def rename_font_file(font_path):
 
     ext = font_path.suffix
     new_name = f"{family_name}-{style}{ext}"
-    new_name = get_unique_filename(font_path.parent, new_name)
     new_path = font_path.parent / new_name
 
     if font_path == new_path:
         print(f"  {font_path.name} -> already has correct name")
         return None
+    if new_path.exists():
+        new_path = unique_path(new_path)
 
     try:
         font_path.rename(new_path)
@@ -128,13 +129,14 @@ def rename_font_file(font_path):
         print(f"  Error renaming {font_path.name}: {e}")
         return None
 
+
 def process_directory(directory, recursive=True):
     """Process all font files in a directory (and subdirectories if recursive)."""
     directory = Path(directory)
     renamed_count = 0
 
     for item in directory.iterdir():
-        if item.is_file() and item.suffix.lower() in SUPPORTED_EXTENSIONS:
+        if item.is_file() and item.suffix.lower() in FONT_EXT:
             new_name = rename_font_file(item)
             if new_name:
                 print(f"  {item.name} -> {new_name}")
@@ -144,15 +146,14 @@ def process_directory(directory, recursive=True):
 
     return renamed_count
 
+
 def main():
-    print("Renaming font files based on their metadata...")
-    print("Supported formats: .ttf, .otf, .woff, .woff2, .ttc\n")
 
-    start_dir = Path.cwd()
-    print(f"Processing: {start_dir}\n")
+    cwd = Path.cwd()
 
-    renamed_count = process_directory(start_dir, recursive=True)
-    print(f"\nRenamed {renamed_count} font file(s).")
+    renamed_count = process_directory(cwd, recursive=True)
+    print(f"\n{renamed_count} font file(s).")
+
 
 if __name__ == "__main__":
     main()

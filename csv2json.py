@@ -27,8 +27,8 @@ def csv_to_json_map(csv_file):
             if key:
                 result[key] = value
     with json_path.open("w", encoding="utf-8") as f:
-        json.dump(result, f, indent=4, ensure_ascii=False, sort_keys=True)
-    print(f"Converted (mapping JSON): {csv_path} → {json_path}")
+        json.dump(result, f, indent=2, ensure_ascii=False)
+    print(f"Converted : {csv_path} → {json_path}")
 
 
 def main():

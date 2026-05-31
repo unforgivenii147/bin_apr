@@ -1,10 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
+import sys
 import os
 from pathlib import Path
 
 from dh import MIME2EXT, cprint, is_binary, runcmd, unique_path
 
-CONFIRM = True
+CONFIRM = "-y" in sys.argv
 
 
 def fix_by_shebang(fp) -> bool:
@@ -53,16 +54,23 @@ def check_files(directory):
             if ".git" in path.parts or "__pycache__" in path.parts:
                 continue
             ext = path.suffix.lower()
+            if ext in {".css", ".js"}:
+                continue
             if fix_by_shebang(path):
                 continue
             mime = get_file_mime(path)
             print(f"{name} --> {mime}")
             if mime:
-                expected_exts = MIME2EXT.get(mime, [])
+                print(f"mime={mime}")
+                expected_exts = MIME2EXT.get(mime.strip(), [])
+                print(f"expected exts ={expected_exts}")
+                if ".txt" in expected_exts:
+                    continue
                 if expected_exts and ext not in expected_exts:
                     new_path = None
                     new_ext = expected_exts[0]
                     new_name = path.stem + new_ext
+                    print(f"new name = {new_name}")
                     new_path = Path(root) / new_name
                     if new_name == name:
                         continue

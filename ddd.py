@@ -4,6 +4,7 @@ from operator import itemgetter
 from os import walk as os_walk
 from pathlib import Path
 
+
 def get_dir_size(path):
     total = 0
     for r, _, files in os_walk(path):
@@ -40,7 +41,7 @@ def du_sort_python(path):
     sorted_results = sorted(results, key=itemgetter(0), reverse=False)
     for size_bytes, path in sorted_results:
         sz = fsz(size_bytes)
-        path=Path(path)
+        path = Path(path)
         if path.is_dir():
             if size_bytes > 1024 * 1024:
                 print(f"\033[5;94m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")

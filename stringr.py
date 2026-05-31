@@ -3,29 +3,33 @@
 import sys
 from pathlib import Path
 
-from dh import get_files, is_binary, run_command
-from pbar import Pbar
+from dh import get_files, is_binary, runcmd, mpf3
 
 cwd = Path.cwd()
 outfile = cwd / "all_strings.txt"
+all_files = 0
+c = 0
 
 
 def process_file(fp):
+    global all_files
+    global c
+    c += 1
+    print(f"[{c}/{all_files}] {fp.name}")
     if not fp.exists() or not is_binary(fp):
         return
-    cmd = f"strings {fp!s}"
-    _code, txt, _err = run_command(cmd)
-    with Path(outfile).open("a", encoding="utf-8") as f:
-        f.write(f"\n# filename : {fp.stem}\n{txt}\n")
+    _, txt, _ = runcmd(["strings", str(fp)], show_output=False)
+    with outfile.open("a", encoding="utf-8") as f:
+        f.write(f"\n# filename : {fp.name}\n{txt}")
     return
 
 
 def main():
     args = sys.argv[1:]
+    global all_files
     files = [Path(arg) for arg in args] if args else get_files(cwd)
-    with Pbar("") as pbar:
-        for f in pbar.wrap(files):
-            process_file(f)
+    all_files = len(files)
+    mpf3(process_file, files)
 
 
 if __name__ == "__main__":

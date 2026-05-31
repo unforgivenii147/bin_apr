@@ -32,7 +32,7 @@ def quick_hash(path: Path, n=QUICK_READ):
                 rest = f.read()
                 h.update(rest)
     except Exception as e:
-        msg="error hashing file"
+        msg = "error hashing file"
         raise OSError(msg)
     return h.hexdigest()
 
@@ -44,7 +44,7 @@ def full_hash(path: Path, block_size=DEFAULT_BLOCK):
             for chunk in iter(lambda: f.read(block_size), b""):
                 h.update(chunk)
     except Exception as e:
-        msg="error hashing file"
+        msg = "error hashing file"
         raise OSError(msg)
     return h.hexdigest()
 
@@ -57,7 +57,7 @@ def iter_files(root: Path):
             p = Path(r) / file
             if ".git" in p.parts:
                 continue
-            if p.is_file() and  not p.is_symlink():
+            if p.is_file() and not p.is_symlink():
                 if p.stat().st_size >= 1:
                     yield p
 

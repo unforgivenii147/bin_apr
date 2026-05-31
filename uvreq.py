@@ -15,7 +15,7 @@ def process_file(fp):
 
 
 def main():
-    process_file(filename)
+    process_file("uv.lock")
 
 
 if __name__ == "__main__":

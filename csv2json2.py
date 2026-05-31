@@ -1,30 +1,24 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import sys
 import csv
 import json
-import sys
 from pathlib import Path
 
 
-def csv_to_json(csv_file):
-    csv_path = Path(csv_file)
-    if not csv_path.exists():
-        print(f"Error: file not found: {csv_path}")
-        sys.exit(1)
-    json_path = csv_path.with_suffix(".json")
-    with csv_path.open(newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        data = list(reader)
-    with json_path.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False, sort_keys=True)
-    print(f"Converted (pretty JSON): {csv_path} → {json_path}")
-
-
 def main():
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file.csv>")
+    if len(sys.argv) < 2:
+        print("Usage: python csv_to_json.py <input.csv>")
         sys.exit(1)
-    csv_to_json(sys.argv[1])
+
+    input_path = Path(sys.argv[1])
+    output_path = input_path.with_suffix(".json")
+
+    with open(input_path, mode="r", newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+        data = [row for row in reader]
+
+    with open(output_path, mode="w", encoding="utf-8") as json_file:
+        json.dump(data, json_file, indent=2, ensure_ascii=False)
 
 
 if __name__ == "__main__":

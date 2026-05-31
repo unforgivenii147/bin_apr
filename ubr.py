@@ -52,7 +52,7 @@ def process_file(fp):
         data = fp.read_bytes()
         decompressed_data = brotlicffi.decompress(data)
         outfile.write_bytes(decompressed_data)
-        print("it worked")
+        #        print("it worked")
         fp.unlink()
         return
     except:

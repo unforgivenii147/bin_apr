@@ -1,48 +1,77 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
+import os
+import mmap
 from collections import defaultdict
 
-from dh import read_lines
+
+def get_lines(file_path):
+    """Reads lines using mmap for large files (>5MB) or standard read for smaller ones."""
+    file_size = os.path.getsize(file_path)
+    if file_size > 5 * 1024 * 1024:  # 5 MB
+        print(f"[Info] Large file detected ({file_size / (1024 * 1024):.2f} MB). Using mmap...")
+        with open(file_path, "r+b") as f:
+            with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+                content = mm.read().decode("utf-8", errors="ignore")
+                return [line.strip() for line in content.splitlines() if line.strip()]
+    else:
+        print("[Info] Small file detected. Using standard read...")
+        with open(file_path, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
 
 
-def main():
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <wordlist.txt>", file=sys.stderr)
+def process_wordlist(file_path):
+    if not os.path.exists(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
         sys.exit(1)
 
-    fname = sys.argv[1]
+    lines = get_lines(file_path)
 
-    lines = read_lines(fname)
+    # Map to hold structural wildcards -> list of original words
+    # e.g., buckets["aa*a"] = ["aaaa", "aaba"]
+    buckets = defaultdict(list)
 
-    similar = set()
-    n = len(lines)
+    # Step 1: Populate buckets in O(N) time
+    for word in lines:
+        for i in range(len(word)):
+            # Create a wildcard variant
+            wildcard = word[:i] + "*" + word[i + 1 :]
+            buckets[wildcard].append(word)
 
-    # Move both lines that differ by exactly one character
-    # (same length, same positions except one char)
-    groups = defaultdict(list)
-    for i, line in enumerate(lines):
-        print(f"{i}/{n}")
-        for pos in range(len(line)):
-            key = (len(line), line[:pos] + "\0" + line[pos + 1 :], pos)
-            groups[key].append(i)
+    # Step 2: Identify words that share a bucket
+    similar_lines = set()
+    for wildcard, matched_words in buckets.items():
+        if len(matched_words) > 1:
+            # If more than one word is in this bucket, they are all similar pairs
+            for word in matched_words:
+                similar_lines.add(word)
 
-    for idxs in groups.values():
-        if len(idxs) >= 2:
-            # mark all lines in this group as similar
-            for i in idxs:
-                similar.add(i)
+    if not similar_lines:
+        print("No similar items found.")
+        return
 
-    # Write similar lines to similar.txt
-    with open("similar.txt", "w", encoding="utf-8") as f:
-        for i in sorted(similar):
-            f.write(lines[i] + "\n")
+    # Step 3: Filter out remaining unique lines
+    remaining_lines = [line for line in lines if line not in similar_lines]
 
-    # Rewrite original file in place without similar lines
-    remaining = [line for i, line in enumerate(lines) if i not in similar]
-    with open(fname, "w", encoding="utf-8") as f:
-        for line in remaining:
+    # Step 4: Write to similar.txt
+    similar_file = "similar.txt"
+    with open(similar_file, "a", encoding="utf-8") as sf:
+        for line in sorted(similar_lines):
+            sf.write(line + "\n")
+
+    # Step 5: Update the original file in place
+    with open(file_path, "w", encoding="utf-8") as f:
+        for line in remaining_lines:
             f.write(line + "\n")
+
+    print(f"[Success] Moved {len(similar_lines)} lines to {similar_file}")
+    print(f"[Success] Updated {file_path} in-place ({len(remaining_lines)} lines remaining).")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: python filter_passwords.py <filename>")
+        sys.exit(1)
+
+    target_file = sys.argv[1]
+    process_wordlist(target_file)

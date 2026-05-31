@@ -1,15 +1,47 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import mmap
 import asyncio
 import contextlib
 import shutil
 import sys
 import tempfile
 from pathlib import Path
+from dh import mpf3
 
-import lzma_mt
+from lzma_mt import compress
 
 _executor = asyncio.Semaphore(4)
+
+
+CHUNK_SIZE = 524288
+
+
+def compress_in_memory(infile, outfile):
+    try:
+        outfile.write_bytes(compress(infile.read_bytes(), preset=7, threads=4))
+        return True
+    except:
+        return False
+
+
+def compress_chunk(data):
+    return compress(data, preset=7, threads=4)
+
+
+def compress_chunked(in_path, out_path, file_size):
+    try:
+        chunk_count = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
+        with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
+            mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
+            chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
+
+            compressed_chunks = mpf3(compress_chunk, chunks)
+            for block in compressed_chunks:
+                fout.write(block)
+            mm.close()
+            return True
+    except OSError:
+        return False
 
 
 def fsz(size: float) -> str:
@@ -30,36 +62,29 @@ async def compress_folder_async(folder_path: Path, output_base_name: str, format
         return False
 
 
-async def compress_file_async(path: Path) -> bool:
-    compressed_path = path.with_suffix(path.suffix + ".xz")
-    if compressed_path.exists():
+def compress_file(path: Path) -> bool:
+    out_path = path.with_suffix(path.suffix + ".xz")
+    if out_path.exists():
         return False
-    try:
-        loop = asyncio.get_running_loop()
+    original_size = path.stat().st_size
+    if not original_size:
+        return False
+    if original_size < CHUNK_SIZE:
+        success = compress_in_memory(path, out_path)
 
-        def _read():
-            with path.open("rb") as f:
-                return f.read()
-
-        data = await loop.run_in_executor(None, _read)
-        original_size = path.stat().st_size
-
-        def _compress():
-            return lzma_mt.compress(data, threads=4, preset=lzma_mt.PRESET_EXTREME)
-
-        compressed_data = await loop.run_in_executor(None, _compress)
-        with compressed_path.open("rb") as f:
-            f.write(compressed_data)
-        compressed_size = compressed_path.stat().st_size
+    else:
+        success = compress_chunked(path, out_path, original_size)
+    if success:
+        compressed_size = out_path.stat().st_size
         if not compressed_size:
-            print(f"Compressed file empty: {compressed_path}")
+            print(f"Compressed file empty: {out_path}")
             return False
         path.unlink()
-        reduction = (original_size - compressed_size) / original_size * 100
-        print(f"{path.name}|{fsz(original_size)} → {fsz(compressed_size)} ratio: {reduction:.2f}%")
+        reduction = ((original_size - compressed_size) / original_size) * 100
+        print(f"{path.name} | {reduction:.2f}%")
         return True
-    except Exception as e:
-        print(f"Compression failed for {path}: {e}")
+    else:
+        print(f"Compression failed for {path}")
         return False
 
 
@@ -107,11 +132,11 @@ async def main_async() -> None:
         print(f"\n[{i}/{len(files_to_compress)}] {path.name}")
         orig_size = path.stat().st_size
         total_original += orig_size
-        if await compress_file_async(path):
+        if compress_file(path):
             successful += 1
-        compressed_path = path.with_suffix(path.suffix + ".xz")
-        if compressed_path.exists():
-            total_compressed += compressed_path.stat().st_size
+        out_path = path.with_suffix(path.suffix + ".xz")
+        if out_path.exists():
+            total_compressed += out_path.stat().st_size
     if successful > 0:
         savings = total_original - total_compressed
         savings_percent = savings / total_original * 100

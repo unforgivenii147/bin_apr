@@ -6,7 +6,7 @@ from pathlib import Path
 from dh import cprint, mpf3
 from xorhash import get_xorhash
 
-REMOVE = "-r" in sys.argv
+REMOVE = "-y" in sys.argv
 
 
 def find_dups_optimized(root: Path):
@@ -17,7 +17,7 @@ def find_dups_optimized(root: Path):
     for r, _, files in os_walk(root):
         for file in files:
             path = Path(r) / file
-            if ".git" in path.parts:
+            if ".git" in path.parts or not path.stat().st_size:
                 continue
             if not path.is_symlink() and path.is_file() and path.exists():
                 paths_to_process.append(path)

@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import os
 import shutil
-from pathlib import Path
-
-from dh import get_files, unique_path
 import sys
+from pathlib import Path
+from dh import get_files, unique_path
 
 
 def get_all_files(cwd):
@@ -87,8 +85,13 @@ def main():
         print("No files found.")
         return
     SIMPLE = "-s" in sys.argv
-    if SIMPLE:
-        num_folders = int(len(files) // 250)
+    if not SIMPLE:
+        numfiles = len(files)
+        if numfiles < 200:
+            midnum = 10
+        else:
+            midnum = 50
+        num_folders = int(numfiles // midnum)
     else:
         num_folders = get_num_folders(files)
     print(f"{num_folders} dirs will be created")

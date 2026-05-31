@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import hashlib
 import mimetypes
 import re
 import sys
 from pathlib import Path
-
 from dh import MIME2EXT
 
 DATA_URL_RE = re.compile(

@@ -1,25 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
-from dh import runcmd, mpf3
+from dh import mpf3, runcmd
 
 
 def process_file(fp):

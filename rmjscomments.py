@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz
 from joblib import Parallel, delayed
 

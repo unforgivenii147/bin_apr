@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from operator import itemgetter
 from os import walk as os_walk
 from pathlib import Path
@@ -47,13 +46,11 @@ def du_sort_python(path):
                 print(f"\033[5;94m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
             else:
                 print(f"\033[5;94m{path.name:25}\033[0m  {sz}")
-
         if path.is_file():
             if size_bytes > 1024 * 1024:
                 print(f"\033[5;92m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
             else:
                 print(f"\033[5;92m{path.name:25}\033[0m  {sz}")
-
     print(f"total size : \033[5;94m{fsz(total)}\033[0m")
 
 

@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import difflib
 import sys
 from pathlib import Path
 from typing import ClassVar
-
 from textual.app import App, ComposeResult
 from textual.color import Color
 from textual.containers import Horizontal, ScrollableContainer
@@ -158,7 +156,6 @@ class DiffViewerApp(App):
                 panels.first().focus()
 
     def action_search(self) -> None:
-
         def on_input(submitted_text: str) -> None:
             if submitted_text:
                 self.search_term = submitted_text

@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import json
 from collections import defaultdict
 from pathlib import Path
-
 from dh import get_dirs
 from xxhash import xxh64
 

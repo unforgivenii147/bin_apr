@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import itertools
 import os
 import re
@@ -201,7 +200,6 @@ if BeautifulSoup:
         if extraline:
             html = "\n\n".join(html.replace("\t", "    ").splitlines()) + "\n"
         return html
-
 else:
 
     def html_prettify(html: str, extraline: bool = False) -> str:

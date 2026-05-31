@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import os
 from pathlib import Path

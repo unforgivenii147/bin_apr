@@ -1,12 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import get_file_age, get_ipkgs
 from rapidfuzz import fuzz
 
@@ -54,7 +49,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <package_prefix>")
         sys.exit(1)
-
     prefix = sys.argv[1].lower()
     installed = load_installed_packages()
     to_uninstall = [

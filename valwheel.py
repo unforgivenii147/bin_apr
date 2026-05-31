@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import shutil
 from pathlib import Path
-
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version

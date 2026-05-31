@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import os
 import re
 import sys
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 
 

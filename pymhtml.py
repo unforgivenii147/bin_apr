@@ -6,7 +6,6 @@ import sys
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
-
 from dh import get_files
 
 
@@ -116,9 +115,9 @@ def process_file(path):
                 i += 1
         with open(out_path, "wb") as f:
             f.write(payload)
+
     #        if cid:
     #            cid_to_file[cid] = fname
-
     def repl_cid(match):
         cid = match.group(1)
         if cid in cid_to_file:
@@ -168,7 +167,6 @@ if __name__ == "__main__":
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)

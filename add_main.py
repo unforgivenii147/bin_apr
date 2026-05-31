@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from pathlib import Path
-from dh import get_files, fsz, gsz
-
+from dh import fsz, get_files, gsz
 
 MAINBLOCK_INDICATOR = 'if __name__ == "__main__":'
 MAX_QUEUE = 16

@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 from pathlib import Path
 from time import perf_counter as pff
-
 from dh import cprint, format_time, fsz, get_pyfiles, mpf3
 
 MODE = "black"

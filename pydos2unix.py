@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import fnmatch
 import mmap
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import is_binary
 
 

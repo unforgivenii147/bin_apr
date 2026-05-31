@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import subprocess
 import sys
 from pathlib import Path
-
 from dh import get_file_age, get_ipkgs
 from pip._internal.cli.main import main as pip_main
 from rapidfuzz import fuzz

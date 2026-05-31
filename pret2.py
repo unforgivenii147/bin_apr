@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from dh import get_files, unique_path
 
 EXT = [".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx", ".tsm", ".jsm"]

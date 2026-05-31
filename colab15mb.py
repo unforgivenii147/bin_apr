@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import site
 import tarfile
 from pathlib import Path
-
 from google.colab import files
 
 

@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python
 from dh import DOC_TH1, clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
@@ -34,7 +32,6 @@ def process_again(pt):
 
 
 def _collect_docstrings(node, source: bytes, deletions: list):
-
     def first_named_child(block):
         for child in block.children:
             if child.is_named:

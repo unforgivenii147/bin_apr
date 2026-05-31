@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from pathlib import Path
-
 from dh import is_binary
 
 LANG_EXTENSIONS = {

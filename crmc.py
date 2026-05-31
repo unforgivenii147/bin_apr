@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
-from pathlib import Path
 from multiprocessing import Pool
+from pathlib import Path
 import tree_sitter_cpp
 from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser

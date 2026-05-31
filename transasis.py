@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 

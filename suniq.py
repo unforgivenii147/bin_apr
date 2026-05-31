@@ -16,20 +16,16 @@ def is_comment(line: str) -> bool:
 def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
     """
     Sort and optionally deduplicate lines in the given index range.
-
     comments=False:
         Keep comment lines in place, sort only non-comment lines.
-
     comments=True:
         Include comment lines in sorting and uniqueness.
     """
     target_slice = lines[start_idx:end_idx]
-
     # Include comments in sorting
     if comments:
         working = target_slice[:]
         removed_lines = []
-
         if unique:
             seen = set()
             unique_lines = []
@@ -40,22 +36,17 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
                 else:
                     removed_lines.append(line.rstrip("\n"))
             working = unique_lines
-
         working.sort()
         return working, removed_lines
-
     # Default: preserve comment lines in place
     sortable_lines = []
     comment_positions = {}
-
     for i, line in enumerate(target_slice):
         if is_comment(line):
             comment_positions[i] = line
         else:
             sortable_lines.append(line)
-
     removed_lines = []
-
     if unique:
         seen = set()
         unique_lines = []
@@ -66,9 +57,7 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
             else:
                 removed_lines.append(line.rstrip("\n"))
         sortable_lines = unique_lines
-
     sortable_lines.sort()
-
     # Rebuild slice while keeping comments in original positions
     rebuilt = []
     sort_idx = 0
@@ -78,7 +67,6 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
         else:
             rebuilt.append(sortable_lines[sort_idx])
             sort_idx += 1
-
     return rebuilt, removed_lines
 
 
@@ -91,49 +79,36 @@ def main():
     parser.add_argument(
         "-u", "--unique", action="store_true", default=False, help="Remove duplicate lines within range"
     )
-
     args = parser.parse_args()
     file_path = Path(args.filename)
-
     if not file_path.exists():
         print(f"Error: File '{file_path}' does not exist.", file=sys.stderr)
         sys.exit(1)
-
     if args.start_line < 1 or args.end_line < args.start_line:
         print("Error: invalid line range.", file=sys.stderr)
         sys.exit(1)
-
     try:
         with file_path.open("r", encoding="utf-8") as f:
             lines = f.readlines()
-
         total_lines = len(lines)
-
         if args.end_line > total_lines:
             print(f"Error: end line {args.end_line} exceeds file length {total_lines}.", file=sys.stderr)
             sys.exit(1)
-
         start_idx = args.start_line - 1
         end_idx = args.end_line  # slice end is exclusive
-
         rebuilt_slice, removed_lines = process_lines(
             lines, start_idx, end_idx, unique=args.unique, comments=args.comments
         )
-
         new_lines = lines[:start_idx] + rebuilt_slice + lines[end_idx:]
-
         # Write safely to temp file first, then replace original
         with tempfile.NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as tmp_file:
             tmp_file.writelines(new_lines)
             temp_name = tmp_file.name
-
         shutil.move(temp_name, file_path)
-
         if args.unique and removed_lines:
             print("Removed duplicate lines:")
             for line in removed_lines:
                 print(f"  {line}")
-
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

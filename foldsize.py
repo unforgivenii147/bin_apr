@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import shutil
 from pathlib import Path
-
 from loguru import logger
 
 
@@ -26,7 +24,6 @@ def safe_rename(src: Path, dest_dir: Path) -> Path:
 
 
 def format_size_range(min_s: int, max_s: int) -> str:
-
     def fmt(n):
         if n < 1000:
             return f"{n}B"

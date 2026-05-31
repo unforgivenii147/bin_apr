@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import re
 import sys
 from pathlib import Path
-
-from dh import cprint, fsz, get_pyfiles, gsz, get_removed_lines
+from dh import cprint, fsz, get_pyfiles, get_removed_lines, gsz
 from joblib import Parallel, delayed
 
 SPECIAL_COMMENT_RE = re.compile("#\\s*(type:|fmt:|pylint|mypy)", re.IGNORECASE)

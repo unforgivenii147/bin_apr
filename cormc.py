@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import glob
 import logging
 import os
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
-
 from loguru import logger
 
 try:

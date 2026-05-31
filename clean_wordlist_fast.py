@@ -17,7 +17,6 @@ def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <wordlist.txt>", file=sys.stderr)
         sys.exit(1)
-
     fname = sys.argv[1]
     tmp_fd, tmp_name = tempfile.mkstemp(prefix="wordlist_", suffix=".tmp")
     try:
@@ -28,7 +27,6 @@ def main():
             for line in inp:
                 if not should_skip(line):
                     out.write(line)
-
         os.replace(tmp_name, fname)  # atomic replace
     except Exception:
         try:

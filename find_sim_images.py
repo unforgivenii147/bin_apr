@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import imagehash
 from PIL import Image
 
 
 def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
-
     def is_image(filename):
         f = filename.lower()
         return f.endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif", ".svg")) or ".jpg" in f
@@ -50,7 +48,6 @@ if __name__ == "__main__":
 
         def hashfunc(img):
             return imagehash.whash(img, mode="db4")
-
     elif hashmethod == "colorhash":
         hashfunc = imagehash.colorhash
     elif hashmethod == "crop-resistant":

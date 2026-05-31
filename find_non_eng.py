@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import sys
 from collections import Counter
 from pathlib import Path
-
 import pycld2
 from dh import is_binary
 

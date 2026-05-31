@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import get_files
 from PIL import Image
 from pytesseract import image_to_string

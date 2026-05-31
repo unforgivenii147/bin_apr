@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import shutil
 import sys
 import tarfile
 from pathlib import Path
-
 import zstandard as zstd
-from dh import get_files, gsz, fsz, cprint
+from dh import cprint, fsz, get_files, gsz
 
 
 def decompress_file(archive_path: Path) -> bool:
@@ -62,7 +60,6 @@ def main() -> None:
                 successful += 1
             else:
                 failed += 1
-
     print(f"successful: {successful}")
     if failed:
         print(f"failed: {failed}")

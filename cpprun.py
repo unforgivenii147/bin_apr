@@ -1,10 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
-
 
 if __name__ == "__main__":
     args = sys.argv[1:]

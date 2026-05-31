@@ -1,12 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-from __future__ import absolute_import, division, print_function
-
-from PIL import Image
-
 import imagehash
+from PIL import Image
 
 """
 Demo of hashing
@@ -41,7 +35,6 @@ def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
             if "dupPictures" in img:
                 print("rm -v", img)
         images[hash] = images.get(hash, []) + [img]
-
     # for k, img_list in six.iteritems(images):
     # 	if len(img_list) > 1:
     # 		print(" ".join(img_list))
@@ -54,9 +47,7 @@ if __name__ == "__main__":  # noqa: C901
     def usage():
         sys.stderr.write(
             """SYNOPSIS: %s [ahash|phash|dhash|...] [<directory>]
-
 Identifies similar images in the directory.
-
 Method:
   ahash:          Average hash
   phash:          Perceptual hash
@@ -65,7 +56,6 @@ Method:
   whash-db4:      Daubechies wavelet hash
   colorhash:      HSV color hash
   crop-resistant: Crop-resistant hash
-
 (C) Johannes Buchner, 2013-2017
 """
             % sys.argv[0]

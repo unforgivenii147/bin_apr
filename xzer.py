@@ -1,18 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/python
-import mmap
 import asyncio
 import contextlib
+import mmap
 import shutil
 import sys
 import tempfile
 from pathlib import Path
 from dh import mpf3
-
 from lzma_mt import compress
 
 _executor = asyncio.Semaphore(4)
-
-
 CHUNK_SIZE = 524288
 
 
@@ -34,7 +31,6 @@ def compress_chunked(in_path, out_path, file_size):
         with out_path.open("wb", buffering=1024 * 1024) as fout, in_path.open("rb") as fin:
             mm = mmap.mmap(fin.fileno(), length=0, access=mmap.ACCESS_READ)
             chunks = [mm[i * CHUNK_SIZE : min((i + 1) * CHUNK_SIZE, file_size)] for i in range(chunk_count)]
-
             compressed_chunks = mpf3(compress_chunk, chunks)
             for block in compressed_chunks:
                 fout.write(block)
@@ -71,7 +67,6 @@ def compress_file(path: Path) -> bool:
         return False
     if original_size < CHUNK_SIZE:
         success = compress_in_memory(path, out_path)
-
     else:
         success = compress_chunked(path, out_path, original_size)
     if success:

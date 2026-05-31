@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import os
-
 import matplotlib.pyplot as plt
 
 current_dir = os.getcwd()

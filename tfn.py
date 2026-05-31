@@ -1,14 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
-from dh import cprint, get_files, mpf3, runcmd, FONT_EXT, unique_path
+from dh import FONT_EXT, cprint, get_files, mpf3, runcmd, unique_path
 from fontTools.ttLib import TTFont
 
 
 def get_font_name(font_path):
     font = TTFont(str(font_path))
-
     try:
         font = TTFont(file_path)
         for record in font["name"].names:
@@ -16,7 +14,6 @@ def get_font_name(font_path):
                 return record.string.decode("utf-16-be").strip()
     except:
         pass
-
     ps_name = font["name"].getName(6, 3, 1, 0, 256)
     if not ps_name:
         family_name = font["name"].getName(1, 3, 1, 0, 256)
@@ -73,7 +70,6 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)

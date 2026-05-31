@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import logging
 import os.path
 import re
@@ -8,7 +7,6 @@ from argparse import ArgumentParser
 from collections.abc import Container, Iterable
 from pathlib import Path
 from typing import Any, TextIO, cast
-
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
 from pdfminer.pdfexceptions import PDFIOError, PDFObjectNotFound, PDFTypeError, PDFValueError
@@ -174,7 +172,6 @@ LITERAL_EMBEDDEDFILE = LIT("EmbeddedFile")
 
 
 def extractembedded(fname: str, password: str, extractdir: str) -> None:
-
     def extract1(objid: int, obj: dict[str, Any]) -> None:
         filename = Path(obj.get("UF") or cast("bytes", obj.get("F")).decode()).name
         fileref = obj["EF"].get("UF") or obj["EF"].get("F")

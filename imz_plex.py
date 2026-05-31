@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import operator
 import re
@@ -7,7 +6,6 @@ import tarfile
 import zipfile
 from collections import defaultdict
 from pathlib import Path
-
 from dh import STDLIB
 
 SHEBANG_PATTERNS = ["#!/data/data/com.termux/files/usr/bin/python", "#!/usr/bin/env python", "#! */python"]

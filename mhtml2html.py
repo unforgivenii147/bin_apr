@@ -1,27 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-    main,
-)
-
-#!/data/data/com.termux/files/usr/bin/python
-import sys
-from pathlib import Path
+import base64
 import os
 import re
-import base64
+import sys
 from email import policy
 from email.parser import BytesParser
+from pathlib import Path
 
 
 def sanitize_filename(name: str) -> str:
@@ -50,18 +34,13 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python mhtml_to_html.py input.mhtml [output.html] [output_files_dir]")
         sys.exit(1)
-
     in_path = Path(sys.argv[1])
     out_html = sys.argv[2] if len(sys.argv) >= 3 else Path(in_path).with_suffix(".html")
     out_dir = sys.argv[3] if len(sys.argv) >= 4 else Path(in_path).stem + "_files"
-
     os.makedirs(out_dir, exist_ok=True)
-
     with open(in_path, "rb") as f:
         raw = f.read()
-
     msg = BytesParser(policy=policy.default).parsebytes(raw)
-
     # MHTML usually is multipart/related. We'll search parts.
     parts = []
     if msg.is_multipart():
@@ -75,19 +54,15 @@ def main():
         walk(msg)
     else:
         parts = [msg]
-
     html_candidates = []
     resource_parts = []
-
     for p in parts:
         ctype = p.get_content_type()
         disp = (p.get("Content-Disposition") or "").lower()
         cid = (p.get("Content-ID") or "").strip()
         if cid.startswith("<") and cid.endswith(">"):
             cid = cid[1:-1]
-
         payload = p.get_payload(decode=True)  # bytes or None
-
         # Identify HTML part
         if ctype == "text/html":
             html_candidates.append((cid, payload))
@@ -95,7 +70,6 @@ def main():
             # Most resources are images/css/js, etc.
             if payload:
                 resource_parts.append((cid, ctype, disp, payload, p))
-
     if not html_candidates:
         # Some mhtml files may store HTML as text/plain or inside headers.
         # Try first text part as fallback.
@@ -105,14 +79,11 @@ def main():
                 if payload:
                     html_candidates.append((None, payload))
                     break
-
     if not html_candidates:
         raise RuntimeError("No HTML part found in the MHTML.")
-
     # Choose first HTML candidate (common case)
     _, html_bytes = html_candidates[0]
     html_text = html_bytes.decode(errors="replace")
-
     # Map CID -> extracted filename
     cid_to_file = {}
     # Map URL fragment/relative href -> extracted file (best-effort)
@@ -133,11 +104,9 @@ def main():
     for cid, ctype, disp, payload, part in resource_parts:
         if not payload:
             continue
-
         # Skip resource if it looks like another HTML
         if ctype == "text/html":
             continue
-
         # Determine extension
         ext = None
         m = re.match(r"^[^/]+/([^;\s]+)", ctype)
@@ -145,10 +114,8 @@ def main():
             ext = m.group(1)
         if ext == "svg+xml":
             ext = "svg"
-
         base_name = get_name_from_headers(part) or cid or "resource"
         base_name = sanitize_filename(base_name)
-
         if ext:
             # If base_name already has an extension, keep it
             if not os.path.splitext(base_name)[1]:
@@ -157,7 +124,6 @@ def main():
                 fname = base_name
         else:
             fname = base_name
-
         # Avoid collisions
         out_path = os.path.join(out_dir, fname)
         if os.path.exists(out_path):
@@ -170,10 +136,8 @@ def main():
                     fname = os.path.basename(cand)
                     break
                 i += 1
-
         with open(out_path, "wb") as f:
             f.write(payload)
-
         if cid:
             cid_to_file[cid] = fname
 
@@ -219,10 +183,8 @@ def main():
         return f'{attr}="{os.path.basename(out_dir)}/{fname}"'
 
     html_text = re.sub(r'(src|href)=["\'](data:[^"\']+)["\']', data_uri_replacer, html_text, flags=re.IGNORECASE)
-
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(html_text)
-
     print(f"Done.")
     print(f"HTML: {out_html}")
     print(f"Resources: {out_dir}/ (extracted {len(cid_to_file)} CID items)")

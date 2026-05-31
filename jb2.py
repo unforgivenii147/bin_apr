@@ -2,7 +2,6 @@
 import json
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz, mpf3
 
 
@@ -19,7 +18,6 @@ def process_file(fp):
             json.dump(jdata, fo, ensure_ascii=False, indent=2)
         after = gsz(fp)
         diffsize = abs(after - before)
-
         print(f"{fp.name}", end=" | ")
         if not diffsize:
             cprint("(no change)", "grey")

@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
-
 from bs4 import BeautifulSoup
 
 
@@ -146,7 +144,6 @@ def create_template_html(
         {chr(10).join(f'                <li><a href="#{Path(f).stem}">{Path(f).relative_to(Path.cwd())}</a></li>' for f in html_files)}
             </ul>
         </div>
-
 {merged_content}
     </div>
     <script>

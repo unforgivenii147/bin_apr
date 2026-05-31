@@ -28,13 +28,10 @@ def create_session():
 def extract_links(url: str, session: requests.Session):
     resp = session.get(url, timeout=30, allow_redirects=True)
     resp.raise_for_status()
-
     # Handle encoding issues with Persian/Arabic characters
     resp.encoding = resp.apparent_encoding or "utf-8"
-
     soup = BeautifulSoup(resp.text, "html.parser")
     links = set()
-
     # Find links in regular <a> tags
     for tag in soup.find_all("a", href=True):
         href = tag.get("href").strip()
@@ -43,7 +40,6 @@ def extract_links(url: str, session: requests.Session):
             parsed = urlparse(abs_url)
             if parsed.scheme in {"http", "https"}:
                 links.add(abs_url)
-
     # Also check for video sources and iframes
     for tag in soup.find_all(["video", "source", "iframe"], src=True):
         src = tag.get("src").strip()
@@ -52,7 +48,6 @@ def extract_links(url: str, session: requests.Session):
             parsed = urlparse(abs_url)
             if parsed.scheme in {"http", "https"}:
                 links.add(abs_url)
-
     return sorted(links)
 
 
@@ -79,14 +74,11 @@ def main():
     parser = argparse.ArgumentParser(description="Extract and save all URLs from a webpage")
     parser.add_argument("url", nargs="?", help="Target URL")
     args = parser.parse_args()
-
     url = args.url or input("Enter URL: ").strip()
     if not url.startswith(("http://", "https://")):
         print("Error: URL must start with http:// or https://", file=sys.stderr)
         sys.exit(1)
-
     session = create_session()
-
     try:
         links = extract_links(url, session)
     except requests.exceptions.HTTPError as e:
@@ -98,16 +90,13 @@ def main():
     except Exception as e:
         print(f"Failed to fetch or parse URL: {e}", file=sys.stderr)
         sys.exit(1)
-
     internal, external = split_internal_external(url, links)
-
     # Always save all categories
     save_links("all_links.txt", links)
     if internal:
         save_links("internal.txt", internal)
     if external:
         save_links("external.txt", external)
-
     print(f"Total links: {len(links)} (Internal: {len(internal)}, External: {len(external)})")
 
 

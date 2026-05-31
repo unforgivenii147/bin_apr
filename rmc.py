@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from ast import get_docstring as ast_get_docstring
 from ast import parse as ast_parse
 from operator import itemgetter
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
@@ -14,7 +12,6 @@ parser = Parser(PY_LANGUAGE)
 
 
 def havedoc(code):
-
     tree = ast_parse(code)
     doc = ast_get_docstring(tree)
     has_doc = doc is not None
@@ -65,7 +62,6 @@ def strip_code(code):
 
 
 def process_file(path: Path) -> bool:
-
     before = gsz(path)
     original = path.read_text(encoding="utf-8")
     if havedoc(original):
@@ -93,7 +89,6 @@ def process_file(path: Path) -> bool:
 
 if __name__ == "__main__":
     from sys import argv as sys_argv
-
     from dh import get_pyfiles, mpf3
 
     cwd = Path.cwd()

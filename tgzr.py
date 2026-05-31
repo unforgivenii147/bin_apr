@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 import tarfile
 from concurrent.futures import ThreadPoolExecutor

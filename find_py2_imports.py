@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import STDLIB2, cprint, get_filez
 from rapidfuzz import fuzz

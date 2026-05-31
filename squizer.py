@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import io
 import os
 import re

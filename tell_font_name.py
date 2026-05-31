@@ -1,26 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    main,
-    process_file,
-    main,
-    main,
-    main,
-    main,
-    unique_path,
-    main,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
 from termcolor import cprint

@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-
 import brotli
 import chardet
 from loguru import logger

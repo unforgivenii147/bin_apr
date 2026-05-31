@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import re
 import tokenize
 from pathlib import Path
-
 from dh import get_files, mpf3
 
 SIZE_THRESHOLD = 1 * 1024 * 1024

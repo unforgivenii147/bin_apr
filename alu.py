@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
-
 from dh import cprint, runcmd
 
 if __name__ == "__main__":

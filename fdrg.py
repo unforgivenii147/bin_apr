@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import fnmatch
 import tarfile
@@ -8,7 +7,6 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from queue import Queue
-
 from fastwalk import walk_files
 
 pause_event = threading.Event()

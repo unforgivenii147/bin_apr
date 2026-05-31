@@ -1,12 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from __future__ import annotations
-
 import hashlib
 import os
 from dataclasses import dataclass
 from pathlib import Path
-
 from tree_sitter import Parser
 from tree_sitter_languages import get_language
 

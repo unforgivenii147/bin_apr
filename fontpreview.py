@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 from pathlib import Path
-
 from dh import FONT_EXT
 
 FONT_EXTENSIONS = tuple(FONT_EXT)

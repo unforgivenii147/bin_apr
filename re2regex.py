@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-
 from dh import get_pyfiles
 
 NORMAL_IMPORT = "^import re\\b"

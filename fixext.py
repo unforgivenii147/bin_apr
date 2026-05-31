@@ -1,8 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
 import os
+import sys
 from pathlib import Path
-
 from dh import MIME2EXT, cprint, is_binary, runcmd, unique_path
 
 CONFIRM = "-y" in sys.argv

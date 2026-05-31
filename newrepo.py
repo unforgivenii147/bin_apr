@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import json
 import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 

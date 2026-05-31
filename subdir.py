@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import shutil
 import sys
 import tarfile
 import zipfile
 from pathlib import Path
-
 import py7zr
 
 

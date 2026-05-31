@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import asyncio
 import contextlib
 import shutil
 import sys
 from pathlib import Path
-
 import zstandard as zstd
-from dh import cprint, gsz, fsz
+from dh import cprint, fsz, gsz
 
 _executor = asyncio.Semaphore(4)
 
@@ -39,7 +37,6 @@ def compress_file(path: Path) -> bool:
         cctx = zstd.ZstdCompressor(level=21)
         with path.open("rb") as fin, dst.open("wb") as fout:
             cctx.copy_stream(fin, fout)
-
         after = dst.stat().st_size
         if not after:
             print(f"Compressed file empty: {dst}")

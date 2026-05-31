@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 import tarfile
 import tempfile
 import time
 from pathlib import Path
-
 import zstandard as zstd
 
 

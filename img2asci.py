@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from pathlib import Path
-
 from ascii_magic import AsciiArt
 from dh import get_files
 

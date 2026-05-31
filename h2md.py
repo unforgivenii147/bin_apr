@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
-from markdownify import markdownify
 from dh import cprint, get_files, mpf3
+from markdownify import markdownify
 
 
 def process_file(fp):
@@ -27,5 +25,4 @@ if __name__ == "__main__":
                 files.extend(get_files(p, ext=[".html"]))
     else:
         files.extend(get_files(p, ext=[".html"]))
-
     mpf3(process_file, files)

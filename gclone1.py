@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-
 import requests
 from dh import runcmd
 

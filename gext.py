@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import os
 import re
@@ -8,14 +7,13 @@ import tarfile
 import zipfile
 from pathlib import Path
 from typing import Any
-from dh import mpf3, get_files, runcmd
+from dh import get_files, mpf3, runcmd
 
-HERE = "-h" in sys.argv
-if HERE:
+HERE = "-t" in sys.argv
+if not HERE:
     OUTPUT_DIR = Path.cwd() / "output"
 else:
     OUTPUT_DIR = Path.home() / "tmp" / "output"
-
 ARCHIVE_EXTENSIONS = (".whl", ".zip", ".tar.gz", ".tgz", ".tar.zst", ".tar.xz", ".tar", ".zst")
 ALLOWED_PYTHON_EXTENSIONS = ".py"
 

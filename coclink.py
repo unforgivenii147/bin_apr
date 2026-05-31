@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 

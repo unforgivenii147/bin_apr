@@ -1,13 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/python
-
+import shutil
 import sys
 import tarfile
-import shutil
 import tempfile
 from pathlib import Path
-
-from lzma_mt import LZMADecompressor
 from dh import get_files
+from lzma_mt import LZMADecompressor
 
 MEM_LIMIT = 104857600
 

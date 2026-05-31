@@ -24,25 +24,20 @@ def make_raw_string(source: str) -> str:
     m = re.match(r'^([rubfRUBF]*)?(?P<quote>"""|\'\'\'|"|\')(?P<body>.*)(?P=quote)$', source, re.S)
     if not m:
         return source
-
     prefix = m.group(1) or ""
     quote = m.group("quote")
     body = m.group("body")
-
     # If already raw, no need to change
     if "r" in prefix.lower():
         return source
-
     # Raw strings cannot end with a single backslash
     if body.endswith("\\") and not body.endswith("\\\\"):
         return source
-
     # Raw strings cannot contain the same quote sequence unescaped in a simple way
     if quote == '"' and '"' in body and '"""' not in source:
         return source
     if quote == "'" and "'" in body and "'''" not in source:
         return source
-
     new_prefix = prefix + ("r" if "r" not in prefix.lower() else "")
     return f"{new_prefix}{quote}{body}{quote}"
 
@@ -56,15 +51,12 @@ def fix_file(path: Path) -> bool:
         text = path.read_text(encoding="utf-8")
     except Exception:
         return False
-
     changed = False
     out_tokens = []
-
     try:
         tokens = list(tokenize.generate_tokens(io.StringIO(text).readline))
     except tokenize.TokenError:
         return False
-
     for tok in tokens:
         if tok.type == tokenize.STRING and has_invalid_escape(tok.string):
             fixed = make_raw_string(tok.string)
@@ -72,22 +64,18 @@ def fix_file(path: Path) -> bool:
                 tok = tokenize.TokenInfo(tok.type, fixed, tok.start, tok.end, tok.line)
                 changed = True
         out_tokens.append(tok)
-
     if changed:
         new_text = tokenize.untokenize(out_tokens)
         path.write_text(new_text, encoding="utf-8")
-
     return changed
 
 
 def scan_and_fix(root_dir: str):
     root = Path(root_dir)
     fixed_files = []
-
     for path in root.rglob("*.py"):
         if fix_file(path):
             fixed_files.append(str(path))
-
     return fixed_files
 
 
@@ -95,10 +83,8 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python fix_invalid_escapes.py <directory>")
         sys.exit(1)
-
     directory = sys.argv[1]
     fixed = scan_and_fix(directory)
-
     if fixed:
         print("Fixed files:")
         for f in fixed:

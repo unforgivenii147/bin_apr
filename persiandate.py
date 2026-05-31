@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import datetime
 
 weekdays = ["دوشنبه", "سه\u200cشنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه", "یکشنبه"]

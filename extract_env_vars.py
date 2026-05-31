@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import builtins
 import re
 from pathlib import Path

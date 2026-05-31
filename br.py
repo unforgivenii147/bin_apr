@@ -1,13 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
 from pathlib import Path
 from binaryornot import is_binary
 from brotlicffi import compress as brotli_compress
 from dh import cprint, fsz, get_files, gsz, mpf3
-# from joblib import Parallel, delayed
 
+# from joblib import Parallel, delayed
 CHUNK_SIZE = 524288
 N_JOBS = -1
 

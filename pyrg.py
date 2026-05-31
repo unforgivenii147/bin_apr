@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import fnmatch
 import operator
@@ -8,7 +7,6 @@ import sys
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from dh import get_files, is_binary
 
 cwd = Path.cwd()

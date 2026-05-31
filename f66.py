@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import operator
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-
 from dh import cprint
 
 

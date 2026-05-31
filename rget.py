@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from urllib.parse import unquote, urlparse
-
 import requests
 from tqdm import tqdm
 

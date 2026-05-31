@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from multiprocessing import Pool
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, cprint, get_files
 from tree_sitter import Language, Parser

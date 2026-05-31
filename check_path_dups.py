@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 from collections import defaultdict
 from pathlib import Path
-
 from dh import cprint, get_sha256
 
 

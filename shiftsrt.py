@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import re
 import sys
@@ -24,7 +23,6 @@ def from_ms(ms: int) -> str:
 
 
 def shift_content(text: str, shift_ms: int) -> str:
-
     def repl(m):
         a, b = m.groups()
         return f"{from_ms(to_ms(a) + shift_ms)} --> {from_ms(to_ms(b) + shift_ms)}"

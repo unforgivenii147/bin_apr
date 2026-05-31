@@ -10,7 +10,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Tuple
-
 import brotlicffi as brotli
 import psutil  # pip install psutil
 import py7zr
@@ -18,7 +17,6 @@ import zstandard as zstd
 from loguru import logger
 
 COMPRESS_MODE = "zstd"
-
 SUPPORTED_EXTS = {
     ".tar",
     ".tar.xz",
@@ -342,7 +340,6 @@ def decompress_one(path_str: str) -> Result:
             out_bytes = brotli.decompress(src.read_bytes())
             extracted_path.write_bytes(out_bytes)
             extracted_path_str = str(extracted_path)
-
         elif name.endswith(".zst"):
             extracted_path = src.with_suffix("")
             dctx = zstd.ZstdDecompressor()
@@ -357,7 +354,6 @@ def decompress_one(path_str: str) -> Result:
                     with tarfile.open(fileobj=reader, mode="r|*") as tf:
                         tf.extractall(path=dst_dir, filter="data")
             extracted_path_str = str(extracted_path)
-
         elif name.endswith(".7z"):
             if py7zr is None:
                 raise RuntimeError("py7zr is not installed")
@@ -462,9 +458,7 @@ def main():
             print("No files or directories to compress.")
             return
         print(f"Found {len(items_to_process)} items to compress using mode '{mode}'. Starting compression...")
-
         COMPRESS_MODE = mode
-
         results = []
         for f in items_to_process:
             path, is_dir = f

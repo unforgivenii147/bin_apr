@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import mmap
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from binaryornot import is_binary
 
 THRESHOLD = 1024 * 1024

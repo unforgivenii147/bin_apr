@@ -6,12 +6,12 @@ Usage:
     python convert_pyproject_to_setup.py [--force] [pyproject.toml path]
 """
 
-import sys
-import os
-import tomllib
 import configparser
+import os
+import sys
+import tomllib
 from pathlib import Path
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 def load_toml(path: Path) -> dict:

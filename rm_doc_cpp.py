@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
@@ -12,7 +11,6 @@ class RegexCommentRemover:
         )
 
     def remove_comments(self, source: str):
-
         def replacer(match):
             s = match.group(0)
             if s.startswith("/"):

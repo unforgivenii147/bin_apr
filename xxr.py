@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from __future__ import annotations
-
 import argparse
 import bz2
 import gzip
@@ -14,7 +12,6 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
-
 import brotlicffi as brotli
 import py7zr
 import zstandard as zstd
@@ -40,7 +37,6 @@ SUPPORTED_EXTS = {
     ".lz4",
     ".tar.lz4",
 }
-
 COMPRESS_MODE = "zstd"
 
 
@@ -425,9 +421,7 @@ def main():
             print("No compressed files found to decompress.")
             return
         print(f"Found {len(targets)} compressed files. Starting decompression...")
-
         _ = mpf3(decompress_one, targets)
-
     else:
         mode = "zstd"
         if args.use_7z:
@@ -447,10 +441,8 @@ def main():
             print("No files or directories to compress.")
             return
         print(f"Found {len(items_to_process)} items to compress using mode '{mode}'. Starting compression...")
-
         COMPRESS_MODE = mode
         _ = mpf3(worker_func, items_to_process)
-
     after = gsz(cwd)
     dsz = before - after
     if not dsz:

@@ -1,28 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    fsz,
-    main,
-    main,
-    clean_file,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 
 STRTOFIND = ["dist-info", ".so", ".py", ".pth", "__", ".zip"]

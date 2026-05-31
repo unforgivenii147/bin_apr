@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from multiprocessing import Process, Queue, cpu_count
 from pathlib import Path
-
 import cv2
 import pytesseract
 from dh import cprint

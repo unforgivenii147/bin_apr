@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from urllib.parse import urlparse
 
 seen = set()

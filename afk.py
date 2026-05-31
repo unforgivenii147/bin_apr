@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from pathlib import Path
-
 from autoflake import fix_code
 from dh import cprint, get_pyfiles, get_removed_lines
 

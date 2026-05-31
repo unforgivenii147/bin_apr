@@ -1,30 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-from utils import (
-    main,
-    fsz,
-    main,
-    process_file,
-    main,
-    fsz,
-    gsz,
-    main,
-    main,
-    main,
-    QUERY_STRING,
-    main,
-    fsz,
-    main,
-    main,
-    main,
-)
-#!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_pyfiles, mpf
 from tree_sitter import Language, Parser, Query, QueryCursor

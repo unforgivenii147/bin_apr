@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2, fsz, get_pyfiles, gsz, mpf3
 
 

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import json
 import os
@@ -8,7 +7,6 @@ import signal
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing import Manager, cpu_count
 from urllib.parse import urljoin
-
 import requests
 from bs4 import BeautifulSoup
 

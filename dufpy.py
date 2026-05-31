@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from pathlib import Path
-
 from dh import cprint, get_pyfiles, mpf3
 from xxhash import xxh64_hexdigest
 
@@ -19,14 +17,12 @@ def main() -> None:
     for result in results:
         hash, path = result
         fd.setdefault(hash, []).append(path)
-
     for h, p in fd.items():
         if len(p) > 1:
             print(f"files with hash: {h}")
             for path in p:
                 print(f"  - {path}")
                 path.unlink()
-
     deleted = 0
     for h, p in fd.items():
         if len(p) > 1:

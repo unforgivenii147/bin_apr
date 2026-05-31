@@ -1,12 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
-
-#!/data/data/com.termux/files/usr/bin/python
-
 import json
 import os
 from pathlib import Path
-
 import jsbeautifier
 
 

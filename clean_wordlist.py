@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-import os
 import mmap
+import os
+import sys
 from collections import defaultdict
 
 
@@ -24,20 +24,16 @@ def process_wordlist(file_path):
     if not os.path.exists(file_path):
         print(f"Error: File '{file_path}' does not exist.")
         sys.exit(1)
-
     lines = get_lines(file_path)
-
     # Map to hold structural wildcards -> list of original words
     # e.g., buckets["aa*a"] = ["aaaa", "aaba"]
     buckets = defaultdict(list)
-
     # Step 1: Populate buckets in O(N) time
     for word in lines:
         for i in range(len(word)):
             # Create a wildcard variant
             wildcard = word[:i] + "*" + word[i + 1 :]
             buckets[wildcard].append(word)
-
     # Step 2: Identify words that share a bucket
     similar_lines = set()
     for wildcard, matched_words in buckets.items():
@@ -45,25 +41,20 @@ def process_wordlist(file_path):
             # If more than one word is in this bucket, they are all similar pairs
             for word in matched_words:
                 similar_lines.add(word)
-
     if not similar_lines:
         print("No similar items found.")
         return
-
     # Step 3: Filter out remaining unique lines
     remaining_lines = [line for line in lines if line not in similar_lines]
-
     # Step 4: Write to similar.txt
     similar_file = "similar.txt"
     with open(similar_file, "a", encoding="utf-8") as sf:
         for line in sorted(similar_lines):
             sf.write(line + "\n")
-
     # Step 5: Update the original file in place
     with open(file_path, "w", encoding="utf-8") as f:
         for line in remaining_lines:
             f.write(line + "\n")
-
     print(f"[Success] Moved {len(similar_lines)} lines to {similar_file}")
     print(f"[Success] Updated {file_path} in-place ({len(remaining_lines)} lines remaining).")
 
@@ -72,6 +63,5 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python filter_passwords.py <filename>")
         sys.exit(1)
-
     target_file = sys.argv[1]
     process_wordlist(target_file)

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import string
 from collections import Counter
 from pathlib import Path

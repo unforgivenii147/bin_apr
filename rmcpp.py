@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, get_files
 from tree_sitter import Language, Parser, Query, QueryCursor

@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
 
 if __name__ == "__main__":

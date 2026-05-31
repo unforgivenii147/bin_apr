@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_pyfiles, gsz, mpf3
 
 cwd = Path.cwd()
@@ -56,9 +54,9 @@ def process_file(path: Path):
     before = gsz(path)
     try:
         code = path.read_text(encoding="utf-8")
+        lines = code.splitlines(keepends=True)
         first_line = ""
         if code.startswith("#!/"):
-            lines = code.splitlines(keepends=True)
             first_line = lines[0]
             code = "".join(lines[1:])
         tree = ast.parse(code)

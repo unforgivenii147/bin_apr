@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import sys
-
 from dh import STDLIB, mpf3, runcmd
 
 
@@ -18,7 +16,5 @@ def main():
 
 #    pkgs = get_ipkgs()
 #    mpf3(process_pkg, pkgs)
-
-
 if __name__ == "__main__":
     sys.exit(main())

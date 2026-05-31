@@ -2,7 +2,6 @@
 import subprocess
 import tempfile
 from pathlib import Path
-
 from dh import get_files
 
 SVGCPATH = "/data/data/com.termux/files/home/.cargo/bin/svgcleaner"

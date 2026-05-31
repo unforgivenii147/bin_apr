@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 from multiprocessing import get_context
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, cprint, fsz, gsz
 from fastwalk import walk_files

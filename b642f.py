@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import base64
 import sys
 from pathlib import Path
-
-from dh import cprint, content_hash
+from dh import content_hash, cprint
 
 cleanup = True
 cwd = Path.cwd()

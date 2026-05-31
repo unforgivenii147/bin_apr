@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import datetime
-
 from dh import georgian_to_hijri
 from print_persian import print_persian as pp
 

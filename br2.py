@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import sys
 import tarfile
 from contextlib import contextmanager, suppress
 from pathlib import Path
-
 from brotlicffi import Compressor, Decompressor
 
 CHUNK_SIZE = 32768

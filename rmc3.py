@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import sys
 from pathlib import Path
-
 from dh import DOC_TH1, cprint, fsz, gsz, mpf
 
 N_JOBS = -1

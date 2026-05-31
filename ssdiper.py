@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import json
 import operator
 from pathlib import Path
-
 import ssdeep
 from dh import get_files
 

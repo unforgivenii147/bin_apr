@@ -1,5 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import contextlib
 import shutil
 import subprocess
@@ -87,7 +86,6 @@ def main() -> None:
     args = sys.argv[1:]
     pkgs = [p.strip() for p in args] if args else ["python", "mc"]
     print(f"[+] Building {len(pkgs)} packages\n")
-
     _ = mpf3(process_pkg, pkgs)
 
 

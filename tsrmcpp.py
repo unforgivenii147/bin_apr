@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 from pathlib import Path
-
 import tree_sitter_cpp as tscpp
 from dh import clean_blank_lines, cprint, run_command
 from tree_sitter import Language, Parser

@@ -1,14 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
-from dh import cprint, get_files, mpf3
-
-from dh import mpf3, runcmd
+from dh import cprint, get_files, mpf3, runcmd
 
 
 def process_file(fp):
-
     if fp.suffix.lower() in {".html", ".htm"}:
         md_file = fp.with_suffix(".md")
     else:
@@ -27,7 +23,6 @@ def main():
     cwd = Path.cwd()
     args = sys.argv[1:]
     files = []
-
     if args:
         for arg in args:
             p = Path(arg)
@@ -37,7 +32,6 @@ def main():
                 files.extend(get_files(p))
     else:
         files = get_files(cwd)
-
     mpf3(process_file, files)
 
 

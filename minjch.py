@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import json
 import multiprocessing
 import os
 import re
 from pathlib import Path
-
 from rcssmin import cssmin
 
 

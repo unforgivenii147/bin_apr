@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import argparse
 import os
 import re
 import sys
 from pathlib import Path
-
 from dh import is_binary
 
 

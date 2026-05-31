@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import subprocess
 import sys
 from pathlib import Path
-
 import requests
 from tqdm import tqdm
 

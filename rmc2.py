@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import ast
 import operator
 from pathlib import Path
-
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, get_pyfiles
 from pbar import Pbar

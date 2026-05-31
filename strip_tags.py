@@ -1,11 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
 
 INPLACE = "-w" in sys.argv
-
 from dh import read_lines
 
 if __name__ == "__main__":

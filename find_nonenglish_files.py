@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import os
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
-
 import pycld2
 from dh import TXT_EXT
 

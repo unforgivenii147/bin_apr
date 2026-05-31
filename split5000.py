@@ -1,9 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
-
 import re
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from nltk.tokenize import sent_tokenize
 

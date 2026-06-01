@@ -2,6 +2,7 @@
 import re
 import sys
 from pathlib import Path
+
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
 from termcolor import cprint
@@ -74,7 +75,6 @@ def process_file(fn):
     if new_path.exists():
         new_path = unique_path(new_path)
     fn.rename(new_path)
-    #    print(f"{fn.name} -> ", end="")
     cprint(f"{new_path.name}", "green")
     return 0
 

@@ -2,6 +2,7 @@
 import json
 import sys
 from pathlib import Path
+
 import ffmpeg
 from pymediainfo import MediaInfo
 
@@ -42,7 +43,6 @@ def main():
         print(f"File not found: {input_path}")
         sys.exit(1)
     basename = input_path.with_suffix("")
-    # Get subtitle stream information using ffprobe via ffmpeg-python
     subtitle_streams = get_subtitle_streams_info(input_path_str)
     print(subtitle_streams)
     if not subtitle_streams:
@@ -58,12 +58,11 @@ def main():
             forced = stream_info["forced"]
             codec_name = stream_info["codec_name"]
             filename_parts = [str(basename)]
-            filename_parts.append(f"sub{index}")  # Use the actual stream index for clarity
+            filename_parts.append(f"sub{index}")
             if lang != "und":
                 filename_parts.append(lang)
             if title:
-                # Sanitize title for filename
-                safe_title = "".join(c if c.isalnum() else "_" for c in title)
+                safe_title = "".join((c if c.isalnum() else "_" for c in title))
                 filename_parts.append(safe_title)
             if forced:
                 filename_parts.append("forced")
@@ -75,35 +74,6 @@ def main():
         print(f"Extracting stream index {index} (Lang: {lang}, Forced: {forced}, Codec: {codec_name}) -> {out_path}")
 
 
-"""
-        try:
-            # Map using the stream index from probe, and ensure output is SRT
-            process = (
-                ffmpeg.input(input_path_str, **{"loglevel": "quiet"})  # Suppress ffmpeg verbose output
-                .output(
-                    str(out_path), map=f"0:s:{index}", c="srt", **{"force_key_frames": None}
-                )  # c='srt' for conversion
-                .overwrite_output()
-            )
-            process.run()
-            print(f"Successfully extracted: {out_path}")
-        except ffmpeg.Error as e:
-            print(f"Error extracting stream index {index}: {e.stderr.decode('utf8')}")
-        except Exception as e:
-            print(f"An unexpected error occurred during extraction of stream index {index}: {e}")
-    if extracted_files:
-        print("\n--- Extraction Complete ---")
-        print("Extracted subtitle files:")
-        for f_path in extracted_files:
-            # The sandbox path is for the tool's internal file system
-            print(f"- {f_path}")
-            # To make it downloadable, you'd typically need a mechanism to serve these files.
-            # For demonstration, let's print a path that a system might use.
-            # If this were a web service, you'd generate a download link.
-            # Here, we'll use a convention similar to how some systems link files.
-    #            print(f"  Downloadable link (example): [/mnt/data/{Path(f_path](https://storage.gapgpt.app/media/code_interpreter/ba384828-490a-47a2-b5d9-b3dd4931e301/%7BPath%28f_path)).name}") # Assuming files are saved in /mnt/data
-#    else:
-#        print("\nNo subtitle files were successfully extracted.")
-"""
+'\n        try:\n            process = (\n                ffmpeg.input(input_path_str, **{"loglevel": "quiet"})\n                .output(\n                    str(out_path), map=f"0:s:{index}", c="srt", **{"force_key_frames": None}\n                )\n                .overwrite_output()\n            )\n            process.run()\n            print(f"Successfully extracted: {out_path}")\n        except ffmpeg.Error as e:\n            print(f"Error extracting stream index {index}: {e.stderr.decode(\'utf8\')}")\n        except Exception as e:\n            print(f"An unexpected error occurred during extraction of stream index {index}: {e}")\n    if extracted_files:\n        print("\n--- Extraction Complete ---")\n        print("Extracted subtitle files:")\n        for f_path in extracted_files:\n            print(f"- {f_path}")\n'
 if __name__ == "__main__":
     main()

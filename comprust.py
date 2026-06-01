@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from compression_prompt import Compressor
 
 if __name__ == "__main__":

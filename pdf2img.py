@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import shutil
 from pathlib import Path
+
 from pdf2image import convert_from_path
 
 POPPLER_PATH = None

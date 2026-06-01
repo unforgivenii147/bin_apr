@@ -13,6 +13,7 @@ import tempfile
 import zipfile
 from collections import defaultdict
 from pathlib import Path
+
 from loguru import logger
 
 try:
@@ -47,9 +48,6 @@ SUPPORTED_ARCHIVES = (
 )
 
 
-# ------------------------------------------------------------
-# Helpers
-# ------------------------------------------------------------
 def sha256(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
@@ -75,9 +73,6 @@ def normalize_newlines(s: str) -> str:
     return s.replace("\r\n", "\n").replace("\r", "\n")
 
 
-# ------------------------------------------------------------
-# Parsing / extraction
-# ------------------------------------------------------------
 def extract_with_tree_sitter(code: str):
     """
     Returns list of dicts:
@@ -115,8 +110,7 @@ def extract_with_tree_sitter(code: str):
                     parsed = ast.parse(text)
                     if len(parsed.body) == 1 and isinstance(parsed.body[0], ast.Assign):
                         assign = parsed.body[0]
-                        if all(isinstance(t, ast.Name) for t in assign.targets):
-                            # only first target name for importability
+                        if all((isinstance(t, ast.Name) for t in assign.targets)):
                             name = assign.targets[0].id
                             objects.append(
                                 {
@@ -174,7 +168,7 @@ def extract_with_ast(code: str):
                     }
                 )
             elif isinstance(node, ast.Assign):
-                if all(isinstance(t, ast.Name) for t in node.targets):
+                if all((isinstance(t, ast.Name) for t in node.targets)):
                     snippet = ast.get_source_segment(code, node)
                     if snippet is None:
                         continue
@@ -200,12 +194,9 @@ def extract_objects(code: str):
     return extract_with_ast(code)
 
 
-# ------------------------------------------------------------
-# Archive support
-# ------------------------------------------------------------
 def is_supported_archive(path: Path) -> bool:
     s = str(path).lower()
-    return any(s.endswith(ext) for ext in SUPPORTED_ARCHIVES)
+    return any((s.endswith(ext) for ext in SUPPORTED_ARCHIVES))
 
 
 def extract_archive(path: Path):
@@ -218,15 +209,15 @@ def extract_archive(path: Path):
         elif lower.endswith((".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tbz2", ".tar.xz", ".txz")):
             with tarfile.open(path) as tf:
                 tf.extractall(temp_dir)
-        elif lower.endswith(".gz") and not lower.endswith(".tar.gz"):
+        elif lower.endswith(".gz") and (not lower.endswith(".tar.gz")):
             out_path = Path(temp_dir) / path.stem
             with gzip.open(path, "rb") as f_in, open(out_path, "wb") as f_out:
                 f_out.write(f_in.read())
-        elif lower.endswith(".bz2") and not lower.endswith(".tar.bz2"):
+        elif lower.endswith(".bz2") and (not lower.endswith(".tar.bz2")):
             out_path = Path(temp_dir) / path.stem
             with bz2.open(path, "rb") as f_in, open(out_path, "wb") as f_out:
                 f_out.write(f_in.read())
-        elif lower.endswith(".xz") and not lower.endswith(".tar.xz"):
+        elif lower.endswith(".xz") and (not lower.endswith(".tar.xz")):
             out_path = Path(temp_dir) / path.stem
             with lzma.open(path, "rb") as f_in, open(out_path, "wb") as f_out:
                 f_out.write(f_in.read())
@@ -254,9 +245,6 @@ def extract_archive(path: Path):
     return temp_dir
 
 
-# ------------------------------------------------------------
-# Scanning
-# ------------------------------------------------------------
 def should_skip_dir(path: Path) -> bool:
     skip_names = {
         ".git",
@@ -292,9 +280,6 @@ def collect_python_files(base: Path):
     return files
 
 
-# ------------------------------------------------------------
-# Worker
-# ------------------------------------------------------------
 def process_file(path_str: str):
     path = Path(path_str)
     code = safe_read_text(path)
@@ -323,9 +308,6 @@ def process_file(path_str: str):
     return result
 
 
-# ------------------------------------------------------------
-# Utils file
-# ------------------------------------------------------------
 def get_utils_path(base: Path) -> Path:
     default_path = base / "utils.py"
     if not default_path.exists():
@@ -344,7 +326,7 @@ def build_import_line(utils_module_name: str, names):
 
 
 def write_utils_file(path: Path, objects):
-    content = "\n\n".join(obj["snippet"].rstrip() for obj in objects).rstrip() + "\n"
+    content = "\n\n".join((obj["snippet"].rstrip() for obj in objects)).rstrip() + "\n"
     try:
         ast.parse(content)
     except SyntaxError as e:
@@ -353,9 +335,6 @@ def write_utils_file(path: Path, objects):
     return safe_write_text(path, content)
 
 
-# ------------------------------------------------------------
-# Source modification
-# ------------------------------------------------------------
 def insert_import_after_shebang(code: str, import_line: str) -> str:
     lines = code.splitlines(keepends=True)
     if not lines:
@@ -363,7 +342,6 @@ def insert_import_after_shebang(code: str, import_line: str) -> str:
     insert_at = 0
     if lines[0].startswith("#!"):
         insert_at = 1
-    # avoid duplicate exact line
     joined = "".join(lines)
     if import_line in joined:
         return joined
@@ -378,19 +356,17 @@ def remove_snippets_from_code(code: str, objects):
     """
     if not objects:
         return code
-    # Prefer byte offsets if all available
-    if all(o.get("start_byte") is not None and o.get("end_byte") is not None for o in objects):
+    if all((o.get("start_byte") is not None and o.get("end_byte") is not None for o in objects)):
         encoded = code.encode("utf-8")
         spans = sorted([(o["start_byte"], o["end_byte"]) for o in objects], key=lambda x: x[0], reverse=True)
         for start, end in spans:
             encoded = encoded[:start] + encoded[end:]
         return encoded.decode("utf-8")
-    # Fallback: line-based removal
     lines = code.splitlines(keepends=True)
     ranges = []
     for o in objects:
         if o.get("lineno") is not None and o.get("end_lineno") is not None:
-            ranges.append((o["lineno"] - 1, o["end_lineno"]))  # end exclusive
+            ranges.append((o["lineno"] - 1, o["end_lineno"]))
     for start, end in sorted(ranges, reverse=True):
         del lines[start:end]
     return "".join(lines)
@@ -403,7 +379,6 @@ def update_file_for_move(path: Path, objects_to_remove, utils_module_name: str):
     code = normalize_newlines(code)
     names = [obj["name"] for obj in objects_to_remove]
     new_code = remove_snippets_from_code(code, objects_to_remove)
-    # validate remaining file before import insertion
     try:
         ast.parse(new_code)
     except SyntaxError as e:
@@ -419,9 +394,6 @@ def update_file_for_move(path: Path, objects_to_remove, utils_module_name: str):
     return safe_write_text(path, new_code)
 
 
-# ------------------------------------------------------------
-# Main
-# ------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
         description="Find repeated top-level Python objects and optionally move/copy them to utils.py"
@@ -447,16 +419,13 @@ def main():
     if not all_objects:
         logger.info("No extractable objects found.")
         return
-    # group by content hash
     by_hash = defaultdict(list)
     for obj in all_objects:
         by_hash[obj["hash"]].append(obj)
-    # duplicates = same content hash appearing in more than one place
     duplicate_groups = {h: group for h, group in by_hash.items() if len(group) > 1}
     if not duplicate_groups:
         logger.info("No duplicates found.")
         return
-    # representative objects to save in utils
     utils_objects = []
     seen_hashes = set()
     for h, group in duplicate_groups.items():
@@ -480,13 +449,9 @@ def main():
     if args.copy:
         logger.info("Copy mode: source files were not modified and no imports were added.")
         return
-    # move mode only:
-    # remove duplicates from each file where those objects exist, then add import
     by_file_to_remove = defaultdict(list)
     for h, group in duplicate_groups.items():
-        # keep one representative in utils, remove all duplicates from source files
         for obj in group:
-            # Do not try to edit extracted temp files from archives
             obj_path = Path(obj["file"])
             try:
                 obj_path.relative_to(base)
@@ -497,7 +462,6 @@ def main():
                 by_file_to_remove[obj["file"]].append(obj)
     for file_str, objects in by_file_to_remove.items():
         path = Path(file_str)
-        # do not rewrite generated utils file itself
         if path.resolve() == utils_path.resolve():
             continue
         ok = update_file_for_move(path, objects, utils_module_name)

@@ -3,11 +3,13 @@ import contextlib
 import os
 from io import BytesIO
 from pathlib import Path
+
 import pycurl
 
 
 def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):
     Path(output_dir).mkdir(exist_ok=True, parents=True)
+    urls = []
     try:
         with Path(filepath).open("r", encoding="utf-8") as f:
             urls = [line.strip() for line in f if line.strip() and (not line.startswith("#"))]
@@ -32,10 +34,11 @@ def download_urls_from_file(filepath="urls.txt", output_dir="downloads"):
                 with contextlib.suppress(BaseException):
                     cd_header = buffer.getvalue()
                 safe_filename = "".join((c for c in filename if c.isalnum() or c in "._- "))[:200].strip()
+                outpath = output_dir / safe_filename
                 if not safe_filename:
-                    filepath_out = os.path.join(output_dir, safe_filename)
-                Path(filepath_out).write_bytes(buffer.getvalue())
-                print(f"✅ Saved to: {filepath_out}\n")
+                    outpath = os.path.join(output_dir, safe_filename)
+                outpath.write_bytes(buffer.getvalue())
+                print(f"✅ Saved to: {outpath.name}\n")
             else:
                 print(f"⚠️  Failed (HTTP {status_code})\n")
         except pycurl.error as e:

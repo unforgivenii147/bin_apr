@@ -2,36 +2,48 @@
 import ast
 import sys
 from pathlib import Path
-from dh import get_pyfiles, mpf3
+
+from dh import get_filez
 
 DRY_RUN = True
 cwd = Path.cwd()
 err_dir = Path(f"{cwd}/error")
+counter = 0
 
 
 def process_file(fp) -> None:
+    global counter
+    counter += 1
+    print(f"{counter} {fp.name}")
+    content: str = ""
     try:
         content = fp.read_text(encoding="utf-8")
     except:
         print(f"error reading {fp}")
         return
     try:
-        ast.parse(content)
+        _ = ast.parse(content)
+        del content
+        return
     except Exception as e:
         print(f"{fp} | {e}")
-        err_dir.mkdir(exist_ok=True)
-        newpath = err_dir / fp.name
-        newpath = Path(newpath)
         if not DRY_RUN:
+            err_dir.mkdir(exist_ok=True)
+            newpath = err_dir / fp.name
+            newpath = Path(newpath)
             newpath.write_text(f"# copied from {fp} \n\n" + content, encoding="utf-8")
+            del content
+            return
         else:
             print(f"{fp.name} ast parse error")
+            del content
+            return
 
 
 def main():
-    args = sys.argv[1:]
-    files = [Path(f) for f in args] if args else get_pyfiles(cwd)
-    mpf3(process_file, files)
+    for f in get_filez(cwd):
+        if f.suffix == ".py":
+            process_file(f)
 
 
 if __name__ == "__main__":

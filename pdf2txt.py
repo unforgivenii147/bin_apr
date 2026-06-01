@@ -5,6 +5,7 @@ import sys
 from collections.abc import Container, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
 import pdfminer.high_level
 from pdfminer.layout import LAParams
 from pdfminer.pdfexceptions import PDFValueError

@@ -5,7 +5,7 @@ import sys
 import tokenize
 from pathlib import Path
 
-INVALID_ESCAPE_RE = re.compile(r'\\(?![\\\'"abfnrtv0-7xuUNN])')
+INVALID_ESCAPE_RE = re.compile("\\\\(?![\\\\\\'\"abfnrtv0-7xuUNN])")
 
 
 def has_invalid_escape(s: str) -> bool:
@@ -20,23 +20,19 @@ def make_raw_string(source: str) -> str:
     Convert a simple string literal source to a raw string literal if possible.
     This preserves the original quote style when feasible.
     """
-    # Match prefixes + quote + content + quote
-    m = re.match(r'^([rubfRUBF]*)?(?P<quote>"""|\'\'\'|"|\')(?P<body>.*)(?P=quote)$', source, re.S)
+    m = re.match("^([rubfRUBF]*)?(?P<quote>\"\"\"|\\'\\'\\'|\"|\\')(?P<body>.*)(?P=quote)$", source, re.S)
     if not m:
         return source
     prefix = m.group(1) or ""
     quote = m.group("quote")
     body = m.group("body")
-    # If already raw, no need to change
     if "r" in prefix.lower():
         return source
-    # Raw strings cannot end with a single backslash
-    if body.endswith("\\") and not body.endswith("\\\\"):
+    if body.endswith("\\") and (not body.endswith("\\\\")):
         return source
-    # Raw strings cannot contain the same quote sequence unescaped in a simple way
-    if quote == '"' and '"' in body and '"""' not in source:
+    if quote == '"' and '"' in body and ('"""' not in source):
         return source
-    if quote == "'" and "'" in body and "'''" not in source:
+    if quote == "'" and "'" in body and ("'''" not in source):
         return source
     new_prefix = prefix + ("r" if "r" not in prefix.lower() else "")
     return f"{new_prefix}{quote}{body}{quote}"

@@ -2,6 +2,7 @@
 import json
 import sys
 from pathlib import Path
+
 from dh import cprint, fsz, get_files, gsz, mpf3
 
 
@@ -22,8 +23,8 @@ def process_file(fp):
         if not diffsize:
             cprint("(no change)", "grey")
             return
-        ratio = (diffsize / before) * 100
-        ratio2 = (abs(after - before) / after) * 100
+        ratio = diffsize / before * 100
+        ratio2 = abs(after - before) / after * 100
         cprint(f"{ratio:.2f}% | {ratio2:.2f}%", "cyan")
         return
     except:
@@ -42,5 +43,5 @@ if __name__ == "__main__":
     mpf3(process_file, files)
     after = gsz(cwd)
     dsz = abs(before - after)
-    ratio = (dsz / before) * 100
+    ratio = dsz / before * 100
     cprint(f"space saved: {fsz(dsz)} {ratio:.2f}%")

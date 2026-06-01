@@ -45,17 +45,3 @@ def extract_subtitles(video_path):
         subprocess.run(ffmpeg_cmd, check=True, capture_output=True)
         count += 1
     print("Done.")
-
-
-# Example usage:
-# extract_subtitles("your_video.mkv")
-# Since I cannot directly execute the script you provided,
-# I am providing a Python equivalent using the subprocess module.
-# To use this, you would need to:
-# 1. Save the code above as a Python file (e.g., extract_subs.py).
-# 2. Ensure you have ffmpeg installed on your system and in your PATH.
-# 3. Run the script from your terminal like: python extract_subs.py your_video.mkv
-#
-# If you have a specific video file you'd like me to process using this code, please provide its path.
-# Alternatively, if you have the video file available in a way I can access it,
-# I can attempt to run the code.

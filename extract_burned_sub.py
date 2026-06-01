@@ -1,21 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/python
-import sys
-import cv2
-import pytesseract
-import numpy as np
 import multiprocessing
+import sys
 from functools import partial
 
+import cv2
+import numpy as np
+import pytesseract
 
-# ---------------------------------------------------------------------------
-# OCR worker (runs in a subprocess — must be a top-level function)
-# ---------------------------------------------------------------------------
+
 def _ocr_worker(frame_data: tuple, ocr_config: str) -> tuple[float, str]:
     """Process one subtitle region. Returns (timestamp, text)."""
     time_pos, subtitle_region = frame_data
     try:
         gray = cv2.cvtColor(subtitle_region, cv2.COLOR_BGR2GRAY)
-        # OTSU threshold adapts to image brightness better than a fixed value
         _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         text = pytesseract.image_to_string(binary, config=ocr_config).strip()
         print(text)
@@ -24,9 +21,6 @@ def _ocr_worker(frame_data: tuple, ocr_config: str) -> tuple[float, str]:
         return (time_pos, "")
 
 
-# ---------------------------------------------------------------------------
-# Frame extraction
-# ---------------------------------------------------------------------------
 def _frames_are_similar(a: np.ndarray, b: np.ndarray, threshold: float = 0.97) -> bool:
     """Quick perceptual similarity check to skip redundant OCR."""
     small_a = cv2.resize(a, (64, 32))
@@ -68,9 +62,6 @@ def extract_frames(
     return frames
 
 
-# ---------------------------------------------------------------------------
-# Subtitle post-processing
-# ---------------------------------------------------------------------------
 def _merge_subtitles(subtitles: list[dict], gap_threshold: float = 1.0) -> list[dict]:
     """
     Merge consecutive entries that share the same text and are close in time.
@@ -84,7 +75,7 @@ def _merge_subtitles(subtitles: list[dict], gap_threshold: float = 1.0) -> list[
         same_text = sub["text"] == cur["text"]
         close_enough = sub["start"] - cur["end"] <= gap_threshold
         if same_text and close_enough:
-            cur["end"] = sub["end"]  # extend current block
+            cur["end"] = sub["end"]
         else:
             merged.append(cur)
             cur = dict(sub)
@@ -92,9 +83,6 @@ def _merge_subtitles(subtitles: list[dict], gap_threshold: float = 1.0) -> list[
     return merged
 
 
-# ---------------------------------------------------------------------------
-# Main entry point
-# ---------------------------------------------------------------------------
 def extract_burned_subs_ocr(
     video_path: str, output_srt_path: str, lang: str = "fas", sample_fps: float = 2.0, workers: int | None = None
 ) -> None:
@@ -118,8 +106,7 @@ def extract_burned_subs_ocr(
     print(f"[2/3] Running OCR with {workers} worker(s)…")
     with multiprocessing.Pool(processes=4) as pool:
         results: list[tuple[float, str]] = pool.map(worker_fn, frames)
-    # Build subtitle list with a default 1-second duration per entry
-    subtitles = [{"start": t, "end": t + (1.0 / sample_fps), "text": txt} for t, txt in results if txt]
+    subtitles = [{"start": t, "end": t + 1.0 / sample_fps, "text": txt} for t, txt in results if txt]
     subtitles.sort(key=lambda s: s["start"])
     subtitles = _merge_subtitles(subtitles)
     print(f"[3/3] Writing {len(subtitles)} subtitle(s) → {output_srt_path}")
@@ -134,15 +121,12 @@ def extract_burned_subs_ocr(
 def format_time(seconds: float) -> str:
     """Convert a float number of seconds to SRT timestamp format."""
     h = int(seconds // 3600)
-    m = int((seconds % 3600) // 60)
+    m = int(seconds % 3600 // 60)
     s = seconds % 60
     ms = int((s - int(s)) * 1000)
     return f"{h:02d}:{m:02d}:{int(s):02d},{ms:03d}"
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python script.py &lt;video&gt; [output.srt] [sample_fps] [workers]")

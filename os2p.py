@@ -2,6 +2,7 @@
 import ast
 import sys
 from pathlib import Path
+
 from dh import fsz, get_files, gsz, mpf
 from termcolor import cprint
 
@@ -16,8 +17,8 @@ def process_file(path):
                 if (
                     isinstance(node.func, ast.Attribute)
                     and isinstance(node.func.value, ast.Name)
-                    and node.func.value.id == "os"
-                    and node.func.attr == "path"
+                    and (node.func.value.id == "os")
+                    and (node.func.attr == "path")
                 ):
                     if isinstance(node.func.value, ast.Attribute) and node.func.attr == "join":
                         print(
@@ -47,7 +48,7 @@ def process_file(path):
                     and node.func.id == "os"
                     and node.args
                     and isinstance(node.args[0], ast.Constant)
-                    and "remove" in node.args[0].value
+                    and ("remove" in node.args[0].value)
                 ):
                     print(
                         f"Warning: Direct os.remove(string) call found in {path}. Consider using Path.unlink(). Node: {ast.dump(node)}"
@@ -56,7 +57,7 @@ def process_file(path):
                 return self.generic_visit(node)
 
             def visit_Attribute(self, node):
-                if isinstance(node.value, ast.Name) and node.value.id == "os" and node.attr == "remove":
+                if isinstance(node.value, ast.Name) and node.value.id == "os" and (node.attr == "remove"):
                     print(
                         f"Info: os.remove attribute found in {path}. Replacing with Path.unlink(). Node: {ast.dump(node)}"
                     )
@@ -67,9 +68,12 @@ def process_file(path):
         transformer = OsPathTransformer()
         new_tree = transformer.visit(tree)
         has_pathlib_import = any(
-            (isinstance(node, ast.Import) and any(alias.name == "pathlib" for alias in node.names))
-            or (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
-            for node in ast.walk(new_tree)
+            (
+                isinstance(node, ast.Import)
+                and any((alias.name == "pathlib" for alias in node.names))
+                or (isinstance(node, ast.ImportFrom) and node.module == "pathlib")
+                for node in ast.walk(new_tree)
+            )
         )
         if not has_pathlib_import:
             import_pathlib = ast.Import(names=[ast.alias(name="Path")])
@@ -81,13 +85,13 @@ def process_file(path):
         try:
             ast.parse(new_content)
             print(f"Successfully validated and refactored: {path}")
-            return new_content, True
+            return (new_content, True)
         except SyntaxError as e:
             print(f"Syntax error in refactored {path}: {e}")
-            return content, False
+            return (content, False)
     except Exception as e:
         print(f"Error processing {path}: {e}")
-        return None, False
+        return (None, False)
 
 
 def main():

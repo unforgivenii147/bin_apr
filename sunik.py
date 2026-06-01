@@ -10,7 +10,7 @@ COMMENT_PREFIXES = ("#", "//", "--")
 
 def is_comment(line: str) -> bool:
     stripped = line.lstrip()
-    return any(stripped.startswith(prefix) for prefix in COMMENT_PREFIXES)
+    return any((stripped.startswith(prefix) for prefix in COMMENT_PREFIXES))
 
 
 def process_lines(lines, start_idx, end_idx, unique=False, sort_comments=False):
@@ -38,7 +38,7 @@ def process_lines(lines, start_idx, end_idx, unique=False, sort_comments=False):
                     removed_lines.append(line.rstrip("\n"))
             working_lines = unique_lines
         working_lines.sort()
-        return working_lines, removed_lines
+        return (working_lines, removed_lines)
         sortable_lines = []
     comment_positions = {}
     for i, line in enumerate(target_slice):
@@ -66,7 +66,7 @@ def process_lines(lines, start_idx, end_idx, unique=False, sort_comments=False):
         else:
             rebuilt.append(sortable_lines[sort_idx])
             sort_idx += 1
-    return rebuilt, removed_lines
+    return (rebuilt, removed_lines)
 
 
 def main():
@@ -94,11 +94,7 @@ def main():
         start_idx = args.start_line - 1
         end_idx = args.end_line
         rebuilt_slice, removed_lines = process_lines(
-            lines,
-            start_idx,
-            end_idx,
-            unique=args.unique,
-            sort_comments=args.comments,
+            lines, start_idx, end_idx, unique=args.unique, sort_comments=args.comments
         )
         new_lines = lines[:start_idx] + rebuilt_slice + lines[end_idx:]
         with tempfile.NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as tmp_file:

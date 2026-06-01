@@ -4,6 +4,7 @@ import shutil
 import sys
 import tarfile
 from pathlib import Path
+
 import zstandard as zstd
 from dh import cprint, fsz, get_files, gsz
 
@@ -13,7 +14,7 @@ def decompress_file(archive_path: Path) -> bool:
         dctx = zstd.ZstdDecompressor()
         extracted_path = archive_path.with_suffix("")
         with archive_path.open("rb") as fin, extracted_path.open("wb") as fout:
-            dctx.copy_stream(fin, fout)  # ← streaming
+            dctx.copy_stream(fin, fout)
         archive_path.unlink()
         return True
     except:
@@ -28,7 +29,7 @@ def decompress_tar_zst(archive_path: Path) -> bool:
         extracted_path = dst_dir / archive_path.stem
         with archive_path.open("rb") as fin:
             with dctx.stream_reader(fin) as reader:
-                with tarfile.open(fileobj=reader, mode="r|*") as tf:  # ← streaming tar!
+                with tarfile.open(fileobj=reader, mode="r|*") as tf:
                     tf.extractall(path=dst_dir, filter="data")
         archive_path.unlink()
         return True

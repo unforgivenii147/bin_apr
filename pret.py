@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_files, mpf3, runcmd
 
 
@@ -20,21 +21,7 @@ def main():
         [Path(f) for f in args]
         if args
         else get_files(
-            cwd,
-            e=[
-                ".html",
-                ".htm",
-                ".js",
-                ".jsx",
-                ".ts",
-                ".tsx",
-                ".css",
-                ".md",
-                ".jsm",
-                ".scss",
-                ".tsm",
-                ".coffee",
-            ],
+            cwd, e=[".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".css", ".md", ".jsm", ".scss", ".tsm", ".coffee"]
         )
     )
     mpf3(process_file, files)

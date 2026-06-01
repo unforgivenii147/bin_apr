@@ -1,6 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-from pathlib import Path
-from dh import read_lines
 
 
 def sort_by_length(lines: list[str]) -> list[str]:
@@ -9,9 +7,14 @@ def sort_by_length(lines: list[str]) -> list[str]:
 
 if __name__ == "__main__":
     import sys
+    from pathlib import Path
 
-    path = Path(sys.argv[1])
+    from dh import read_lines
+
+    path = Path(sys.argv[1].strip())
+    bakpath = path.with_name(path.stem + "_sorted_by_len" + path.suffix)
     lines = read_lines(path)
+
     sorted_lines = sort_by_length(lines)
-    with path.open("wb") as f:
-        f.writelines((line.encode("utf-8") for line in sorted_lines))
+    bakpath.write_text("".join(sorted_lines), encoding="utf8")
+    del sorted_lines, lines, path, bakpath

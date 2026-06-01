@@ -5,10 +5,11 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+
 import requests
 from tqdm import tqdm
 
-MAX_WORKERS = 8
+MAX_WORKERS = 4
 MAX_RETRIES = 3
 TIMEOUT = 60
 OUTPUT_DIR = "downloads"
@@ -128,6 +129,7 @@ def download_urls(urls, output_dir=OUTPUT_DIR):
 
 
 if __name__ == "__main__":
+    urls = []
     try:
         with Path(URLS_FILE).open("r", encoding="utf-8") as f:
             urls = [line.strip() for line in f if line.strip() and (not line.startswith("#"))]

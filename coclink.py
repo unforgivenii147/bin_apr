@@ -3,6 +3,7 @@ import os
 import re
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 
@@ -53,7 +54,7 @@ def create_html(channel_name, base_data):
     file_path = os.path.join(dir_name, "bases.html")
     html_content = f"\n    <html>\n    <head>\n        <title>{channel_name} TH18 Bases</title>\n        <style>\n            body {{ font-family: sans-serif; padding: 20px; background:\n            .card {{ background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}\n            a {{ color:\n            .vid-ref {{ font-size: 0.9em; color:\n        </style>\n    </head>\n    <body>\n        <h1>TH18 Bases from {channel_name} (Last 30 Days)</h1>\n    "
     for item in base_data:
-        html_content += f"""\n        <div class="card">\n            <h3>{item["title"]}</h3>\n            <p class="vid-ref">Source: <a href="{item["video_url"]}" target="_blank">Watch Video</a></p>\n            <ul>\n        """
+        html_content += f'''\n        <div class="card">\n            <h3>{item["title"]}</h3>\n            <p class="vid-ref">Source: <a href="{item["video_url"]}" target="_blank">Watch Video</a></p>\n            <ul>\n        '''
         for link in item["links"]:
             html_content += f'<li><a href="{link}">Get Base Layout</a></li>'
         html_content += "</ul></div>"

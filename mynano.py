@@ -3,6 +3,7 @@ import readline
 import rlcompleter
 import sys
 from pathlib import Path
+
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.log import TextLog

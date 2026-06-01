@@ -14,6 +14,7 @@ import io
 import os
 import sys
 from pathlib import Path
+
 from dh import FONT_EXT, unique_path
 from fontTools.ttLib import TTFont
 
@@ -41,16 +42,10 @@ def get_font_name_and_style(font_path):
     """Extract font family name and style from a font file using fontTools."""
     ext = font_path.suffix.lower()
     try:
-        #        ttf_path=font_path.with_suffix(".ttf")
-        #        if ext == ".woff2":
-        #            with open(font_path, "rb") as f:
-        #                ttf_data = woff2.decompress(f.read(),ttf_path)
-        #            font = TTFont(io.BytesIO(ttf_data))
-        #        else:
         font = TTFont(font_path)
         name_table = font.get("name")
         if not name_table:
-            return None, None
+            return (None, None)
         family_name = subfamily_name = None
         for record in name_table.names:
             name_str = record.string.decode("utf-16-be", errors="ignore").strip()
@@ -70,17 +65,17 @@ def get_font_name_and_style(font_path):
                     break
             if style == "Regular" and subfamily_name.lower() != "regular":
                 style = subfamily_name
-        return family_name, style
+        return (family_name, style)
     except Exception as e:
         print(f"  Warning: Could not read {font_path.name}: {e}")
-        return None, None
+        return (None, None)
 
 
 def sanitize_filename(name):
     """Sanitize a string for use as a filename."""
     if not name:
         return "Unknown"
-    sanitized = "".join(c if c.isalnum() or c in ("-", "_", " ") else "_" for c in name)
+    sanitized = "".join((c if c.isalnum() or c in ("-", "_", " ") else "_" for c in name))
     sanitized = sanitized.replace(" ", "_").strip("_")
     while "__" in sanitized:
         sanitized = sanitized.replace("__", "_")

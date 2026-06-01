@@ -14,29 +14,18 @@ import os
 import re
 from pathlib import Path
 
-# Pattern for base64 data URIs:
-#   data:[<mime>][;parameter=value...];base64,<base64-data>
-DATA_URI_PATTERN = re.compile(
-    r"data:"
-    r"(?P<mime>[^;,]*)"  # MIME type (optional)
-    r"(?P<params>(?:;[^;,]+=[^;,]+)*)"  # additional parameters (optional)
-    r";base64,"
-    r"(?P<data>[A-Za-z0-9+/=]+)"  # base64 payload
-)
+DATA_URI_PATTERN = re.compile("data:(?P<mime>[^;,]*)(?P<params>(?:;[^;,]+=[^;,]+)*);base64,(?P<data>[A-Za-z0-9+/=]+)")
 
 
 def get_extension(mime: str) -> str:
     """Return a file extension (with leading dot) for the given MIME type."""
     if mime:
-        # Try the standard library first
         ext = mimetypes.guess_extension(mime)
         if ext:
             return ext
-        # Fallback: use the subtype (e.g., "font/ttf" -> ".ttf")
         parts = mime.split("/")
         if len(parts) == 2 and parts[1]:
             return f".{parts[1]}"
-    # Unknown or missing MIME → binary
     return ".bin"
 
 
@@ -50,16 +39,13 @@ def process_file(file_path: Path, assets_dir: Path, processed: dict) -> None:
     except Exception as e:
         print(f"⚠ Skipping {file_path}: {e}")
         return
-    # Relative path from the file's folder to the top‑level assets folder
     rel_to_assets = Path(os.path.relpath(assets_dir, file_path.parent))
 
     def replace_match(match: re.Match) -> str:
-        full = match.group(0)  # entire data URI
+        full = match.group(0)
         mime = match.group("mime") or None
         data_b64 = match.group("data")
-        # Unique identifier for the asset (SHA‑256 of the full URI)
         hash_digest = hashlib.sha256(full.encode()).hexdigest()
-        # If not seen yet, decode and write the asset
         if hash_digest not in processed:
             ext = get_extension(mime)
             filename = f"{hash_digest}{ext}"
@@ -75,11 +61,9 @@ def process_file(file_path: Path, assets_dir: Path, processed: dict) -> None:
             processed[hash_digest] = filename
         else:
             filename = processed[hash_digest]
-        # Relative link to the asset
         link = rel_to_assets / filename
         return link.as_posix()
 
-    # Perform the replacements
     new_content = DATA_URI_PATTERN.sub(replace_match, content)
     if new_content != content:
         file_path.write_text(new_content, encoding="utf-8")
@@ -88,10 +72,10 @@ def process_file(file_path: Path, assets_dir: Path, processed: dict) -> None:
 
 def main():
     """Main entry point: walk the current directory and process target files."""
-    mimetypes.init()  # initialise MIME‑to‑extension mappings
+    mimetypes.init()
     assets_dir = Path("assets")
     assets_dir.mkdir(parents=True, exist_ok=True)
-    processed = {}  # hash -> filename (inside assets/)
+    processed = {}
     current_dir = Path(".")
     for file_path in current_dir.rglob("*"):
         if file_path.is_file() and file_path.suffix.lower() in (".css", ".js", ".html"):

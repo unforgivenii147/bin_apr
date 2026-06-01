@@ -7,6 +7,7 @@ IMG_TAG_RE = re.compile("<img\\b[^>]*\\bsrc\\s*=\\s*[\"\\']([^\"\\']+)[\"\\'][^>
 
 
 def remove_remote_html_images(text: str) -> str:
+
     def repl(match):
         src = match.group(1)
         if src.startswith(REMOTE_PREFIXES):
@@ -23,6 +24,7 @@ RST_IMG_RE = re.compile("^\\s*\\.\\. \\|[^|]+\\| image:: https?://[^\\s]+.*$", r
 
 
 def remove_remote_md_images(text: str) -> str:
+
     def inline_repl(match):
         url = match.group(1)
         if url.startswith(REMOTE_PREFIXES):

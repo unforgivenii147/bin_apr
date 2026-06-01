@@ -4,13 +4,14 @@ import re
 import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 
 COMMENT_AND_DOCSTRING_REGEX = re.compile(
-    rf"(?:^(\s*)#.*$)|(?:^(\s*)({DOC_TH2}).*?(\3)|^(\s*)({DOC_TH1}).*?(\5))|(?:\b(def|class)\s+\w+[^():]*\([^)]*\)\s*:\s*)(\s*)((DOC_TH2).*?(\7)|({DOC_TH1}).*?(\9))",
+    f"(?:^(\\s*)#.*$)|(?:^(\\s*)({DOC_TH2}).*?(\\3)|^(\\s*)({DOC_TH1}).*?(\\5))|(?:\\b(def|class)\\s+\\w+[^():]*\\([^)]*\\)\\s*:\\s*)(\\s*)((DOC_TH2).*?(\\7)|({DOC_TH1}).*?(\\9))",
     re.MULTILINE | re.DOTALL,
 )
-DOCSTRING_START_REGEX = re.compile(rf"^\s*({DOC_TH2}|{DOC_TH1}).*?(\1)\s*", re.MULTILINE | re.DOTALL)
+DOCSTRING_START_REGEX = re.compile(f"^\\s*({DOC_TH2}|{DOC_TH1}).*?(\\1)\\s*", re.MULTILINE | re.DOTALL)
 MAX_WORKERS = 4
 
 
@@ -23,7 +24,7 @@ def strip_comments_and_docstrings(file_path_str):
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
         return False
-    cleaned_content = DOCSTRING_START_REGEX.sub("\1", original_content, count=3)
+    cleaned_content = DOCSTRING_START_REGEX.sub("\x01", original_content, count=3)
 
     def replace_comments(match):
         _indent1, comment1, quote1, _indent2, _quote2, fn_type, indent3, quote3, quote4 = match.groups()
@@ -35,10 +36,10 @@ def strip_comments_and_docstrings(file_path_str):
             return f"{fn_type}{indent3}"
         return match.group(0)
 
-    no_single_line_comments = re.sub(r"^\s*#.*$", "", original_content, flags=re.MULTILINE)
+    no_single_line_comments = re.sub("^\\s*#.*$", "", original_content, flags=re.MULTILINE)
     try:
         tree = ast.parse(no_single_line_comments)
-        cleaned_content_heuristic = DOCSTRING_START_REGEX.sub("\1", no_single_line_comments, count=3)
+        cleaned_content_heuristic = DOCSTRING_START_REGEX.sub("\x01", no_single_line_comments, count=3)
         try:
             ast.parse(cleaned_content_heuristic)
             final_code = cleaned_content_heuristic

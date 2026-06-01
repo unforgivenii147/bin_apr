@@ -9,7 +9,7 @@ def get_dir_size(path):
     for r, _, files in os_walk(path):
         for file in files:
             path = Path(r) / file
-            if path.is_file() and not path.is_symlink():
+            if path.is_file() and (not path.is_symlink()):
                 try:
                     total += path.stat().st_size
                 except OSError:
@@ -43,15 +43,15 @@ def du_sort_python(path):
         path = Path(path)
         if path.is_dir():
             if size_bytes > 1024 * 1024:
-                print(f"\033[5;94m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
+                print(f"\x1b[5;94m{path.name:25}\x1b[0m  \x1b[5;96m {sz}\x1b[0m")
             else:
-                print(f"\033[5;94m{path.name:25}\033[0m  {sz}")
+                print(f"\x1b[5;94m{path.name:25}\x1b[0m  {sz}")
         if path.is_file():
             if size_bytes > 1024 * 1024:
-                print(f"\033[5;92m{path.name:25}\033[0m  \033[5;96m {sz}\033[0m")
+                print(f"\x1b[5;92m{path.name:25}\x1b[0m  \x1b[5;96m {sz}\x1b[0m")
             else:
-                print(f"\033[5;92m{path.name:25}\033[0m  {sz}")
-    print(f"total size : \033[5;94m{fsz(total)}\033[0m")
+                print(f"\x1b[5;92m{path.name:25}\x1b[0m  {sz}")
+    print(f"total size : \x1b[5;94m{fsz(total)}\x1b[0m")
 
 
 if __name__ == "__main__":

@@ -18,7 +18,6 @@ try:
 except ImportError:
     print("Error: This script requires Pillow. Install it with: pip install Pillow")
     exit(1)
-# Image file extensions (lowercase)
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico"}
 
 
@@ -36,7 +35,7 @@ def collect_images(root: Path):
         try:
             with Image.open(file_path) as img:
                 width, height = img.size
-            size_to_files[(width, height)].append(file_path)
+            size_to_files[width, height].append(file_path)
         except Exception as e:
             print(f"Warning: Skipping {file_path} - {e}")
     return size_to_files
@@ -66,7 +65,6 @@ def organize_images(root: Path, size_to_files: dict):
     the files there. Print a summary of the moves.
     """
     for (width, height), files in size_to_files.items():
-        # Determine folder name
         if len(files) == 1:
             folder = "other"
         else:
@@ -84,7 +82,7 @@ def main():
     root = Path.cwd()
     print(f"Scanning {root} for image files...")
     size_to_files = collect_images(root)
-    total_files = sum(len(v) for v in size_to_files.values())
+    total_files = sum((len(v) for v in size_to_files.values()))
     if total_files == 0:
         print("No image files found.")
         return

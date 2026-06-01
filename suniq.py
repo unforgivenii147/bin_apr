@@ -10,7 +10,7 @@ COMMENT_PREFIXES = ("#", "//", "--")
 
 def is_comment(line: str) -> bool:
     stripped = line.lstrip()
-    return any(stripped.startswith(prefix) for prefix in COMMENT_PREFIXES)
+    return any((stripped.startswith(prefix) for prefix in COMMENT_PREFIXES))
 
 
 def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
@@ -22,7 +22,6 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
         Include comment lines in sorting and uniqueness.
     """
     target_slice = lines[start_idx:end_idx]
-    # Include comments in sorting
     if comments:
         working = target_slice[:]
         removed_lines = []
@@ -37,8 +36,7 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
                     removed_lines.append(line.rstrip("\n"))
             working = unique_lines
         working.sort()
-        return working, removed_lines
-    # Default: preserve comment lines in place
+        return (working, removed_lines)
     sortable_lines = []
     comment_positions = {}
     for i, line in enumerate(target_slice):
@@ -58,7 +56,6 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
                 removed_lines.append(line.rstrip("\n"))
         sortable_lines = unique_lines
     sortable_lines.sort()
-    # Rebuild slice while keeping comments in original positions
     rebuilt = []
     sort_idx = 0
     for i in range(len(target_slice)):
@@ -67,7 +64,7 @@ def process_lines(lines, start_idx, end_idx, unique=False, comments=True):
         else:
             rebuilt.append(sortable_lines[sort_idx])
             sort_idx += 1
-    return rebuilt, removed_lines
+    return (rebuilt, removed_lines)
 
 
 def main():
@@ -95,12 +92,11 @@ def main():
             print(f"Error: end line {args.end_line} exceeds file length {total_lines}.", file=sys.stderr)
             sys.exit(1)
         start_idx = args.start_line - 1
-        end_idx = args.end_line  # slice end is exclusive
+        end_idx = args.end_line
         rebuilt_slice, removed_lines = process_lines(
             lines, start_idx, end_idx, unique=args.unique, comments=args.comments
         )
         new_lines = lines[:start_idx] + rebuilt_slice + lines[end_idx:]
-        # Write safely to temp file first, then replace original
         with tempfile.NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as tmp_file:
             tmp_file.writelines(new_lines)
             temp_name = tmp_file.name

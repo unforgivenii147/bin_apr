@@ -2,14 +2,12 @@
 import ast
 import sys
 from pathlib import Path
-from dh import DOC_TH1, cprint, fsz, gsz, mpf
 
-N_JOBS = -1
+from dh import DOC_TH1, cprint, fsz, get_pyfiles, gsz, mpf, read_lines
 
 
 def process_file(fp):
-    data = fp.read_text(encoding="utf-8")
-    lines = data.splitlines(keepends=False)
+    lines = read_lines(fp, ke=False)
     nl = []
     removed = 0
     for line in lines:
@@ -43,7 +41,7 @@ def main():
             elif p.is_dir():
                 files.extend(get_files(p))
     else:
-        files = get_files(root_dir)
+        files = get_pyfiles(root_dir)
     results = mpf(process_file, files)
     for result in results:
         if result:

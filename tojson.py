@@ -10,7 +10,6 @@ def file_to_json(filepath, delimiter):
         with open(filepath, "r", encoding="utf-8") as f:
             for line_num, line in enumerate(f, start=1):
                 line = line.strip()
-                # Skip empty lines and comments
                 if not line or line.startswith("#"):
                     continue
                 parts = line.split(delimiter, 1)

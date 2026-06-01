@@ -1,29 +1,38 @@
 #!/data/data/com.termux/files/usr/bin/python
+import shutil
 import sys
 from pathlib import Path
 
-EMPTYIT = False
-RMIT = True
+from dh import get_files2, read_lines
+
+EMPTYIT = "-e" in sys.argv
+RMIT = "-r" in sys.argv
+junk_path = "/sdcard/data/junk"
 
 
-def empty_it(pth) -> None:
-    Path(pth).write_text("", encoding="utf-8")
+def empty_it(path) -> None:
+    path.write_text("", encoding="utf-8")
 
 
 def remove_it(fp) -> None:
-    if fp.exists() and (not fp.is_dir()):
-        fp.unlink()
+    if fp.exists():
+        if fp.is_dir():
+            shutil.rmtree(fp)
+        else:
+            fp.unlink()
 
 
 def load_junk():
-    with Path("/sdcard/data/junk").open(encoding="utf-8") as f:
-        return [line.strip().lower() for line in f if line.strip()]
+    return read_lines(junk_path)
 
 
 def main():
     cwd = Path.cwd()
+    counter = 0
     junk_files = load_junk()
-    for path in cwd.rglob("*"):
+    for path in get_files2(cwd):
+        counter += 1
+        print(counter)
         if path.name.lower() in {
             ".travis.yml",
             ".gitkeep",
@@ -39,9 +48,15 @@ def main():
                 remove_it(path)
                 print(path.relative_to(cwd))
                 continue
-            if EMPTYIT:
+            elif EMPTYIT:
                 empty_it(path)
                 print(path.relative_to(cwd))
+            else:
+                empty_it(path)
+                print(path.relative_to(cwd))
+        if path.is_dir() and path.name == "licenses" and "dist-info" in path.parent.name:
+            remove_it(path)
+            print(path.relative_to(cwd))
 
 
 if __name__ == "__main__":

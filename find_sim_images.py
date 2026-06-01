@@ -4,6 +4,7 @@ from PIL import Image
 
 
 def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
+
     def is_image(filename):
         f = filename.lower()
         return f.endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif", ".svg")) or ".jpg" in f

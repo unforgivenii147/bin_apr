@@ -2,19 +2,12 @@
 import ast
 import sys
 from pathlib import Path
+
 import tree_sitter_python as tspython
 from dh import clean_blank_lines, cprint, fsz, get_pyfiles, gsz, mpf3
 from tree_sitter import Language, Parser, Query, QueryCursor
 
-QUERY_STRING = """
-(comment) @comment
-(block
-  . (expression_statement
-    (string)) @docstring)
-(module
-  . (expression_statement
-    (string)) @docstring)
-"""
+QUERY_STRING = "\n(comment) @comment\n(block\n  . (expression_statement\n    (string)) @docstring)\n(module\n  . (expression_statement\n    (string)) @docstring)\n"
 
 
 class TSRemover:
@@ -61,7 +54,7 @@ def process_file(path):
     ts_rmc = TSRemover()
     code = path.read_text(encoding="utf-8", errors="ignore")
     result, comments, docstrings = ts_rmc.remove_comments(code)
-    if not comments and not docstrings:
+    if not comments and (not docstrings):
         cprint(f"[NO CHANGE] : {path.name}", "grey")
         return
     try:
@@ -70,7 +63,7 @@ def process_file(path):
         print(f"{path.name}:{comments}/{docstrings}", end=" | ")
         dsz = before - gsz(path)
         if dsz:
-            ratio = (dsz / before) * 100
+            ratio = dsz / before * 100
             cprint(f"{fsz(dsz)} | {ratio:.1f}", "cyan")
         else:
             cprint("(no change)", "grey")

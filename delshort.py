@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import get_files, is_binary
 
 SIZE_THRESHOLD = 100
@@ -10,7 +11,7 @@ LINE_THRESHOLD = 3
 def process_file(fp) -> None:
     if not fp.exists():
         return
-    if fp.stat().st_size < SIZE_THRESHOLD and (len(fp.read_text().splitlines()) < LINE_THRESHOLD):
+    if fp.stat().st_size < SIZE_THRESHOLD and len(fp.read_text().splitlines()) < LINE_THRESHOLD:
         fp.unlink()
         print(f"{fp.name} removed")
 

@@ -2,6 +2,7 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from xxhash import xxh64
 
 DEFAULT_BLOCK = 32768
@@ -57,7 +58,7 @@ def iter_files(root: Path):
             p = Path(r) / file
             if ".git" in p.parts:
                 continue
-            if p.is_file() and not p.is_symlink():
+            if p.is_file() and (not p.is_symlink()):
                 if p.stat().st_size >= 1:
                     yield p
 

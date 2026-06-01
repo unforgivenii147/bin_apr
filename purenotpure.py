@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import sys
 import sysconfig
 from importlib import metadata
@@ -14,21 +15,19 @@ def is_in_system_site_packages(dist: metadata.Distribution) -> bool:
         files = list(dist.files or [])
         if not files:
             return False
-        # Prefer the location of the dist-info / metadata directory.
         loc = Path(dist.locate_file(files[0])).resolve()
         site_paths = set()
         for key in ("purelib", "platlib"):
             p = sysconfig.get_paths().get(key)
             if p:
                 site_paths.add(Path(p).resolve())
-        # Also include any sys.path entries that look like site-packages.
         for p in sys.path:
             if p and "site-packages" in p:
                 try:
                     site_paths.add(Path(p).resolve())
                 except Exception:
                     pass
-        return any(str(loc).startswith(str(sp)) for sp in site_paths)
+        return any((str(loc).startswith(str(sp)) for sp in site_paths))
     except Exception:
         return False
 

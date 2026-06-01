@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from pip._internal.cli.main import main as pip_main
 from rapidfuzz import fuzz
 

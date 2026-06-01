@@ -4,11 +4,11 @@ import sys
 import time
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
 
 
-# Create a session that mimics a real browser
 def create_session():
     session = requests.Session()
     session.headers.update(
@@ -28,19 +28,16 @@ def create_session():
 def extract_links(url: str, session: requests.Session):
     resp = session.get(url, timeout=30, allow_redirects=True)
     resp.raise_for_status()
-    # Handle encoding issues with Persian/Arabic characters
     resp.encoding = resp.apparent_encoding or "utf-8"
     soup = BeautifulSoup(resp.text, "html.parser")
     links = set()
-    # Find links in regular <a> tags
     for tag in soup.find_all("a", href=True):
         href = tag.get("href").strip()
-        if href and not href.startswith("#") and not href.startswith("javascript:"):
+        if href and (not href.startswith("#")) and (not href.startswith("javascript:")):
             abs_url = urljoin(url, href)
             parsed = urlparse(abs_url)
             if parsed.scheme in {"http", "https"}:
                 links.add(abs_url)
-    # Also check for video sources and iframes
     for tag in soup.find_all(["video", "source", "iframe"], src=True):
         src = tag.get("src").strip()
         if src:
@@ -91,7 +88,6 @@ def main():
         print(f"Failed to fetch or parse URL: {e}", file=sys.stderr)
         sys.exit(1)
     internal, external = split_internal_external(url, links)
-    # Always save all categories
     save_links("all_links.txt", links)
     if internal:
         save_links("internal.txt", internal)

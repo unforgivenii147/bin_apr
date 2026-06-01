@@ -1,12 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 from pathlib import Path
+
 from dh import cprint, get_pyfiles, mpf3
 from xxhash import xxh64_hexdigest
 
 
 def process_file(path):
-    return xxh64_hexdigest(ast.unparse(ast.parse(path.read_text(encoding="utf-8")))), path
+    return (xxh64_hexdigest(ast.unparse(ast.parse(path.read_text(encoding="utf-8")))), path)
 
 
 def main() -> None:
@@ -28,8 +29,6 @@ def main() -> None:
         if len(p) > 1:
             for path in p[1:]:
                 deleted += 1
-                #                ans=input("y/n ? ")
-                #                if ans=="y":
                 if path.exists():
                     path.unlink()
     if deleted:

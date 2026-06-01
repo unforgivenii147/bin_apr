@@ -2,12 +2,11 @@
 import imagehash
 from PIL import Image
 
-"""
-Demo of hashing
-"""
+"\nDemo of hashing\n"
 
 
 def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
+
     def is_image(filename):
         f = filename.lower()
         return (
@@ -16,7 +15,7 @@ def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
             or f.endswith(".jpeg")
             or f.endswith(".bmp")
             or f.endswith(".gif")
-            or ".jpg" in f
+            or (".jpg" in f)
             or f.endswith(".svg")
         )
 
@@ -35,29 +34,15 @@ def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
             if "dupPictures" in img:
                 print("rm -v", img)
         images[hash] = images.get(hash, []) + [img]
-    # for k, img_list in six.iteritems(images):
-    # 	if len(img_list) > 1:
-    # 		print(" ".join(img_list))
 
 
-if __name__ == "__main__":  # noqa: C901
+if __name__ == "__main__":
     import os
     import sys
 
     def usage():
         sys.stderr.write(
-            """SYNOPSIS: %s [ahash|phash|dhash|...] [<directory>]
-Identifies similar images in the directory.
-Method:
-  ahash:          Average hash
-  phash:          Perceptual hash
-  dhash:          Difference hash
-  whash-haar:     Haar wavelet hash
-  whash-db4:      Daubechies wavelet hash
-  colorhash:      HSV color hash
-  crop-resistant: Crop-resistant hash
-(C) Johannes Buchner, 2013-2017
-"""
+            "SYNOPSIS: %s [ahash|phash|dhash|...] [<directory>]\nIdentifies similar images in the directory.\nMethod:\n  ahash:          Average hash\n  phash:          Perceptual hash\n  dhash:          Difference hash\n  whash-haar:     Haar wavelet hash\n  whash-db4:      Daubechies wavelet hash\n  colorhash:      HSV color hash\n  crop-resistant: Crop-resistant hash\n(C) Johannes Buchner, 2013-2017\n"
             % sys.argv[0]
         )
         sys.exit(1)

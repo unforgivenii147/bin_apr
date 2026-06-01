@@ -10,8 +10,9 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Tuple
+
 import brotlicffi as brotli
-import psutil  # pip install psutil
+import psutil
 import py7zr
 import zstandard as zstd
 from loguru import logger
@@ -217,14 +218,14 @@ def compress_one(path_str: str, mode: str, is_dir: bool) -> Result:
 def compress_file_zstd(src: Path, dst: Path) -> None:
     cctx = zstd.ZstdCompressor(level=9)
     with src.open("rb") as fin, dst.open("wb") as fout:
-        cctx.copy_stream(fin, fout)  # ← true streaming, no buffering
+        cctx.copy_stream(fin, fout)
 
 
 def decompress_zst_file(src: Path) -> Path:
     dctx = zstd.ZstdDecompressor()
     extracted_path = src.with_suffix("")
     with src.open("rb") as fin, extracted_path.open("wb") as fout:
-        dctx.copy_stream(fin, fout)  # ← streaming
+        dctx.copy_stream(fin, fout)
     return extracted_path
 
 
@@ -234,7 +235,7 @@ def decompress_tar_zst(src: Path) -> Path:
     extracted_path = dst_dir / src.stem
     with src.open("rb") as fin:
         with dctx.stream_reader(fin) as reader:
-            with tarfile.open(fileobj=reader, mode="r|*") as tf:  # ← streaming tar!
+            with tarfile.open(fileobj=reader, mode="r|*") as tf:
                 tf.extractall(path=dst_dir, filter="data")
     return extracted_path
 
@@ -253,9 +254,8 @@ def mpf3(func, items):
 
 def get_safe_workers():
     total_mem = psutil.virtual_memory().total
-    # Leave 2 GB headroom; assume ~2 GB per worker
     mem_headroom_gb = 2
-    max_workers = max(1, (total_mem / (1024**3) - mem_headroom_gb) // 2)
+    max_workers = max(1, (total_mem / 1024**3 - mem_headroom_gb) // 2)
     return int(max_workers)
 
 
@@ -344,7 +344,7 @@ def decompress_one(path_str: str) -> Result:
             extracted_path = src.with_suffix("")
             dctx = zstd.ZstdDecompressor()
             with src.open("rb") as fin, extracted_path.open("wb") as fout:
-                dctx.copy_stream(fin, fout)  # ← streaming
+                dctx.copy_stream(fin, fout)
             extracted_path_str = str(extracted_path)
         elif name.endswith(".tar.zst"):
             extracted_path = dst_dir / src.stem
@@ -389,7 +389,7 @@ def collect_items(base: Path) -> list[Tuple[Path, bool]]:
             if not has_compressed_suffix(p):
                 items.append((p, False))
         elif p.is_dir():
-            if not has_compressed_suffix(p) and not p.name == ".git":
+            if not has_compressed_suffix(p) and (not p.name == ".git"):
                 items.append((p, True))
     return items
 

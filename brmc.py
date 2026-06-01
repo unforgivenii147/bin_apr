@@ -2,6 +2,7 @@
 import ast
 import sys
 from pathlib import Path
+
 from dh import cprint, fsz, get_pyfiles, gsz, mpf3
 
 cwd = Path.cwd()
@@ -78,7 +79,7 @@ def process_file(path: Path):
         after = gsz(path)
         dsz = before - after
         if dsz:
-            ratio = (dsz / before) * 100
+            ratio = dsz / before * 100
             print(f"✅ {path.name}", end=" | ")
             cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
             return

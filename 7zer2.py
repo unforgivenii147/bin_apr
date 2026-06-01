@@ -1,10 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import logging
 import multiprocessing as mp
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
+
 import py7zr
 
 BASE_DIR = Path.cwd()

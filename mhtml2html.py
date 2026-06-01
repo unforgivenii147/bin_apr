@@ -11,21 +11,20 @@ from pathlib import Path
 def sanitize_filename(name: str) -> str:
     name = name.strip().strip('"').strip("'")
     name = name.replace("\\", "/").split("/")[-1]
-    return re.sub(r"[^A-Za-z0-9._-]+", "_", name) or "resource"
+    return re.sub("[^A-Za-z0-9._-]+", "_", name) or "resource"
 
 
 def split_data_url(src: str):
-    # Returns (mime, b64_bytes) for data: URIs, otherwise None
     if not src or not src.startswith("data:"):
         return None
-    m = re.match(r"data:([^;]+);base64,(.*)$", src, flags=re.IGNORECASE | re.DOTALL)
+    m = re.match("data:([^;]+);base64,(.*)$", src, flags=re.IGNORECASE | re.DOTALL)
     if not m:
         return None
     mime = m.group(1)
     b64 = m.group(2)
     try:
         raw = base64.b64decode(b64)
-        return mime, raw
+        return (mime, raw)
     except Exception:
         return None
 
@@ -41,7 +40,6 @@ def main():
     with open(in_path, "rb") as f:
         raw = f.read()
     msg = BytesParser(policy=policy.default).parsebytes(raw)
-    # MHTML usually is multipart/related. We'll search parts.
     parts = []
     if msg.is_multipart():
 
@@ -62,17 +60,12 @@ def main():
         cid = (p.get("Content-ID") or "").strip()
         if cid.startswith("<") and cid.endswith(">"):
             cid = cid[1:-1]
-        payload = p.get_payload(decode=True)  # bytes or None
-        # Identify HTML part
+        payload = p.get_payload(decode=True)
         if ctype == "text/html":
             html_candidates.append((cid, payload))
-        else:
-            # Most resources are images/css/js, etc.
-            if payload:
-                resource_parts.append((cid, ctype, disp, payload, p))
+        elif payload:
+            resource_parts.append((cid, ctype, disp, payload, p))
     if not html_candidates:
-        # Some mhtml files may store HTML as text/plain or inside headers.
-        # Try first text part as fallback.
         for p in parts:
             if p.get_content_type().startswith("text/"):
                 payload = p.get_payload(decode=True)
@@ -81,35 +74,28 @@ def main():
                     break
     if not html_candidates:
         raise RuntimeError("No HTML part found in the MHTML.")
-    # Choose first HTML candidate (common case)
     _, html_bytes = html_candidates[0]
     html_text = html_bytes.decode(errors="replace")
-    # Map CID -> extracted filename
     cid_to_file = {}
-    # Map URL fragment/relative href -> extracted file (best-effort)
     url_to_file = {}
 
     def get_name_from_headers(part) -> str:
-        # Try filename from Content-Type parameters or Content-Disposition.
         filename = part.get_param("name", header="Content-Type") if part.get("Content-Type") else None
         if filename:
             return sanitize_filename(filename)
         cd = part.get("Content-Disposition") or ""
-        m = re.search(r'filename\*?=(?:UTF-8\'\')?["\']?([^"\';]+)', cd, flags=re.IGNORECASE)
+        m = re.search("filename\\*?=(?:UTF-8\\'\\')?[\"\\']?([^\"\\';]+)", cd, flags=re.IGNORECASE)
         if m:
             return sanitize_filename(m.group(1))
         return None
 
-    # Extract resources and build CID mapping
     for cid, ctype, disp, payload, part in resource_parts:
         if not payload:
             continue
-        # Skip resource if it looks like another HTML
         if ctype == "text/html":
             continue
-        # Determine extension
         ext = None
-        m = re.match(r"^[^/]+/([^;\s]+)", ctype)
+        m = re.match("^[^/]+/([^;\\s]+)", ctype)
         if m:
             ext = m.group(1)
         if ext == "svg+xml":
@@ -117,14 +103,12 @@ def main():
         base_name = get_name_from_headers(part) or cid or "resource"
         base_name = sanitize_filename(base_name)
         if ext:
-            # If base_name already has an extension, keep it
             if not os.path.splitext(base_name)[1]:
                 fname = f"{base_name}.{ext}"
             else:
                 fname = base_name
         else:
             fname = base_name
-        # Avoid collisions
         out_path = os.path.join(out_dir, fname)
         if os.path.exists(out_path):
             stem, suffix = os.path.splitext(fname)
@@ -141,17 +125,14 @@ def main():
         if cid:
             cid_to_file[cid] = fname
 
-    # Rewrite HTML: cid: references
-    # Common: <img src="cid:xxxx">
     def repl_cid(match):
         cid = match.group(1)
         if cid in cid_to_file:
             return f'src="{os.path.basename(out_dir)}/{cid_to_file[cid]}"'
         return match.group(0)
 
-    # Replace cid: in src/href
     html_text = re.sub(
-        r'(src|href)=["\']cid:([^"\']+)["\']',
+        "(src|href)=[\"\\']cid:([^\"\\']+)[\"\\']",
         lambda m: (
             f'{m.group(1)}="{os.path.basename(out_dir)}/{cid_to_file.get(m.group(2), m.group(2))}"'
             if m.group(2) in cid_to_file
@@ -161,8 +142,6 @@ def main():
         flags=re.IGNORECASE,
     )
 
-    # Handle data: URIs best-effort (extract into files and rewrite)
-    # This is optional; many MHTMLs already use CID for external resources.
     def data_uri_replacer(match):
         attr = match.group(1)
         data_url = match.group(2)
@@ -171,18 +150,18 @@ def main():
             return match.group(0)
         mime, raw = parsed
         ext = None
-        m = re.match(r"^[^/]+/([^;\s]+)", mime)
+        m = re.match("^[^/]+/([^;\\s]+)", mime)
         if m:
             ext = m.group(1)
         if ext == "svg+xml":
             ext = "svg"
-        fname = f"data_resource_{abs(hash(data_url)) % (10**8)}.{ext or 'bin'}"
+        fname = f"data_resource_{abs(hash(data_url)) % 10**8}.{ext or 'bin'}"
         out_path = os.path.join(out_dir, fname)
         with open(out_path, "wb") as f:
             f.write(raw)
         return f'{attr}="{os.path.basename(out_dir)}/{fname}"'
 
-    html_text = re.sub(r'(src|href)=["\'](data:[^"\']+)["\']', data_uri_replacer, html_text, flags=re.IGNORECASE)
+    html_text = re.sub("(src|href)=[\"\\'](data:[^\"\\']+)[\"\\']", data_uri_replacer, html_text, flags=re.IGNORECASE)
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(html_text)
     print(f"Done.")

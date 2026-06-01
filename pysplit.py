@@ -18,9 +18,7 @@ def split_file_into_parts(file_path: Path, n: int):
         sys.exit(1)
     lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
     num_lines = len(lines)
-    # Calculate padding length based on n (e.g., if n=10, width=2)
     padding_width = len(str(n))
-    # Logic: base lines per file + remainder in the last file
     base = num_lines // n
     stem = file_path.stem
     suffix = file_path.suffix
@@ -31,7 +29,6 @@ def split_file_into_parts(file_path: Path, n: int):
             end = num_lines
         else:
             end = start + base
-        # Use zfill for zero padding
         index_str = str(i).zfill(padding_width)
         part_name = f"{stem}_{index_str}{suffix}"
         part_path = parent / part_name

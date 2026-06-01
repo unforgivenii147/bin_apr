@@ -4,6 +4,7 @@ import difflib
 import re
 import sys
 from pathlib import Path
+
 from dh import cprint, get_pyfiles
 
 REPLACEMENTS = {
@@ -19,20 +20,14 @@ REPLACEMENTS = {
     "path.realpath": ("pathlib", "Path", "lambda p: Path(p).resolve()"),
     "path.basename": ("pathlib", "Path", "lambda p: Path(p).name"),
     "path.dirname": ("pathlib", "Path", "lambda p: Path(p).parent"),
-    #    "path.splitext": ("pathlib", "Path", "lambda p: (Path(p).stem, Path(p).suffix)"),
     "path.split": ("pathlib", "Path", "lambda p: (str(Path(p).parent), Path(p).name)"),
     "path.getmtime": ("pathlib", "Path", "lambda p: Path(p).stat().st_mtime"),
     "path.getsize": ("pathlib", "Path", "lambda p: Path(p).stat().st_size"),
-    "path.relpath": (
-        "pathlib",
-        "Path",
-        "lambda p, start='.': Path(p).resolve().relative_to(Path(start).resolve())",
-    ),
+    "path.relpath": ("pathlib", "Path", "lambda p, start='.': Path(p).resolve().relative_to(Path(start).resolve())"),
     "path.commonpath": ("pathlib", "Path", "lambda paths: Path(os.path.commonpath(paths))"),
     "path.samefile": ("pathlib", "Path", "lambda p1, p2: Path(p1).samefile(Path(p2))"),
     "path.expanduser": ("pathlib", "Path", "lambda p: Path(p).expanduser()"),
     "path.expandvars": ("pathlib", "Path", "lambda p: Path(p).expandvars()"),
-    #    "path.normpath": ("pathlib", "Path", "lambda p: Path(p).resolve()"),
     "path.normcase": ("pathlib", "Path", "lambda p: Path(p).resolve().as_posix()"),
     "makedirs": ("shutil", "Path", "lambda p, *a, **k: Path(p).mkdir(*a, **k)"),
     "mkdir": ("pathlib", "Path", "lambda p: Path(p).mkdir(parents=False, exist_ok=False)"),
@@ -104,11 +99,11 @@ class OsUsageFinder(ast.NodeVisitor):
 
 
 def rewrite_os_to_pathlib(source, tree):
-    source = re.sub(r"\bos\.path\.join\s*\(\s*([^)]*)\s*\)", lambda m: _join_replacer(m.group(1)), source)
-    source = re.sub(r"\bos\.getcwd\s*\(\s*\)", "Path.cwd()", source)
-    source = re.sub(r"\bos\.listdir\s*\(\s*\)", "list(Path().iterdir())", source)
-    source = re.sub(r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', 'list(Path("\1").iterdir())', source)
-    source = re.sub(r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", 'list(Path("\1").iterdir())', source)
+    source = re.sub("\\bos\\.path\\.join\\s*\\(\\s*([^)]*)\\s*\\)", lambda m: _join_replacer(m.group(1)), source)
+    source = re.sub("\\bos\\.getcwd\\s*\\(\\s*\\)", "Path.cwd()", source)
+    source = re.sub("\\bos\\.listdir\\s*\\(\\s*\\)", "list(Path().iterdir())", source)
+    source = re.sub('\\bos\\.listdir\\s*\\(\\s*"([^"]+)"\\s*\\)', 'list(Path("\x01").iterdir())', source)
+    source = re.sub("\\bos\\.listdir\\s*\\(\\s*\\'([^\\']+)\\'\\s*\\)", 'list(Path("\x01").iterdir())', source)
     for attr in [
         "exists",
         "isdir",
@@ -117,7 +112,6 @@ def rewrite_os_to_pathlib(source, tree):
         "realpath",
         "basename",
         "dirname",
-        #        "splitext",
         "split",
         "getmtime",
         "getsize",
@@ -125,17 +119,16 @@ def rewrite_os_to_pathlib(source, tree):
         "samefile",
         "expanduser",
         "expandvars",
-        #        "normpath",
         "normcase",
     ]:
-        pattern = rf"\bos\.path\.{attr}\s*\(\s*([^)]*)\s*\)"
+        pattern = f"\\bos\\.path\\.{attr}\\s*\\(\\s*([^)]*)\\s*\\)"
         repl = _make_pathlib_call(attr)
         source = re.sub(pattern, repl, source)
     for os_attr, (mod, imp, repl) in REPLACEMENTS.items():
         if mod is None and imp == "Path" and ("lambda" in repl):
             continue
         if os_attr[0] == "os" and os_attr[1] != "path":
-            pattern = rf"\bos\.{os_attr[1]}\s*\(\s*([^)]*)\s*\)"
+            pattern = f"\\bos\\.{os_attr[1]}\\s*\\(\\s*([^)]*)\\s*\\)"
             if os_attr[1] in {
                 "makedirs",
                 "mkdir",
@@ -153,7 +146,7 @@ def rewrite_os_to_pathlib(source, tree):
             }:
                 if os_attr[1] == "makedirs":
                     source = re.sub(
-                        r"\bos\.makedirs\s*\(\s*([^,]+)\s*(?:,\s*([^)]+))?\s*\)",
+                        "\\bos\\.makedirs\\s*\\(\\s*([^,]+)\\s*(?:,\\s*([^)]+))?\\s*\\)",
                         lambda m: (
                             f"Path({m.group(1)}).mkdir(parents=True, exist_ok=True)"
                             if m.group(2) is None
@@ -163,38 +156,46 @@ def rewrite_os_to_pathlib(source, tree):
                     )
                 elif os_attr[1] == "mkdir":
                     source = re.sub(
-                        r"\bos\.mkdir\s*\(\s*([^)]+)\s*\)",
-                        r"Path(\1).mkdir(parents=False, exist_ok=False)",
+                        "\\bos\\.mkdir\\s*\\(\\s*([^)]+)\\s*\\)",
+                        "Path(\\1).mkdir(parents=False, exist_ok=False)",
                         source,
                     )
                 elif os_attr[1] == "rmdir":
-                    source = re.sub(r"\bos\.rmdir\s*\(\s*([^)]+)\s*\)", "Path(\1).rmdir()", source)
+                    source = re.sub("\\bos\\.rmdir\\s*\\(\\s*([^)]+)\\s*\\)", "Path(\x01).rmdir()", source)
                 elif os_attr[1] == "remove":
-                    source = re.sub(r"\bos\.remove\s*\(\s*([^)]+)\s*\)", "Path(\1).unlink()", source)
+                    source = re.sub("\\bos\\.remove\\s*\\(\\s*([^)]+)\\s*\\)", "Path(\x01).unlink()", source)
                 elif os_attr[1] == "rename":
-                    source = re.sub(r"\bos\.rename\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", "Path(\1).rename(\2)", source)
+                    source = re.sub(
+                        "\\bos\\.rename\\s*\\(\\s*([^,]+)\\s*,\\s*([^)]+)\\s*\\)", "Path(\x01).rename(\x02)", source
+                    )
                 elif os_attr[1] == "replace":
-                    source = re.sub(r"\bos\.replace\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", "Path(\1).replace(\2)", source)
+                    source = re.sub(
+                        "\\bos\\.replace\\s*\\(\\s*([^,]+)\\s*,\\s*([^)]+)\\s*\\)", "Path(\x01).replace(\x02)", source
+                    )
                 elif os_attr[1] == "stat":
-                    source = re.sub(r"\bos\.stat\s*\(\s*([^)]+)\s*\)", "Path(\1).stat()", source)
+                    source = re.sub("\\bos\\.stat\\s*\\(\\s*([^)]+)\\s*\\)", "Path(\x01).stat()", source)
                 elif os_attr[1] == "chmod":
-                    source = re.sub(r"\bos\.chmod\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", "Path(\1).chmod(\2)", source)
+                    source = re.sub(
+                        "\\bos\\.chmod\\s*\\(\\s*([^,]+)\\s*,\\s*([^)]+)\\s*\\)", "Path(\x01).chmod(\x02)", source
+                    )
                 elif os_attr[1] == "chown":
                     source = re.sub(
-                        r"\bos\.chown\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^)]+)\s*\)",
-                        "Path(\1).chown(\2, \3)",
+                        "\\bos\\.chown\\s*\\(\\s*([^,]+)\\s*,\\s*([^,]+)\\s*,\\s*([^)]+)\\s*\\)",
+                        "Path(\x01).chown(\x02, \x03)",
                         source,
                     )
                 elif os_attr[1] == "symlink":
                     source = re.sub(
-                        r"\bos\.symlink\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)", "Path(\2).symlink_to(\1)", source
+                        "\\bos\\.symlink\\s*\\(\\s*([^,]+)\\s*,\\s*([^)]+)\\s*\\)",
+                        "Path(\x02).symlink_to(\x01)",
+                        source,
                     )
                 elif os_attr[1] == "readlink":
-                    source = re.sub(r"\bos\.readlink\s*\(\s*([^)]+)\s*\)", "str(Path(\1).readlink())", source)
+                    source = re.sub("\\bos\\.readlink\\s*\\(\\s*([^)]+)\\s*\\)", "str(Path(\x01).readlink())", source)
                 elif os_attr[1] == "unlink":
-                    source = re.sub(r"\bos\.unlink\s*\(\s*([^)]+)\s*\)", "Path(\1).unlink()", source)
+                    source = re.sub("\\bos\\.unlink\\s*\\(\\s*([^)]+)\\s*\\)", "Path(\x01).unlink()", source)
                 elif os_attr[1] == "scandir":
-                    source = re.sub(r"\bos\.scandir\s*\(\s*([^)]*)\s*\)", "Path(\1).iterdir()", source)
+                    source = re.sub("\\bos\\.scandir\\s*\\(\\s*([^)]*)\\s*\\)", "Path(\x01).iterdir()", source)
     if "Path(" in source and "from pathlib import Path" not in source:
         lines = source.splitlines(keepends=True)
         insert_idx = 0
@@ -228,7 +229,6 @@ def _make_pathlib_call(attr):
         "realpath": lambda p: f"Path({p}).resolve()",
         "basename": lambda p: f"Path({p}).name",
         "dirname": lambda p: f"Path({p}).parent",
-        #        "splitext": lambda p: f"(Path({p}).stem, Path({p}).suffix)",
         "split": lambda p: f"(str(Path({p}).parent), Path({p}).name)",
         "getmtime": lambda p: f"Path({p}).stat().st_mtime",
         "getsize": lambda p: f"Path({p}).stat().st_size",
@@ -236,7 +236,6 @@ def _make_pathlib_call(attr):
         "samefile": lambda p: f"Path({p}).exists() and Path({p}).samefile(Path({p}))",
         "expanduser": lambda p: f"Path({p}).expanduser()",
         "expandvars": lambda p: f"Path({p}).expandvars()",
-        #        "normpath": lambda p: f"str(Path({p}).resolve())",
         "normcase": lambda p: f"Path({p}).as_posix().lower()",
     }
     return mapping.get(attr, lambda p: f"Path({p}).{attr}()")

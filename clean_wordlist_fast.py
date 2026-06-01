@@ -4,8 +4,8 @@ import re
 import sys
 import tempfile
 
-THRESHOLD = 5 * 1024 * 1024  # 5 MB
-RE_REPEAT = re.compile(r"^(.)\1+$", re.IGNORECASE)
+THRESHOLD = 5 * 1024 * 1024
+RE_REPEAT = re.compile("^(.)\\1+$", re.IGNORECASE)
 
 
 def should_skip(line: str) -> bool:
@@ -27,7 +27,7 @@ def main():
             for line in inp:
                 if not should_skip(line):
                     out.write(line)
-        os.replace(tmp_name, fname)  # atomic replace
+        os.replace(tmp_name, fname)
     except Exception:
         try:
             os.remove(tmp_name)

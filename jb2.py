@@ -2,6 +2,7 @@
 import json
 import sys
 from pathlib import Path
+
 from dh import cprint, fsz, get_files, gsz, mpf3
 
 
@@ -22,8 +23,8 @@ def process_file(fp):
         if not diffsize:
             cprint("(no change)", "grey")
             return
-        ratio = (diffsize / after) * 100
-        ratio2 = (abs(before - after) / before) * 100
+        ratio = diffsize / after * 100
+        ratio2 = abs(before - after) / before * 100
         cprint(f"{ratio:.2f}% | {ratio2:.2f}%", "cyan")
         return
     except:
@@ -39,12 +40,10 @@ if __name__ == "__main__":
         print("no json files found")
         sys.exit(1)
     print(f"{len(files)} json files found.")
-    #    for f in files:
-    #        process_file(f)
     mpf3(process_file, files)
     after = gsz(cwd)
     dsz = abs(before - after)
     if not dsz:
         sys.exit(1)
-    ratio = (dsz / before) * 100
+    ratio = dsz / before * 100
     cprint(f"space change: {fsz(dsz)} {ratio:.2f}%")

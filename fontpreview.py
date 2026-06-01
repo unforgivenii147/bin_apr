@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import os
 from pathlib import Path
+
 from dh import FONT_EXT
 
 FONT_EXTENSIONS = tuple(FONT_EXT)
@@ -39,15 +40,15 @@ def generate_html(font_files):
             )
         )
         html.append(
-            f"""<div style='font-family: "{font_name}"; font-size: 16px;'>LIFE IS A DREAM, we are dreaming.</div>"""
+            f'''<div style='font-family: "{font_name}"; font-size: 16px;'>LIFE IS A DREAM, we are dreaming.</div>'''
         )
         html.append(
-            f"""<div style='font-family: "{font_name}"; font-size: 22px;'>LIFE IS A DREAM, we are dreaming.</div>"""
+            f'''<div style='font-family: "{font_name}"; font-size: 22px;'>LIFE IS A DREAM, we are dreaming.</div>'''
         )
         html.append(
-            f"""<div style='font-family: "{font_name}"; font-size: 28px;'>LIFE IS A DREAM, we are dreaming.</div>"""
+            f'''<div style='font-family: "{font_name}"; font-size: 28px;'>LIFE IS A DREAM, we are dreaming.</div>'''
         )
-        html.append(f"""<div style='font-family: "{font_name}"; font-size: 14px;'>{font_name}</div><hr>""")
+        html.append(f'''<div style='font-family: "{font_name}"; font-size: 14px;'>{font_name}</div><hr>''')
         html.append("</div>")
     html.append("</body></html>")
     return "\n".join(html)

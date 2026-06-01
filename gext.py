@@ -7,6 +7,7 @@ import tarfile
 import zipfile
 from pathlib import Path
 from typing import Any
+
 from dh import get_files, mpf3, runcmd
 
 HERE = "-t" in sys.argv
@@ -217,8 +218,6 @@ def main():
     print(f"Found {len(files_to_process)} relevant files/archives. Starting multiprocessing pool...")
     all_entities = []
     results_list = mpf3(worker_process, files_to_process)
-    #    with get_context("spawn").Pool(processes=8) as pool:
-    #        results_list = pool.map(worker_process, files_to_process)
     for result in results_list:
         all_entities.extend(result)
     print("Saving entities ... ")

@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+
 import brotlicffi
 
 _executor = asyncio.Semaphore(4)

@@ -2,6 +2,7 @@
 import argparse
 from pathlib import Path
 from time import perf_counter as pff
+
 from dh import cprint, format_time, fsz, get_pyfiles, mpf3
 
 MODE = "black"
@@ -49,7 +50,7 @@ def process_file(path: str | Path, mode: str = MODE) -> bool:
         etime = pff()
         if dsz:
             path.write_text(code, encoding="utf-8")
-            ratio = (dsz / before) * 100
+            ratio = dsz / before * 100
             print(f"{path.name} ", end=" ")
             cprint(f"({format_time(etime - stime)}) | {fsz(dsz)} | {ratio:.1f}%", "cyan")
             return True

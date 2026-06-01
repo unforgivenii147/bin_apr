@@ -3,6 +3,7 @@ import ast
 import re
 import sys
 from pathlib import Path
+
 from dh import cprint, fsz, get_pyfiles, get_removed_lines, gsz
 from joblib import Parallel, delayed
 
@@ -61,7 +62,7 @@ def process_file(path: Path):
             if not dsz:
                 cprint("(no change)", "grey")
                 return
-            ratio = (dsz / before) * 100
+            ratio = dsz / before * 100
             cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
             removed, _ = get_removed_lines(original, final_code)
             for k in removed:

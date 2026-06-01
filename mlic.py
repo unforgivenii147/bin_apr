@@ -6,7 +6,7 @@ Repeated means the exact same comment line appears in at least two places
 (across files or within the same file). This is intended to catch license
 headers and similar boilerplate that developers paste into many files.
 Excluded lines:
-  - Shebang lines (e.g., #!/usr/bin/env python3)
+  - Shebang lines (e.g.,
   - Lines starting with '# type', '# fmt', '# pylint', '# ruff', '# mypy'
 """
 
@@ -24,7 +24,7 @@ def is_comment_line(stripped: str) -> bool:
     """Return True if the stripped line is a comment that should be checked for repetition."""
     if not stripped.startswith("#"):
         return False
-    return not any(stripped.startswith(prefix) for prefix in EXCLUDED_PREFIXES)
+    return not any((stripped.startswith(prefix) for prefix in EXCLUDED_PREFIXES))
 
 
 def collect_comments(root: Path) -> Dict[str, List[Tuple[Path, int, str]]]:
@@ -67,7 +67,6 @@ def report(repeated: Dict[str, List[Tuple[Path, int, str]]]) -> None:
 
 def remove_repeated(repeated: Dict[str, List[Tuple[Path, int, str]]]) -> None:
     """Remove all occurrences of the given repeated comment lines from their files."""
-    # Collect all files that need modification and the set of lines to strip
     lines_to_remove = set(repeated.keys())
     files_to_process = {filepath for occurrences in repeated.values() for filepath, _, _ in occurrences}
     removed_total = 0
@@ -87,9 +86,9 @@ def remove_repeated(repeated: Dict[str, List[Tuple[Path, int, str]]]) -> None:
             if stripped in lines_to_remove:
                 file_removed += 1
                 continue
-            new_lines.append(raw_line)  # keep exact original line with newline
+            new_lines.append(raw_line)
         if file_removed == 0:
-            continue  # nothing removed (should not happen given our filtering)
+            continue
         try:
             new_content = "".join(new_lines)
             _ = ast.parse(new_content)

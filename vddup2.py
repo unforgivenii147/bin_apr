@@ -1,7 +1,7 @@
+import argparse
 import ast
 import os
 import shutil
-import argparse
 from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 
@@ -24,7 +24,7 @@ def extract_definitions(tree):
             for target in node.targets:
                 if isinstance(target, ast.Name):
                     constants.append(target.id)
-    return functions, classes, constants
+    return (functions, classes, constants)
 
 
 def find_repeated_definitions(file_paths):

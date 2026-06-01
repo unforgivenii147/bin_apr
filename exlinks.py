@@ -5,6 +5,7 @@ import tarfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
 import brotli
 import chardet
 from loguru import logger

@@ -1,27 +1,25 @@
 #!/data/data/com.termux/files/usr/bin/python
-import os
-import ast
-import hashlib
-import shutil
 import argparse
-import zipfile
-import tarfile
-import gzip
+import ast
 import bz2
+import gzip
+import hashlib
 import lzma
-import zstandard as zstd
-import brotli
+import os
+import shutil
+import tarfile
+import zipfile
 from multiprocessing import Pool, cpu_count
-from loguru import logger
 from pathlib import Path
 
-# Configure logger
+import brotli
+import zstandard as zstd
+from loguru import logger
+
 logger.add("error.log", level="ERROR")
-# Constants for file extensions
 COMPRESSED_EXTENSIONS = [".zip", ".tar", ".gz", ".bz2", ".xz", ".zst", ".br"]
 
 
-# Utility functions
 def hash_content(content):
     """Generate a hash for the given content."""
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
@@ -90,7 +88,6 @@ def find_repeated_definitions(ast_tree):
                     content = ast.unparse(node)
                     content_hash = hash_content(content)
                     definitions["constants"].setdefault(content_hash, []).append(node)
-    # Filter out unique definitions
     for key in definitions:
         definitions[key] = {k: v for k, v in definitions[key].items() if len(v) > 1}
     return definitions
@@ -133,8 +130,7 @@ def write_definitions_to_file(definitions, output_dir, move=False):
                         ast.parse(content)
                         f.write(content + "\n\n")
                         if move:
-                            # Remove original node from source file
-                            pass  # Implement removal logic if needed
+                            pass
                     except SyntaxError as e:
                         logger.error(f"Syntax error in {content}: {e}")
 
@@ -148,16 +144,13 @@ def main():
     utils_dir = current_dir / "utils"
     utils_dir.mkdir(exist_ok=True)
     print(cpu_count())
-    # Process files in parallel
     with Pool(cpu_count()) as pool:
         results = pool.map(process_directory, [current_dir])
-    # Combine results
     combined_results = {"functions": {}, "classes": {}, "constants": {}}
     for result in results:
         for key in combined_results:
             for content_hash, nodes in result[key].items():
                 combined_results[key].setdefault(content_hash, []).extend(nodes)
-    # Write to files
     if args.move or args.copy:
         write_definitions_to_file(combined_results, utils_dir, move=args.move)
 

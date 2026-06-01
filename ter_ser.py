@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from dh import cprint, fsz, gsz, runcmd
 
 
@@ -20,8 +21,6 @@ def process_file(fp) -> bool:
     before = gsz(fp)
     if not fp.exists() or not before:
         return False
-    #    if ".min." in fp.name:
-    #        return False
     if len(fp.read_text().splitlines()) == 1:
         return False
     print(f"{fp.name}", end=" ")

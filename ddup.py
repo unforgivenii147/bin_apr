@@ -28,17 +28,7 @@ except ImportError:
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
-# ---------------------------------------------------------------------------
-#  Compression helpers
-# ---------------------------------------------------------------------------
-_COMPRESSED_EXT: Dict[str, object] = {
-    ".gz": gzip,
-    ".bz2": gzip,  # will use bz2 module directly
-    ".xz": lzma,
-    ".lzma": lzma,
-    ".zst": None,  # zstandard
-    ".br": None,  # brotli
-}
+_COMPRESSED_EXT: Dict[str, object] = {".gz": gzip, ".bz2": gzip, ".xz": lzma, ".lzma": lzma, ".zst": None, ".br": None}
 
 
 def _decompress_file(path: Path) -> Optional[str]:
@@ -46,7 +36,7 @@ def _decompress_file(path: Path) -> Optional[str]:
     suffix = path.suffix.lower()
     if suffix not in _COMPRESSED_EXT:
         return None
-    stem = path.stem  # e.g. "script.py" from "script.py.gz"
+    stem = path.stem
     if not stem.endswith(".py"):
         return None
     try:
@@ -66,7 +56,7 @@ def _decompress_file(path: Path) -> Optional[str]:
         if suffix in (".gz", ".bz2"):
             module = gzip if suffix == ".gz" else __import__("bz2")
         else:
-            module = _COMPRESSED_EXT[suffix]  # lzma
+            module = _COMPRESSED_EXT[suffix]
         with module.open(path, "rt", encoding="utf-8", errors="replace") as fh:
             return fh.read()
     except ImportError as exc:
@@ -77,9 +67,6 @@ def _decompress_file(path: Path) -> Optional[str]:
         return None
 
 
-# ---------------------------------------------------------------------------
-#  File discovery
-# ---------------------------------------------------------------------------
 def _find_files(root: str = ".") -> List[Tuple[str, Optional[str]]]:
     """Walk *root* recursively; return ``(path, source_or_None)`` tuples.
     For plain ``.py`` files ``source`` is ``None`` (deferred read).
@@ -89,7 +76,6 @@ def _find_files(root: str = ".") -> List[Tuple[str, Optional[str]]]:
     root_path = Path(root).resolve()
     utils_path = root_path / "utils"
     for dirpath, _, filenames in os.walk(root):
-        # Never scan the output directory.
         if Path(dirpath).resolve() == utils_path:
             continue
         for fname in filenames:
@@ -104,21 +90,17 @@ def _find_files(root: str = ".") -> List[Tuple[str, Optional[str]]]:
     return results
 
 
-# ---------------------------------------------------------------------------
-#  AST helpers
-# ---------------------------------------------------------------------------
 def _hash(source: str) -> str:
     """SHA-256 hex digest of *source*."""
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
-# Internal data class for a single definition.
 from dataclasses import dataclass
 
 
 @dataclass
 class _Def:
-    type: str  # 'func' | 'class' | 'const'
+    type: str
     name: str
     source_code: str
     content_hash: str
@@ -135,12 +117,12 @@ def _extract_definitions(path: str, source: str) -> List[_Def]:
     defs: List[_Def] = []
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            typ, name = "func", node.name
+            typ, name = ("func", node.name)
         elif isinstance(node, ast.ClassDef):
-            typ, name = "class", node.name
+            typ, name = ("class", node.name)
         elif isinstance(node, ast.Assign):
             if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
-                typ, name = "const", node.targets[0].id
+                typ, name = ("const", node.targets[0].id)
             else:
                 continue
         else:
@@ -153,49 +135,30 @@ def _extract_definitions(path: str, source: str) -> List[_Def]:
         if segment is None:
             continue
         segment = segment.strip("\n")
-        defs.append(
-            _Def(
-                type=typ,
-                name=name,
-                source_code=segment,
-                content_hash=_hash(segment),
-                filepath=path,
-            )
-        )
+        defs.append(_Def(type=typ, name=name, source_code=segment, content_hash=_hash(segment), filepath=path))
     return defs
 
 
-# ---------------------------------------------------------------------------
-#  Utils directory handling
-# ---------------------------------------------------------------------------
 def _new_utils_entries(groups: Dict[str, List[_Def]], existing: Dict[str, Dict[str, _Def]]) -> Dict[str, List[_Def]]:
     """Determine which duplicate groups should be added to the utils files."""
     new: Dict[str, List[_Def]] = {"func": [], "class": [], "const": []}
     for hash_key, defs in groups.items():
-        rep = defs[0]  # all definitions in a group are identical
-        typ, name = rep.type, rep.name
-        # Ensure the type key exists in existing
+        rep = defs[0]
+        typ, name = (rep.type, rep.name)
         if typ not in existing:
             existing[typ] = {}
-        # Already present with identical content?
         if name in existing[typ]:
             if existing[typ][name].content_hash == rep.content_hash:
                 logger.debug("Already in {}.py: {}", typ, name)
                 continue
-            logger.warning(
-                "Conflict in {}.py: '{}' exists with different content – skipping.",
-                typ,
-                name,
-            )
+            logger.warning("Conflict in {}.py: '{}' exists with different content – skipping.", typ, name)
             continue
-        # Already scheduled to be added?
-        if any(d.name == name for d in new[typ]):
+        if any((d.name == name for d in new[typ])):
             continue
         new[typ].append(rep)
     return new
 
 
-########
 def _read_existing_utils(utils_dir: Path) -> Dict[str, Dict[str, _Def]]:
     """Parse existing ``utils/*.py`` and return ``{type: {name: _Def}}``."""
     existing: Dict[str, Dict[str, _Def]] = {"func": {}, "class": {}, "const": {}}
@@ -227,9 +190,6 @@ def _write_utils_files(utils_dir: Path, new: Dict[str, List[_Def]]) -> None:
         logger.info("Added {} definition(s) to {}", len(new[typ]), fname)
 
 
-# ---------------------------------------------------------------------------
-#  Move logic (remove from original files)
-# ---------------------------------------------------------------------------
 def _move_definitions(groups: Dict[str, List[_Def]]) -> None:
     """
     Remove moved definitions from regular ``.py`` files.
@@ -237,11 +197,10 @@ def _move_definitions(groups: Dict[str, List[_Def]]) -> None:
     The resulting source is validated with ``ast.parse``; if a syntax error
     occurs the file is **not** overwritten.
     """
-    # Collect which hashes must be removed from which file.
-    to_remove: Dict[str, Set[str]] = {}  # filepath -> {hash, ...}
+    to_remove: Dict[str, Set[str]] = {}
     for hash_key, defs in groups.items():
         for d in defs:
-            if not d.filepath.endswith(".py") or any(d.filepath.endswith(ext) for ext in _COMPRESSED_EXT):
+            if not d.filepath.endswith(".py") or any((d.filepath.endswith(ext) for ext in _COMPRESSED_EXT)):
                 continue
             to_remove.setdefault(d.filepath, set()).add(hash_key)
     for fpath, hashes in to_remove.items():
@@ -260,21 +219,16 @@ def _move_definitions(groups: Dict[str, List[_Def]]) -> None:
                     continue
                 node_hash = _hash(segment.strip("\n"))
                 if node_hash in hashes:
-                    continue  # remove this node
+                    continue
                 new_body.append(node)
             if len(new_body) == len(tree.body):
-                continue  # nothing removed
+                continue
             tree.body = new_body
             new_source = ast.unparse(tree)
-            # Validate the new source.
             try:
                 ast.parse(new_source)
             except SyntaxError as exc:
-                logger.error(
-                    "Resulting code of {} has a syntax error – skipping: {}",
-                    fpath,
-                    exc,
-                )
+                logger.error("Resulting code of {} has a syntax error – skipping: {}", fpath, exc)
                 continue
             Path(fpath).write_text(new_source, encoding="utf-8")
             logger.info("Removed {} duplicate definition(s) from {}", len(hashes), fpath)
@@ -282,26 +236,19 @@ def _move_definitions(groups: Dict[str, List[_Def]]) -> None:
             logger.error("Failed to process {} for moving: {}", fpath, exc)
 
 
-# ---------------------------------------------------------------------------
-#  Main
-# ---------------------------------------------------------------------------
 def main() -> None:
     if sys.version_info < (3, 9):
         logger.error("Python 3.9+ is required (ast.unparse).")
         sys.exit(1)
-    parser = argparse.ArgumentParser(
-        description="Copy/move repeated Python definitions to utils/",
-    )
+    parser = argparse.ArgumentParser(description="Copy/move repeated Python definitions to utils/")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-c", "--copy", action="store_true", help="Copy duplicates to utils/")
     group.add_argument("-m", "--move", action="store_true", help="Move duplicates to utils/ and remove from originals")
     args = parser.parse_args()
     action = "copy" if args.copy else "move"
     logger.info("Action: {}", action)
-    # 1. Find all files (plain and compressed)
     logger.info("Scanning for Python files …")
     files = _find_files(".")
-    # 2. Read plain .py files that haven't been decompressed yet
     file_jobs: List[Tuple[str, str]] = []
     for path, source in files:
         if source is None:
@@ -312,7 +259,6 @@ def main() -> None:
                 continue
         file_jobs.append((path, source))
     logger.info("Found {} file(s) to process", len(file_jobs))
-    # 3. Extract definitions in parallel
     all_defs: List[_Def] = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = {executor.submit(_extract_definitions, p, src): p for p, src in file_jobs}
@@ -323,7 +269,6 @@ def main() -> None:
                     all_defs.extend(result)
             except Exception as exc:
                 logger.error("Worker failed: {}", exc)
-    # 4. Group by content hash, keep only duplicates
     groups: Dict[str, List[_Def]] = {}
     for d in all_defs:
         groups.setdefault(d.content_hash, []).append(d)
@@ -332,17 +277,14 @@ def main() -> None:
     if not duplicate_groups:
         logger.info("No duplicates – nothing to do.")
         return
-    # 5. Check what is already in utils/
     utils_dir = Path("utils")
     existing = _read_existing_utils(utils_dir) if utils_dir.exists() else {}
     new_entries = _new_utils_entries(duplicate_groups, existing)
-    total_new = sum(len(lst) for lst in new_entries.values())
+    total_new = sum((len(lst) for lst in new_entries.values()))
     if total_new == 0:
         logger.info("All duplicates are already present in utils/ – nothing to add.")
         return
-    # 6. Write to utils/
     _write_utils_files(utils_dir, new_entries)
-    # 7. If moving, remove definitions from original .py files
     if action == "move":
         _move_definitions(duplicate_groups)
 

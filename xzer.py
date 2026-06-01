@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+
 from dh import mpf3
 from lzma_mt import compress
 
@@ -75,7 +76,7 @@ def compress_file(path: Path) -> bool:
             print(f"Compressed file empty: {out_path}")
             return False
         path.unlink()
-        reduction = ((original_size - compressed_size) / original_size) * 100
+        reduction = (original_size - compressed_size) / original_size * 100
         print(f"{path.name} | {reduction:.2f}%")
         return True
     else:

@@ -10,7 +10,7 @@ def process_dir(root_dir, ext):
         symlink_path = path.with_name(path.stem)
         if not symlink_path.exists():
             symlink_path.symlink_to(path)
-            print(f"Created symlink: {symlink_path.name} -> {path.name}")
+            print(f"Created: {symlink_path.name} -> {path.name}")
         else:
             continue
 

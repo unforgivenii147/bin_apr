@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
+
 from autoflake import fix_code
 from dh import cprint, get_pyfiles, get_removed_lines
 
@@ -17,7 +18,6 @@ def process_file(fp):
         for x in removed:
             cprint(f" + {x}", "green")
         fp.write_text(result, encoding="utf-8")
-    #        input()
     else:
         print(f"{fp.name} no change")
 

@@ -1,10 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import contextlib
 import os
 import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
 from dh import TXT_EXT, is_binary
 
 if TYPE_CHECKING:
@@ -120,6 +122,7 @@ def rgba_to_hex(c: Color) -> str:
 
 
 def rgb_to_luminance(r: int, g: int, b: int) -> float:
+
     def lin(x):
         x = x / 255.0
         return x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4

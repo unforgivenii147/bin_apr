@@ -4,6 +4,7 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
+
 from dh import get_nobinary
 from toolz import compose, frequencies
 from toolz.curried import map as _map

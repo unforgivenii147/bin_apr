@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
+
 import argparse
 import bz2
 import gzip
@@ -12,6 +13,7 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
+
 import brotlicffi as brotli
 import py7zr
 import zstandard as zstd
@@ -449,7 +451,7 @@ def main():
         print("no change")
         return
     print("space freed", end=" : ")
-    ratio = (dsz / before) * 100
+    ratio = dsz / before * 100
     cprint(f"{fsz(dsz)} | {ratio:.1f}%", "cyan")
 
 

@@ -7,12 +7,12 @@ import tempfile
 import tokenize
 from multiprocessing import get_context
 from pathlib import Path
-from deep_translator import GoogleTranslator
-from dh import DOC_TH1, DOC_TH2
-from fastwalk import walk_files
 
-DIRECTORY = "."
-non_english_pattern = re.compile("[^\\x00-\\x7F]")
+from deep_translator import GoogleTranslator
+from dh import DOC_TH1, DOC_TH2, get_files
+
+cwd = Path.cwd()
+non_english_pattern = re.compile(r"[^\x00-\x7F]")
 
 
 def is_english(text: str) -> bool:
@@ -35,7 +35,7 @@ def translate_chunk(chunk: str) -> str:
 def translate_text(text: str) -> str:
     chunks = chunk_text(text)
     with get_context("spawn").Pool(8) as pool:
-        translated = list(pool.imap(translate_chunk, chunks))
+        translated = list(pool.map(translate_chunk, chunks))
     return "".join(translated)
 
 
@@ -107,19 +107,15 @@ def translate_python_file(source: str) -> str:
 
 
 def process_files(directory: str) -> None:
-    print(f"Scanning directory: {directory}")
-    paths = [Path(p) for p in walk_files(directory)]
-    files = [p for p in paths if p.is_file()]
-    supported_extensions = {".txt", ".md", ".srt", ".json", ".html", ".py"}
-    target_files = [f for f in files if f.suffix.lower() in supported_extensions]
-    print(f"Found {len(target_files)} supported files out of {len(files)} total files")
-    print("-" * 50)
+
+    files = get_files(directory, ext=(".txt", ".md", ".srt", ".json", ".html", ".py"))
+    print(f"Found {len(files)} files")
     translated_count = 0
     skipped_count = 0
     error_count = 0
-    for i, fp in enumerate(target_files, 1):
+    for i, fp in enumerate(files, 1):
         suffix = fp.suffix.lower()
-        print(f"[{i}/{len(target_files)}] Processing: {fp}")
+        print(f"[{i}/{len(files)}] {fp.name}")
         try:
             original = fp.read_text(encoding="utf-8", errors="ignore")
         except Exception as e:
@@ -127,7 +123,6 @@ def process_files(directory: str) -> None:
             error_count += 1
             continue
         if is_english(original.strip()):
-            print("  File is already in English, skipping")
             skipped_count += 1
             continue
         print("  Translating content...")
@@ -135,23 +130,15 @@ def process_files(directory: str) -> None:
             translated = translate_python_file(original, fp) if suffix == ".py" else translate_text(original)
             if translated.strip() != original.strip():
                 safe_overwrite(fp, translated)
-                print("  ✓ Successfully translated and saved")
                 translated_count += 1
             else:
-                print("  Translation produced same content, skipping")
                 skipped_count += 1
-        except Exception as e:
-            print(f"  ✗ Error processing file: {e}")
+        except:
             error_count += 1
         print("-" * 30)
-    print("TRANSLATION SUMMARY")
-    print("=" * 50)
-    print(f"Total files processed: {len(target_files)}")
-    print(f"Successfully translated: {translated_count}")
     print(f"Skipped (already English): {skipped_count}")
     print(f"Errors: {error_count}")
-    print("=" * 50)
 
 
 if __name__ == "__main__":
-    process_files(DIRECTORY)
+    process_files(cwd)

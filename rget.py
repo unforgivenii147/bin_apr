@@ -15,27 +15,27 @@ TIMEOUT = 60
 OUTPUT_DIR = "downloads"
 URLS_FILE = "urls.txt"
 SAFE_EXTENSIONS = [
-    "\\.ttf$",
-    "\\.woff$",
-    "\\.woff2$",
-    "\\.eot$",
-    "\\.otf$",
-    "\\.min\\.css$",
-    "\\.min\\.js$",
-    "\\.css$",
-    "\\.js$",
-    "\\.pdf$",
-    "\\.html?$",
-    "\\.whl$",
-    "\\.tar\\.(gz|xz|zst|bz2|lzma|7z)$",
-    "\\.zip$",
+    r"\.ttf$",
+    r"\.woff$",
+    r"\.woff2$",
+    r"\.eot$",
+    r"\.otf$",
+    r"\.min\.css$",
+    r"\.min\.js$",
+    r"\.css$",
+    r"\.js$",
+    r"\.pdf$",
+    r"\.html?$",
+    r"\.whl$",
+    r"\.tar\.(gz|xz|zst|bz2|lzma|7z)$",
+    r"\.zip$",
 ]
-EXT_PATTERN = re.compile("|".join(SAFE_EXTENSIONS), re.IGNORECASE)
+EXT_PATTERN = re.compile(r"|".join(SAFE_EXTENSIONS), re.IGNORECASE)
 
 
 def sanitize_filename(name):
     name = unquote(name)
-    name = re.sub('[<>:"|?*]', "_", name)
+    name = re.sub(r'[<>:"|?*]', "_", name)
     return name[:255].strip() or "downloaded_file"
 
 
@@ -46,7 +46,7 @@ def extract_filename(url):
     filename = filename.split("#")[0]
     filename = filename.split("?")[0]
     filename = sanitize_filename(filename)
-    if not re.search("\\.[a-zA-Z0-9]+$", filename):
+    if not re.search("\.[a-zA-Z0-9]+$", filename):
         filename += ".dat"
     return filename
 

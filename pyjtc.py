@@ -7,23 +7,23 @@ from pathlib import Path
 
 def remove_comments_and_strings(content, filetype, keep_strings=False):
     if filetype in {"c", "cpp", "h", "hpp"}:
-        content = re.sub("//.*", "", content)
-        content = re.sub("/\\*.*?\\*/", "", content, flags=re.DOTALL)
+        content = re.sub(r"//.*", "", content)
+        content = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
         if not keep_strings:
-            content = re.sub('\\"[^\\"]*\\"', "", content)
-            content = re.sub("'[^']*'", "", content)
+            content = re.sub(r"\"[^\"]*\"", "", content)
+            content = re.sub(r"'[^']*'", "", content)
     elif filetype == "py":
         content = re.sub("#.*", "", content)
-        content = re.sub('\\"\\"\\"[\\s\\S]*?\\"\\"\\"', "", content)
-        content = re.sub("'''[\\s\\S]*?'''", "", content)
+        content = re.sub(r"\"\"\"[\s\S]*?\"\"\"", "", content)
+        content = re.sub(r"'''[\s\S]*?'''", "", content)
         if not keep_strings:
-            content = re.sub('\\"[^\\"]*\\"', "", content)
-            content = re.sub("'[^']*'", "", content)
+            content = re.sub(r"\"[^\"]*\"", "", content)
+            content = re.sub(r"'[^']*'", "", content)
     elif filetype == "sh":
-        content = re.sub("#.*", "", content)
+        content = re.sub(r"#.*", "", content)
         if not keep_strings:
-            content = re.sub('\\"[^\\"]*\\"', "", content)
-            content = re.sub("'[^']*'", "", content)
+            content = re.sub(r"\"[^\"]*\"", "", content)
+            content = re.sub(r"'[^']*'", "", content)
     return content
 
 

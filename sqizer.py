@@ -6,8 +6,8 @@ from pathlib import Path
 
 def compress_python_file(filepath):
     content = Path(filepath).read_text(encoding="utf-8")
-    content = re.sub("\"\"\".*?\"\"\"|\\'\\'\\'.*?\\'\\'\\'", "", content, flags=re.DOTALL)
-    content = re.sub("#.*", "", content)
+    content = re.sub(r"\"\"\".*?\"\"\"|'''.*?'''", "", content, flags=re.DOTALL)
+    content = re.sub(r"#.*", "", content)
     lines = content.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]
     content = "\n".join(non_empty_lines)

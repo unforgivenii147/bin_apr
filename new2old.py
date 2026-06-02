@@ -7,7 +7,6 @@ Usage:
 """
 
 import configparser
-import os
 import sys
 import tomllib
 from pathlib import Path

@@ -3,13 +3,15 @@ import re
 import sys
 from pathlib import Path
 
+from dh import read_lines, get_removed_lines
+
 INPLACE = "-w" in sys.argv
-from dh import read_lines
+
 
 if __name__ == "__main__":
     fn = Path(sys.argv[1])
-    content = fn.read_text(encoding="utf8")
-    lines = content.splitlines(keepends=False)
+    content = fn.read_text(encoding="utf-8")
+    lines = read_lines(fn, ke=False)
     nl = []
     for line in lines:
         if "<:" in line or ">:" in line:

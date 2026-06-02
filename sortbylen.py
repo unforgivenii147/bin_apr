@@ -12,8 +12,8 @@ if __name__ == "__main__":
     from dh import read_lines
 
     path = Path(sys.argv[1].strip())
-    bakpath = path.with_name(path.stem + "_sorted_by_len" + path.suffix)
-    lines = read_lines(path)
+    bakpath = path.with_name(path.stem + "_sorted" + path.suffix)
+    lines = read_lines(path, ke=True)
 
     sorted_lines = sort_by_length(lines)
     bakpath.write_text("".join(sorted_lines), encoding="utf8")

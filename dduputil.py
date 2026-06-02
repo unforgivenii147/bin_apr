@@ -13,15 +13,13 @@ from __future__ import annotations
 import argparse
 import ast
 import hashlib
-import io
 import os
 import sys
 import tempfile
 from dataclasses import dataclass
-from functools import partial
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from loguru import logger
 

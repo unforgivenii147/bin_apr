@@ -6,8 +6,8 @@ from pathlib import Path
 
 from dh import get_pyfiles
 
-NORMAL_IMPORT = "^import re\\b"
-REGEX_IMPORT = "^import regex as re\\b"
+NORMAL_IMPORT = r"^import re\b"
+REGEX_IMPORT = r"^import regex as re\b"
 
 
 def update_file(file_path, reverse=False):

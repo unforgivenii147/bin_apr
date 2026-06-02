@@ -45,16 +45,21 @@ NOT_ALLOWED = [
 
 
 def process_lic(fp):
-    lic_dir = Path(f"{fp}/licenses")
-    if lic_dir.exists() and "dist-info" in str(lic_dir.parent):
+    lic_dir = fp / "licenses"
+    if lic_dir.exists() and "dist-info" in lic_dir.parent.name:
         shutil.rmtree(lic_dir)
         print(f"{lic_dir} removed.")
+    for k in NOT_ALLOWED:
+        nap = fp / k
+        if nap.exists():
+            print(nap)
+            nap.unlink()
 
 
 def main():
     missings = []
     cwd = Path.cwd()
-    for path in cwd.rglob("*"):
+    for path in cwd.glob("*"):
         if path.is_dir() and "dist-info" in path.name:
             process_lic(path)
             if len(os.listdir(path)) < 2:

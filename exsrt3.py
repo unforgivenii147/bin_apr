@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
-import json
 import sys
 from pathlib import Path
 
 import ffmpeg
-from pymediainfo import MediaInfo
 
 
 def get_subtitle_streams_info(input_path: str) -> list[dict]:
@@ -70,7 +68,6 @@ def main():
             out_path = Path(out_filename)
             extracted_files.append(str(out_path))
     except:
-        pass
         print(f"Extracting stream index {index} (Lang: {lang}, Forced: {forced}, Codec: {codec_name}) -> {out_path}")
 
 

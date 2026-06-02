@@ -10,12 +10,10 @@ def update_setup_py(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
-        content = re.sub("author\\s*=\\s*[\"\\'][^\"\\']*[\"\\']", f'''author="{NEW_INFO["name"]}"''', content)
+        content = re.sub(r"author\s*=\s*[\"'][^\"']*[\"']", f'''author="{NEW_INFO["name"]}"''', content)
+        content = re.sub(r"author_email\s*=\s*[\"'][^\"']*[\"']", f'''author_email="{NEW_INFO["email"]}"''', content)
         content = re.sub(
-            "author_email\\s*=\\s*[\"\\'][^\"\\']*[\"\\']", f'''author_email="{NEW_INFO["email"]}"''', content
-        )
-        content = re.sub(
-            "(https?://github\\.com/)[^/]+(/[^\"\\']*)", f"\\g<1>{NEW_INFO['github_username']}\\g<2>", content
+            r"(https?://github\.com/)[^/]+(/[^\"']*)", rf"\g<1>{NEW_INFO['github_username']}\g<2>", content
         )
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
@@ -36,15 +34,11 @@ def update_pyproject_toml(file_path: Path) -> bool:
 
             def replace_author(match):
                 author_block = match.group(1)
-                author_block = re.sub(
-                    "name\\s*=\\s*[\"\\'][^\"\\']*[\"\\']", f'''name = "{NEW_INFO["name"]}"''', author_block
-                )
-                return re.sub(
-                    "email\\s*=\\s*[\"\\'][^\"\\']*[\"\\']", f'''email = "{NEW_INFO["email"]}"''', author_block
-                )
+                author_block = re.sub(r"name\s*=\s*[\"'][^\"']*[\"']", f'''name = "{NEW_INFO["name"]}"''', author_block)
+                return re.sub(rf"email\s*=\s*[\"'][^\"']*[\"']", f'''email = "{NEW_INFO["email"]}"''', author_block)
 
             content = re.sub(author_pattern, replace_author, content, flags=re.DOTALL)
-        content = re.sub("(https?://github\\.com/)[^/]+(/)", f"\\g<1>{NEW_INFO['github_username']}\\g<2>", content)
+        content = re.sub(r"(https?://github\.com/)[^/]+(/)", rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")
@@ -61,11 +55,11 @@ def update_setup_cfg(file_path: Path) -> bool:
         content = file_path.read_text(encoding="utf-8")
         original_content = content
         if "[metadata]" in content:
-            content = re.sub("^author\\s*=\\s*.*$", f"author = {NEW_INFO['name']}", content, flags=re.MULTILINE)
+            content = re.sub(r"^author\s*=\s*.*$", f"author = {NEW_INFO['name']}", content, flags=re.MULTILINE)
             content = re.sub(
-                "^author_email\\s*=\\s*.*$", f"author_email = {NEW_INFO['email']}", content, flags=re.MULTILINE
+                r"^author_email\s*=\s*.*$", f"author_email = {NEW_INFO['email']}", content, flags=re.MULTILINE
             )
-        content = re.sub("(https?://github\\.com/)[^/]+(/)", f"\\g<1>{NEW_INFO['github_username']}\\g<2>", content)
+        content = re.sub(r"(https?://github\.com/)[^/]+(/)", rf"\g<1>{NEW_INFO['github_username']}\g<2>", content)
         if content != original_content:
             file_path.write_text(content, encoding="utf-8")
             print(f"✅ Updated {file_path}")

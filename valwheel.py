@@ -8,7 +8,7 @@ from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 WHEEL_PATTERN = re.compile(
-    "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\\.whl$", re.IGNORECASE
+    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\.whl$", re.IGNORECASE
 )
 
 

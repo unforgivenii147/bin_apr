@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import argparse
 import sys
-import time
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 

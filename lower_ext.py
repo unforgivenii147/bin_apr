@@ -1,34 +1,86 @@
 #!/data/data/com.termux/files/usr/bin/python
-import string
+"""
+Find files with uppercase extensions in current directory recursively.
+Optionally convert them to lowercase using -a or --autofix flag.
+"""
+
+import argparse
 import sys
 from pathlib import Path
 
-from dh import mpf
-from fastwalk import walk_files
 
+def find_uppercase_extensions(directory, autofix=False):
+    """
+    Find files with uppercase extensions in directory recursively.
 
-def is_all_upper(str1):
-    ln = len(str1)
-    return all((str1[i] in string.ascii_uppercase for i in range(ln)))
+    Args:
+        directory: Path object for the directory to search
+        autofix: If True, convert uppercase extensions to lowercase
 
+    Returns:
+        List of files with uppercase extensions
+    """
+    uppercase_files = []
 
-def process_file(fp):
-    if not fp.exists() or fp.is_symlink():
-        return None
-    ext = fp.suffix[1:]
-    if ext and is_all_upper(ext):
-        print(fp)
-        return True
-    return False
+    # Walk through directory recursively
+    for file_path in directory.rglob("*"):
+        # Skip directories
+        if not file_path.is_file():
+            continue
+
+        # Check if file has an extension
+        if file_path.suffix:
+            extension = file_path.suffix[1:]  # Remove the dot
+            # Check if extension contains any uppercase letters
+            if any(c.isupper() for c in extension):
+                uppercase_files.append(file_path)
+
+                if autofix:
+                    # Create new filename with lowercase extension
+                    new_extension = "." + extension.lower()
+                    new_path = file_path.with_suffix(new_extension)
+
+                    # Rename the file
+                    try:
+                        file_path.rename(new_path)
+                        print(f"✓ Renamed: {file_path.name} → {new_path.name}")
+                    except Exception as e:
+                        print(f"✗ Failed to rename {file_path.name}: {e}", file=sys.stderr)
+
+    return uppercase_files
 
 
 def main():
-    files = []
-    for pth in walk_files("."):
-        path = Path(pth)
-        if path.is_file():
-            files.append(path)
-    mpf(process_file, files)
+    parser = argparse.ArgumentParser(
+        description="Find files with uppercase extensions in current directory recursively"
+    )
+    parser.add_argument("-a", "--autofix", action="store_true", help="Convert uppercase extensions to lowercase")
+
+    args = parser.parse_args()
+
+    # Use current working directory
+    search_dir = Path.cwd()
+
+    print(f"Searching for files with uppercase extensions in: {search_dir}")
+    print("=" * 60)
+
+    # Find and optionally fix files
+    uppercase_files = find_uppercase_extensions(search_dir, args.autofix)
+
+    # Display results
+    if uppercase_files:
+        if not args.autofix:
+            print(f"\nFound {len(uppercase_files)} file(s) with uppercase extensions:")
+            for file_path in uppercase_files:
+                print(f"  • {file_path.relative_to(search_dir)} (extension: .{file_path.suffix[1:]})")
+
+            print("\nRun with -a or --autofix to convert them to lowercase")
+        else:
+            print(f"\n✓ Processed {len(uppercase_files)} file(s)")
+    else:
+        print("\n✓ No files with uppercase extensions found")
+
+    return 0
 
 
 if __name__ == "__main__":

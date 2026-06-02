@@ -3,7 +3,9 @@ import ast
 import sys
 from pathlib import Path
 
-from dh import DOC_TH1, cprint, fsz, get_pyfiles, gsz, mpf, read_lines
+from dh import DOC_TH1, cprint, fsz, get_pyfiles, gsz, mpf3, read_lines
+
+DOCTH1 = DOC_TH1 * 2
 
 
 def process_file(fp):
@@ -11,8 +13,9 @@ def process_file(fp):
     nl = []
     removed = 0
     for line in lines:
-        stripped = line.lstrip(" ").rstrip(" ").strip()
-        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOC_TH1 * 2):
+        stripped = line.lstrip().rstrip().strip()
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOCTH1):
+            print(line)
             removed += 1
             continue
         nl.append(line)
@@ -29,8 +32,8 @@ def process_file(fp):
 
 
 def main():
-    root_dir = Path.cwd()
-    before = gsz(root_dir)
+    cwd = Path.cwd()
+    before = gsz(cwd)
     args = sys.argv[1:]
     files = []
     if args:
@@ -41,12 +44,12 @@ def main():
             elif p.is_dir():
                 files.extend(get_files(p))
     else:
-        files = get_pyfiles(root_dir)
-    results = mpf(process_file, files)
+        files = get_pyfiles(cwd)
+    results = mpf3(process_file, files)
     for result in results:
         if result:
             print(result)
-    diffsize = before - gsz(root_dir)
+    diffsize = before - gsz(cwd)
     cprint(f"space change : {fsz(diffsize)}", "cyan")
 
 

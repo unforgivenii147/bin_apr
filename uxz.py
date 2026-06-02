@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
-import shutil
 import sys
 import tarfile
-import tempfile
 from pathlib import Path
 
 from dh import get_files

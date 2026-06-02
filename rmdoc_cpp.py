@@ -6,9 +6,7 @@ from pathlib import Path
 
 class RegexCommentRemover:
     def __init__(self) -> None:
-        self.pattern = re.compile(
-            "//.*?$|/\\*.*?\\*/|\\'(?:\\\\.|[^\\\\\\'])*\\'|\"(?:\\\\.|[^\\\\\"])*\"", re.DOTALL | re.MULTILINE
-        )
+        self.pattern = re.compile(r"//.*?$|/\*.*?\*/|'(?:\.|[^'])*'|\"(?:\.|[^\"])*\"", re.DOTALL | re.MULTILINE)
 
     def remove_comments(self, source: str):
 

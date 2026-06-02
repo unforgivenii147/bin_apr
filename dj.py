@@ -28,11 +28,11 @@ def load_junk():
 
 def main():
     cwd = Path.cwd()
-    counter = 0
+    #    counter = 0
     junk_files = load_junk()
     for path in get_files2(cwd):
-        counter += 1
-        print(counter)
+        #        counter += 1
+        #        print(counter)
         if path.name.lower() in {
             ".travis.yml",
             ".gitkeep",
@@ -43,7 +43,11 @@ def main():
         }:
             path.unlink()
             continue
-        if any((path.name.lower() == junk for junk in junk_files)) and path.exists():
+        if (
+            path.name.lower().endswith("license.txt")
+            or (path.stem.lower() == "license" and not path.suffix in {".py", ".pyx", ".js", ".pxd"})
+            or (any((path.name.lower() == junk for junk in junk_files)))
+        ) and path.exists():
             if RMIT:
                 remove_it(path)
                 print(path.relative_to(cwd))

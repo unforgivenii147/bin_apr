@@ -1,10 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/python
 import asyncio
-import contextlib
 import mmap
 import shutil
 import sys
-import tempfile
 from pathlib import Path
 
 from dh import mpf3

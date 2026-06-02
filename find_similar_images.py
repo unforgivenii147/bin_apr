@@ -2,8 +2,6 @@
 import imagehash
 from PIL import Image
 
-"\nDemo of hashing\n"
-
 
 def find_similar_images(userpaths, hashfunc=imagehash.average_hash):
 

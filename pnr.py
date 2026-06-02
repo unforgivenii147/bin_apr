@@ -7,7 +7,7 @@ from pathlib import Path
 def get_unique_name(path: Path, base_name: str) -> str:
     if not (path / base_name).exists():
         return base_name
-    name, ext = (Path(base_name).stem, Path(base_name).suffix)
+    name, ext = (base_name.stem, base_name.suffix)
     counter = 1
     while True:
         new_name = f"{name}_{counter}{ext}"
@@ -21,7 +21,7 @@ def ask_user_for_rename(old_name: str, new_name: str) -> bool:
 
 
 def remove_string_from_names(
-    string_to_remove: str, dry_run: bool = False, recursive: bool = False, current_path: Path = Path()
+    string_to_remove: str, dry_run: bool = False, recursive: bool = False, current_path: Path = Path.cwd()
 ) -> int:
     renamed_count = 0
     try:

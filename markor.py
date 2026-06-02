@@ -83,14 +83,14 @@ class MarkdownFormat(DocumentFormat):
             "heading1": "^# .*$",
             "heading2": "^## .*$",
             "heading3": "^### .*$",
-            "bold": "\\*\\*.*?\\*\\*",
-            "italic": "\\*.*?\\*",
+            "bold": r"\*\*.*?\*\*",
+            "italic": r"\*.*?\*",
             "code": "`.*?`",
-            "codeblock": "```.*?```",
-            "link": "\\[.*?\\]\\(.*?\\)",
-            "image": "!\\[.*?\\]\\(.*?\\)",
-            "list": "^[\\*\\-\\+] .*$",
-            "blockquote": "^> .*$",
+            "codeblock": r"```.*?```",
+            "link": r"\[.*?\]\(.*?\)",
+            "image": r"!\[.*?\]\(.*?\)",
+            "list": r"^[\*\-\+] .*$",
+            "blockquote": r"^> .*$",
         }
 
     def get_preview(self, content: str) -> str:
@@ -115,14 +115,14 @@ class MarkdownFormat(DocumentFormat):
 class TodoFormat(DocumentFormat):
     def get_syntax_highlight_rules(self) -> dict[str, str]:
         return {
-            "completed": "^\\(x\\) .*$",
-            "incomplete": "^\\(\\) .*$",
-            "priority_a": "^\\(A\\) .*$",
-            "priority_b": "^\\(B\\) .*$",
-            "priority_c": "^\\(C\\) .*$",
-            "project": "\\+\\w+",
-            "context": "@\\w+",
-            "date": "\\d{4}-\\d{2}-\\d{2}",
+            "completed": r"^\(x\) .*$",
+            "incomplete": r"^\(\) .*$",
+            "priority_a": r"^\(A\) .*$",
+            "priority_b": r"^\(B\) .*$",
+            "priority_c": r"^\(C\) .*$",
+            "project": r"\+\w+",
+            "context": r"@\w+",
+            "date": r"\d{4}-\d{2}-\d{2}",
         }
 
     def get_preview(self, content: str) -> str:

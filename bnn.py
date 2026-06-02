@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 def process_file(fname):
     content = fname.read_text(encoding="utf-8")
-    content = content.replace("\\n", "\n")
+    content = content.replace(r"\n", "\n")
     fname.write_text(content, encoding="utf-8")
     print(f"{fname.name} updated.")
 

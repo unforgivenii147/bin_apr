@@ -1,6 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/python
-import contextlib
-import shutil
 import sys
 import tarfile
 from pathlib import Path

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 
-from git import RemoteReference, Repo
+from git import Repo
 
 
 def sync_branch_with_upstream(repo_path="."):

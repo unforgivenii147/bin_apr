@@ -30,4 +30,4 @@ if __name__ == "__main__":
     img_path = Path(sys.argv[1])
     result, ratio = analyze_image(img_path)
     print(f"{img_path.name}: {result}")
-    print(f"Dark pixel ratio: {ratio:.2%}")
+    print(f"Dark pixel ratio: {ratio:.2f}%")

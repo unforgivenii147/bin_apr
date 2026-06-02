@@ -134,5 +134,5 @@ if __name__ == "__main__":
     video = sys.argv[1]
     output = sys.argv[2] if len(sys.argv) > 2 else "extracted_subs.srt"
     fps_arg = float(sys.argv[3]) if len(sys.argv) > 3 else 2.0
-    worker_arg = int(sys.argv[4]) if len(sys.argv) > 4 else None
+    worker_arg = int(sys.argv[4]) if len(sys.argv) > 4 else 4
     extract_burned_subs_ocr(video, output, sample_fps=fps_arg, workers=worker_arg)

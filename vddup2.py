@@ -1,7 +1,6 @@
 import argparse
 import ast
 import os
-import shutil
 from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 

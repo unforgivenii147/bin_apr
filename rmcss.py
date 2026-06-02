@@ -4,7 +4,6 @@ import sys
 from collections import deque
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz
 
 MAX_QUEUE = 16
@@ -13,7 +12,7 @@ MAX_QUEUE = 16
 def process_file(fp) -> None:
     before = gsz(fp)
     src = fp.read_text(encoding="utf-8")
-    pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
+    pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
     if out != src:
         fp.write_text(out, encoding="utf-8")

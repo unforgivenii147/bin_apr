@@ -3,9 +3,33 @@ import ast
 import sys
 from pathlib import Path
 
-from dh import cprint, fsz, get_pyfiles, gsz, mpf3
+from dh import DOC_TH1, cprint, fsz, get_pyfiles, gsz, mpf3, read_lines
 
+DOCTH1 = DOC_TH1 * 2
 cwd = Path.cwd()
+
+
+def preprocess_code(code):
+    nl = []
+    removed = 0
+    lines = code.splitlines()
+    for line in lines:
+        stripped = line.lstrip().rstrip().strip()
+        if stripped.startswith(DOC_TH1) and stripped.endswith(DOC_TH1) and (stripped != DOCTH1):
+            print(line)
+            removed += 1
+            continue
+        nl.append(line)
+    if removed:
+        try:
+            new_code = "\n".join(nl)
+            _ = ast.parse(code)
+            return new_code
+        except:
+            cprint("ast parse error")
+            return code
+    else:
+        return code
 
 
 class DocstringRemover(ast.NodeTransformer):
@@ -55,22 +79,23 @@ def process_file(path: Path):
     before = gsz(path)
     try:
         code = path.read_text(encoding="utf-8")
-        lines = code.splitlines(keepends=True)
         first_line = ""
-        if code.startswith("#!/"):
+        if code.startswith("#!"):
+            lines = code.splitlines(keepends=True)
             first_line = lines[0]
             code = "".join(lines[1:])
-        tree = ast.parse(code)
+        pre_code = preprocess_code(code)
+        tree = ast.parse(pre_code)
         transformer = DocstringRemover()
         new_tree = transformer.visit(tree)
-        ast.fix_missing_locations(new_tree)
+        new_tree = ast.fix_missing_locations(new_tree)
         newcode = ast.unparse(new_tree)
         if first_line:
             newcode = first_line + newcode
         try:
             ast.parse(newcode)
         except SyntaxError:
-            cprint(f"syntax error: {path.name}")
+            cprint(f"ast parse error: {path.name}")
             return
         if len(newcode.strip()) == len(code.strip()):
             print(f"{path.name} (no change)")

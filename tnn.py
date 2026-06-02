@@ -3,10 +3,9 @@ import argparse
 import re
 import sys
 from pathlib import Path
-
 from dh import get_nobinary
 
-TAB_PATTERN = re.compile(r"\t")
+TAB_PATTERN = re.compile("\\t")
 SPACE_REPLACEMENT = " " * 4
 cwd = Path.cwd()
 

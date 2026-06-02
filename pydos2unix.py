@@ -4,7 +4,6 @@ import fnmatch
 import mmap
 from multiprocessing import Pool
 from pathlib import Path
-
 from dh import is_binary
 
 

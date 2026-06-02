@@ -5,7 +5,6 @@ import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
-
 from dh import is_valid_archive
 
 TARGET_FILES = {"METADATA", "PKGINFO", "PKG-INFO"}

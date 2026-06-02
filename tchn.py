@@ -2,13 +2,12 @@
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def is_text_file(path: Path) -> bool:

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import ast
 from pathlib import Path
-
 from dh import get_pyfiles
 
 TARGET_FUNCS = {"compile", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn"}

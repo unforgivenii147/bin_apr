@@ -11,7 +11,6 @@ If the target filename already exists, appends _1, _2, etc. to avoid overwriting
 """
 
 from pathlib import Path
-
 from dh import FONT_EXT, unique_path
 from fontTools.ttLib import TTFont
 

@@ -4,7 +4,6 @@ import json
 import re
 import time
 from pathlib import Path
-
 import requests
 from dh import cprint, get_installed_packages
 from packaging.version import Version

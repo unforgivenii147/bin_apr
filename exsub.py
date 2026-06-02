@@ -4,7 +4,6 @@ import multiprocessing
 import os
 import re
 from functools import partial
-
 import cv2
 import numpy as np
 import pytesseract
@@ -60,11 +59,9 @@ def extract_frames(
         if not ret:
             break
         timestamp = frame_count / native_fps
-        # skip frames before start_time
         if start_time is not None and timestamp < start_time:
             frame_count += 1
             continue
-        # stop if we passed end_time
         if end_time is not None and timestamp > end_time:
             break
         if frame_count % frame_interval == 0:
@@ -84,7 +81,6 @@ def parse_time(time_str: str) -> float:
     if len(parts) != 3:
         raise ValueError(f"Invalid time format: {time_str}. Expected HH:MM:SS")
     h, m, s = parts
-    # handle possible milliseconds like 12.345
     secs = float(s)
     return int(h) * 3600 + int(m) * 60 + secs
 
@@ -107,23 +103,18 @@ def parse_srt(filepath: str) -> list[dict]:
         lines = [line.rstrip() for line in f]
     i = 0
     while i < len(lines):
-        # skip empty lines and indices
         if not lines[i].strip() or lines[i].strip().isdigit():
             i += 1
             continue
-        # timestamp line
         ts_line = lines[i]
         i += 1
-        # collect text lines until empty
         text_lines = []
         while i < len(lines) and lines[i].strip():
             text_lines.append(lines[i].strip())
             i += 1
-        # skip trailing blank
-        if i < len(lines) and not lines[i].strip():
+        if i < len(lines) and (not lines[i].strip()):
             i += 1
-        # parse timestamp
-        match = re.match(r"(\d{2}:\d{2}:\d{2}[.,]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[.,]\d{3})", ts_line)
+        match = re.match("(\\d{2}:\\d{2}:\\d{2}[.,]\\d{3})\\s*-->\\s*(\\d{2}:\\d{2}:\\d{2}[.,]\\d{3})", ts_line)
         if match:
             start = _ts_to_seconds(match.group(1))
             end = _ts_to_seconds(match.group(2))
@@ -177,51 +168,32 @@ def extract_burned_subs_ocr(
     """
     if workers is None:
         workers = max(1, multiprocessing.cpu_count() - 1)
-
-    # Determine start_time for extraction
     start_time = 0.0
     existing_subs = []
     if resume and os.path.isfile(output_srt_path):
         existing_subs = parse_srt(output_srt_path)
         if existing_subs:
-            # resume from the end of the last existing subtitle
-            last_end = max(sub["end"] for sub in existing_subs)
+            last_end = max((sub["end"] for sub in existing_subs))
             start_time = last_end
             print(f"Resuming from {format_time(start_time)} (end of last existing subtitle)")
-
     print(
-        f"[1/3] Extracting frames  ({sample_fps} fps sample, "
-        f"from {format_time(start_time)} to {format_time(end_time) if end_time else 'end'})…"
+        f"[1/3] Extracting frames  ({sample_fps} fps sample, from {format_time(start_time)} to {(format_time(end_time) if end_time else 'end')})…"
     )
-    frames = extract_frames(
-        video_path,
-        sample_fps=sample_fps,
-        start_time=start_time,
-        end_time=end_time,
-    )
+    frames = extract_frames(video_path, sample_fps=sample_fps, start_time=start_time, end_time=end_time)
     print(f"      {len(frames)} unique frames queued for OCR")
-
     ocr_config = f"--oem 3 --psm 6 -l {lang}"
     worker_fn = partial(_ocr_worker, ocr_config=ocr_config)
     print(f"[2/3] Running OCR with {workers} worker(s)…")
     with multiprocessing.Pool(processes=workers) as pool:
         results: list[tuple[float, str]] = pool.map(worker_fn, frames)
-
     new_subs = [{"start": t, "end": t + 1.0 / sample_fps, "text": txt} for t, txt in results if txt]
-    # combine with existing subtitles that finish before the resume point
     if resume and existing_subs:
-        # keep only subs that end before start_time (the point we started from)
         kept = [s for s in existing_subs if s["end"] <= start_time]
-        # in case a subtitle crossed the boundary, we might want to keep it too;
-        # but to be safe we only keep those fully before.
-        # any overlap is handled by the merge step later.
         all_subs = kept + new_subs
     else:
         all_subs = new_subs
-
     all_subs.sort(key=lambda s: s["start"])
     subtitles = _merge_subtitles(all_subs)
-
     print(f"[3/3] Writing {len(subtitles)} subtitle(s) → {output_srt_path}")
     with open(output_srt_path, "w", encoding="utf-8") as f:
         for i, sub in enumerate(subtitles, 1):
@@ -244,15 +216,10 @@ if __name__ == "__main__":
     parser.add_argument("--sample_fps", type=float, default=2.0, help="Frames per second to sample (default: 2.0)")
     parser.add_argument("--workers", type=int, default=4, help="Number of OCR worker processes (default: 4)")
     args = parser.parse_args()
-
-    # Allow the old positional style: second arg as time string (without -t)
-    if args.output and re.match(r"\d{1,2}:\d{2}:\d{2}", args.output) and not args.max_time:
-        # treat the second argument as the max time, reset output to default
+    if args.output and re.match("\\d{1,2}:\\d{2}:\\d{2}", args.output) and (not args.max_time):
         args.max_time = args.output
         args.output = "extracted_subs.srt"
-
     end_time = parse_time(args.max_time) if args.max_time else None
-
     extract_burned_subs_ocr(
         video_path=args.video,
         output_srt_path=args.output,

@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from fastwalk import walk_files
 
 
@@ -11,7 +10,7 @@ def extract_requirements(metadata_path):
     requirements = []
     for line in lines:
         if line.startswith("Requires-Dist:"):
-            match = re.match(r"Requires-Dist:\s*([^\s;]+)", line)
+            match = re.match("Requires-Dist:\\s*([^\\s;]+)", line)
             if match:
                 requirements.append(match.group(1))
     if not requirements:

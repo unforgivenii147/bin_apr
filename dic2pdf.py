@@ -1,6 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
-
 from weasyprint import HTML
 
 INPUT_FILE = "dictionary.txt"

@@ -3,7 +3,6 @@ import ast
 import re
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz
 
 
@@ -83,7 +82,7 @@ def find_docstring_ranges(node) -> list[tuple[int, int]]:
 
 
 def clean_blank_lines(content: str) -> str:
-    content = re.sub(r"\n\n+", "\n", content)
+    content = re.sub("\\n\\n+", "\n", content)
     return "\n".join((line.rstrip() for line in content.split("\n")))
 
 

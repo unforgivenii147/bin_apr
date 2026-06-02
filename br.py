@@ -2,7 +2,6 @@
 import mmap
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from brotlicffi import compress as brotli_compress
 from dh import cprint, fsz, get_files, gsz, mpf3

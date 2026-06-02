@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from dh import cprint, fsz, get_files, gsz, mpf3
 
 MAX_QUEUE = 16
@@ -11,7 +10,7 @@ MAX_QUEUE = 16
 def process_file(fp) -> None:
     before = gsz(fp)
     src = fp.read_text(encoding="utf-8")
-    pattern = re.compile(r"<!--[\s\S]*?-->", re.MULTILINE)
+    pattern = re.compile("<!--[\\s\\S]*?-->", re.MULTILINE)
     out = pattern.sub("", src)
     if out != src:
         code = out.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")

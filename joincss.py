@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from dh import atomic_write
 
 LOCAL_FONT_BASE = Path("/sdcard/_static/fonts")

@@ -6,7 +6,6 @@ import shutil
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 
@@ -25,7 +24,7 @@ def get_translator():
 
 
 def is_non_english(line):
-    return re.search(r"[^\x00-\x7F]", line)
+    return re.search("[^\\x00-\\x7F]", line)
 
 
 def translate_line(line):
@@ -117,7 +116,7 @@ def process_file(filepath):
         if stripped.startswith("#") and is_non_english(stripped[1:]):
             trans = translate_line(stripped[1:].strip())
             if trans:
-                indentation = re.match(r"\s*", line).group(0)
+                indentation = re.match("\\s*", line).group(0)
                 final_lines.append(f"{indentation}# {trans}")
     Path(filepath).write_text("\n".join(final_lines) + "\n", encoding="utf-8")
     print(f"Translated: {filepath}")

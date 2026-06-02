@@ -54,7 +54,7 @@ def compress_python_file_aggressively(filepath):
             return name
         return shorten_variable_name(name)
 
-    content_no_multiline_strings = re.sub(r"'''.*?'''|\"\"\".*?\"\"\"", "", content, flags=re.DOTALL)
+    content_no_multiline_strings = re.sub("'''.*?'''|\\\"\\\"\\\".*?\\\"\\\"\\\"", "", content, flags=re.DOTALL)
     content_no_comments_single = re.sub("#.*", "", content_no_multiline_strings)
     lines = content_no_comments_single.splitlines()
     non_empty_lines = [line.strip() for line in lines if line.strip()]

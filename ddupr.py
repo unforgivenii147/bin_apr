@@ -12,7 +12,6 @@ Usage
 """
 
 from __future__ import annotations
-
 import ast
 import argparse
 import hashlib
@@ -25,10 +24,7 @@ from dataclasses import dataclass, field
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Optional
-
 from loguru import logger
-
-# ── optional heavy-compression libs ─────────────────────────────────────────
 import zstandard as zstd
 
 HAS_ZST = True
@@ -36,50 +32,28 @@ import lzma_mt
 import brotlicffi as brotli
 
 HAS_BR = True
-
-ARCHIVE_EXTENSIONS = {
-    ".zip",
-    ".tar",
-    ".gz",
-    ".bz2",
-    ".xz",
-    ".tgz",
-    ".tbz2",
-    ".zst",
-    ".br",
-}
-
-UTILS_MAP: dict[str, str] = {
-    "func": "funcs.py",
-    "class": "classes.py",
-    "const": "const.py",
-}
-
-# Names that are always treated as constants regardless of casing
+ARCHIVE_EXTENSIONS = {".zip", ".tar", ".gz", ".bz2", ".xz", ".tgz", ".tbz2", ".zst", ".br"}
+UTILS_MAP: dict[str, str] = {"func": "funcs.py", "class": "classes.py", "const": "const.py"}
 CONSTANT_CALL_NAMES = {"TypeVar", "NewType", "ParamSpec", "TypeVarTuple"}
-
-
-# ── data model ───────────────────────────────────────────────────────────────
 
 
 @dataclass
 class PyObject:
-    kind: str  # 'func' | 'class' | 'const'
+    kind: str
     name: str
-    source: str  # normalised source text
+    source: str
     content_hash: str
-    origin_file: str  # real path or "archive.zip::member.py"
+    origin_file: str
     node_lineno: int
     node_end_lineno: int
     imports: list[str] = field(default_factory=list)
 
 
-# ── source helpers ───────────────────────────────────────────────────────────
-
-
 def _content_hash(source: str) -> str:
     """SHA-256 of source with blank lines and comments stripped."""
-    normalised = "\n".join(line for line in source.splitlines() if line.strip() and not line.strip().startswith("#"))
+    normalised = "\n".join(
+        (line for line in source.splitlines() if line.strip() and (not line.strip().startswith("#")))
+    )
     return hashlib.sha256(normalised.encode()).hexdigest()
 
 
@@ -92,8 +66,8 @@ def _node_source(source: str, node: ast.AST) -> str:
     if seg is not None:
         return seg
     lines = source.splitlines(keepends=True)
-    start = node.lineno - 1  # type: ignore[attr-defined]
-    end = node.end_lineno  # type: ignore[attr-defined]
+    start = node.lineno - 1
+    end = node.end_lineno
     return textwrap.dedent("".join(lines[start:end]))
 
 
@@ -107,18 +81,16 @@ def _collect_imports(tree: ast.Module, node: ast.AST) -> list[str]:
         if isinstance(n, ast.Name):
             used.add(n.id)
         elif isinstance(n, ast.Attribute):
-            # collect root of attribute chains: a.b.c → 'a'
             root = n
             while isinstance(root, ast.Attribute):
-                root = root.value  # type: ignore[assignment]
+                root = root.value
             if isinstance(root, ast.Name):
                 used.add(root.id)
-
     lines: list[str] = []
     for stmt in tree.body:
         if isinstance(stmt, ast.Import):
             for alias in stmt.names:
-                name = alias.asname or alias.name.split(".")[0]  # (0)
+                name = alias.asname or alias.name.split(".")[0]
                 if name in used:
                     lines.append(ast.unparse(stmt))
         elif isinstance(stmt, ast.ImportFrom):
@@ -126,8 +98,7 @@ def _collect_imports(tree: ast.Module, node: ast.AST) -> list[str]:
                 name = alias.asname or alias.name
                 if name in used:
                     lines.append(ast.unparse(stmt))
-
-    return list(dict.fromkeys(lines))  # deduplicate, preserve order
+    return list(dict.fromkeys(lines))
 
 
 def _is_constant_node(node: ast.AST) -> tuple[bool, str]:
@@ -140,28 +111,21 @@ def _is_constant_node(node: ast.AST) -> tuple[bool, str]:
     """
     if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
         name = node.target.id
-        return True, name
-
+        return (True, name)
     if isinstance(node, ast.Assign) and len(node.targets) == 1:
-        target = node.targets[0]  # (0)
+        target = node.targets[0]
         if not isinstance(target, ast.Name):
-            return False, ""
+            return (False, "")
         name = target.id
-        # ALL_CAPS heuristic
         if name.isupper():
-            return True, name
-        # TypeVar / NewType etc.
+            return (True, name)
         value = node.value
         if isinstance(value, ast.Call):
             func = value.func
             func_name = func.id if isinstance(func, ast.Name) else func.attr if isinstance(func, ast.Attribute) else ""
             if func_name in CONSTANT_CALL_NAMES:
-                return True, name
-
-    return False, ""
-
-
-# ── per-file analysis (worker) ───────────────────────────────────────────────
+                return (True, name)
+    return (False, "")
 
 
 def analyse_source(source: str, origin: str) -> list[PyObject]:
@@ -172,10 +136,8 @@ def analyse_source(source: str, origin: str) -> list[PyObject]:
     except SyntaxError as exc:
         logger.warning("Syntax error in {}: {}", origin, exc)
         return objects
-
     for node in tree.body:
         try:
-            # ── functions ────────────────────────────────────────────────
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 src = _node_source(source, node)
                 objects.append(
@@ -190,8 +152,6 @@ def analyse_source(source: str, origin: str) -> list[PyObject]:
                         imports=_collect_imports(tree, node),
                     )
                 )
-
-            # ── classes ──────────────────────────────────────────────────
             elif isinstance(node, ast.ClassDef):
                 src = _node_source(source, node)
                 objects.append(
@@ -206,8 +166,6 @@ def analyse_source(source: str, origin: str) -> list[PyObject]:
                         imports=_collect_imports(tree, node),
                     )
                 )
-
-            # ── constants ────────────────────────────────────────────────
             else:
                 is_const, name = _is_constant_node(node)
                 if is_const:
@@ -224,14 +182,9 @@ def analyse_source(source: str, origin: str) -> list[PyObject]:
                             imports=_collect_imports(tree, node),
                         )
                     )
-
         except Exception as exc:
             logger.error("Failed to process node '{}' in {}: {}", getattr(node, "name", "?"), origin, exc)
-
     return objects
-
-
-# ── archive readers ──────────────────────────────────────────────────────────
 
 
 def _read_zip(path: Path) -> list[tuple[str, str]]:
@@ -316,33 +269,23 @@ def read_file_sources(path: Path) -> list[tuple[str, str]]:
     Handles plain .py files and all supported archive formats.
     """
     ext = path.suffix.lower()
-
     if ext == ".py":
         try:
             return [(str(path), path.read_text(encoding="utf-8", errors="replace"))]
         except Exception as exc:
             logger.error("Cannot read {}: {}", path, exc)
             return []
-
     if ext == ".zip" or ext == ".whl":
         return _read_zip(path)
-
     if ext in {".tar", ".tgz", ".tbz2", ".tar.gz", ".tar.bz2", ".tar.xz"}:
         return _read_tar(path)
-
     if ext == ".xz":
         return _read_xz(path)
-
     if ext == ".zst":
         return _read_zst(path)
-
     if ext == ".br":
         return _read_br(path)
-
     return []
-
-
-# ── multiprocessing worker ───────────────────────────────────────────────────
 
 
 def _worker(path: Path) -> list[PyObject]:
@@ -351,9 +294,6 @@ def _worker(path: Path) -> list[PyObject]:
     for origin, source in read_file_sources(path):
         results.extend(analyse_source(source, origin))
     return results
-
-
-# ── utils file builder ───────────────────────────────────────────────────────
 
 
 def _build_utils_source(objects: list[PyObject]) -> str:
@@ -365,13 +305,11 @@ def _build_utils_source(objects: list[PyObject]) -> str:
     for obj in objects:
         all_imports.extend(obj.imports)
     unique_imports = list(dict.fromkeys(all_imports))
-
     parts: list[str] = []
     if unique_imports:
         parts.append("\n".join(unique_imports))
     for obj in objects:
         parts.append(obj.source.strip())
-
     return "\n\n\n".join(parts) + "\n"
 
 
@@ -385,29 +323,19 @@ def _validate_source(source: str, dest: Path) -> bool:
         return False
 
 
-def write_utils(
-    grouped: dict[str, list[PyObject]],
-    utils_dir: Path,
-    *,
-    dry_run: bool = False,
-) -> dict[str, Path]:
+def write_utils(grouped: dict[str, list[PyObject]], utils_dir: Path, *, dry_run: bool = False) -> dict[str, Path]:
     """
     Write utils/{func,class,const}.py.
     Returns a mapping of kind → written path.
     """
     utils_dir.mkdir(parents=True, exist_ok=True)
     written: dict[str, Path] = {}
-
     for kind, filename in UTILS_MAP.items():
         objects = grouped.get(kind, [])
         if not objects:
             continue
-
         dest = utils_dir / filename
         existing_hashes: set[str] = set()
-
-        # If the file already exists, parse it and collect existing hashes
-        # so we never write duplicates across runs.
         if dest.exists():
             try:
                 existing_src = dest.read_text(encoding="utf-8")
@@ -418,35 +346,24 @@ def write_utils(
                         existing_hashes.add(_content_hash(seg))
             except Exception as exc:
                 logger.warning("Could not parse existing {}: {}", dest, exc)
-
         new_objects = [o for o in objects if o.content_hash not in existing_hashes]
         if not new_objects:
             logger.info("No new objects for {} — skipping", dest)
             continue
-
         new_source = _build_utils_source(new_objects)
-
-        # Append to existing file or create fresh
         if dest.exists():
             combined = dest.read_text(encoding="utf-8") + "\n\n" + new_source
         else:
             combined = f'"""Auto-generated by refactor_utils.py"""\n\n' + new_source
-
         if not _validate_source(combined, dest):
             continue
-
         if not dry_run:
             dest.write_text(combined, encoding="utf-8")
             logger.success("Wrote {} object(s) to {}", len(new_objects), dest)
         else:
             logger.info("[dry-run] Would write {} object(s) to {}", len(new_objects), dest)
-
         written[kind] = dest
-
     return written
-
-
-# ── move mode: patch original files ─────────────────────────────────────────
 
 
 def _build_import_line(utils_dir: Path, root_dir: Path, kind: str) -> str:
@@ -459,76 +376,56 @@ def _build_import_line(utils_dir: Path, root_dir: Path, kind: str) -> str:
     return f"from {module_path} import {{names}}"
 
 
-def remove_and_patch(
-    objects_to_remove: list[PyObject],
-    utils_dir: Path,
-    root_dir: Path,
-) -> None:
+def remove_and_patch(objects_to_remove: list[PyObject], utils_dir: Path, root_dir: Path) -> None:
     """
     Remove duplicate definitions from their origin files and inject
     the required import so the file still resolves the names.
     Only operates on real .py files (not archive members).
     """
-    # Group by origin file
     by_file: dict[str, list[PyObject]] = defaultdict(list)
     for obj in objects_to_remove:
         if "::" in obj.origin_file:
             logger.warning("Cannot patch archive member {} — skipping move", obj.origin_file)
             continue
         by_file[obj.origin_file].append(obj)
-
     for filepath, objs in by_file.items():
         path = Path(filepath)
         if not path.exists():
             logger.warning("Origin file gone: {}", filepath)
             continue
-
         try:
             original = path.read_text(encoding="utf-8")
             lines = original.splitlines(keepends=True)
         except Exception as exc:
             logger.error("Cannot read {} for patching: {}", filepath, exc)
             continue
-
-        # Sort by line number descending so we can splice without offset drift
         objs_sorted = sorted(objs, key=lambda o: o.node_lineno, reverse=True)
-
         patched_lines = list(lines)
         for obj in objs_sorted:
             start = obj.node_lineno - 1
             end = obj.node_end_lineno
             patched_lines[start:end] = []
-
-        # Build import additions grouped by kind
         imports_by_kind: dict[str, list[str]] = defaultdict(list)
         for obj in objs:
             imports_by_kind[obj.kind].append(obj.name)
-
         import_lines: list[str] = []
         for kind, names in imports_by_kind.items():
             template = _build_import_line(utils_dir, root_dir, kind)
             import_lines.append(template.format(names=", ".join(sorted(names))) + "\n")
-
-        # Insert imports after the last existing import block
         insert_at = 0
         try:
             tree = ast.parse("".join(patched_lines))
             for node in tree.body:
                 if isinstance(node, (ast.Import, ast.ImportFrom)):
-                    insert_at = node.end_lineno  # type: ignore[attr-defined]
+                    insert_at = node.end_lineno
         except SyntaxError:
-            pass  # best-effort; insert at top
-
+            pass
         for i, imp in enumerate(import_lines):
             patched_lines.insert(insert_at + i, imp)
-
         new_source = "".join(patched_lines)
-
-        # Validate before writing
         if not _validate_source(new_source, path):
             logger.error("Patched {} has syntax errors — original preserved", filepath)
             continue
-
         try:
             path.write_text(new_source, encoding="utf-8")
             logger.success("Patched {}: removed {} definition(s), added imports", filepath, len(objs))
@@ -536,21 +433,15 @@ def remove_and_patch(
             logger.error("Cannot write patched {}: {}", filepath, exc)
 
 
-# ── orchestration ────────────────────────────────────────────────────────────
-
-
 def collect_all_paths(root: Path) -> list[Path]:
     """Recursively collect .py files and supported archives under root."""
     all_exts = {".py"} | ARCHIVE_EXTENSIONS
     paths = [p for p in root.rglob("*") if p.suffix.lower() in all_exts and p.is_file()]
-    # Exclude the utils dir itself to avoid re-processing generated files
     utils_dir = root / "utils"
     return [p for p in paths if not str(p).startswith(str(utils_dir))]
 
 
-def find_duplicates(
-    all_objects: list[PyObject],
-) -> tuple[dict[str, list[PyObject]], dict[str, list[PyObject]]]:
+def find_duplicates(all_objects: list[PyObject]) -> tuple[dict[str, list[PyObject]], dict[str, list[PyObject]]]:
     """
     Return:
       duplicates  — hash → [PyObject, …]  (only hashes seen > 1 time)
@@ -559,36 +450,25 @@ def find_duplicates(
     by_hash: dict[str, list[PyObject]] = defaultdict(list)
     for obj in all_objects:
         by_hash[obj.content_hash].append(obj)
-
     duplicates = {h: objs for h, objs in by_hash.items() if len(objs) > 1}
-
     grouped: dict[str, list[PyObject]] = defaultdict(list)
     for objs in duplicates.values():
         representative = objs[0]
         grouped[representative.kind].append(representative)
+    return (duplicates, grouped)
 
-    return duplicates, grouped
 
-
-def run(
-    root_dir: Path,
-    mode: Optional[str],
-    workers: int,
-) -> None:
+def run(root_dir: Path, mode: Optional[str], workers: int) -> None:
     utils_dir = root_dir / "utils"
     paths = collect_all_paths(root_dir)
     logger.info("Found {} file(s) to scan", len(paths))
-
-    # ── parallel scan ────────────────────────────────────────────────────────
     all_objects: list[PyObject] = []
     with Pool(processes=workers) as pool:
         for result in pool.imap_unordered(_worker, paths, chunksize=4):
             all_objects.extend(result)
-
     logger.info("Extracted {} top-level object(s) total", len(all_objects))
-
     duplicates, grouped = find_duplicates(all_objects)
-    total_dupes = sum(len(v) for v in grouped.values())
+    total_dupes = sum((len(v) for v in grouped.values()))
     logger.info(
         "Found {} duplicate group(s): {} func, {} class, {} const",
         len(duplicates),
@@ -596,37 +476,22 @@ def run(
         len(grouped.get("class", [])),
         len(grouped.get("const", [])),
     )
-
     if not duplicates:
         logger.info("Nothing to do.")
         return
-
     if mode is None:
-        # Report only
         for kind, objs in grouped.items():
             for obj in objs:
                 logger.info("[{}] '{}' duplicated in {} file(s)", kind, obj.name, len(duplicates[obj.content_hash]))
         return
-
-    # ── write utils files ────────────────────────────────────────────────────
     dry_run = mode not in {"copy", "move"}
     write_utils(grouped, utils_dir, dry_run=dry_run)
-
-    # ── move mode: remove originals and patch imports ────────────────────────
     if mode == "move":
-        # Collect all non-representative copies (the ones to remove)
         objects_to_remove: list[PyObject] = []
         for h, objs in duplicates.items():
-            # Keep the representative (first), remove the rest
             objects_to_remove.extend(objs[1:])
-            # Also remove the representative from its origin
-            # (it now lives in utils/)
             objects_to_remove.append(objs[0])
-
         remove_and_patch(objects_to_remove, utils_dir, root_dir)
-
-
-# ── CLI ──────────────────────────────────────────────────────────────────────
 
 
 def _parse_args() -> argparse.Namespace:
@@ -636,22 +501,13 @@ def _parse_args() -> argparse.Namespace:
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "-c",
-        "--copy",
-        action="store_true",
-        help="Copy duplicate definitions to utils/ (originals untouched)",
+        "-c", "--copy", action="store_true", help="Copy duplicate definitions to utils/ (originals untouched)"
     )
     group.add_argument(
-        "-m",
-        "--move",
-        action="store_true",
-        help="Move duplicate definitions to utils/ and patch original files",
+        "-m", "--move", action="store_true", help="Move duplicate definitions to utils/ and patch original files"
     )
     parser.add_argument(
-        "--dir",
-        type=Path,
-        default=Path("."),
-        help="Root directory to scan (default: current directory)",
+        "--dir", type=Path, default=Path("."), help="Root directory to scan (default: current directory)"
     )
     parser.add_argument(
         "--workers",
@@ -670,8 +526,6 @@ def _parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = _parse_args()
-
-    # Configure loguru
     logger.remove()
     logger.add(
         sys.stderr,
@@ -679,25 +533,16 @@ def main() -> None:
         format="<green>{time:HH:mm:ss}</green> | <level>{level:<8}</level> | {message}",
         colorize=True,
     )
-    logger.add(
-        "refactor_utils.log",
-        level="DEBUG",
-        rotation="5 MB",
-        retention=3,
-        encoding="utf-8",
-    )
-
+    logger.add("refactor_utils.log", level="DEBUG", rotation="5 MB", retention=3, encoding="utf-8")
     root = args.dir.resolve()
     if not root.is_dir():
         logger.error("'{}' is not a directory", root)
         sys.exit(1)
-
     mode = None
     if args.copy:
         mode = "copy"
     elif args.move:
         mode = "move"
-
     logger.info("Root: {}  |  mode: {}  |  workers: {}", root, mode or "report-only", args.workers)
     run(root, mode, args.workers)
 

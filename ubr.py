@@ -2,7 +2,6 @@
 import mmap
 import sys
 from pathlib import Path
-
 import brotlicffi
 from dh import cprint, fsz, get_files, gsz
 

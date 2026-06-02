@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import get_nobinary, is_binary
 
 
@@ -12,7 +11,7 @@ def unicode_unescape(text: str) -> str:
 def process_file(path: Path) -> None:
     lines = path.read_text(encoding="utf-8").splitlines()
     for line in lines:
-        nl = r"\u" + str(line.strip())
+        nl = "\\u" + str(line.strip())
         decoded = unicode_unescape(nl)
         print(nl)
         print(decoded)

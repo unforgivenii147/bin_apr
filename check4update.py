@@ -2,7 +2,6 @@
 import json
 from importlib.metadata import distributions
 from pathlib import Path
-
 import requests
 from dh import cprint
 from loguru import logger

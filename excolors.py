@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from dh import cprint, get_filez, is_binary
 
 COLOR_RE = re.compile("#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\\b")

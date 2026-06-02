@@ -4,7 +4,6 @@ import mmap
 import shutil
 import sys
 from pathlib import Path
-
 from dh import mpf3
 from lzma_mt import compress
 

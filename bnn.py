@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/python
 def process_file(fname):
     content = fname.read_text(encoding="utf-8")
-    content = content.replace(r"\n", "\n")
+    content = content.replace("\\n", "\n")
     fname.write_text(content, encoding="utf-8")
     print(f"{fname.name} updated.")
 
@@ -9,7 +9,6 @@ def process_file(fname):
 if __name__ == "__main__":
     import sys
     from pathlib import Path
-
     from dh import get_pyfiles, mpf3
 
     cwd = Path.cwd()

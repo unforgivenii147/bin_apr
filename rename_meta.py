@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from pathlib import Path
-
 from dh import cprint, get_files, unique_path
 
 OUT_PATH = Path("/data/data/com.termux/files/home/tmp/metadata")

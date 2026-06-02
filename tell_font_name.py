@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from dh import get_files, mpf, unique_path
 from fontTools.ttLib import TTFont
 from termcolor import cprint
@@ -13,7 +12,7 @@ def is_ascii_printable(s: str) -> bool:
 
 
 def clean_filename(s: str) -> str:
-    s = re.sub(r"[^\w\-\.]", "", s)
+    s = re.sub("[^\\w\\-\\.]", "", s)
     return s.strip("_-.")
 
 

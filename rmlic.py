@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import re
 from pathlib import Path
-
 from dh import cprint, fsz, get_nobinary, gsz
 
 LIC_FILE = Path("/sdcard/lic")
@@ -12,11 +11,11 @@ NUM_WORKERS = 8
 def load_patterns(lic_path: Path) -> list[str]:
     try:
         content = Path(lic_path).read_text(encoding="utf-8", errors="ignore")
-        pattern_separator = r"\n(?:\s*\n){" + str(MIN_BLANK_LINES) + ",}"
+        pattern_separator = "\\n(?:\\s*\\n){" + str(MIN_BLANK_LINES) + ",}"
         patterns = re.split(pattern_separator, content)
         patterns = [p.strip() for p in patterns if p.strip()]
         for pattern in patterns:
-            pattern[:50].replace("\n", r"\n")
+            pattern[:50].replace("\n", "\\n")
         return patterns
     except Exception as e:
         print(f"Error loading patterns from {lic_path}: {e}")
@@ -25,7 +24,7 @@ def load_patterns(lic_path: Path) -> list[str]:
 
 def escape_for_regex(text: str) -> str:
     escaped = re.escape(text)
-    return escaped.replace(r"\n", r"\s*\n\s*")
+    return escaped.replace("\\n", "\\s*\\n\\s*")
 
 
 def remove_patterns_from_content(content: str, patterns: list[str]) -> str:

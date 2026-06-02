@@ -96,7 +96,9 @@ def slugify(text: str) -> str:
     text = unicodedata.normalize("NFKD", text)
     temp = text
     text = text.lower()
-    text = re.sub(r"(\?|\|\||\`|\<|\>|\~|\:|\;|\"|'|\@|\$|\#|\%|\&|\^|\(|\)|\{|\}|\[|\])", "", text)
+    text = re.sub(
+        "(\\?|\\|\\||\\`|\\<|\\>|\\~|\\:|\\;|\\\"|'|\\@|\\$|\\#|\\%|\\&|\\^|\\(|\\)|\\{|\\}|\\[|\\])", "", text
+    )
     text = re.sub("( )+", "_", text)
     text = re.sub("(/)+", "_", text)
     text = re.sub("(__)+", "_", text)

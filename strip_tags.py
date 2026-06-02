@@ -2,12 +2,9 @@
 import re
 import sys
 from pathlib import Path
-
 from dh import read_lines, get_removed_lines
 
 INPLACE = "-w" in sys.argv
-
-
 if __name__ == "__main__":
     fn = Path(sys.argv[1])
     content = fn.read_text(encoding="utf-8")

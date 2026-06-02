@@ -2,14 +2,13 @@
 import re
 import sys
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from fastwalk import walk_files
 
 DIRECTORY = "."
 CHUNK_SIZE = 2000
 TARGET_LANGUAGE = "en"
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def chunk_text(text, chunk_size=CHUNK_SIZE):

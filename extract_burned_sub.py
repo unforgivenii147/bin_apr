@@ -2,7 +2,6 @@
 import multiprocessing
 import sys
 from functools import partial
-
 import cv2
 import numpy as np
 import pytesseract

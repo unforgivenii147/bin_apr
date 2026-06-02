@@ -5,11 +5,10 @@ import mimetypes
 import re
 import sys
 from pathlib import Path
-
 from dh import MIME2EXT
 
 DATA_URL_RE = re.compile(
-    r"url\(\s*(['\"]?)data:(?P<mime>[^;]+)(?:;charset=[^;]+)?;base64,(?P<data>[A-Za-z0-9+/=\s]+)\1\s*\)",
+    "url\\(\\s*(['\\\"]?)data:(?P<mime>[^;]+)(?:;charset=[^;]+)?;base64,(?P<data>[A-Za-z0-9+/=\\s]+)\\1\\s*\\)",
     re.IGNORECASE,
 )
 MIME_FALLBACKS = MIME2EXT

@@ -90,7 +90,7 @@ class BashCommentRemover:
             modified_content = "".join(modified_lines)
             import re
 
-            modified_content = re.sub(r"\n\s*\n\s*\n", r"\n\n", modified_content)
+            modified_content = re.sub("\\n\\s*\\n\\s*\\n", "\\n\\n", modified_content)
             return (modified_content, True)
         except Exception as e:
             print(f"Error processing content: {e}")

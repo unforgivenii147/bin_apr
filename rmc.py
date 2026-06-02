@@ -3,7 +3,6 @@ from ast import get_docstring as ast_get_docstring
 from ast import parse as ast_parse
 from operator import itemgetter
 from pathlib import Path
-
 import tree_sitter_python as tsp
 from dh import clean_blank_lines, cprint, fsz, gsz
 from tree_sitter import Language, Parser
@@ -91,7 +90,6 @@ def process_file(path: Path) -> bool:
 
 if __name__ == "__main__":
     from sys import argv as sys_argv
-
     from dh import get_pyfiles, mpf3
 
     cwd = Path.cwd()

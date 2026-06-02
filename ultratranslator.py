@@ -7,12 +7,11 @@ import tempfile
 import tokenize
 from multiprocessing import get_context
 from pathlib import Path
-
 from deep_translator import GoogleTranslator
 from dh import DOC_TH1, DOC_TH2, get_files
 
 cwd = Path.cwd()
-non_english_pattern = re.compile(r"[^\x00-\x7F]")
+non_english_pattern = re.compile("[^\\x00-\\x7F]")
 
 
 def is_english(text: str) -> bool:
@@ -107,7 +106,6 @@ def translate_python_file(source: str) -> str:
 
 
 def process_files(directory: str) -> None:
-
     files = get_files(directory, ext=(".txt", ".md", ".srt", ".json", ".html", ".py"))
     print(f"Found {len(files)} files")
     translated_count = 0

@@ -9,7 +9,6 @@ Usage:
 """
 
 from __future__ import annotations
-
 import argparse
 import ast
 import hashlib
@@ -20,7 +19,6 @@ from dataclasses import dataclass
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
-
 from loguru import logger
 
 try:

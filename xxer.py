@@ -10,7 +10,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Tuple
-
 import brotlicffi as brotli
 import psutil
 import py7zr

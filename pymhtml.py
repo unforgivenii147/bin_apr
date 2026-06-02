@@ -6,13 +6,12 @@ import sys
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
-
 from dh import get_files
 
 
 def sanitize_filename(name: str) -> str:
     name = name.strip().strip('"').strip("'")
-    return re.sub(r"[^A-Za-z0-9._-]+", "_", name) or "resource"
+    return re.sub("[^A-Za-z0-9._-]+", "_", name) or "resource"
 
 
 def split_data_url(src: str):
@@ -84,7 +83,7 @@ def process_file(path):
         if filename:
             return sanitize_filename(filename)
         cd = part.get("Content-Disposition") or ""
-        m = re.search(r"filename\*?=(?:UTF-8'')?[\"']?([^\"';]+)", cd, flags=re.IGNORECASE)
+        m = re.search("filename\\*?=(?:UTF-8'')?[\\\"']?([^\\\"';]+)", cd, flags=re.IGNORECASE)
         if m:
             return sanitize_filename(m.group(1))
         return None
@@ -96,7 +95,7 @@ def process_file(path):
         if ctype == "text/html":
             continue
         ext = None
-        m = re.match(r"^[^/]+/([^;\s]+)", ctype)
+        m = re.match("^[^/]+/([^;\\s]+)", ctype)
         if m:
             ext = m.group(1)
         if ext == "svg+xml":
@@ -124,7 +123,7 @@ def process_file(path):
         return match.group(0)
 
     html_text = re.sub(
-        r"(src|href)=[\"']cid:([^\"']+)[\"']",
+        "(src|href)=[\\\"']cid:([^\\\"']+)[\\\"']",
         lambda m: (
             f'{m.group(1)}="{os.path.basename(out_dir)}/{cid_to_file.get(m.group(2), m.group(2))}"'
             if m.group(2) in cid_to_file
@@ -142,7 +141,7 @@ def process_file(path):
             return match.group(0)
         mime, raw = parsed
         ext = None
-        m = re.match(r"^[^/]+/([^;\s]+)", mime)
+        m = re.match("^[^/]+/([^;\\s]+)", mime)
         if m:
             ext = m.group(1)
         if ext == "svg+xml":
@@ -154,7 +153,7 @@ def process_file(path):
             f.write(raw)
         return f'{attr}="{os.path.basename(out_dir)}/{fname}"'
 
-    html_text = re.sub(r"(src|href)=[\"'](data:[^\"']+)[\"']", data_uri_replacer, html_text, flags=re.IGNORECASE)
+    html_text = re.sub("(src|href)=[\\\"'](data:[^\\\"']+)[\\\"']", data_uri_replacer, html_text, flags=re.IGNORECASE)
     with open(out_html, "w", encoding="utf-8") as f:
         f.write(html_text)
     print("Done.")

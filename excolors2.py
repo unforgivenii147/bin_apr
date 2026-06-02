@@ -1,12 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/python
 from __future__ import annotations
-
 import contextlib
 import os
 import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-
 from dh import TXT_EXT, is_binary
 
 if TYPE_CHECKING:

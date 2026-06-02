@@ -2,7 +2,6 @@
 import os
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from dh import cprint
 

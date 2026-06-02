@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 REMOTE_PREFIXES = ("http://", "https://", "//")
-IMG_TAG_RE = re.compile(r"<img\b[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
+IMG_TAG_RE = re.compile("<img\\b[^>]*\\bsrc\\s*=\\s*[\\\"']([^\\\"']+)[\\\"'][^>]*>", re.IGNORECASE)
 
 
 def remove_remote_html_images(text: str) -> str:
@@ -17,10 +17,10 @@ def remove_remote_html_images(text: str) -> str:
     return IMG_TAG_RE.sub(repl, text)
 
 
-MD_INLINE_IMG_RE = re.compile(r"!\[.*?\]\((.*?)\)", re.IGNORECASE)
-MD_REF_IMG_RE = re.compile(r"!\[.*?\]\[(.*?)\]", re.IGNORECASE)
-MD_REF_DEF_RE = re.compile(r"^\s*\[(.*?)\]:\s*(\S+)", re.MULTILINE)
-RST_IMG_RE = re.compile(r"^\s*\.\. \|[^|]+\| image:: https?://[^\s]+.*$", re.MULTILINE)
+MD_INLINE_IMG_RE = re.compile("!\\[.*?\\]\\((.*?)\\)", re.IGNORECASE)
+MD_REF_IMG_RE = re.compile("!\\[.*?\\]\\[(.*?)\\]", re.IGNORECASE)
+MD_REF_DEF_RE = re.compile("^\\s*\\[(.*?)\\]:\\s*(\\S+)", re.MULTILINE)
+RST_IMG_RE = re.compile("^\\s*\\.\\. \\|[^|]+\\| image:: https?://[^\\s]+.*$", re.MULTILINE)
 
 
 def remove_remote_md_images(text: str) -> str:

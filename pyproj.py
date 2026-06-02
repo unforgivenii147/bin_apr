@@ -29,7 +29,7 @@ def create_pyproject(current_dir, pkg_name):
 
 def create_setuppy(current_dir, pkg_name):
     setuppy_file = current_dir / "setup.py"
-    setuppy_content = rf'from pathlib import Path\nfrom setuptools import setup, find_packages\nimport re\nhere = Path(__file__).parent\nversion_re = re.compile(r"__version__ = (\(.*?\))")\nversion = "1.4.7"\nfor line in Path("src/{pkg_name}/__init__.py").read_text().splitlines():\n    match = version_re.search(line)\n    if match:\n        version = eval(match.group(1))\n        break\nsetup(\n    name="{pkg_name}",\n    version=".".join(map(str, version)),\n    description=f"python pkg named {pkg_name}",\n    packages=find_packages(),\n)\n'
+    setuppy_content = f'from pathlib import Path\\nfrom setuptools import setup, find_packages\\nimport re\\nhere = Path(__file__).parent\\nversion_re = re.compile(r"__version__ = (\\(.*?\\))")\\nversion = "1.4.7"\\nfor line in Path("src/{pkg_name}/__init__.py").read_text().splitlines():\\n    match = version_re.search(line)\\n    if match:\\n        version = eval(match.group(1))\\n        break\\nsetup(\\n    name="{pkg_name}",\\n    version=".".join(map(str, version)),\\n    description=f"python pkg named {pkg_name}",\\n    packages=find_packages(),\\n)\\n'
     if not setuppy_file.exists():
         setuppy_file.write_text(setuppy_content, encoding="utf-8")
 

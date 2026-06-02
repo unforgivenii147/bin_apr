@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/python
 import sys
 from datetime import datetime, timedelta
-
 from git import Repo
 
 

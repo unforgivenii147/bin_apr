@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 from collections.abc import Container, Iterable
 from pathlib import Path
 from typing import Any, TextIO, cast
-
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
 from pdfminer.pdfexceptions import PDFIOError, PDFObjectNotFound, PDFTypeError, PDFValueError

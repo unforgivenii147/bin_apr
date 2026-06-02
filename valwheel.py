@@ -2,13 +2,12 @@
 import re
 import shutil
 from pathlib import Path
-
 from packaging.tags import parse_tag
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 WHEEL_PATTERN = re.compile(
-    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\.whl$", re.IGNORECASE
+    "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])-([^-]+)-(\\d[^-]*)-([^-]+)-([^-]+)-([^-]+)\\.whl$", re.IGNORECASE
 )
 
 

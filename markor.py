@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
 import markdown
 
 
@@ -83,14 +82,14 @@ class MarkdownFormat(DocumentFormat):
             "heading1": "^# .*$",
             "heading2": "^## .*$",
             "heading3": "^### .*$",
-            "bold": r"\*\*.*?\*\*",
-            "italic": r"\*.*?\*",
+            "bold": "\\*\\*.*?\\*\\*",
+            "italic": "\\*.*?\\*",
             "code": "`.*?`",
-            "codeblock": r"```.*?```",
-            "link": r"\[.*?\]\(.*?\)",
-            "image": r"!\[.*?\]\(.*?\)",
-            "list": r"^[\*\-\+] .*$",
-            "blockquote": r"^> .*$",
+            "codeblock": "```.*?```",
+            "link": "\\[.*?\\]\\(.*?\\)",
+            "image": "!\\[.*?\\]\\(.*?\\)",
+            "list": "^[\\*\\-\\+] .*$",
+            "blockquote": "^> .*$",
         }
 
     def get_preview(self, content: str) -> str:
@@ -115,14 +114,14 @@ class MarkdownFormat(DocumentFormat):
 class TodoFormat(DocumentFormat):
     def get_syntax_highlight_rules(self) -> dict[str, str]:
         return {
-            "completed": r"^\(x\) .*$",
-            "incomplete": r"^\(\) .*$",
-            "priority_a": r"^\(A\) .*$",
-            "priority_b": r"^\(B\) .*$",
-            "priority_c": r"^\(C\) .*$",
-            "project": r"\+\w+",
-            "context": r"@\w+",
-            "date": r"\d{4}-\d{2}-\d{2}",
+            "completed": "^\\(x\\) .*$",
+            "incomplete": "^\\(\\) .*$",
+            "priority_a": "^\\(A\\) .*$",
+            "priority_b": "^\\(B\\) .*$",
+            "priority_c": "^\\(C\\) .*$",
+            "project": "\\+\\w+",
+            "context": "@\\w+",
+            "date": "\\d{4}-\\d{2}-\\d{2}",
         }
 
     def get_preview(self, content: str) -> str:

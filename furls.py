@@ -10,7 +10,6 @@ import tempfile
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-
 import zstd
 from dh import append_text, is_valid_url
 

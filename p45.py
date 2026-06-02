@@ -3,7 +3,6 @@ import ast
 import sys
 import textwrap
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2
 
 

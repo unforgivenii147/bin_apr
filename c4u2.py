@@ -5,7 +5,6 @@ import operator
 import re
 import sys
 from pathlib import Path
-
 import aiohttp
 from bs4 import BeautifulSoup
 

@@ -2,7 +2,6 @@
 import contextlib
 import os
 import sys
-
 import matplotlib.pyplot as plt
 
 MAX_DIRS = 25

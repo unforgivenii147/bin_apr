@@ -2,7 +2,6 @@
 import shutil
 import sys
 from pathlib import Path
-
 from dh import get_files2, read_lines
 
 EMPTYIT = "-e" in sys.argv
@@ -28,11 +27,8 @@ def load_junk():
 
 def main():
     cwd = Path.cwd()
-    #    counter = 0
     junk_files = load_junk()
     for path in get_files2(cwd):
-        #        counter += 1
-        #        print(counter)
         if path.name.lower() in {
             ".travis.yml",
             ".gitkeep",
@@ -45,8 +41,8 @@ def main():
             continue
         if (
             path.name.lower().endswith("license.txt")
-            or (path.stem.lower() == "license" and not path.suffix in {".py", ".pyx", ".js", ".pxd"})
-            or (any((path.name.lower() == junk for junk in junk_files)))
+            or (path.stem.lower() == "license" and (not path.suffix in {".py", ".pyx", ".js", ".pxd"}))
+            or any((path.name.lower() == junk for junk in junk_files))
         ) and path.exists():
             if RMIT:
                 remove_it(path)
@@ -58,7 +54,7 @@ def main():
             else:
                 empty_it(path)
                 print(path.relative_to(cwd))
-        if path.is_dir() and path.name == "licenses" and "dist-info" in path.parent.name:
+        if path.is_dir() and path.name == "licenses" and ("dist-info" in path.parent.name):
             remove_it(path)
             print(path.relative_to(cwd))
 

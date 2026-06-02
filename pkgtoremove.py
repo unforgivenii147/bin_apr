@@ -29,7 +29,7 @@ def get_used_packages(history, installed_packages):
     package_names = dict(installed_packages)
     for line in history:
         for pkg in package_names:
-            if re.search(rf"\b{pkg}\b", line):
+            if re.search(f"\\b{pkg}\\b", line):
                 used_packages.add(pkg)
     return used_packages
 

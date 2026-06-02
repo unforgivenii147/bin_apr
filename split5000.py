@@ -2,7 +2,6 @@
 import re
 import sys
 from pathlib import Path
-
 from binaryornot import is_binary
 from nltk.tokenize import sent_tokenize
 
@@ -11,7 +10,7 @@ BINARY_SAMPLE = 4096
 
 
 def split_long_by_words(segment: str, max_chars: int = DEFAULT_MAX):
-    words = re.findall(r"\S+\s*", segment, flags=re.DOTALL)
+    words = re.findall("\\S+\\s*", segment, flags=re.DOTALL)
     parts = []
     cur = ""
     for w in words:

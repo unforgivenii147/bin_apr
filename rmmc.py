@@ -4,7 +4,6 @@ import re
 import sys
 from multiprocessing import get_context
 from pathlib import Path
-
 from dh import fsz, get_nobinary, gsz, is_binary
 
 
@@ -14,7 +13,7 @@ def process_file(file_path: Path) -> None:
     before = gsz(file_path)
     file_path.read_text(encoding="utf-8")
     orig = re.sub("#.*", "")
-    orig = re.sub(r"\n\n*", "\n")
+    orig = re.sub("\\n\\n*", "\n")
     if file_path.suffix == ".py":
         try:
             ast.parse(orig)

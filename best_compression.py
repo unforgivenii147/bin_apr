@@ -12,7 +12,6 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-
 import brotli
 import py7zr
 import zstandard as zstd

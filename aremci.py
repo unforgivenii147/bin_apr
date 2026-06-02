@@ -4,7 +4,6 @@ import re
 import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-
 from dh import DOC_TH1, DOC_TH2, get_pyfiles
 
 COMMENT_AND_DOCSTRING_REGEX = re.compile(
